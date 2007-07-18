@@ -1,0 +1,55 @@
+Stockholm Environmental Institude (SEI)
+=======================================
+
++   App language - Python
++   Graphical toolkit - wxPython
++   Must be cross-platform! - only use cross-platform parts of the API (check)
+    -   Windows packaging - pyInstaller
+        -   Will it package wxPython, F2PY, etc?
++   Fortran bindings - F2PY
++   Documentation - docbook, doxygen, or just plain latex?
+
+• Workflow
+∘ Select model, [ select data input method ], changable rates etc
+∘ Input data / use default data
+∘ processing
+∘ output to onscreen graphs (save as?), CSV, XLS
+
+• Standards/checking 
+∘ PyLint
+∘ PyUnit
+
+
+NEW
+
+• Timeline
+∘ 1 - Defining structure of the model; modularization
+∘ 2 - 
+∘ 3 - Writing the Python wrapper for the model
+∘ 4 - Designing the UI
+∘ 5 - Coding the UI
+∘ 6 - 
+∘ 7 - Documentation - User Interface, Model (for SEI devs), user templates for input/output
+∘ 8 - [buffer week]
+• Application workflow
+∘ Selecting which parts of the model to use (leaf, canopy, which Rsto, etc)
+∘ User inputs
+‣ CSV, XLS
+‣ Meteorological data, Ozone data
+‣ Vegetation parameters
+• Cover type OR species
+‣ Site-specific parameters
+‣ Physical constants
+CONTINUE WITH THIS!
+
+Model structure
+• Option 1 - Abstract Data Object - all data is local to the model, cannot use for multiple calculations at the same time
+• Option 2 - All global variables are in a data type, passed around using a pointer
+
+• "save" attribute = static vars - maybe use for the stuff dependant on hours/days ?
+
+References
+• 118 - Procedures as arguments
+• 120 - "save" attribute (= static variables)
+∘ Use for stuff that is cumulative?
+• 
