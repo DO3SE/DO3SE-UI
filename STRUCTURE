@@ -1,0 +1,31 @@
+Structure of Modules, etc.
+==========================
+
+Inputs
+------
+
++   Constants_mod.f90
+    -   Constants used in more than one section of the model 
+        (i.e. conversions, pi, etc etc)
+
++   Vegetation_mod.f90
+    -   Cover type/species related parameters
+
++   Site_mod.f90
+    -   All site-specific parameters (elevation, etc.)
+
++   Variables_mod.f90
+    -   All variables that are needed between calculations, all static
+
++   R_mod.f90
+    -   Calculations for Ra, Rb, Rsto etc etc
+    +   Rsto_mod.f90
+        -   Interchangable module containing the Rsto calculation
+    +   Phenology_mod.f90
+        -   Module containing phenology calculation
+
++   Et_mod.f90
+    -   Calculations for AEt and PEt
+
++   Derivations_mod.f90
+    -   Procedures for deriving data, for example irradience, etc.
