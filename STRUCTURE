@@ -1,9 +1,6 @@
 Structure of Modules, etc.
 ==========================
 
-Inputs
-------
-
 +   Constants_mod.f90
     -   Constants used in more than one section of the model 
         (i.e. conversions, pi, etc etc)
@@ -21,11 +18,16 @@ Inputs
     -   Calculations for Ra, Rb, Rsto etc etc
     +   Rsto_mod.f90
         -   Interchangable module containing the Rsto calculation
-    +   Phenology_mod.f90
-        -   Module containing phenology calculation
+        +   Soil_mod.f90
+            -   Calculations for fSWP, SMD, etc
+            +   Et_mod.f90
+                -   Calculations for AEt, PEt
 
-+   Et_mod.f90
-    -   Calculations for AEt and PEt
+    +   Seasonal_mod.f90
+        -   Module containing Fphen calculation, etc
 
 +   Derivations_mod.f90
-    -   Procedures for deriving data, for example irradience, etc.
+    -   Procedures for deriving data
+
++   Functions_mod.f90
+    -   Procedures with generic uses
