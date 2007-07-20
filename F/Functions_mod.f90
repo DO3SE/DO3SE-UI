@@ -17,7 +17,7 @@
             ! value on a graph that follows the generic 3-level polygon 
             ! shape
             !*******************************************************************
-            function Polygon(a, b, c, d, x, y, z, value) result(retval)
+            function OddPolygon(a, b, c, d, x, y, z, value) result(retval)
                 real, intent(in) :: a, b, c, d, x, y, z, value
                 real :: retval
 
@@ -34,6 +34,35 @@
                 endif
             end function Polygon
 
-            function SymPolygon(Ymin, Ymax, Ystart, 
-
+            !*******************************************************************
+            !   
+            !          |
+            !    Ymax  |        ________________
+            !          |       /                \
+            !          |      /                  \
+            !    Ystart|     /                    \
+            !          |     |                    |
+            !          |     |                    |
+            !    Ymin  +---------------------------------
+            !                S  S1            E1  E
+            !
+            !                S1 = S + dtS
+            !                E1 = E - dtE
+            !
+            ! This function finds the value on the y-axis for a given x-axis 
+            ! value on a graph that follows the above shape
+            !*******************************************************************
+            function Polygon(value, Ymin, Ymax, Ystart, 
+                                S, dtS, E, dtE) result(retval)
+                real :: value, Ymin, Ymax, Ystart, S, dtS, E, dtE
+                
+                if ( value < S .or. value > E )
+                    retval = Ymin
+                elseif ( value < (S + dtS) )
+                    retval = ((value - S) / dtS) * (Ymax - Ystart) + Ystart
+                elseif ( value > (E - dtE) )
+                    retval = Ystart - ((E - value) / dtE) * (Ymax - Ystart)
+                else
+                    retval = Ymax
+                endif
         end module Functions_mod
