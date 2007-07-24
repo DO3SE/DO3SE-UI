@@ -24,5 +24,8 @@
             real, public, save :: Yield_Loss
             real, public, save :: AOT40
 
+            ! Day of year for previous dataset
+            integer, public, save :: dd_prev = -1
+
         end module Variables_mod
 
