@@ -1,33 +1,71 @@
-Structure of Modules, etc.
-==========================
+Modular restructure of DO3SE model
+==================================
 
-+   Constants_mod.f90
-    -   Constants used in more than one section of the model 
-        (i.e. conversions, pi, etc etc)
++   Inputs_mod.f90
+    -   All input variables
+    -   All procedures required for loading input data
 
-+   Vegetation_mod.f90
++   Params_Veg_mod.f90
     -   Cover type/species related parameters
+    -   Any extra procedures for loading/setting these parameters
 
-+   Site_mod.f90
-    -   All site-specific parameters (elevation, etc.)
++   Params_Site_mod.f90
+    -   All site-specific parameters (elevation, soil properties, etc.)
+    -   Any extra procedures for loading/setting these parameters
 
 +   Variables_mod.f90
-    -   All variables that are needed between calculations, all static
-
-+   R_mod.f90
-    -   Calculations for Ra, Rb, Rsto etc etc
-    +   Rsto_mod.f90
-        -   Interchangable module containing the Rsto calculation
-        +   Soil_mod.f90
-            -   Calculations for fSWP, SMD, etc
-            +   Et_mod.f90
-                -   Calculations for AEt, PEt
-
-    +   Seasonal_mod.f90
-        -   Module containing Fphen calculation, etc
-
-+   Derivations_mod.f90
-    -   Procedures for deriving data
+    -   Variables which do not belong to any one particular module
 
 +   Functions_mod.f90
-    -   Procedures with generic uses
+    -   Procedures with generic uses (for example polygons for growing season)
+
++   R_mod.f90
+    -   Calculations for all resistances that must be derived (Ra, Rb, Rsur, 
+        Rinc, Rsto, rb)
+    -   Resistances supplied as parameters can be found in their respective
+        modules (e.g. Rsoil is in Params_Site_mod.f90)
+
++   Rsto_mod.f90
+    -   Interchangeable module for Rsto/Gsto calculations
+
++   Phenology_mod.f90
+    -   Calculations resulting in fphen - growing season, SAI, etc.
+
++   Environmental_mod.f90
+    -   Calculations relating to the environment the vegetation exists within
+        (ftemp, fVPD, uses Soil_mod for fSWP, uses Irradiance_mod for flight)
+
++   Soil_mod.f90
+    -   Calculations for soil properties, mainly SMD and SWP
+
++   Irradiance_mod.f90
+    -   Calculations deriving the components of the solar radiation, 
+        plus the flight calculation
+
++   O3_Flux_mod.f90
+    -   Calculations for the O3 flux data (Ftot, Fns, Fstom, Fst, AFstY, AOT40)
+
++   Yield_Loss_mod.f90
+    -   Calculation for yield loss
+
+All public variables are static (using the `save` keyword) to facilitate use
+between modules.
+
+Dependancies look something like this:
+
++   Yield_Loss_mod
+    +   O3_Flux_mod
+        +   R_mod
+            +   Rsto_mod
+                +   Phenology_mod
+                +   Environmental_mod
+                    +   Soil_mod
+                        +   Evapotranspiration_mod
+                    +   Irradiance_mod
+                +   Soil_mod
+                    +   Evapotranspiration_mod
+
+Pretty much all modules rely on parts from Params_Veg_mod, Params_Site_mod, 
+Inputs_mod, Variables_mod and Functions_mod.  Some also rely on each other, 
+these dependancies will be solved with static variables and careful ordering
+of the calls to procedures.
