@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF8"?>
+<resource>
+  <object class="wxDialog" name="dialogInit">
+    <title>DO3SE Model Interface</title>
+    <size>500,300</size>
+    <object class="wxPanel">
+      <object class="wxStaticBoxSizer">
+        <label>This is a frame</label>
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxFlexGridSizer">
+            <cols>2</cols>
+            <rows>3</rows>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Foo</label>
+              </object>
+              <flag>wxALIGN_CENTRE_VERTICAL</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl"/>
+              <flag>wxLEFT|wxEXPAND|wxGROW</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Bar</label>
+              </object>
+              <flag>wxALIGN_CENTRE_VERTICAL</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl"/>
+              <flag>wxEXPAND|wxGROW</flag>
+            </object>
+            <vgap>2</vgap>
+            <hgap>10</hgap>
+            <object class="spacer"/>
+            <object class="sizeritem">
+              <object class="wxButton" name="btnAButton">
+                <label>A button</label>
+              </object>
+            </object>
+            <growablecols>1</growablecols>
+          </object>
+          <flag>wxEXPAND|wxGROW</flag>
+        </object>
+      </object>
+    </object>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+  </object>
+  <object class="wxDialog" name="DIALOG2">
+    <title>A window</title>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+    <object class="wxPanel">
+      <object class="wxGridSizer">
+        <cols>1</cols>
+        <rows>1</rows>
+        <object class="sizeritem">
+          <object class="wxGenericDirCtrl"/>
+          <flag>wxEXPAND|wxGROW</flag>
+        </object>
+      </object>
+    </object>
+  </object>
+</resource>
