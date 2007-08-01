@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+F_Object = Builder(action = 'F -o $TARGET -c $SOURCE', \
+                    suffix = '.o', src_suffix = '.f90')
+
+F_Program = Builder(action = 'F -o $TARGET $SOURCES')
+
+env = Environment()
+env['BUILDERS']['Object'] = F_Object
+env['BUILDERS']['Program'] = F_Program
+
+# New fully build model - doesn't work yet!
+do3se = env.Program(target = 'DO3SE', source = ['Inputs_mod.f90'])
+
+# Phenology module tests
+phen_test = env.Program(target = 'Phenology_test', \
+    source = ['Params_Veg_mod.f90', 'Functions_mod.f90', 'Inputs_mod.f90', \
+                'Phenology_mod.f90', 'Phenology_test.f90'])
+
+# Original model
+baum_dose = env.Program(target = 'Baum_DOSE', source = '../Baum_DOSE.f90')
+
+test_phen = env.Command('test_phen', ['Phenology_test', 'Baum_DOSE'], './Phenology_test > TEST_PHEN_NEW ; ./Baum_DOSE > TEST_PHEN_OLD ; diff -u -s TEST_PHEN_OLD TEST_PHEN_NEW')
+
+Default(do3se)
