@@ -1,34 +1,37 @@
-        module R_mod
+module R_mod
 
-            real, public, save  :: Rext
-            real, public, save  :: Ra
-            real, public, save  :: Rb
-            real, public, save  :: Rsur
-            real, public, save  :: Rinc
-            real, public, save  :: Rext
-            real, public, save  :: Rsoil
-            real, public, save  :: Rsto
+    real, public, save  :: Rext
+    real, public, save  :: Ra
+    real, public, save  :: Rb
+    real, public, save  :: Rsur
+    real, public, save  :: Rinc
+    real, public, save  :: Rext
+    real, public, save  :: Rsoil
+    real, public, save  :: Rsto
 
-            public :: Calc_Rext, Calc_Rsoil
+    public :: Calc_Rext, Calc_Rsoil
 
-        contains
+contains
 
-        !***********************************************************************
-        ! R calculations that do nothing more than copy from parameters
-        ! made available to the model
-        !***********************************************************************
-        subroutine Calc_Rext()
-            use Params_Veg_mod, only: Rext_param => Rext
-            Rext = Rext_param
-        end subroutine Calc_Rext
+!***********************************************************************
+! R calculations that do nothing more than copy from parameters
+! made available to the model
+!***********************************************************************
+subroutine Calc_Rext()
+    use Params_Veg_mod, only: Rext_param => Rext
+    Rext = Rext_param
+end subroutine Calc_Rext
 
-        subroutine Calc_Rsoil()
-            use Params_Site_mod, only: Rsoil_param => Rsoil
-            Rsoil = Rsoil_param
-        end subroutine Calc_Rsoil
+subroutine Calc_Rsoil()
+    use Params_Site_mod, only: Rsoil_param => Rsoil
+    Rsoil = Rsoil_param
+end subroutine Calc_Rsoil
 
-        subroutine Calc_Ra()
+!***********************************************************************
+! Calculate Ra, Atmospheric resistance
+!***********************************************************************
+subroutine Calc_Ra()
+    use Constants_mod, only: uzR
+end subroutine Calc_Ra
 
-        end subroutine Calc_Ra
-
-        end module R_mod
+end module R_mod

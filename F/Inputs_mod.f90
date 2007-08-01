@@ -1,7 +1,5 @@
-        module Inputs_mod
+module Inputs_mod
 
-            integer, public, save   :: dd
+    real, public, save   :: mm, mdd, dd, hr
 
-        contains
-
-        end module Inputs_mod
+end module Inputs_mod
