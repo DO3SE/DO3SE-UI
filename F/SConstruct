@@ -5,6 +5,16 @@ F_Object = Builder(action = 'F -o $TARGET -c $SOURCE', \
 
 F_Program = Builder(action = 'F -o $TARGET $SOURCES')
 
+def maketest(env, target, module, testvars):
+    env.Command(target, ['TEST_' + module], """
+            replace "!%%%%OUTPUTVARS%%%%" "%s" < ../Baum_DOSE.f90 > TEST_%s_orig.f90
+            F -o TEST_%s_orig TEST_%s_orig.f90
+            ./TEST_%s > TEST_%s_OUTPUT_NEW
+            ./TEST_%s_orig > TEST_%s_OUTPUT_ORIG
+            diff -u -s TEST_%s_OUTPUT_ORIG TEST_%s_OUTPUT_NEW
+    """ % (testvars, module, module, module, module, module, module, module, module, module))
+    env.Command(target + "_clean", [], 'rm TEST_%s*' % (module))
+
 env = Environment()
 env['BUILDERS']['Object'] = F_Object
 env['BUILDERS']['Program'] = F_Program
@@ -12,14 +22,16 @@ env['BUILDERS']['Program'] = F_Program
 # New fully build model - doesn't work yet!
 do3se = env.Program(target = 'DO3SE', source = ['Inputs_mod.f90'])
 
-# Phenology module tests
-phen_test = env.Program(target = 'Phenology_test', \
-    source = ['Params_Veg_mod.f90', 'Functions_mod.f90', 'Inputs_mod.f90', \
-                'Phenology_mod.f90', 'Phenology_test.f90'])
 
 # Original model
 baum_dose = env.Program(target = 'Baum_DOSE', source = '../Baum_DOSE.f90')
 
-test_phen = env.Command('test_phen', ['Phenology_test', 'Baum_DOSE'], './Phenology_test > TEST_PHEN_NEW ; ./Baum_DOSE > TEST_PHEN_OLD ; diff -u -s TEST_PHEN_OLD TEST_PHEN_NEW')
+# Module tests
+
+# Phenology
+env.Program(target = 'TEST_Phenology', \
+    source = ['Params_Veg_mod.f90', 'Functions_mod.f90', 'Inputs_mod.f90', \
+                'Phenology_mod.f90', 'Phenology_test.f90'])
+maketest(env, 'test_phen', 'Phenology', 'LAI, SAI, fphen')
 
 Default(do3se)

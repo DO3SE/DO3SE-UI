@@ -61,7 +61,13 @@ contains
             fphen = fphen_a
         else if ( dd < Astart + fphenS ) then
             fphen = fphen_b + (fphen_c - fphen_b) * (dd - Astart)/fphenS
-        else if ( dd
+        else if ( dd < Aend - fphenE ) then
+            fphen = fphen_c
+        else if ( dd < Aend ) then
+            fphen = fphen_d + (fphen_c - fphen_d) * (Aend - dd)/fphenE
+        else
+            fphen = fphen_d
+        end if
     end subroutine Calc_fphen
 
 end module Phenology_mod
