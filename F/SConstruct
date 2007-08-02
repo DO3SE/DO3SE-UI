@@ -24,10 +24,22 @@ do3se = env.Program(target = 'DO3SE', source = ['Inputs_mod.f90'])
 
 # Module tests
 
+common_modules = ['Params_Veg_mod.f90', 'Params_Site_mod.f90', 'Inputs_mod.f90', \
+        'Constants_mod.f90', 'Functions_mod.f90']
+
 # Phenology
 env.Program(target = 'TEST_Phenology', \
-    source = ['Params_Veg_mod.f90', 'Functions_mod.f90', 'Inputs_mod.f90', \
-                'Phenology_mod.f90', 'Phenology_test.f90'])
+    source = common_modules + ['Phenology_mod.f90', 'Phenology_test.f90'])
 maketest(env, 'test_phen', 'Phenology', 'LAI, SAI, fphen')
+
+# Irradiance
+env.Program(target = 'TEST_Irradiance', \
+    source = common_modules + ['Phenology_mod.f90', 'Irradiance_mod.f90', 'Irradiance_test.f90'])
+maketest(env, 'test_irrad', 'Irradiance', 'PARshade, PARsun, flight, leaf_flight')
+
+# Environmental
+env.Program(target = 'TEST_Environmental', \
+    source = common_modules + ['Environmental_mod.f90', 'Environmental_test.f90'])
+maketest(env, 'test_env', 'Environmental', 'ftemp, fVPD')
 
 Default(do3se)
