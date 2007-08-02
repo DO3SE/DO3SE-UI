@@ -7,7 +7,7 @@ F_Program = Builder(action = 'F -o $TARGET $SOURCES')
 
 def maketest(env, target, module, testvars):
     env.Command(target, ['TEST_' + module], """
-            replace "!%%%%OUTPUTVARS%%%%" "%s" < ../Baum_DOSE.f90 > TEST_%s_orig.f90
+            replace "!%%%%OUTPUTVARS%%%%" "%s" < Baum_DOSE.f90 > TEST_%s_orig.f90
             F -o TEST_%s_orig TEST_%s_orig.f90
             ./TEST_%s > TEST_%s_OUTPUT_NEW
             ./TEST_%s_orig > TEST_%s_OUTPUT_ORIG
@@ -21,10 +21,6 @@ env['BUILDERS']['Program'] = F_Program
 
 # New fully build model - doesn't work yet!
 do3se = env.Program(target = 'DO3SE', source = ['Inputs_mod.f90'])
-
-
-# Original model
-baum_dose = env.Program(target = 'Baum_DOSE', source = '../Baum_DOSE.f90')
 
 # Module tests
 
