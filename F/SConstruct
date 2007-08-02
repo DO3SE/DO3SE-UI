@@ -3,16 +3,18 @@
 F_Object = Builder(action = 'F -o $TARGET -c $SOURCE', \
                     suffix = '.o', src_suffix = '.f90')
 
-F_Program = Builder(action = 'F -o $TARGET $SOURCES')
+F_Program = Builder(action = 'F -O0 -o $TARGET $SOURCES')
+#F_Program = Builder(action = 'f95 -o $TARGET $SOURCES')
 
 def maketest(env, target, module, testvars):
     env.Command(target, ['TEST_' + module], """
             replace "!%%%%OUTPUTVARS%%%%" "%s" < Baum_DOSE.f90 > TEST_%s_orig.f90
-            F -o TEST_%s_orig TEST_%s_orig.f90
+            F -O0 -o TEST_%s_orig TEST_%s_orig.f90
             ./TEST_%s > TEST_%s_OUTPUT_NEW
             ./TEST_%s_orig > TEST_%s_OUTPUT_ORIG
+            #ndiff --relative-error 1.0e-6 TEST_%s_OUTPUT_ORIG TEST_%s_OUTPUT_NEW
             diff -u -s TEST_%s_OUTPUT_ORIG TEST_%s_OUTPUT_NEW
-    """ % (testvars, module, module, module, module, module, module, module, module, module))
+    """ % (testvars, module, module, module, module, module, module, module, module, module, module, module))
     env.Command(target + "_clean", [], 'rm TEST_%s*' % (module))
 
 env = Environment()
@@ -25,7 +27,7 @@ do3se = env.Program(target = 'DO3SE', source = ['Inputs_mod.f90'])
 # Module tests
 
 common_modules = ['Params_Veg_mod.f90', 'Params_Site_mod.f90', 'Inputs_mod.f90', \
-        'Constants_mod.f90', 'Functions_mod.f90']
+        'Constants_mod.f90', 'Variables_mod.f90', 'Functions_mod.f90']
 
 # Phenology
 env.Program(target = 'TEST_Phenology', \
@@ -41,5 +43,15 @@ maketest(env, 'test_irrad', 'Irradiance', 'PARshade, PARsun, flight, leaf_flight
 env.Program(target = 'TEST_Environmental', \
     source = common_modules + ['Environmental_mod.f90', 'Environmental_test.f90'])
 maketest(env, 'test_env', 'Environmental', 'ftemp, fVPD')
+
+# Soil
+env.Program(target = 'TEST_Soil', \
+    source = common_modules + ['Soil_mod.f90', 'Soil_test.f90'])
+maketest(env, 'test_soil', 'Soil', 'precip_use')
+
+# R_mod
+env.Program(target = 'TEST_R', \
+    source = common_modules + ['R_mod.f90', 'R_test.f90'])
+maketest(env, 'test_r', 'R', 'ustar, Ra_u, Rb')
 
 Default(do3se)

@@ -1,21 +1,19 @@
 module Soil_mod
-    real :: PWP        ! Calculated PWP in m3/3
-    real :: ASW        ! Calculated ASW in m3/m3
-    real :: Sn_star    ! Calculated Sn* in m3/m3
-    real :: Sn         ! soil Water storage capacity
-    real :: Sn_1       ! soil water storage capacity of previous day
-    real :: per_vol    ! % volumetric water content
-    real :: SMD        ! soil moisture deficit in mm
-    real :: SWP        ! Soil water potential in MPa
-    real :: WC         ! water content
-    real :: precip     ! Previous day's total precipitation
-    real :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
+    real, public, save :: PWP        ! Calculated PWP in m3/3
+    real, public, save :: ASW        ! Calculated ASW in m3/m3
+    real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
+    real, public, save :: Sn         ! soil Water storage capacity
+    real, public, save :: Sn_1       ! soil water storage capacity of previous day
+    real, public, save :: per_vol    ! % volumetric water content
+    real, public, save :: SMD        ! soil moisture deficit in mm
+    real, public, save :: SWP        ! Soil water potential in MPa
+    real, public, save :: WC         ! water content
+    real, public, save :: precip     ! Previous day's total precipitation
+    real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
 
-    integer :: hour_count, hour_count_1, hour_count_2, hour_count_3, &
-               hour_count_4, hour_count_5
+    real, public, save  :: fSWP
 
-    integer :: current_dd   ! Current day of the year - used for 
-                            ! finding when the day changes
+    public :: initialize, Calc_precip, Calc_SMD
 
 contains
 
@@ -36,6 +34,7 @@ contains
         WC          = Fc_m - PWP
         per_vol     = (Fc_m + PWP) * 100 
         fSWP        = 1
+        precip = 0
 
 
         
@@ -46,7 +45,7 @@ contains
         use Inputs_mod, only: dd, precip_in => precip
         use Variables_mod, only: dd_prev
 
-        real, save :: precip_dd
+        real, save :: precip_dd = 0
 
         if ( dd == dd_prev ) then
             ! Same day, accumulate (converts mm to m)

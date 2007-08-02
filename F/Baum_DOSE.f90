@@ -9,7 +9,7 @@ Program DOSE
 
 integer :: mm      ! month
 integer :: mdd     ! day of month
-integer :: dd      ! day of year
+real :: dd      ! day of year
 integer :: hr      ! hour of day
 real :: Ts_c       ! surface air temperature in oC
 real :: ustar      ! Friction velocity (m/s)
@@ -364,7 +364,8 @@ Uzh = (ustar/k) * log((h-d)/zo)
 ! ==========================================================
 
 
-Rb = (2/(k*ustar)) * ((v/DO3/Pr)**(0.6666666666666))
+!Rb = (2/(k*ustar)) * ((v/DO3/Pr)**(0.6666666666666))
+Rb = (2/(k*ustar)) * ((v/DO3/Pr)**(2/3))
 
 
 ! ===============
@@ -495,7 +496,7 @@ if (zen <= 88 .and. LAI > 0) then
                0.07 * Idrctt  * (1.1-0.1*LAI)*exp(-sinB)
 
    PARsun = Idrctt *cosA/sinB + PARshade
-
+   
     ! .. Convert units, and to PAR fraction and multiply by albedo...
 
   PARshade = PARshade * Wm2_2uEPAR * ( 1.0 - albedo )
@@ -590,16 +591,15 @@ end if
 ! Estimate soil water potential
 ! =============================
 
-
-if (precip == 0) then
-
-precip=0
-
-else if (precip >= 0) then
-
-precip = precip  / 1000    ! Converts input precip in mm to m
-
-end if
+!if (precip == 0) then
+!
+!precip=0
+!
+!else if (precip >= 0) then
+!
+!precip = precip  / 1000    ! Converts input precip in mm to m
+!
+!end if
 
 ! For daily precipitation use, "_use" term
 
@@ -607,12 +607,12 @@ end if
 
    if (hour_count < 25) then
 
-   precip_dd  = precip_dd + precip
+   precip_dd  = precip_dd + precip/1000
 
    else if (hour_count == 25) then
 
       precip_use = precip_dd
-      precip_dd = 0 + precip
+      precip_dd = precip/1000
       hour_count = 1
 
    end if
