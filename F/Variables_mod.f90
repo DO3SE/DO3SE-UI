@@ -18,7 +18,6 @@ module Variables_mod
     real, public, save :: Fstom
 
     ! Outputs for leaf level
-    real, public, save :: gsto
     real, public, save :: Fst
     real, public, save :: AFstY
     real, public, save :: Yield_Loss

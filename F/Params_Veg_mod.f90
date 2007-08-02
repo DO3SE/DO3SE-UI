@@ -40,6 +40,8 @@ module Params_Veg_mod
     real, public, save  :: fphen_d = 0      ! fphen at Aend and EGS
     real, public, save  :: fphenS = 15      ! period to fphen_c
     real, public, save  :: fphenE = 20      ! period to fphen_d
+
+    real, public, save  :: Rext = 2500      ! external plant cuticle resistance in s/m
     
 
 end module Params_Veg_mod
