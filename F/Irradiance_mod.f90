@@ -1,11 +1,5 @@
 module Irradiance_mod
 
-    real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
-    real, public, save  :: leaf_flight  ! light related g
-    real, public, save  :: LAIsunfrac
-    real, public, save  :: PARshade
-    real, public, save  :: PARsun
-
     public :: Calc_Flight
 
 contains
@@ -14,7 +8,8 @@ contains
         use Constants_mod, only: DEG2RAD, PARfrac, Wm2_2uEPAR
         use Inputs_mod, only: Idrctt, Idfuse, zen
         use Params_Veg_mod, only: f_lightfac, cosA, albedo
-        use Phenology_mod, only: LAI
+        use Variables_mod, only: LAI, LAIsunfrac, PARshade, PARsun, &
+            leaf_flight, Flight
 
         real :: sunLAI  ! sunlit LAI
         real :: sinB    ! B = solar elevation angle component of zenith angle

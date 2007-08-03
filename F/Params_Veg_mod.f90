@@ -42,6 +42,10 @@ module Params_Veg_mod
     real, public, save  :: fphenE = 20      ! period to fphen_d
 
     real, public, save  :: Rext = 2500      ! external plant cuticle resistance in s/m
+    real, public, save  :: Rinc_b = 14      ! Rinc co-efficient
+
+    real, public, save  :: Lm = 0.05        ! Leaf dimension (m)
+    real, public, save  :: Y = 1.6          ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
     
 
 end module Params_Veg_mod

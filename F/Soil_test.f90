@@ -18,7 +18,7 @@ program test_Irradiance
 
         call Calc_precip()
 
-        print *, precip_out
+        print *, precip_out, SWP
         dd_prev = dd
     end do read_loop
 

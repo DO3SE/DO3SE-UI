@@ -1,8 +1,8 @@
-program test_R
+program test_Evapotranspiration
     use Inputs_mod
     use Variables_mod, only: dd_prev
+    use Evapotranspiration_mod
     use R_mod
-    use Phenology_mod, only: Calc_LAI, Calc_SAI => Calc_SAI_Simple
 
     integer :: ios = 0
 
@@ -19,17 +19,13 @@ program test_R
 
         call Input_sanitize()
 
-        call Calc_LAI()
-        call Calc_SAI()
         call Calc_ustar()
-        call Calc_Ra()
         call Calc_Rb()
-        call Calc_Rgs()
-        call Calc_Rinc()
+        call Calc_Ei()
 
-        print *, ustar, Ra, Rb, Rgs, Rinc
+        print *, Ei
 
         dd_prev = dd
     end do read_loop
 
-end program test_R
+end program test_Evapotranspiration

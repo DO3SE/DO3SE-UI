@@ -6,25 +6,62 @@
 
 module Variables_mod
     
-    ! Outputs for canopy level
-    real, public, save :: Ra
-    real, public, save :: Rb
-    real, public, save :: Rsur
-    real, public, save :: Rsto
-    real, public, save :: Gsto
-    real, public, save :: Vg
-    real, public, save :: Ftot
-    real, public, save :: Fns
-    real, public, save :: Fstom
-
-    ! Outputs for leaf level
-    real, public, save :: Fst
-    real, public, save :: AFstY
-    real, public, save :: Yield_Loss
-    real, public, save :: AOT40
-
     ! Day of year for previous dataset
-    integer, public, save :: dd_prev = -1
+    real, public, save :: dd_prev = -1
+
+    ! Environmental_mod
+    real, public, save  :: ftemp
+    real, public, save  :: fVPD
+
+    ! Evapotranspiration_mod
+    real, public, save  :: PEt  ! Potential evapotranspiration
+    real, public, save  :: AEt  ! Actual evapotranspiration
+    real, public, save  :: Ei   ! Evaporation of intercepted precip
+
+    ! Irradiance_mod
+    real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
+    real, public, save  :: leaf_flight  ! light related g
+    real, public, save  :: LAIsunfrac
+    real, public, save  :: PARshade
+    real, public, save  :: PARsun
+
+    ! Phenology_mod
+    real, public, save  :: LAI
+    real, public, save  :: SAI
+    real, public, save  :: fphen
+    real, public, save  :: leaf_fphen
+
+    ! R_mod
+    real, public, save  :: Ra
+    real, public, save  :: Ra_O3
+    real, public, save  :: Rb
+    real, public, save  :: Rsur
+    real, public, save  :: Rinc
+    real, public, save  :: Rsto
+    real, public, save  :: Rgs
+
+    real, public, save  :: ustar
+    real, public, save  :: Gsto, Gsto_PEt
+
+    ! Soil_mod
+    real, public, save :: PWP        ! Calculated PWP in m3/3
+    real, public, save :: ASW        ! Calculated ASW in m3/m3
+    real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
+    real, public, save :: Sn         ! soil Water storage capacity
+    real, public, save :: per_vol    ! % volumetric water content
+    real, public, save :: SMD        ! soil moisture deficit in mm
+    real, public, save :: SWP        ! Soil water potential in MPa
+    real, public, save :: WC         ! water content
+    real, public, save :: precip     ! Previous day's total precipitation
+    real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
+    real, public, save :: fSWP
+
+    ! O3_Flux_mod
+    real, public, save :: O3_ppb, O3_nmol_m3, Vd
+    real, public, save :: Ftot
+
+    ! O3_Effects_mod
+    real, public, save :: Fst, AFstY, AOT40
 
 end module Variables_mod
 

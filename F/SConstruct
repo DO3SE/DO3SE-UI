@@ -47,11 +47,60 @@ maketest(env, 'test_env', 'Environmental', 'ftemp, fVPD')
 # Soil
 env.Program(target = 'TEST_Soil', \
     source = common_modules + ['Soil_mod.f90', 'Soil_test.f90'])
-maketest(env, 'test_soil', 'Soil', 'precip_use')
+maketest(env, 'test_soil', 'Soil', 'precip_use, SWP')
 
 # R_mod
 env.Program(target = 'TEST_R', \
-    source = common_modules + ['R_mod.f90', 'R_test.f90'])
-maketest(env, 'test_r', 'R', 'ustar, Ra_u, Rb')
+    source = common_modules + ['Phenology_mod.f90', 'R_mod.f90', 'R_test.f90'])
+maketest(env, 'test_r', 'R', 'ustar, Ra_u, Rb, Rgs, Rinc')
+
+# Evapotranspiration_mod
+env.Program(target = 'TEST_Evapotranspiration', \
+    source = common_modules + ['Phenology_mod.f90', 'R_mod.f90', 'Soil_mod.f90', \
+    'Evapotranspiration_mod.f90', 'Evapotranspiration_test.f90'])
+maketest(env, 'test_evap', 'Evapotranspiration', 'Ei_use')
+
+all_modules = common_modules + ['Phenology_mod.f90', 'Environmental_mod.f90', 'Irradiance_mod.f90',\
+        'Evapotranspiration_mod.f90', 'Soil_mod.f90', 'R_mod.f90']
+
+
+#env.Program(target = 'TEST_New', source = all_modules + ['Run.f90', 'Test.f90'])
+#env.Program(target = 'TEST_Orig', source = 'Baum_DOSE_orig.f90')
+#env.Command('test', ['TEST_New', 'TEST_Orig'], """
+#        ./TEST_Orig > TEST_OUTPUT_Orig
+#        ./TEST_New > TEST_OUPUT_New
+#        ndiff --relative-error 1.0e-6 TEST_OUTPUT_Orig TEST_OUTPUT_New
+#        diff -u -s TEST_OUTPUT_Orig TEST_OUTPUT_New""")
+
+const = env.Object('Constants_mod.f90')
+p_veg = env.Object('Params_Veg_mod.f90')
+p_site = env.Object('Params_Site_mod.f90')
+vars = env.Object('Variables_mod.f90')
+inputs = env.Object('Inputs_mod.f90')
+funcs = env.Object('Functions_mod.f90')
+
+common = const + p_veg + p_site + vars + inputs + funcs
+
+phen = env.Object('Phenology_mod.f90')
+irrad = env.Object('Irradiance_mod.f90')
+evap = env.Object('Evapotranspiration_mod.f90')
+envir = env.Object('Environmental_mod.f90')
+r = env.Object('R_mod.f90')
+soil = env.Object('Soil_mod.f90')
+flux = env.Object('O3_Flux_mod.f90')
+effects = env.Object('O3_Effects_mod.f90')
+
+all = common + phen + irrad + envir + r + evap + soil + flux + effects
+
+env.Program(target = 'TEST_new', source = all + ['Run.f90', 'Test.f90'])
+env.Program(target = 'TEST_old', source = 'Baum_DOSE_test.f90')
+env.Command('test', ['TEST_new', 'TEST_old'], """
+        ./TEST_old > TEST_OUTPUT_old
+        ./TEST_new > TEST_OUTPUT_new
+        diff -u -s TEST_OUTPUT_old TEST_OUTPUT_new""")
+env.Command('ntest', ['TEST_new', 'TEST_old'], """
+        ./TEST_old > TEST_OUTPUT_old
+        ./TEST_new > TEST_OUTPUT_new
+        ndiff --relative-error 1.0e-6 TEST_OUTPUT_old TEST_OUTPUT_new""")
 
 Default(do3se)

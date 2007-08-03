@@ -1,9 +1,5 @@
 module Phenology_mod
 
-    real, public, save  :: LAI
-    real, public, save  :: SAI
-    real, public, save  :: fphen
-
     public :: Calc_LAI, Calc_SAI_Simple, Calc_SAI_Crops, &
         Calc_fphen
 
@@ -18,6 +14,7 @@ contains
         use Params_Veg_mod, only: SGS, EGS, Ls, Le, LAI_min, &
             LAI_max
         use Inputs_mod, only: dd
+        use Variables_mod, only: LAI
 
         LAI = Polygon(SGS, SGS + Ls, EGS - Le, EGS, &
                         LAI_min, LAI_max, LAI_min, dd)
@@ -28,6 +25,7 @@ contains
     ! trees
     !**************************************************************
     subroutine Calc_SAI_Simple()
+        use Variables_mod, only: LAI, SAI
         SAI = LAI + 1
     end subroutine Calc_SAI_Simple
 
@@ -39,6 +37,7 @@ contains
         use Inputs_mod, only: dd
         use Params_Veg_mod, only: SGS, EGS, Ls, Le
         use Functions_mod, only: Polygon
+        use Variables_mod, only: LAI, SAI
 
         if ( dd < SGS .or. dd > EGS ) then
             SAI = LAI
@@ -54,6 +53,7 @@ contains
         use Params_Veg_mod, only: SGS, EGS, Astart, Aend, &
             fphen_a, fphen_b, fphen_c, fphen_d, fphenS, fphenE
         use Inputs_mod, only: dd
+        use Variables_mod, only: fphen, leaf_fphen
 
         if ( dd <= SGS .or. dd > EGS ) then
             fphen = 0
@@ -68,6 +68,9 @@ contains
         else
             fphen = fphen_d
         end if
+
+        ! TODO: Change this to calculate fphen for upper canopy leaf
+        leaf_fphen = fphen
     end subroutine Calc_fphen
 
 end module Phenology_mod

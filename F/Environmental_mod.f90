@@ -1,8 +1,5 @@
 module Environmental_mod
 
-    real, public, save  :: ftemp
-    real, public, save  :: fVPD
-
     public :: Calc_ftemp, Calc_fVPD
 
 contains
@@ -11,6 +8,8 @@ contains
     ! Calculate ftemp
     !***************************************************************************
     subroutine Calc_ftemp()
+        use Variables_mod, only: ftemp
+
         use Inputs_mod, only: Ts_c
         use Params_Veg_mod, only: T_max, T_min, T_opt, fmin
 
@@ -24,6 +23,8 @@ contains
     ! Calculate fVPD (vapour pressure deficit related g)
     !***************************************************************************
     subroutine Calc_fVPD()
+        use Variables_mod, only: fVPD
+
         use Inputs_mod, only: VPD
         use Params_Veg_mod, only: fmin, VPD_min, VPD_max
 
