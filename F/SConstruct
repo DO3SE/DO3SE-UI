@@ -3,11 +3,14 @@
 F_Object = Builder(action = 'F -o $TARGET -c $SOURCE', \
                     suffix = '.o', src_suffix = '.f90')
 
-F_Program = Builder(action = 'F -O -o $TARGET $SOURCES')
+F_Program = Builder(action = 'F -o $TARGET $SOURCES')
+
+F_Python = Builder(action = 'f2py --f77exec=f95 --f90exec=f95 -m $TARGET -c $SOURCES')
 
 env = Environment()
 env['BUILDERS']['Object'] = F_Object
 env['BUILDERS']['Program'] = F_Program
+env['BUILDERS']['F_Python'] = F_Python
 
 # Common modules
 const = env.Object('Constants_mod.f90')
@@ -43,4 +46,10 @@ ntest = env.Command('ntest', ['TEST_new', 'TEST_old'], """
         ./TEST_new > TEST_OUTPUT_new
         ndiff --relative-error 1.0e-6 TEST_OUTPUT_old TEST_OUTPUT_new""")
 
+build_python = env.F_Python(target = 'dose_f', source = [ \
+        'Constants_mod.f90', 'Params_Veg_mod.f90', 'Params_Site_mod.f90', \
+        'Variables_mod.f90', 'Inputs_mod.f90', 'Functions_mod.f90', \
+        'Phenology_mod.f90', 'Irradiance_mod.f90', 'Evapotranspiration_mod.f90', \
+        'Environmental_mod.f90', 'R_mod.f90', 'Soil_mod.f90', 'O3_Flux_mod.f90', \
+        'O3_Effects_mod.f90', 'Run.f90'])
 Default(test)
