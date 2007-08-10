@@ -1,4 +1,4 @@
-module Functions_mod
+module Functions
 
     public :: Polygon, newPolygon
 
@@ -69,4 +69,4 @@ contains
         end if
     end function newPolygon
 
-end module Functions_mod
+end module Functions

@@ -1,4 +1,4 @@
-module Params_Site_mod
+module Params_Site
 
     real, public, save  :: Rsoil = 200      ! Soil resistance in (s/m)
 
@@ -9,4 +9,4 @@ module Params_Site_mod
                                             ! medium = -3.3, fine = -5.4
     real, public, save  :: Fc_m = 0.193     ! Field capacity (m^3/m^3)
 
-end module Params_Site_mod
+end module Params_Site

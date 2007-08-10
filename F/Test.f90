@@ -1,8 +1,8 @@
 program Test
     
     use Run
-    use Inputs_mod, precip_in => precip
-    use Variables_mod
+    use Inputs, precip_in => precip
+    use Variables
 
     integer :: ios = 0
 

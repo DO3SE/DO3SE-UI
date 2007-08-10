@@ -1,4 +1,4 @@
-module Phenology_mod
+module Phenology
 
     public :: Calc_LAI, Calc_SAI_Simple, Calc_SAI_Crops, &
         Calc_fphen
@@ -10,11 +10,11 @@ contains
     ! calculation
     !**************************************************************
     subroutine Calc_LAI()
-        use Functions_mod, only: Polygon
-        use Params_Veg_mod, only: SGS, EGS, Ls, Le, LAI_min, &
+        use Functions, only: Polygon
+        use Params_Veg, only: SGS, EGS, Ls, Le, LAI_min, &
             LAI_max
-        use Inputs_mod, only: dd
-        use Variables_mod, only: LAI
+        use Inputs, only: dd
+        use Variables, only: LAI
 
         LAI = Polygon(SGS, SGS + Ls, EGS - Le, EGS, &
                         LAI_min, LAI_max, LAI_min, dd)
@@ -25,7 +25,7 @@ contains
     ! trees
     !**************************************************************
     subroutine Calc_SAI_Simple()
-        use Variables_mod, only: LAI, SAI
+        use Variables, only: LAI, SAI
         SAI = LAI + 1
     end subroutine Calc_SAI_Simple
 
@@ -34,10 +34,10 @@ contains
     ! account
     !**************************************************************
     subroutine Calc_SAI_Crops()
-        use Inputs_mod, only: dd
-        use Params_Veg_mod, only: SGS, EGS, Ls, Le
-        use Functions_mod, only: Polygon
-        use Variables_mod, only: LAI, SAI
+        use Inputs, only: dd
+        use Params_Veg, only: SGS, EGS, Ls, Le
+        use Functions, only: Polygon
+        use Variables, only: LAI, SAI
 
         if ( dd < SGS .or. dd > EGS ) then
             SAI = LAI
@@ -49,11 +49,11 @@ contains
     end subroutine Calc_SAI_Crops
 
     subroutine Calc_fphen()
-        use Functions_mod, only: Polygon
-        use Params_Veg_mod, only: SGS, EGS, Astart, Aend, &
+        use Functions, only: Polygon
+        use Params_Veg, only: SGS, EGS, Astart, Aend, &
             fphen_a, fphen_b, fphen_c, fphen_d, fphenS, fphenE
-        use Inputs_mod, only: dd
-        use Variables_mod, only: fphen, leaf_fphen
+        use Inputs, only: dd
+        use Variables, only: fphen, leaf_fphen
 
         if ( dd <= SGS .or. dd > EGS ) then
             fphen = 0
@@ -73,4 +73,4 @@ contains
         leaf_fphen = fphen
     end subroutine Calc_fphen
 
-end module Phenology_mod
+end module Phenology

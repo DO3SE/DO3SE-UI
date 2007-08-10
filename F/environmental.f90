@@ -1,4 +1,4 @@
-module Environmental_mod
+module Environmental
 
     public :: Calc_ftemp, Calc_fVPD
 
@@ -8,10 +8,10 @@ contains
     ! Calculate ftemp
     !***************************************************************************
     subroutine Calc_ftemp()
-        use Variables_mod, only: ftemp
+        use Variables, only: ftemp
 
-        use Inputs_mod, only: Ts_c
-        use Params_Veg_mod, only: T_max, T_min, T_opt, fmin
+        use Inputs, only: Ts_c
+        use Params_Veg, only: T_max, T_min, T_opt, fmin
 
         real :: bt 
         
@@ -23,10 +23,10 @@ contains
     ! Calculate fVPD (vapour pressure deficit related g)
     !***************************************************************************
     subroutine Calc_fVPD()
-        use Variables_mod, only: fVPD
+        use Variables, only: fVPD
 
-        use Inputs_mod, only: VPD
-        use Params_Veg_mod, only: fmin, VPD_min, VPD_max
+        use Inputs, only: VPD
+        use Params_Veg, only: fmin, VPD_min, VPD_max
 
         fVPD = ((1 - fmin)*(VPD_min - VPD)/(VPD_min - VPD_max)) + fmin
         fVPD = max(fVPD, fmin)
@@ -36,4 +36,4 @@ contains
         end if
     end subroutine Calc_fVPD
 
-end module Environmental_mod
+end module Environmental

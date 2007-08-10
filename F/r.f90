@@ -1,4 +1,4 @@
-module R_mod
+module R
 
     public :: Calc_Rext, Calc_Rsoil, Calc_ustar, Calc_Ra, Calc_Rb, Calc_Rgs, &
                 Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur
@@ -9,9 +9,9 @@ contains
     ! Calculate ustar - resistance velocity
     !***************************************************************************
     subroutine Calc_ustar()
-        use Constants_mod, only: uzR, d, zo, k
-        use Inputs_mod, only: uh
-        use Variables_mod, only: ustar
+        use Constants, only: uzR, d, zo, k
+        use Inputs, only: uh
+        use Variables, only: ustar
 
         ustar = (uh * k) / log((uzR - d) / (zo))
     end subroutine Calc_ustar
@@ -21,8 +21,8 @@ contains
     ! Calculate Ra, Atmospheric resistance
     !***************************************************************************
     subroutine Calc_Ra()
-        use Constants_mod, only: uzR, d, zo, k, h, czR
-        use Variables_mod, only: ustar, Ra, Ra_O3
+        use Constants, only: uzR, d, zo, k, h, czR
+        use Variables, only: ustar, Ra, Ra_O3
 
         if ( uzR < zo + d ) then
             Ra = 1 / (k * ustar) * (log(((zo + d) - d)/(h - d)))
@@ -41,8 +41,8 @@ contains
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
     !***************************************************************************
     subroutine Calc_Rb()
-        use Constants_mod, only: k, v, DO3, Pr
-        use Variables_mod, only: ustar, Rb
+        use Constants, only: k, v, DO3, Pr
+        use Variables, only: ustar, Rb
 
         Rb = (2/(k*ustar)) * ((v/DO3/Pr)**(2/3))
     end subroutine Calc_Rb
@@ -51,9 +51,9 @@ contains
     ! Calculate Rgs, non-vegetative surface resistance
     !***************************************************************************
     subroutine Calc_Rgs()
-        use Params_Site_mod, only: Rsoil
-        use Inputs_mod, only: Ts_c
-        use Variables_mod, only: ustar, Rgs
+        use Params_Site, only: Rsoil
+        use Inputs, only: Ts_c
+        use Variables, only: ustar, Rgs
 
         real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
  
@@ -66,8 +66,8 @@ contains
     ! Calculate Rinc, in-canopy aerodynamic resistance
     !***************************************************************************
     subroutine Calc_Rinc()
-        use Params_Veg_mod, only: Rinc_b
-        use Variables_mod, only: ustar, SAI, Rinc
+        use Params_Veg, only: Rinc_b
+        use Variables, only: ustar, SAI, Rinc
 
         Rinc = Rinc_b * SAI * Rinc_b/ustar
     end subroutine Calc_Rinc
@@ -76,8 +76,8 @@ contains
     ! Calculate Rsto, stomatal resistance
     !***************************************************************************
     subroutine Calc_Rsto()
-        use Params_Veg_mod, only: gmax, fmin
-        use Variables_mod, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, SWP, LAI
+        use Params_Veg, only: gmax, fmin
+        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, SWP, LAI
 
         real :: Gsto_sm
 
@@ -113,9 +113,9 @@ contains
     end subroutine Calc_Rsto
 
     subroutine Calc_Rsur()
-        use Params_Veg_mod, only: Rext
-        use Params_Site_mod, only: Rsoil
-        use Variables_mod, only: LAI, SAI, Rsto, Rinc, Rsur
+        use Params_Veg, only: Rext
+        use Params_Site, only: Rsoil
+        use Variables, only: LAI, SAI, Rsto, Rinc, Rsur
         
         if ( LAI > 0 ) then
             Rsur = 1 / ((LAI / Rsto) + (SAI / Rext) + (1 / (Rinc + Rsoil)))
@@ -127,4 +127,4 @@ contains
         end if
     end subroutine Calc_Rsur
 
-end module R_mod
+end module R

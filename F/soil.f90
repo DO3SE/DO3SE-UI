@@ -1,15 +1,15 @@
-module Soil_mod
+module Soil
 
     public :: Soil_initialize, Calc_precip, Calc_SWP, Calc_fSWP
 
 contains
 
     subroutine Soil_initialize()
-        use Params_Site_mod, only: &
+        use Params_Site, only: &
             Rsoil, soil_BD, soil_a, soil_b, Fc_m
-        use Params_Veg_mod, only: &
+        use Params_Veg, only: &
             SWP_min, SWP_max
-        use Variables_mod, only: PWP, ASW, Sn_star, Sn, SWP, WC, per_vol, fSWP, precip, &
+        use Variables, only: PWP, ASW, Sn_star, Sn, SWP, WC, per_vol, fSWP, precip, &
             AEt, PEt, Ei, SMD
 
         ! Calculate Wstar
@@ -28,8 +28,8 @@ contains
     end subroutine Soil_initialize
 
     subroutine Calc_precip()
-        use Inputs_mod, only: dd, precip_in => precip
-        use Variables_mod, only: dd_prev, precip
+        use Inputs, only: dd, precip_in => precip
+        use Variables, only: dd_prev, precip
 
         real, save :: precip_dd = 0
 
@@ -44,10 +44,10 @@ contains
     end subroutine Calc_precip
 
     subroutine Calc_SWP()
-        use Inputs_mod, only: dd
-        use Params_Veg_mod, only: root, SWP_min
-        use Params_Site_mod, only: Fc_m, soil_BD, soil_a, soil_b
-        use Variables_mod, only: dd_prev, AEt, Ei, Sn, SMD, WC, per_vol, SWP, precip, PWP, Sn_star
+        use Inputs, only: dd
+        use Params_Veg, only: root, SWP_min
+        use Params_Site, only: Fc_m, soil_BD, soil_a, soil_b
+        use Variables, only: dd_prev, AEt, Ei, Sn, SMD, WC, per_vol, SWP, precip, PWP, Sn_star
 
         real :: Sn_diff
 
@@ -68,7 +68,7 @@ contains
     end subroutine Calc_SWP
 
     subroutine Calc_fSWP()
-        use Variables_mod, only: SWP, fSWP
+        use Variables, only: SWP, fSWP
         fswp=1/(0.75+(SWP/(-0.25))**1.7)   ! sloped fSWP relationship better fit to wheat data
                                      ! (used to parameterise model)
 
@@ -82,4 +82,4 @@ contains
         end if
     end subroutine Calc_fSWP
 
-end module Soil_mod
+end module Soil

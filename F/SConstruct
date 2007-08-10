@@ -13,24 +13,24 @@ env['BUILDERS']['Program'] = F_Program
 env['BUILDERS']['F_Python'] = F_Python
 
 # Common modules
-const = env.Object('Constants_mod.f90')
-p_veg = env.Object('Params_Veg_mod.f90')
-p_site = env.Object('Params_Site_mod.f90')
-vars = env.Object('Variables_mod.f90')
-inputs = env.Object('Inputs_mod.f90')
-funcs = env.Object('Functions_mod.f90')
+const = env.Object('constants.f90')
+p_veg = env.Object('params_veg.f90')
+p_site = env.Object('params_site.f90')
+vars = env.Object('variables.f90')
+inputs = env.Object('inputs.f90')
+funcs = env.Object('functions.f90')
 
 common = const + p_veg + p_site + vars + inputs + funcs
 
 # Calculation modules
-phen = env.Object('Phenology_mod.f90')
-irrad = env.Object('Irradiance_mod.f90')
-evap = env.Object('Evapotranspiration_mod.f90')
-envir = env.Object('Environmental_mod.f90')
-r = env.Object('R_mod.f90')
-soil = env.Object('Soil_mod.f90')
-flux = env.Object('O3_Flux_mod.f90')
-effects = env.Object('O3_Effects_mod.f90')
+phen = env.Object('phenology.f90')
+irrad = env.Object('irradiance.f90')
+evap = env.Object('evapotranspiration.f90')
+envir = env.Object('environmental.f90')
+r = env.Object('r.f90')
+soil = env.Object('soil.f90')
+flux = env.Object('o3_flux.f90')
+effects = env.Object('o3_effects.f90')
 
 all = common + phen + irrad + envir + r + evap + soil + flux + effects
 

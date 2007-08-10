@@ -1,4 +1,4 @@
-module Constants_mod
+module Constants
     ! Angle conversions    
     real, public, parameter :: PI = 3.14159265358979312
     real, public, parameter :: DEG2RAD = PI / 180.0
@@ -27,4 +27,4 @@ module Constants_mod
 
     real, public, parameter :: Ts_K = 273.15    ! Conversion from ToC to T Kelvin
 
-end module Constants_mod
+end module Constants

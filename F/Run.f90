@@ -5,8 +5,8 @@ module Run
 contains
 
     subroutine init()
-        use Soil_mod
-        use Variables_mod
+        use Soil
+        use Variables
         call Soil_initialize()
         AEt = 0
         PEt = 0
@@ -16,16 +16,16 @@ contains
     end subroutine init
 
     subroutine Do_Calcs()
-        use Inputs_mod, only: Input_sanitize, dd
-        use Variables_mod, only: dd_prev
-        use Phenology_mod, Calc_SAI => Calc_SAI_Simple
-        use R_mod
-        use Irradiance_mod
-        use Environmental_mod
-        use Soil_mod
-        use Evapotranspiration_mod
-        use O3_Flux_mod
-        use O3_Effects_mod
+        use Inputs, only: Input_sanitize, dd
+        use Variables, only: dd_prev
+        use Phenology, Calc_SAI => Calc_SAI_Simple
+        use R
+        use Irradiance
+        use Environmental
+        use Soil
+        use Evapotranspiration
+        use O3_Flux
+        use O3_Effects
         
         call Input_sanitize()
 

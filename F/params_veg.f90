@@ -1,4 +1,4 @@
-module Params_Veg_mod
+module Params_Veg
 
     real, public, save  :: T_min = 0    ! oC min temp for g
     real, public, save  :: T_opt = 21   ! oC opt temp for g
@@ -48,4 +48,4 @@ module Params_Veg_mod
     real, public, save  :: Y = 1.6          ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
     
 
-end module Params_Veg_mod
+end module Params_Veg
