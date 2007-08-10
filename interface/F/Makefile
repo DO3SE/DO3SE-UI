@@ -1,4 +1,4 @@
-FORTRAN		= gfortran
+FORTRAN		= gfortran -fdefault-real-8
 F2PY		= f2py
 F2PY_BUILD 	= f2py --f77exec=$(FORTRAN) --f90exec=$(FORTRAN)
 
