@@ -1,13 +1,13 @@
-module Evapotranspiration_mod
+module Evapotranspiration
 
     public :: Calc_PEt, Calc_AEt, Calc_Ei
 
 contains
     
     subroutine Calc_PEt()
-        use Constants_mod,  only: seaP, Ts_K
-        use Inputs_mod,     only: dd, VPD, Ts_c
-        use Variables_mod,  only: dd_prev, PEt, Rb, Gsto_PEt, LAI
+        use Constants,  only: seaP, Ts_K
+        use Inputs,     only: dd, VPD, Ts_c
+        use Variables,  only: dd_prev, PEt, Rb, Gsto_PEt, LAI
 
         real :: PEt_hr = 0          ! Potential evapotranspiration for the hour
         real, save :: PEt_dd = 0    ! PEt for the day (accumulates)
@@ -30,10 +30,10 @@ contains
     end subroutine Calc_PEt
 
     subroutine Calc_AEt()
-        use Constants_mod,  only: seaP, Ts_K
-        use Inputs_mod,     only: dd, VPD, Ts_c
-        use Params_Veg_mod, only: SWP_min
-        use Variables_mod,  only: dd_prev, AEt, SWP, Rb, Rsto, LAI
+        use Constants,  only: seaP, Ts_K
+        use Inputs,     only: dd, VPD, Ts_c
+        use Params_Veg, only: SWP_min
+        use Variables,  only: dd_prev, AEt, SWP, Rb, Rsto, LAI
 
         real :: AEt_hr          ! Potential evapotranspiration for the hour
         real, save :: AEt_dd = 0    ! PEt for the day (accumulates)
@@ -58,9 +58,9 @@ contains
     end subroutine Calc_AEt
 
     subroutine Calc_Ei()
-        use Constants_mod,  only: seaP, Ts_K
-        use Inputs_mod,     only: dd, VPD, Ts_c
-        use Variables_mod,  only: dd_prev, Rb, Ei
+        use Constants,  only: seaP, Ts_K
+        use Inputs,     only: dd, VPD, Ts_c
+        use Variables,  only: dd_prev, Rb, Ei
 
         real :: Ei_hr
         real, save :: Ei_dd = 0
@@ -77,4 +77,4 @@ contains
         endif
     end subroutine Calc_Ei
 
-end module Evapotranspiration_mod
+end module Evapotranspiration

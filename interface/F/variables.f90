@@ -1,37 +1,37 @@
 !*******************************************************************************
-! Variables_mod.f90 - Global variables module
+! Variables.f90 - Global variables module
 !
 ! Contains all variables used in more than one part of the model
 !*******************************************************************************
 
-module Variables_mod
+module Variables
     
     ! Day of year for previous dataset
     real, public, save :: dd_prev = -1
 
-    ! Environmental_mod
+    ! Environmental
     real, public, save  :: ftemp
     real, public, save  :: fVPD
 
-    ! Evapotranspiration_mod
+    ! Evapotranspiration
     real, public, save  :: PEt  ! Potential evapotranspiration
     real, public, save  :: AEt  ! Actual evapotranspiration
     real, public, save  :: Ei   ! Evaporation of intercepted precip
 
-    ! Irradiance_mod
+    ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
     real, public, save  :: leaf_flight  ! light related g
     real, public, save  :: LAIsunfrac
     real, public, save  :: PARshade
     real, public, save  :: PARsun
 
-    ! Phenology_mod
+    ! Phenology
     real, public, save  :: LAI
     real, public, save  :: SAI
     real, public, save  :: fphen
     real, public, save  :: leaf_fphen
 
-    ! R_mod
+    ! R
     real, public, save  :: Ra
     real, public, save  :: Ra_O3
     real, public, save  :: Rb
@@ -43,7 +43,7 @@ module Variables_mod
     real, public, save  :: ustar
     real, public, save  :: Gsto, Gsto_PEt
 
-    ! Soil_mod
+    ! Soil
     real, public, save :: PWP        ! Calculated PWP in m3/3
     real, public, save :: ASW        ! Calculated ASW in m3/m3
     real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
@@ -56,12 +56,12 @@ module Variables_mod
     real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
     real, public, save :: fSWP
 
-    ! O3_Flux_mod
+    ! O3_Flux
     real, public, save :: O3_ppb, O3_nmol_m3, Vd
     real, public, save :: Ftot
 
-    ! O3_Effects_mod
+    ! O3_Effects
     real, public, save :: Fst, AFstY, AOT40
 
-end module Variables_mod
+end module Variables
 

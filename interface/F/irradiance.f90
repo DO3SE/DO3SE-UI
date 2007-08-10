@@ -1,14 +1,14 @@
-module Irradiance_mod
+module Irradiance
 
     public :: Calc_Flight
 
 contains
 
     subroutine Calc_Flight()
-        use Constants_mod, only: DEG2RAD, PARfrac, Wm2_2uEPAR
-        use Inputs_mod, only: Idrctt, Idfuse, zen
-        use Params_Veg_mod, only: f_lightfac, cosA, albedo
-        use Variables_mod, only: LAI, LAIsunfrac, PARshade, PARsun, &
+        use Constants, only: DEG2RAD, PARfrac, Wm2_2uEPAR
+        use Inputs, only: Idrctt, Idfuse, zen
+        use Params_Veg, only: f_lightfac, cosA, albedo
+        use Variables, only: LAI, LAIsunfrac, PARshade, PARsun, &
             leaf_flight, Flight
 
         real :: sunLAI  ! sunlit LAI
@@ -43,4 +43,4 @@ contains
         Flight      = LAIsunfrac * leaf_flight + (1.0 - LAIsunfrac) * f_shade
     end subroutine Calc_Flight
 
-end module Irradiance_mod
+end module Irradiance

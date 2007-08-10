@@ -1,4 +1,4 @@
-module Inputs_mod
+module Inputs
 
     real, public, save   :: mm, mdd, dd, hr, Ts_c, VPD, precip, uh, O3_ppb_zR, &
                             Idrctt, Idfuse, zen
@@ -14,4 +14,4 @@ contains
         end if
     end subroutine Input_sanitize
 
-end module Inputs_mod
+end module Inputs

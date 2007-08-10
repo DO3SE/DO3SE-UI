@@ -1,14 +1,14 @@
-module O3_Effects_mod
+module O3_Effects
 
     public :: Calc_Fst, Calc_AFstY, Calc_AOT40
 
 contains
     
     subroutine Calc_Fst()
-        use Inputs_mod, only: uh
-        use Variables_mod, only: Fst, leaf_fphen, leaf_flight, ftemp, fVPD, &
+        use Inputs, only: uh
+        use Variables, only: Fst, leaf_fphen, leaf_flight, ftemp, fVPD, &
             fSWP, O3_nmol_m3
-        use Params_Veg_mod, only: gmax, Lm
+        use Params_Veg, only: gmax, Lm
 
         real :: gO3, leaf_rb, leaf_gb, leaf_r
         real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance
@@ -35,8 +35,8 @@ contains
     end subroutine Calc_Fst
 
     subroutine Calc_AFstY()
-        use Variables_mod, only: Fst, AFstY
-        use Params_Veg_mod, only: Y
+        use Variables, only: Fst, AFstY
+        use Params_Veg, only: Y
 
         if ( Fst > Y ) then
             AFstY = AFstY + (((Fst - Y)*60*60)/1000000) ! Cumulative Fst above Y in mmol/m2
@@ -44,8 +44,8 @@ contains
     end subroutine Calc_AFstY
 
     subroutine Calc_AOT40()
-        use Variables_mod, only: AOT40, O3_ppb, fphen
-        use Inputs_mod, only: Idfuse
+        use Variables, only: AOT40, O3_ppb, fphen
+        use Inputs, only: Idfuse
 
         real :: OT40
 
@@ -62,4 +62,4 @@ contains
         AOT40 = (AOT40 + OT40)
     end subroutine Calc_AOT40
 
-end module O3_Effects_mod
+end module O3_Effects

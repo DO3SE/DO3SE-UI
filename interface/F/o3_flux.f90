@@ -1,18 +1,18 @@
-module O3_Flux_mod
+module O3_Flux
 
     public :: Calc_Vd, Calc_O3_Concentration, Calc_Ftot
 
 contains
 
     subroutine Calc_Vd()
-        use Variables_mod, only: Vd, Ra_O3, Rb, Rsur
+        use Variables, only: Vd, Ra_O3, Rb, Rsur
 
         Vd = 1 / (Ra_O3 + Rb + Rsur)
     end subroutine Calc_Vd
 
     subroutine Calc_O3_Concentration()
-        use Inputs_mod, only: O3_ppb_zR
-        use Variables_mod, only: O3_ppb, O3_nmol_m3, Ra_O3, Vd
+        use Inputs, only: O3_ppb_zR
+        use Variables, only: O3_ppb, O3_nmol_m3, Ra_O3, Vd
 
         O3_ppb = O3_ppb_zR * (1 - (Ra_O3 * (Vd)))
         O3_nmol_m3 = O3_ppb * 41.67   ! Estimates ozone concentration at canopy height 
@@ -21,9 +21,9 @@ contains
     end subroutine Calc_O3_Concentration
 
     subroutine Calc_Ftot()
-        use Variables_mod, only: Ftot, O3_nmol_m3, Vd
+        use Variables, only: Ftot, O3_nmol_m3, Vd
 
         Ftot = O3_nmol_m3 * Vd
     end subroutine Calc_Ftot
 
-end module O3_Flux_mod
+end module O3_Flux
