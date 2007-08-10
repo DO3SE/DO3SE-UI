@@ -1,4 +1,4 @@
-FORTRAN		= gfortran
+FORTRAN		= F
 
 # Rule for building .o and .mod files
 %.o %.mod: %.f90
@@ -34,3 +34,6 @@ clean:
 
 clean_test:
 	rm -f TEST_OUTPUT_old TEST_OUTPUT_new
+
+clean_all: clean clean_test
+	rm -f do3se do3se_old
