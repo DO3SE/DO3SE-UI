@@ -18,8 +18,8 @@ contains
     ! shape
     !*******************************************************************
     function Polygon(a, b, c, d, x, y, z, value) result(retval)
-        real, intent(in) :: a, b, c, d, x, y, z, value
-        real :: retval
+        real*8, intent(in) :: a, b, c, d, x, y, z, value
+        real*8 :: retval
 
         if ( value < a ) then
             retval = x
@@ -51,8 +51,8 @@ contains
     ! value on a graph that follows a polygon shape
     !*******************************************************************
     function newPolygon(a, b, c, d, v, w, x, y, z, value) result(retval)
-        real, intent(in) :: a, b, c, d, v, w, x, y, z, value
-        real :: retval
+        real*8, intent(in) :: a, b, c, d, v, w, x, y, z, value
+        real*8 :: retval
 
         print *, v, w, x, y, z
 

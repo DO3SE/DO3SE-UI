@@ -31,7 +31,7 @@ contains
         use Inputs, only: dd, precip_in => precip
         use Variables, only: dd_prev, precip
 
-        real, save :: precip_dd = 0
+        real*8, save :: precip_dd = 0
 
         if ( dd == dd_prev ) then
             ! Same day, accumulate (converts mm to m)
@@ -49,7 +49,7 @@ contains
         use Params_Site, only: Fc_m, soil_BD, soil_a, soil_b
         use Variables, only: dd_prev, AEt, Ei, Sn, SMD, WC, per_vol, SWP, precip, PWP, Sn_star
 
-        real :: Sn_diff
+        real*8 :: Sn_diff
 
         ! These only change once per day
         if ( dd /= dd_prev ) then
