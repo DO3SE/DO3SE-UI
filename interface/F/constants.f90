@@ -1,7 +1,7 @@
 module Constants
     ! Angle conversions    
     real, public, parameter :: PI = 3.14159265358979312
-    real, public, parameter :: DEG2RAD = PI / 180.0
+    real, public, parameter :: DEG2RAD = 0.017453292519943295
 
     real, public, parameter :: k = 0.41         ! von Karman's constant
     real, public, parameter :: cp = 1005        ! specific head of air at constant 
