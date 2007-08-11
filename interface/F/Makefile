@@ -28,8 +28,7 @@ do3se_old:
 	$(FORTRAN) -o $@ Baum_DOSE_test.f90
 
 clean:
-	rm -f *.o
-	rm -f *.mod
+	rm -f $(common) $(others) $(subst .o,.mod,$(common) $(others))
 
 clean_all: clean
-	rm -f *.so
+	rm -f do3se.so do3se do3se_old
