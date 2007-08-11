@@ -237,7 +237,7 @@ real*8 :: AOT40  		! AOT40 over bulk canopy growth period (ppm.hrs)
 max_lines = 400000
 
 
-open (unit=9, file="../../2003_input.csv", &
+open (unit=9, file="2003_input.csv", &
        status="old", action="read", position="rewind")
 
 !open (unit=8, file="2003_output", &

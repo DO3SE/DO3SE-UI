@@ -1,5 +1,5 @@
 #FORTRAN		= F
-FORTRAN		= gfortran -fdefault-real-8
+FORTRAN		= gfortran
 
 # Rule for building .o and .mod files
 %.o %.mod: %.f90
