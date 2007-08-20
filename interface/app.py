@@ -1,13 +1,18 @@
 #!/usr/bin/python
 
-import wx
-from wx import xrc
+from tools import _verbose
 
-import window_main
+import do3se_xrc as ui
+
+import os
+import wx
+
+#import w_main
 
 class DOSEApp(wx.App):
     def OnInit(self):
-        self.window = window_main.Main(None)
+        #self.window = w_main.Main(None)
+        self.window = ui.xrcwindow_main(None)
         self.window.Show()
         return True
 

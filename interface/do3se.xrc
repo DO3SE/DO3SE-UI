@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource>
+  <object class="wxFrame" name="window_main">
+    <title>Deposition of Ozone and Stomatal Exchange</title>
+    <object class="wxMenuBar">
+      <object class="wxMenu" name="menu_file">
+        <label>&amp;File</label>
+        <object class="wxMenuItem" name="menu_file_open">
+          <label>&amp;Open...</label>
+        </object>
+        <object class="wxMenuItem" name="menu_file_close">
+          <label>&amp;Close</label>
+          <enabled>0</enabled>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="menu_file_quit">
+          <label>&amp;Quit</label>
+          <bitmap stock_id="wxART_QUIT"></bitmap>
+        </object>
+      </object>
+    </object>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <object class="wxPanel" name="panel_placeholder">
+          <object class="wxBoxSizer">
+            <orient>wxHORIZONTAL</orient>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>To start, open a file using the 'File -&gt; Open...' menu.</label>
+                <style>wxALIGN_CENTRE</style>
+              </object>
+              <option>1</option>
+              <flag>wxALIGN_CENTRE_VERTICAL</flag>
+            </object>
+          </object>
+          <hidden>1</hidden>
+        </object>
+        <option>1</option>
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxPanel" name="panel_main">
+          <object class="wxBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+              <object class="wxNotebook">
+                <object class="notebookpage">
+                  <label>Input</label>
+                  <object class="wxPanel">
+                    <object class="wxBoxSizer">
+                      <orient>wxVERTICAL</orient>
+                      <object class="sizeritem">
+                        <object class="wxFlexGridSizer">
+                          <cols>2</cols>
+                          <vgap>7</vgap>
+                          <hgap>8</hgap>
+                          <object class="sizeritem">
+                            <object class="wxStaticText">
+                              <label>Input file:</label>
+                            </object>
+                            <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                          </object>
+                          <object class="sizeritem">
+                            <object class="wxBoxSizer">
+                              <orient>wxHORIZONTAL</orient>
+                              <object class="sizeritem">
+                                <object class="wxTextCtrl">
+                                  <enabled>0</enabled>
+                                </object>
+                                <option>1</option>
+                                <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+                              </object>
+                              <object class="sizeritem">
+                                <object class="wxButton">
+                                  <label>Change...</label>
+                                  <style>wxBU_EXACTFIT</style>
+                                </object>
+                                <option>0</option>
+                                <flag>wxLEFT|wxEXPAND</flag>
+                                <border>2</border>
+                              </object>
+                            </object>
+                            <option>1</option>
+                            <flag>wxEXPAND</flag>
+                          </object>
+                          <object class="sizeritem">
+                            <object class="wxStaticText">
+                              <label>Data fields:</label>
+                            </object>
+                          </object>
+                          <object class="sizeritem">
+                            <object class="wxBoxSizer">
+                              <orient>wxVERTICAL</orient>
+                              <object class="sizeritem">
+                                <object class="wxListBox">
+                                  <content>
+                                    <item>a</item>
+                                    <item>b</item>
+                                    <item>c</item>
+                                    <item>d</item>
+                                    <item>e</item>
+                                    <item>f</item>
+                                  </content>
+                                  <size>15</size>
+                                </object>
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                              </object>
+                              <object class="sizeritem">
+                                <object class="wxButton">
+                                  <label>Edit fields</label>
+                                  <style>wxBU_EXACTFIT</style>
+                                </object>
+                                <flag>wxTOP|wxALIGN_RIGHT</flag>
+                                <border>2</border>
+                              </object>
+                            </object>
+                            <option>1</option>
+                            <flag>wxEXPAND</flag>
+                          </object>
+                          <growablecols>1</growablecols>
+                          <growablerows>1</growablerows>
+                        </object>
+                        <option>1</option>
+                        <flag>wxALL|wxEXPAND</flag>
+                        <border>4</border>
+                      </object>
+                    </object>
+                  </object>
+                  <selected>1</selected>
+                </object>
+              </object>
+              <option>1</option>
+              <flag>wxALL|wxEXPAND</flag>
+            </object>
+          </object>
+        </object>
+        <option>1</option>
+        <flag>wxALL|wxEXPAND</flag>
+        <border>4</border>
+      </object>
+    </object>
+  </object>
+  <object class="wxDialog" name="dialog_input_fields">
+    <title>Edit input fields</title>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxRESIZE_BOX|wxDIALOG_MODAL</style>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>Available fields</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxListBox">
+                  <content>
+                    <item>[Day of Year]</item>
+                    <item>Direct radiation</item>
+                    <item>Diffuse radiation</item>
+                  </content>
+                </object>
+                <option>1</option>
+                <flag>wxEXPAND</flag>
+              </object>
+            </object>
+            <option>1</option>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>4</border>
+          </object>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>&gt;&gt;</label>
+                  <style>wxBU_EXACTFIT</style>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>&lt;&lt;</label>
+                  <style>wxBU_EXACTFIT</style>
+                </object>
+              </object>
+            </object>
+            <flag>wxALIGN_CENTRE_VERTICAL</flag>
+          </object>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>Selected fields</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxListBox">
+                  <content>
+                    <item>Day of Month</item>
+                    <item>Month</item>
+                    <item>Year</item>
+                    <item>Precipitation (mm)</item>
+                    <item></item>
+                  </content>
+                </object>
+                <option>1</option>
+                <flag>wxEXPAND</flag>
+              </object>
+            </object>
+            <option>1</option>
+            <flag>wxALL|wxEXPAND</flag>
+            <border>4</border>
+          </object>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label> </label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>Move up</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>Move down</label>
+                </object>
+              </object>
+              <object class="spacer">
+                <size>0,10</size>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>Save format</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton">
+                  <label>Load format</label>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxStdDialogButtonSizer">
+          <object class="button">
+            <object class="wxButton" name="wxID_OK">
+              <label></label>
+              <label>&amp;Ok</label>
+            </object>
+          </object>
+          <object class="button">
+            <object class="wxButton" name="wxID_CANCEL">
+              <label></label>
+              <label>&amp;Cancel</label>
+            </object>
+          </object>
+        </object>
+        <option>0</option>
+        <flag>wxALIGN_RIGHT</flag>
+      </object>
+    </object>
+  </object>
+</resource>
