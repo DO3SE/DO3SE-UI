@@ -2,11 +2,14 @@
 <resource>
   <object class="wxFrame" name="window_main">
     <title>Deposition of Ozone and Stomatal Exchange</title>
-    <object class="wxMenuBar">
+    <object class="wxMenuBar" name="menu">
       <object class="wxMenu" name="menu_file">
         <label>&amp;File</label>
         <object class="wxMenuItem" name="menu_file_open">
           <label>&amp;Open...</label>
+        </object>
+        <object class="wxMenu" name="menu_file_openrecent">
+          <label>Open &amp;recent...</label>
         </object>
         <object class="wxMenuItem" name="menu_file_close">
           <label>&amp;Close</label>
@@ -37,7 +40,7 @@
           <hidden>1</hidden>
         </object>
         <option>1</option>
-        <flag>wxALL|wxEXPAND</flag>
+        <flag>wxEXPAND</flag>
       </object>
       <object class="sizeritem">
         <object class="wxPanel" name="panel_main">
@@ -267,7 +270,10 @@
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxSpinCtrl"/>
+                                    <object class="wxTextCtrl" name="float_site_latitude" subclass="wxext.FloatCtrl">
+                                      <value>0.0</value>
+                                    </object>
+                                    <option>1</option>
                                     <flag>wxEXPAND</flag>
                                   </object>
                                   <object class="sizeritem">
@@ -277,7 +283,9 @@
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name=""/>
+                                    <object class="wxTextCtrl" name="float_site_longitude" subclass="wxext.FloatCtrl">
+                                      <value>0.0</value>
+                                    </object>
                                     <flag>wxEXPAND</flag>
                                   </object>
                                   <object class="sizeritem">
@@ -287,7 +295,9 @@
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxSpinCtrl"/>
+                                    <object class="wxTextCtrl">
+                                      <value>0</value>
+                                    </object>
                                     <flag>wxEXPAND</flag>
                                   </object>
                                 </object>
