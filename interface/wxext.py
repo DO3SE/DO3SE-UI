@@ -1,7 +1,16 @@
+###############################################################################
+# wxext.py - wxPython extensions
+# (c)2007 Alan Briolat
+#
+# A collection of extra wxPython widgets usable via XRC subclassing
+###############################################################################
+
 import wx
 from tools import _verbose
 
 class FloatCtrl(wx.TextCtrl):
+    """Range-checked floating-point input control."""
+
     def __init__(self):
         p = wx.PreTextCtrl()
         self.PostCreate(p)
@@ -170,6 +179,8 @@ class ListSelectCtrl(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnRemove, self.button_remove)
         self.Bind(wx.EVT_BUTTON, self.OnUp, self.button_up)
         self.Bind(wx.EVT_BUTTON, self.OnDown, self.button_down)
+        self.Bind(wx.EVT_BUTTON, self.OnLoad, self.button_load)
+        self.Bind(wx.EVT_BUTTON, self.OnSave, self.button_save)
 
         # Make sure this is only called once
         self.Unbind(wx.EVT_SIZE)
@@ -195,6 +206,10 @@ class ListSelectCtrl(wx.Panel):
         for i in items:
             self.list_avail.SetStringSelection(i)
             self.OnAdd(None)
+
+
+    def SetFormats(self, formats):
+        self.formats = formats
 
 
     def OnAdd(self, evt):
@@ -241,6 +256,29 @@ class ListSelectCtrl(wx.Panel):
             self.list_sel.SetSelection(sel + 1)
 
 
+    def OnLoad(self, evt):
+        choice = GetSingleChoice(self, 'Select format', 'DO3SE', self.formats.keys())
+
+        if choice: self.SetSelected(self.formats[choice])
+
+    
+    def OnSave(self, evt):
+        key = wx.GetTextFromUser('Format name', 'DO3SE', '', self)
+
+        if key:
+            if not key in self.formats or \
+                    wx.MessageBox('Overwrite existing format with same name?', 
+                            'DO3SE', wx.YES_NO | wx.ICON_QUESTION) == wx.YES:
+                self.formats[key] = self.list_sel.GetItems()
+            else:
+                wx.MessageBox('Format not saved!', 'DO3SE', wx.OK | wx.ICON_WARNING)
+        else:
+            wx.MessageBox('Format not saved!', 'DO3SE', wx.OK | wx.ICON_WARNING)
+
+
+
+
+
 class ChoiceDialog(wx.Dialog):
     
     def __init__(self, *args, **kwargs):
@@ -248,14 +286,47 @@ class ChoiceDialog(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        self.message = wx.StaticText(self, label = '')
+        sizer.Add(self.message, 0, wx.TOP | wx.LEFT | wx.RIGHT | wx.EXPAND, 4)
         self.choice = wx.Choice(self)
         sizer.Add(self.choice, 0, wx.ALL | wx.EXPAND, 4)
         btns = wx.StdDialogButtonSizer()
-        sizer.Add(btns, 0, wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND, 4)
-        self.button_ok = wx.Button(self, wx.ID_OK, '&Ok')
-        btns.Add(self.button_ok)
+        sizer.Add(btns, 0, wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND | wx.ALIGN_RIGHT, 4)
         self.button_cancel = wx.Button(self, wx.ID_CANCEL, '&Cancel')
-        btns.Add(self.button_cancel)
+        btns.AddButton(self.button_cancel)
+        self.button_ok = wx.Button(self, wx.ID_OK, '&Ok')
+        btns.AddButton(self.button_ok)
         btns.Realize()
+        
+        self.SetMinSize(sizer.GetMinSize())
+        self.SetSize(sizer.GetMinSize())
 
-def GetUserChoise(
+
+    def SetMessage(self, message):
+        self.message.SetLabel(message)
+
+
+    def SetChoices(self, choices):
+        self.choice.SetItems(choices)
+        self.choice.SetSelection(0)
+
+
+    def GetChoice(self):
+        return self.choice.GetStringSelection()
+
+
+
+
+def GetSingleChoice(parent, message, caption, choices):
+    cd = ChoiceDialog(parent, title = caption)
+    cd.SetMessage(message)
+    cd.SetChoices(choices)
+    
+    if cd.ShowModal() == wx.ID_OK:
+        choice = cd.GetChoice()
+    else:
+        choice = ''
+
+    cd.Destroy()
+
+    return choice
