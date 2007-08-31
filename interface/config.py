@@ -82,3 +82,7 @@ def AddRecentFile(path):
         state['recentfiles'].insert(0, path)
 
     state['recentfiles'] = state['recentfiles'][:10]
+
+def RemoveRecentFile(path):
+    if path in state['recentfiles']:
+        state['recentfiles'].remove(path)
