@@ -99,3 +99,161 @@ class FloatCtrl(wx.TextCtrl):
         self.default = value
         self.Validate()
 
+
+
+
+class ListSelectCtrl(wx.Panel):
+    
+    def __init__(self):
+        p = wx.PrePanel()
+        self.PostCreate(p)
+
+        # This is the 'official' way to hook the creation of the object
+        #self.Bind(wx.EVT_WINDOW_CREATE, self.OnCreate)
+        # This is the way that actually works, courtesy of:
+        # http://aspn.activestate.com/ASPN/Mail/Message/wxPython-users/2169189
+        self.Bind(wx.EVT_SIZE, self.OnCreate)
+
+
+    def OnCreate(self, evt):
+        _verbose('Creating ListSelectCtrl')
+        
+        mainsizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.SetSizer(mainsizer)
+
+        # Available entries
+        s1 = wx.BoxSizer(wx.VERTICAL)
+        mainsizer.Add(s1, 1, wx.EXPAND)
+        s1.Add(wx.StaticText(self, label = 'Available fields'))
+        self.list_avail = wx.ListBox(self, style = wx.LB_SINGLE)
+        s1.Add(self.list_avail, 1, wx.EXPAND)
+
+        # Add/remove
+        s2 = wx.BoxSizer(wx.VERTICAL)
+        mainsizer.Add(s2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
+        self.button_add = wx.Button(self, label = '>>', 
+                style = wx.BU_EXACTFIT)
+        s2.Add(self.button_add)
+        s2.AddSpacer(4)
+        self.button_remove = wx.Button(self, label = '<<', 
+                style = wx.BU_EXACTFIT)
+        s2.Add(self.button_remove)
+
+        # Selected entries
+        s3 = wx.BoxSizer(wx.VERTICAL)
+        mainsizer.Add(s3, 1, wx.EXPAND)
+        s3.Add(wx.StaticText(self, label = 'Selected fields'))
+        self.list_sel = wx.ListBox(self, style = wx.LB_SINGLE)
+        s3.Add(self.list_sel, 1, wx.EXPAND)
+
+        # Up/down/save/load
+        s4 = wx.BoxSizer(wx.VERTICAL)
+        mainsizer.Add(s4, 0, wx.LEFT | wx.EXPAND, 4)
+        s4.Add(wx.StaticText(self, label = ''))
+        self.button_up = wx.Button(self, label = 'Move &up', 
+                style = wx.BU_EXACTFIT)
+        s4.Add(self.button_up, 0, wx.EXPAND)
+        s4.AddSpacer(4)
+        self.button_down = wx.Button(self, label = 'Move &down', 
+                style = wx.BU_EXACTFIT)
+        s4.Add(self.button_down, 0, wx.EXPAND)
+        s4.AddSpacer(14)
+        self.button_save = wx.Button(self, label = '&Save format', 
+                style = wx.BU_EXACTFIT)
+        s4.Add(self.button_save, 0, wx.EXPAND)
+        s4.AddSpacer(4)
+        self.button_load = wx.Button(self, label = '&Load format', 
+                style = wx.BU_EXACTFIT)
+        s4.Add(self.button_load, 0, wx.EXPAND)
+
+        self.Bind(wx.EVT_BUTTON, self.OnAdd, self.button_add)
+        self.Bind(wx.EVT_BUTTON, self.OnRemove, self.button_remove)
+        self.Bind(wx.EVT_BUTTON, self.OnUp, self.button_up)
+        self.Bind(wx.EVT_BUTTON, self.OnDown, self.button_down)
+
+        # Make sure this is only called once
+        self.Unbind(wx.EVT_SIZE)
+        evt.Skip()
+
+    
+    def Reset(self):
+        self.list_avail.Clear()
+        self.list_sel.Clear()
+
+        for i in self.available_items:
+            self.list_avail.Append(i)
+
+
+    def SetAvailable(self, items):
+        self.available_items = items
+        self.Reset()
+
+
+    def SetSelected(self, items):
+        self.Reset()
+        
+        for i in items:
+            self.list_avail.SetStringSelection(i)
+            self.OnAdd(None)
+
+
+    def OnAdd(self, evt):
+        sel = self.list_avail.GetSelection()
+
+        if sel != -1:
+            self.list_sel.Append(self.list_avail.GetString(sel))
+            self.list_avail.Delete(sel)
+            if sel == self.list_avail.GetCount():
+                self.list_avail.SetSelection(sel - 1)
+            else:
+                self.list_avail.SetSelection(sel)
+
+
+    def OnRemove(self, evt):
+        sel = self.list_sel.GetSelection()
+
+        if sel != -1:
+            self.list_avail.Append(self.list_sel.GetString(sel))
+            self.list_sel.Delete(sel)
+            if sel == self.list_sel.GetCount():
+                self.list_sel.SetSelection(sel - 1)
+            else:
+                self.list_sel.SetSelection(sel)
+
+
+    def OnUp(self, evt):
+        sel = self.list_sel.GetSelection()
+
+        if sel > 0:
+            item = self.list_sel.GetString(sel)
+            self.list_sel.Delete(sel)
+            self.list_sel.Insert(item, sel - 1)
+            self.list_sel.SetSelection(sel - 1)
+
+
+    def OnDown(self, evt):
+        sel = self.list_sel.GetSelection()
+
+        if sel != -1 and sel < (self.list_sel.GetCount() - 1):
+            item = self.list_sel.GetString(sel)
+            self.list_sel.Delete(sel)
+            self.list_sel.Insert(item, sel + 1)
+            self.list_sel.SetSelection(sel + 1)
+
+
+class ChoiceDialog(wx.Dialog):
+    
+    def __init__(self, parent, title, choices, default = None):
+        wx.Dialog.__init__(self, parent, title = title)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sizer)
+        self.choice = wx.Choice(self)
+        sizer.Add(self.choice, 0, wx.ALL | wx.EXPAND, 4)
+        btns = wx.StdDialogButtonSizer()
+        sizer.Add(btns, 0, wx.BOTTOM | wx.LEFT | wx.RIGHT | wx.EXPAND, 4)
+        self.button_ok = wx.Button(self, wx.ID_OK, '&Ok')
+        btns.Add(self.button_ok)
+        self.button_cancel = wx.Button(self, wx.ID_CANCEL, '&Cancel')
+        btns.Add(self.button_cancel)
+        btns.Realize()
