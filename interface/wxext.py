@@ -200,12 +200,15 @@ class ListSelectCtrl(wx.Panel):
         self.Reset()
 
 
-    def SetSelected(self, items):
+    def SetSelection(self, items):
         self.Reset()
         
         for i in items:
             self.list_avail.SetStringSelection(i)
             self.OnAdd(None)
+
+    def GetSelection(self):
+        return self.list_sel.GetItems()
 
 
     def SetFormats(self, formats):
@@ -259,7 +262,7 @@ class ListSelectCtrl(wx.Panel):
     def OnLoad(self, evt):
         choice = GetSingleChoice(self, 'Select format', 'DO3SE', self.formats.keys())
 
-        if choice: self.SetSelected(self.formats[choice])
+        if choice: self.SetSelection(self.formats[choice])
 
     
     def OnSave(self, evt):

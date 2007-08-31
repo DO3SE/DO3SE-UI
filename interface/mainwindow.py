@@ -86,7 +86,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, lambda evt: self.Close(), 
                 id = xrc.XRCID('button_quit'))
-        #self.Bind(wx.EVT_BUTTON, self.OnRun, id = xrc.XRCID('button_run'))
+        self.Bind(wx.EVT_BUTTON, self.OnRun, id = xrc.XRCID('button_run'))
 
 
     def InitMenu(self):
@@ -206,3 +206,31 @@ class MainWindow(wx.Frame):
                 config.AddRecentFile(path)
                 # Refresh menu
                 self.RefreshOpenRecent()
+        
+
+    def OnRun(self, evt):
+        print "foo"
+        self.inputfile.SetFields(maps.InputFieldsToShort(self.input_fields.GetSelection()))
+        self.inputfile.Load()
+        # Deal with problems loading the file here
+        
+        # Build site params
+        site = {
+                'rsoil'     : float(self.site_rsoil.GetValue()),
+                'soil_bd'   : 1.3,
+                'soil_a'    : {'Coarse': -4.0, 'Medium': -5.5, 'Fine': -7.0}[self.site_soil.GetChoice()], 
+                'soil_b'    : {'Coarse': -2.3, 'Medium': -3.3, 'Fine': -5.4}[self.site_soil.GetChoice()], 
+                'fc_m'      : 0.193,
+                }
+
+        veg = {
+                't_min'     : float(self.veg_t_min.GetValue()),
+                't_opt'     : float(self.veg_t_opt.GetValue()),
+                't_max'     : float(self.veg_t_max.GetValue()),
+                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
+                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
+                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
+                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
+
+                }
+

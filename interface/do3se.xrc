@@ -218,12 +218,13 @@
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxChoice">
+                                    <object class="wxChoice" name="choice_site_soil">
                                       <content>
                                         <item>Coarse</item>
                                         <item>Medium</item>
                                         <item>Fine</item>
                                       </content>
+                                      <selection>1</selection>
                                     </object>
                                     <flag>wxEXPAND</flag>
                                   </object>
@@ -500,6 +501,95 @@
                           <vgap>4</vgap>
                           <hgap>4</hgap>
                           <growablecols>0,1</growablecols>
+                          <object class="sizeritem">
+                            <object class="wxStaticBoxSizer">
+                              <label>Growth parameters</label>
+                              <orient>wxVERTICAL</orient>
+                              <object class="sizeritem">
+                                <object class="wxFlexGridSizer">
+                                  <cols>2</cols>
+                                  <vgap>4</vgap>
+                                  <hgap>8</hgap>
+                                  <growablecols>1</growablecols>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Min. temp. (Celcius):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl"/>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Max. temp. (Celcius):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl"/>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Optimum temp. (Celcius):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl"/>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Minimum VPD:</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" subclass="wxext.FloatCtrl"/>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Maximum VPD:</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" subclass="wxext.FloatCtrl"/>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Minimum SWP:</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" subclass="wxext.FloatCtrl"/>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Maximum SWP:</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" subclass="wxext.FloatCtrl"/>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                </object>
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>4</border>
+                              </object>
+                            </object>
+                            <flag>wxALL|wxEXPAND</flag>
+                            <cellpos>1,0</cellpos>
+                          </object>
                         </object>
                         <option>1</option>
                         <flag>wxALL|wxEXPAND</flag>
@@ -521,7 +611,7 @@
               <object class="wxBoxSizer">
                 <orient>wxHORIZONTAL</orient>
                 <object class="sizeritem">
-                  <object class="wxButton">
+                  <object class="wxButton" name="button_run">
                     <label>&amp;Run</label>
                   </object>
                 </object>

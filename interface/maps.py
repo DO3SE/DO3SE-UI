@@ -15,3 +15,9 @@ input_fields = {
         }
 
 input_fields_reverse = dict([(v, k) for k, v in input_fields.items()])
+
+def InputFieldsToShort(fields):
+    return [input_fields_reverse[x] for x in fields]
+
+def InputFieldsToLong(fields):
+    return [input_fields[x] for x in fields]

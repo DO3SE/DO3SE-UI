@@ -1,5 +1,7 @@
 import csv, copy, exceptions
 
+from tools import _verbose
+
 class InputFileError(exceptions.Exception):
     pass
 
@@ -36,18 +38,20 @@ class InputFile:
         if not self.fields:
             raise InputFileError("Field order not yet set")
 
-        file = open(file)
+        file = open(self.path)
 
         self.linecount = 0
         self.data = []
         
-        r = csv.DictReader(file, fieldnames = fields)
+        r = csv.DictReader(file, fieldnames = self.fields)
 
         for l in r:
             self.linecount = self.linecount + 1
             self.data.append({'lineno': self.linecount, 'data': copy.deepcopy(l)})
 
-        close(file)
+        file.close()
+
+        _verbose("Loaded %s lines from %s" % (self.linecount, self.path))
 
 if __name__ == "__main__":
     f = InputFile('../2003_input.csv', ['mm', 'mdd', 'dd', 'hr', 'ts_c', 'vpd', 'precip', 'uh', 'o3_ppb_zr', 'idrctt', 'idfuse', 'zen'])
