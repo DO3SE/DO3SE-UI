@@ -243,8 +243,8 @@ class ListSelectCtrl(wx.Panel):
 
 class ChoiceDialog(wx.Dialog):
     
-    def __init__(self, parent, title, choices, default = None):
-        wx.Dialog.__init__(self, parent, title = title)
+    def __init__(self, *args, **kwargs):
+        wx.Dialog.__init__(self, *args, **kwargs)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
@@ -257,3 +257,5 @@ class ChoiceDialog(wx.Dialog):
         self.button_cancel = wx.Button(self, wx.ID_CANCEL, '&Cancel')
         btns.Add(self.button_cancel)
         btns.Realize()
+
+def GetUserChoise(
