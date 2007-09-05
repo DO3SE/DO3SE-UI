@@ -1,6 +1,6 @@
 FORTRAN		= gfortran
 F2PY		= f2py
-F2PY_BUILD 	= f2py --f77exec=$(FORTRAN) --f90exec=$(FORTRAN)
+F2PY_BUILD 	= python f2py.py --f77exec=$(FORTRAN) --f90exec=$(FORTRAN)
 
 # Rule for building .o and .mod files
 %.o %.mod: %.f90
