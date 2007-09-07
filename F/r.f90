@@ -5,55 +5,39 @@ module R
 
 contains
 
-    !***************************************************************************
-    ! Calculate ustar - resistance velocity
-    !***************************************************************************
-    subroutine Calc_ustar()
-        use Constants, only: uzR, d, zo, k
-        use Inputs, only: uh
-        use Variables, only: ustar
-
-        ustar = (uh * k) / log((uzR - d) / (zo))
-    end subroutine Calc_ustar
-   
-
-    !***************************************************************************
+    !==========================================================================
     ! Calculate Ra, Atmospheric resistance
-    !***************************************************************************
+    !==========================================================================
     subroutine Calc_Ra()
-        use Constants, only: uzR, d, zo, k, h, czR
-        use Variables, only: ustar, Ra, Ra_O3
+        use Constants, only: k
+        use Inputs, only: ustar
+        use Params_Site, only: O3zR, O3_d
+        use Params_Veg, only: h, d
 
-        if ( uzR < zo + d ) then
-            Ra = 1 / (k * ustar) * (log(((zo + d) - d)/(h - d)))
-        else
-            Ra = 1 / (k * ustar) * (log((uzR - d)/(h - d)))
-        end if
-
-        if ( czR < d + zo ) then
-            Ra_O3 = 1 / (k * ustar) * (log(((zo + d) - d)/(h - d)))
-        else
-            Ra_O3 = 1 / (k * ustar) * (log((czR - d)/(h - d)))
-        end if
+        ! TODO: Should the last O3_d be d ?
+        Ra = (1 / (ustar * k)) * log((O3zR - O3_d) / (h - O3_d))
     end subroutine Calc_Ra
 
-    !***************************************************************************
+    ! TODO: Add new Ra for heat flux
+
+    !==========================================================================
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
-    !***************************************************************************
+    !==========================================================================
     subroutine Calc_Rb()
         use Constants, only: k, v, DO3, Pr
-        use Variables, only: ustar, Rb
+        use Inputs, only: ustar
+        use Variables, only: Rb
 
         Rb = (2/(k*ustar)) * ((v/DO3/Pr)**(2/3))
     end subroutine Calc_Rb
 
-    !***************************************************************************
+    !==========================================================================
     ! Calculate Rgs, non-vegetative surface resistance
-    !***************************************************************************
+    !==========================================================================
     subroutine Calc_Rgs()
         use Params_Site, only: Rsoil
-        use Inputs, only: Ts_c
-        use Variables, only: ustar, Rgs
+        use Inputs, only: Ts_C, ustar
+        use Variables, only: Rgs
 
         real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
  
@@ -62,19 +46,20 @@ contains
         Rgs = Rsoil + Rlow + 2000*0
     end subroutine Calc_Rgs
 
-    !***************************************************************************
+    !==========================================================================
     ! Calculate Rinc, in-canopy aerodynamic resistance
-    !***************************************************************************
+    !==========================================================================
     subroutine Calc_Rinc()
         use Params_Veg, only: Rinc_b
-        use Variables, only: ustar, SAI, Rinc
+        use Inputs, only: ustar
+        use Variables, only: SAI, Rinc
 
         Rinc = Rinc_b * SAI * Rinc_b/ustar
     end subroutine Calc_Rinc
 
-    !***************************************************************************
+    !==========================================================================
     ! Calculate Rsto, stomatal resistance
-    !***************************************************************************
+    !==========================================================================
     subroutine Calc_Rsto()
         use Params_Veg, only: gmax, fmin
         use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, SWP, LAI
@@ -112,6 +97,8 @@ contains
         end if
     end subroutine Calc_Rsto
 
+    !==========================================================================
+    !==========================================================================
     subroutine Calc_Rsur()
         use Params_Veg, only: Rext
         use Params_Site, only: Rsoil
