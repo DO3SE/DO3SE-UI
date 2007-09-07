@@ -4,7 +4,7 @@ module Functions
 
 contains
     
-    !*******************************************************************
+    !==========================================================================
     !   
     !  y|      ____________
     !   |     /            \
@@ -16,7 +16,7 @@ contains
     ! This function finds the value on the y-axis for a given x-axis 
     ! value on a graph that follows the generic 3-level polygon 
     ! shape
-    !*******************************************************************
+    !==========================================================================
     function Polygon(a, b, c, d, x, y, z, value) result(retval)
         real, intent(in) :: a, b, c, d, x, y, z, value
         real :: retval
@@ -34,7 +34,7 @@ contains
         end if
     end function Polygon
 
-    !*******************************************************************
+    !==========================================================================
     !   
     !   |  x ____________
     !   |   /            \
@@ -49,7 +49,7 @@ contains
     !
     ! This function finds the value on the y-axis for a given x-axis 
     ! value on a graph that follows a polygon shape
-    !*******************************************************************
+    !==========================================================================
     function newPolygon(a, b, c, d, v, w, x, y, z, value) result(retval)
         real, intent(in) :: a, b, c, d, v, w, x, y, z, value
         real :: retval
@@ -68,5 +68,25 @@ contains
             retval = z
         end if
     end function newPolygon
+
+    
+    !==========================================================================
+    ! Conversions between degrees and radians
+    !==========================================================================
+    function deg2rad(x) result(retval)
+        use Constants, only: D2R => DEG2RAD
+        real, intent(in) :: x
+        real :: retval
+
+        retval = x * D2R
+    end function deg2rad
+
+    function rad2deg(x) result(retval)
+        use Constants, only: D2R => DEG2RAD
+        real, intent(in) :: x
+        real :: retval
+
+        retval = x / D2R
+    end function rad2deg
 
 end module Functions
