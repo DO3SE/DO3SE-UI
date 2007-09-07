@@ -24,6 +24,7 @@ module Variables
     real, public, save  :: LAIsunfrac
     real, public, save  :: PARshade
     real, public, save  :: PARsun
+    real, public, save  :: Rn       ! net radiation
 
     ! Phenology
     real, public, save  :: LAI
@@ -33,14 +34,12 @@ module Variables
 
     ! R
     real, public, save  :: Ra
-    real, public, save  :: Ra_O3
     real, public, save  :: Rb
     real, public, save  :: Rsur
     real, public, save  :: Rinc
     real, public, save  :: Rsto
     real, public, save  :: Rgs
 
-    real, public, save  :: ustar
     real, public, save  :: Gsto, Gsto_PEt
 
     ! Soil
