@@ -1,6 +1,6 @@
 module Inputs
 
-    real*8, public, save   :: mm, mdd, dd, hr, Ts_c, VPD, precip, uh, O3_ppb_zR, &
+    real, public, save   :: mm, mdd, dd, hr, Ts_c, VPD, precip, uh, O3_ppb_zR, &
                             Idrctt, Idfuse, zen
     
     public :: Input_sanitize

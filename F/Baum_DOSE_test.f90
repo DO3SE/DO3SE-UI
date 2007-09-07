@@ -9,20 +9,20 @@ Program DOSE
 
 integer :: mm      ! month
 integer :: mdd     ! day of month
-real*8 :: dd      ! day of year
+real :: dd      ! day of year
 integer :: hr      ! hour of day
-real*8 :: Ts_c       ! surface air temperature in oC
-real*8 :: ustar      ! Friction velocity (m/s)
-real*8 :: VPD        ! Vapour pressure deficit (kPa)
-real*8 :: precip     ! Precipitation (mm)
-real*8 :: uh         ! Windspeed at top of canopy (m/s)
-real*8 :: O3_nmol_m3 ! Canopy ozone concentration (nmol/m3)
-real*8 :: Idfuse     ! Diffuse radiation in W/m2
-real*8 :: Idrctt     ! Direct radiation in W/m2
-real*8 :: O3_ppb_zR  ! Ozone concentration at observation height (ppb)
-real*8 :: O3_ppb     ! canopy height O3 in ppb (for AOT40 calculation)
-real*8 :: zen        ! Zenith angle in degrees
-real*8 :: LAI        ! Grassland growth models LAI
+real :: Ts_c       ! surface air temperature in oC
+real :: ustar      ! Friction velocity (m/s)
+real :: VPD        ! Vapour pressure deficit (kPa)
+real :: precip     ! Precipitation (mm)
+real :: uh         ! Windspeed at top of canopy (m/s)
+real :: O3_nmol_m3 ! Canopy ozone concentration (nmol/m3)
+real :: Idfuse     ! Diffuse radiation in W/m2
+real :: Idrctt     ! Direct radiation in W/m2
+real :: O3_ppb_zR  ! Ozone concentration at observation height (ppb)
+real :: O3_ppb     ! canopy height O3 in ppb (for AOT40 calculation)
+real :: zen        ! Zenith angle in degrees
+real :: LAI        ! Grassland growth models LAI
 
 
 ! ====================================================
@@ -38,19 +38,19 @@ real*8 :: LAI        ! Grassland growth models LAI
 !                                 to water vapour (DO3, m2/s) = 0.000015
 ! Prandtl Number (Pr, -) = 0.72
 
-real*8, parameter :: k=0.41
+real, parameter :: k=0.41
 
 integer, parameter :: cp=1005
-real*8, parameter :: g=9.8
-real*8, parameter :: czR=25      ! Reference height for O3 concentration
-real*8, parameter :: uzR=25      ! Reference height for wind speed
+real, parameter :: g=9.8
+real, parameter :: czR=25      ! Reference height for O3 concentration
+real, parameter :: uzR=25      ! Reference height for wind speed
 
-real*8, parameter :: v=0.000015
-real*8, parameter :: DO3=0.000015
-real*8, parameter :: Pr=0.72
-real*8, parameter :: h=25             ! Canopy height
-real*8, parameter :: zo=h*0.1         ! roughness length (h*0.1)
-real*8, parameter :: d=h*0.7          ! displacement height (h*0.7)
+real, parameter :: v=0.000015
+real, parameter :: DO3=0.000015
+real, parameter :: Pr=0.72
+real, parameter :: h=25             ! Canopy height
+real, parameter :: zo=h*0.1         ! roughness length (h*0.1)
+real, parameter :: d=h*0.7          ! displacement height (h*0.7)
 
 integer :: i, max_lines, ios
 
@@ -59,40 +59,40 @@ integer :: i, max_lines, ios
 ! ============================
 
 
-real*8 :: Ra_u         ! Atmospheric resistance for windspeed calculations (s/m)
+real :: Ra_u         ! Atmospheric resistance for windspeed calculations (s/m)
                      ! Also used in SMD calcs. as assumed met variables
                      ! will be measured at same height (e.g. VPD and wind speed)
-real*8 :: Ra_O3        ! Atmospheric resistance for ozone calculations (s/m)
-real*8 :: uzh          ! Wind speed at top of canopy (i.e. h) (m/s)
+real :: Ra_O3        ! Atmospheric resistance for ozone calculations (s/m)
+real :: uzh          ! Wind speed at top of canopy (i.e. h) (m/s)
                      ! N.B. Windseepd goes to zero at (d + zo) 
-real*8 :: Rb           ! Quasi-laminar boundary layer resistance (s/m)
+real :: Rb           ! Quasi-laminar boundary layer resistance (s/m)
 
 
 ! =========================
 ! SMD calculation variables
 ! =========================
 
-real*8 :: Ei_hr      ! Hourly intercepted evaporation
-real*8 :: AEt_hr     ! Hourly actual transpiration
-real*8 :: PEt_hr     ! Hourly potential transpiration
-real*8 :: PWP        ! Calculated PWP in m3/3
-real*8 :: ASW        ! Calculated ASW in m3/m3
-real*8 :: Sn_star    ! Calculated Sn* in m3/m3
-real*8 :: Sn         ! soil Water storage capacity
-real*8 :: Sn_1       ! soil water storage capacity of previous day
-real*8 :: per_vol    ! % volumetric water content
-real*8 :: SMD        ! soil moisture deficit in mm
-real*8 :: SWP        ! Soil water potential in MPa
-real*8 :: WC         ! water content
-real*8 :: precip_dd  ! cumulated daily precipitation
-real*8 :: precip_use ! daily precipitation used in calculations
-real*8 :: Ei_dd      ! cumulated daily intercepted evaporation
-real*8 :: Ei_use     ! daily intercepted evaporation used in calculations
-real*8 :: AEt_dd     ! cumulated daily actual transpiraton
-real*8 :: AEt_use    ! daily transpiration used in calculations
-real*8 :: PEt_dd     ! cumulated daily potential transpiraton
-real*8 :: PEt_use    ! daily potential used in calculations
-real*8 :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
+real :: Ei_hr      ! Hourly intercepted evaporation
+real :: AEt_hr     ! Hourly actual transpiration
+real :: PEt_hr     ! Hourly potential transpiration
+real :: PWP        ! Calculated PWP in m3/3
+real :: ASW        ! Calculated ASW in m3/m3
+real :: Sn_star    ! Calculated Sn* in m3/m3
+real :: Sn         ! soil Water storage capacity
+real :: Sn_1       ! soil water storage capacity of previous day
+real :: per_vol    ! % volumetric water content
+real :: SMD        ! soil moisture deficit in mm
+real :: SWP        ! Soil water potential in MPa
+real :: WC         ! water content
+real :: precip_dd  ! cumulated daily precipitation
+real :: precip_use ! daily precipitation used in calculations
+real :: Ei_dd      ! cumulated daily intercepted evaporation
+real :: Ei_use     ! daily intercepted evaporation used in calculations
+real :: AEt_dd     ! cumulated daily actual transpiraton
+real :: AEt_use    ! daily transpiration used in calculations
+real :: PEt_dd     ! cumulated daily potential transpiraton
+real :: PEt_use    ! daily potential used in calculations
+real :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
 
 integer :: hour_count, hour_count_1, hour_count_2, hour_count_3, &
            hour_count_4, hour_count_5
@@ -101,134 +101,134 @@ integer :: hour_count, hour_count_1, hour_count_2, hour_count_3, &
 ! Rsur & go3 parameters
 ! =====================
 
-real*8 :: SGS = 121            ! start of bulk canopy growth period
-real*8 :: EGS = 273          ! end of bulk canopy growth period
-real*8 :: Astart = 121         ! start of upper leaf growth period
-real*8 :: Aend = 273         ! end of upper leaf growth period
+real :: SGS = 121            ! start of bulk canopy growth period
+real :: EGS = 273          ! end of bulk canopy growth period
+real :: Astart = 121         ! start of upper leaf growth period
+real :: Aend = 273         ! end of upper leaf growth period
 
-real*8 :: LAI_max = 4.0        ! maximum LAI in m2/m2 
-real*8 :: LAI_min = 0      ! minimum LAI in m2/m2 
-real*8 :: Ls = 30            ! days to go from min LAI in m2/m2 to max 
-real*8 :: Le = 30            ! days to go from max LAI in m2/m2 to min 
-
-
-real*8 :: gmax = 148         ! mmol O3 m-2 PLA s-1
-real*8 :: fmin = 0.13         ! minimum gs
-
-real*8 :: fphen_a = 0      ! fphen at SGS
-real*8 :: fphen_b = 0      ! fphen at Astart
-real*8 :: fphen_c = 1.0      ! fphen midway during season
-real*8 :: fphen_d = 0      ! fphen at Aend and EGS
-real*8 :: fphenS  = 15       ! period to fphen_c
-real*8 :: fphenE  = 20       ! period to fphen_d 
+real :: LAI_max = 4.0        ! maximum LAI in m2/m2 
+real :: LAI_min = 0      ! minimum LAI in m2/m2 
+real :: Ls = 30            ! days to go from min LAI in m2/m2 to max 
+real :: Le = 30            ! days to go from max LAI in m2/m2 to min 
 
 
-real*8, parameter ::  PI = 3.14159265358979312     ! pi
-real*8, parameter ::  DEG2RAD = PI/180.0           ! Degrees -> Radians
-real*8, parameter ::  nydays = 365                 ! no. days per year (365 or 366)
-real*8 ::  cosA    = 0.5                ! A = mean leaf inclination (60 deg.)
+real :: gmax = 148         ! mmol O3 m-2 PLA s-1
+real :: fmin = 0.13         ! minimum gs
+
+real :: fphen_a = 0      ! fphen at SGS
+real :: fphen_b = 0      ! fphen at Astart
+real :: fphen_c = 1.0      ! fphen midway during season
+real :: fphen_d = 0      ! fphen at Aend and EGS
+real :: fphenS  = 15       ! period to fphen_c
+real :: fphenE  = 20       ! period to fphen_d 
+
+
+real, parameter ::  PI = 3.14159265358979312     ! pi
+real, parameter ::  DEG2RAD = PI/180.0           ! Degrees -> Radians
+real, parameter ::  nydays = 365                 ! no. days per year (365 or 366)
+real ::  cosA    = 0.5                ! A = mean leaf inclination (60 deg.)
                                                  ! where it is assumed that leaf
   							       ! inclination has a spherical distribution
 
-!real*8, parameter :: albedo = 0.12                  ! 0.2 is value for crops, 
-real*8 :: albedo = 0.12                  ! 0.2 is value for crops, 
+!real, parameter :: albedo = 0.12                  ! 0.2 is value for crops, 
+real :: albedo = 0.12                  ! 0.2 is value for crops, 
 								 ! 0.12 for needle leaf trees, 
 								 ! 0.16 for broad leaf trees
                                                  ! 0.14 for moorland
-real*8, parameter :: PARfrac = 0.45                ! approximation to fraction (0.45
+real, parameter :: PARfrac = 0.45                ! approximation to fraction (0.45
 							       ! to 0.5) of total
                                                  ! radiation in PAR waveband (400-700nm)
-real*8, parameter :: Wm2_uE  = 4.57                ! converts from W/m^2 to umol/m^2/s
-real*8, parameter :: Wm2_2uEPAR= PARfrac * Wm2_uE  ! converts from W/m^2 to umol/m^2/s PAR
-real*8, parameter :: f_lightfac = 0.006             ! single leaf flight co-efficient
+real, parameter :: Wm2_uE  = 4.57                ! converts from W/m^2 to umol/m^2/s
+real, parameter :: Wm2_2uEPAR= PARfrac * Wm2_uE  ! converts from W/m^2 to umol/m^2/s PAR
+real, parameter :: f_lightfac = 0.006             ! single leaf flight co-efficient
 
-real*8 ::  T_min = 0        ! oC min temperature for g
-real*8 ::  T_opt = 21         ! oC opt temperature for g
-real*8 ::  T_max = 35        ! oC max temperature for g
+real ::  T_min = 0        ! oC min temperature for g
+real ::  T_opt = 21         ! oC opt temperature for g
+real ::  T_max = 35        ! oC max temperature for g
 
-real*8 :: VPD_max = 1.0      ! VPD for max g
-real*8 :: VPD_min = 3.25      ! VPD for min g
+real :: VPD_max = 1.0      ! VPD for max g
+real :: VPD_min = 3.25      ! VPD for min g
 
 ! fswp = 1 for generic Med evergreen (use dummy values here and set fSWP = 1 later)
-real*8 :: SWP_max = -0.05    ! SWP for max g
-real*8 :: SWP_min = -1.25    ! SWP for min g
+real :: SWP_max = -0.05    ! SWP for max g
+real :: SWP_min = -1.25    ! SWP for min g
 
-real*8 :: seaP = 101.325     ! sea level presuure in kPa
-real*8 :: Rsoil = 200        ! Soil resistance in s/m
-real*8 :: Rinc_b = 14        ! Rinc co-efficient
-real*8 :: Rext = 2500        ! external plant cuticle resistance in s/m
-real*8, parameter :: Ts_k = 273.15      ! Conversion from ToC to T Kelvin
+real :: seaP = 101.325     ! sea level presuure in kPa
+real :: Rsoil = 200        ! Soil resistance in s/m
+real :: Rinc_b = 14        ! Rinc co-efficient
+real :: Rext = 2500        ! external plant cuticle resistance in s/m
+real, parameter :: Ts_k = 273.15      ! Conversion from ToC to T Kelvin
 
 ! ********************************************************************
 ! Soil water release curve constants; after Millthorpe & Moorby, 1974)
 ! ********************************************************************
 
-real*8 :: soil_BD = 1.3    ! Soil bulk density (g/cm^3)
+real :: soil_BD = 1.3    ! Soil bulk density (g/cm^3)
                                     ! coarse = 1.6, medium = 1.3, fine = 1.1
-real*8 :: soil_a = -5.5    ! SWC constant a
+real :: soil_a = -5.5    ! SWC constant a
                                     ! coarse = -4, medium = -5.5, fine = -7
-real*8 :: soil_b = -3.3    ! SWC constant b
+real :: soil_b = -3.3    ! SWC constant b
                                     ! coarse = -2.3, medium -3.3, fine = -5.4
-real*8 :: Fc_m = 0.193      ! Field capacity(m3/m3)
+real :: Fc_m = 0.193      ! Field capacity(m3/m3)
                                     ! coarse = 0.15, medium = 0.27, fine = 0.43
-real*8 :: root = 1.2         ! root depth, soil and species specific (m)
+real :: root = 1.2         ! root depth, soil and species specific (m)
 
-real*8 :: Lm = 0.05       ! Leaf dimension (m)
-real*8 :: Y = 1.6           ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
+real :: Lm = 0.05       ! Leaf dimension (m)
+real :: Y = 1.6           ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
 
 
 ! =============================================
 ! Calculated deposition, Rsur and go3 variables
 ! =============================================
 
-real*8 :: SAI              ! Stand Area Indea m2/m2
+real :: SAI              ! Stand Area Indea m2/m2
 
-real*8 :: Gsto             ! Bulk stomatal conductance mmol O3 m-2 PLA s-1
-real*8 :: Gsto_PEt         ! Bulk stomatal conductance mmol O3 m-2 PLA s-1
+real :: Gsto             ! Bulk stomatal conductance mmol O3 m-2 PLA s-1
+real :: Gsto_PEt         ! Bulk stomatal conductance mmol O3 m-2 PLA s-1
 				 ! assuming no soil water limit
-real*8 :: Gsto_sm          ! Bulk stomatal conductance s/m
-real*8 :: gO3              ! Upper leaf stomatal conductnce mmol O3 m-2 PLA s-1
-real*8 :: leaf_gO3         ! Upper leaf stomatal condctance m/s
-real*8 :: leaf_rO3         ! Upper leaf stoamtal resistance s/m
-real*8 :: leaf_r           ! leaf resistance s/m
+real :: Gsto_sm          ! Bulk stomatal conductance s/m
+real :: gO3              ! Upper leaf stomatal conductnce mmol O3 m-2 PLA s-1
+real :: leaf_gO3         ! Upper leaf stomatal condctance m/s
+real :: leaf_rO3         ! Upper leaf stoamtal resistance s/m
+real :: leaf_r           ! leaf resistance s/m
 
-real*8 :: fphen            ! phenology related bulk g
-real*8 :: flight           ! Canopy average gsto in relation to canopy light
-real*8 :: ftemp            ! temperate related g
-real*8 :: bt               ! ftemp variable
-real*8 :: fVPD             ! VPD related g
-real*8 :: Rsto             ! average canopy leaf stomatal resistance to O3 in s/m
-real*8 :: fSWP             ! SWP related g
-real*8 :: Rinc             ! In-canopy aerodynamic reistance
-real*8 :: Rsur             ! Surface resistance to ozone in s/m
-real*8 :: Ftot             ! Total ozone flux to vegetated surface in nmol O3 m-2 PLA s-1
+real :: fphen            ! phenology related bulk g
+real :: flight           ! Canopy average gsto in relation to canopy light
+real :: ftemp            ! temperate related g
+real :: bt               ! ftemp variable
+real :: fVPD             ! VPD related g
+real :: Rsto             ! average canopy leaf stomatal resistance to O3 in s/m
+real :: fSWP             ! SWP related g
+real :: Rinc             ! In-canopy aerodynamic reistance
+real :: Rsur             ! Surface resistance to ozone in s/m
+real :: Ftot             ! Total ozone flux to vegetated surface in nmol O3 m-2 PLA s-1
 
-real*8 :: leaf_fphen       ! phenology related to leaf g
-real*8 :: leaf_flight      ! light related g
-real*8 :: leaf_rb          ! leaf level rb in s/m
-real*8 :: leaf_gb          ! leaf level gb in m/s
+real :: leaf_fphen       ! phenology related to leaf g
+real :: leaf_flight      ! light related g
+real :: leaf_rb          ! leaf level rb in s/m
+real :: leaf_gb          ! leaf level gb in m/s
 
 
 ! flight variables
 
-real*8 :: PARsun
-real*8 :: PARshade
-real*8 :: LAIsunfrac
-real*8 :: sinB            ! B = solar elevation angle complement
+real :: PARsun
+real :: PARshade
+real :: LAIsunfrac
+real :: sinB            ! B = solar elevation angle complement
                         ! of zenith angle
-real*8 :: sunLAI          ! sunlit LAI
-real*8 :: f_shade         ! shade-leaf contribution to f_light
+real :: sunLAI          ! sunlit LAI
+real :: f_shade         ! shade-leaf contribution to f_light
 
-real*8 :: Rlow            ! Low temperature resistance(af.Wesely, 1989)
-real*8 :: Rgs             ! Non vegetative surface resistance
+real :: Rlow            ! Low temperature resistance(af.Wesely, 1989)
+real :: Rgs             ! Non vegetative surface resistance
 				! including low temperature and snow
 
 
-real*8 :: Vd     		! Deposition velocity of ozone (m/s)
-real*8 :: Fst   		! Upper leaf stomatal ozone flux (nmol O3 m-2 PLA s-1)
-real*8 :: AFstY 		! Accumulated stomatal flux above a threshold Y (mmol O3 m-2 PLA)
-real*8 :: OT40   		! Ozone over 40 ppb over fphen period (ppm)
-real*8 :: AOT40  		! AOT40 over bulk canopy growth period (ppm.hrs)
+real :: Vd     		! Deposition velocity of ozone (m/s)
+real :: Fst   		! Upper leaf stomatal ozone flux (nmol O3 m-2 PLA s-1)
+real :: AFstY 		! Accumulated stomatal flux above a threshold Y (mmol O3 m-2 PLA)
+real :: OT40   		! Ozone over 40 ppb over fphen period (ppm)
+real :: AOT40  		! AOT40 over bulk canopy growth period (ppm.hrs)
 
 ! ======================
 ! Read in data from file

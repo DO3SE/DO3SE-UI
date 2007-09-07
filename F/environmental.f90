@@ -13,7 +13,7 @@ contains
         use Inputs, only: Ts_c
         use Params_Veg, only: T_max, T_min, T_opt, fmin
 
-        real*8 :: bt 
+        real :: bt 
         
         bt = (T_max - T_opt) / (T_opt - T_min)
         ftemp = max(((Ts_c-T_min)/(T_opt-T_min))*((T_max-Ts_c)/(T_max-T_opt))**bt, fmin)

@@ -11,9 +11,9 @@ contains
         use Variables, only: LAI, LAIsunfrac, PARshade, PARsun, &
             leaf_flight, Flight
 
-        real*8 :: sunLAI  ! sunlit LAI
-        real*8 :: sinB    ! B = solar elevation angle component of zenith angle
-        real*8 :: f_shade ! shade-leaf contribution to flight
+        real :: sunLAI  ! sunlit LAI
+        real :: sinB    ! B = solar elevation angle component of zenith angle
+        real :: f_shade ! shade-leaf contribution to flight
 
         if ( zen <= 88 .and. LAI > 0 ) then
             sinB = cos(zen * DEG2RAD)   ! uses EMEP output zen to estimate sinB

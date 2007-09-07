@@ -55,7 +55,7 @@ contains
         use Inputs, only: Ts_c
         use Variables, only: ustar, Rgs
 
-        real*8 :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
+        real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
  
         Rlow = (1000 * exp(-(Ts_c + 4)))
         ! TODO:   ????
@@ -79,7 +79,7 @@ contains
         use Params_Veg, only: gmax, fmin
         use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, SWP, LAI
 
-        real*8 :: Gsto_sm
+        real :: Gsto_sm
 
         Gsto = gmax * fphen * flight * ftemp * fVPD * fSWP
 

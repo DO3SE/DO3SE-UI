@@ -10,8 +10,8 @@ contains
             fSWP, O3_nmol_m3
         use Params_Veg, only: gmax, Lm
 
-        real*8 :: gO3, leaf_rb, leaf_gb, leaf_r
-        real*8 :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance
+        real :: gO3, leaf_rb, leaf_gb, leaf_r
+        real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance
 
         gO3 = gmax * leaf_fphen * leaf_flight * ftemp * fVPD * fSWP  ! in mmol O3 m^-2 s^-1
 
@@ -47,7 +47,7 @@ contains
         use Variables, only: AOT40, O3_ppb, fphen
         use Inputs, only: Idfuse
 
-        real*8 :: OT40
+        real :: OT40
 
         if ( O3_ppb > 40 ) then
             OT40 = (O3_ppb - 40) / 1000

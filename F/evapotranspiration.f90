@@ -9,8 +9,8 @@ contains
         use Inputs,     only: dd, VPD, Ts_c
         use Variables,  only: dd_prev, PEt, Rb, Gsto_PEt, LAI
 
-        real*8 :: PEt_hr = 0          ! Potential evapotranspiration for the hour
-        real*8, save :: PEt_dd = 0    ! PEt for the day (accumulates)
+        real :: PEt_hr = 0          ! Potential evapotranspiration for the hour
+        real, save :: PEt_dd = 0    ! PEt for the day (accumulates)
 
         if ( LAI > 0 ) then
             PEt_hr = (VPD*3600*18)/(seaP*((Rb*0.61) &
@@ -35,8 +35,8 @@ contains
         use Params_Veg, only: SWP_min
         use Variables,  only: dd_prev, AEt, SWP, Rb, Rsto, LAI
 
-        real*8 :: AEt_hr          ! Potential evapotranspiration for the hour
-        real*8, save :: AEt_dd = 0    ! PEt for the day (accumulates)
+        real :: AEt_hr          ! Potential evapotranspiration for the hour
+        real, save :: AEt_dd = 0    ! PEt for the day (accumulates)
 
         if ( LAI == 0 .or. SWP <= SWP_min ) then
             AEt_hr = 0
@@ -62,8 +62,8 @@ contains
         use Inputs,     only: dd, VPD, Ts_c
         use Variables,  only: dd_prev, Rb, Ei
 
-        real*8 :: Ei_hr
-        real*8, save :: Ei_dd = 0
+        real :: Ei_hr
+        real, save :: Ei_dd = 0
 
         Ei_hr = (VPD*3600*18)/(seaP*(Rb*0.61)*0.0224*((Ts_C+Ts_K)/Ts_K)*(10**6))
 
