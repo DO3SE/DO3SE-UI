@@ -1,14 +1,15 @@
 module Phenology
 
-    public :: Calc_LAI, Calc_SAI_Simple, Calc_SAI_Crops, &
-        Calc_fphen
+    public :: Calc_LAI
+    public :: Calc_SAI_Simple
+    public :: Calc_SAI_Crops
+    public :: Calc_fphen
 
 contains 
 
-    !**************************************************************
-    ! LAI calculation based on growing season - uses polygon 
-    ! calculation
-    !**************************************************************
+    !==========================================================================
+    ! LAI calculation based on growing season - uses polygon calculation
+    !==========================================================================
     subroutine Calc_LAI()
         use Functions, only: Polygon
         use Params_Veg, only: SGS, EGS, Ls, Le, LAI_min, &
@@ -20,19 +21,17 @@ contains
                         LAI_min, LAI_max, LAI_min, dd)
     end subroutine Calc_LAI
 
-    !**************************************************************
-    ! 'Simple' SAI calculation - SAI = LAI + 1 for grasses and 
-    ! trees
-    !**************************************************************
+    !==========================================================================
+    ! 'Simple' SAI calculation - SAI = LAI + 1 for grasses and trees
+    !==========================================================================
     subroutine Calc_SAI_Simple()
         use Variables, only: LAI, SAI
         SAI = LAI + 1
     end subroutine Calc_SAI_Simple
 
-    !**************************************************************
-    ! SAI calculation for crops taking growing season into 
-    ! account
-    !**************************************************************
+    !==========================================================================
+    ! SAI calculation for crops taking growing season into account
+    !==========================================================================
     subroutine Calc_SAI_Crops()
         use Inputs, only: dd
         use Params_Veg, only: SGS, EGS, Ls, Le
@@ -48,6 +47,9 @@ contains
         end if
     end subroutine Calc_SAI_Crops
 
+    !==========================================================================
+    ! Calculate fphen, incorporating differing plant and leaf growth seasons
+    !==========================================================================
     subroutine Calc_fphen()
         use Functions, only: Polygon
         use Params_Veg, only: SGS, EGS, Astart, Aend, &
