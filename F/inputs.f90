@@ -45,7 +45,8 @@ module Inputs
         use Constants, only: k
         use Params_Site, only: uzR, u_d, u_zo
 
-        ustar = (u_uzR * k) / log((uzR - u_d) / u_zo)
+        ! Uses max(...) to stop ustar from ever being 0
+        ustar = (max(0.001, u_uzR) * k) / log((uzR - u_d) / u_zo)
     end subroutine Derive_ustar
 
     !==========================================================================
