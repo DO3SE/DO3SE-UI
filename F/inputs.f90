@@ -7,11 +7,10 @@ module Inputs
     real, public, save :: hr            ! Hour
     real, public, save :: Ts_C          ! Surface air temperature (degrees C)
     real, public, save :: VPD           ! Vapour pressure deficit (kPa)
-    real, public, save :: u_uzR         ! Wind speed at measurement height uzR (m/s)
+    real, public, save :: u_zR          ! Wind speed at measurement height uzR (m/s)
     real, public, save :: precip        ! Precipitation (mm)
     real, public, save :: P             ! Atmospheric pressure (kPa)
-    real, public, save :: O3_ppb_czR    ! O3 concentration at height czR (parts per billion)
-    real, public, save :: LAI           ! Leaf area index (m^2/m^2)
+    real, public, save :: O3_ppb_zR     ! O3 concentration at height czR (parts per billion)
     real, public, save :: Hd            ! Sensible heat flux (W/m^2)
     real, public, save :: R             ! Global radiation (Wh/m^2)
     real, public, save :: PAR           ! PAR (umol/m^2/s)
