@@ -1,18 +1,19 @@
 program Test
     
     use Run
-    use Inputs, precip_in => precip
+    use Inputs, precip_in => precip, Rn_in => Rn
     use Variables
 
     integer :: ios = 0
+    real :: foo_a
 
     call init()
 
-    open (unit=9, file="2003_input.csv", &
+    open (unit=9, file="input_newstyle.csv", &
        status="old", action="read", position="rewind")
 
-    read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_c, VPD, precip_in, &
-                                    uh, O3_ppb_zR, Idrctt, Idfuse, zen
+    read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_C, VPD, u_zR, &
+            precip_in, P, O3_ppb_zR, foo_a, Hd, R, PAR
 
     dd_prev = dd
     read_loop: do
@@ -22,16 +23,10 @@ program Test
 
         call Do_Calcs()
 
-        print *, Ra_O3, Rb, Rsto, LAI, SAI, Fphen, &
-                      Ts_c, precip, &
-                      SMD, SWP, fswp, Gsto, Rsur, Vd, &
-                      Fst, AFstY, & !gO3, &
-                      O3_ppb, PEt, AEt, &
-		      Rsto_PEt, Ei, ustar, Sn, &
-                      Ftot, Ra, Per_vol
+        !print *, Rn
 
-        read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_c, VPD, precip_in, &
-                                    uh, O3_ppb_zR, Idrctt, Idfuse, zen
+        read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_C, VPD, u_zR, &
+                precip_in, P, O3_ppb_zR, foo_a, Hd, R, PAR
     end do read_loop
 
 end program Test

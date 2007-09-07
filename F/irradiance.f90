@@ -41,6 +41,7 @@ contains
 
         ! TODO: check this value!!!
         sinB = sin(deg2rad(lat))*sin(dec) + cos(deg2rad(lat))*cos(dec)*cos(deg2rad(h))
+        print *, sinB
     end subroutine Calc_sinB
 
     
