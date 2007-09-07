@@ -11,20 +11,12 @@ module Constants
     real, public, parameter :: DO3 = 0.000015   ! molecular diffusivity of OR in 
                                                 ! air relative to water vapour (m^2/s)
     real, public, parameter :: Pr = 0.72        ! Prandtl Number (Pr, -)
-    real, public, parameter :: uzR = 25         ! Reference height for wind speed
-    real, public, parameter :: czR = 25         ! Reference height for O3 concentration
-    real, public, parameter :: h = 25           ! Canopy height
-    real, public, parameter :: zo = h * 0.1     ! Roughness length
-    real, public, parameter :: d = h * 0.7      ! Displacement height
 
     real, public, parameter :: seaP = 101.325   ! Sea level air pressure in kPa
 
     real, public, parameter :: PARfrac = 0.45   ! approx. fraction of total radiation in 
                                                 ! PAR waveband (0.45 to 0.5)
                                     
-    real, public, parameter :: Wm2_uE = 4.57                    ! converts W/m^2 to umol/m^2/s
-    real, public, parameter :: Wm2_2uEPAR = PARfrac * Wm2_uE    ! converts W/m^2 to umol/m^2/s PAR
-
     real, public, parameter :: Ts_K = 273.15    ! Conversion from ToC to T Kelvin
 
 end module Constants
