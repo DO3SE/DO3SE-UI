@@ -12,7 +12,7 @@ module Params_Site
 
     ! Measurement heights
     real, public, save :: uzR = 25      ! Windspeed measurement height (m)
-    real, public, save :: czR = 25      ! Ozone concentration measurement height (m)
+    real, public, save :: O3zR = 25     ! Ozone concentration measurement height (m)
     real, public, save :: xzR = 25      ! "Other" measurement height (m)
     
     ! Properties of vegetation over which windspeed is measured
