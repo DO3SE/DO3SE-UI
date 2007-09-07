@@ -1,6 +1,6 @@
 module Irradiance
 
-    public, private, save :: sinB   ! Solar elevation angle
+    real, private, save :: sinB   ! Solar elevation angle
 
     public :: Calc_sinB
     public :: Calc_Flight
