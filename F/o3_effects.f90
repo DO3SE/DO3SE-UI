@@ -5,13 +5,25 @@ module O3_Effects
 contains
     
     subroutine Calc_Fst()
-        use Inputs, only: uh
+        use Constants, only: k
+        use Params_Site, only: u_d, uzR
+        use Params_Veg, only: h
+        use Inputs, only: u_zR, ustar
         use Variables, only: Fst, leaf_fphen, leaf_flight, ftemp, fVPD, &
             fSWP, O3_nmol_m3
         use Params_Veg, only: gmax, Lm
 
-        real :: gO3, leaf_rb, leaf_gb, leaf_r
+        real :: gO3, leaf_rb, leaf_gb, leaf_r, uh
         real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance
+        
+        ! Calculate windspeed at top of canopy
+        if (uzR == h) then
+            uh = u_zR
+        else if (uzR > h) then
+            uh = u_zR + (ustar / k) * log((h - d) / (uzR - d))
+        else
+            uh = u_zR + (ustar / k) * log((h - u_d) / (uzR - u_d))
+        end if
 
         gO3 = gmax * leaf_fphen * leaf_flight * ftemp * fVPD * fSWP  ! in mmol O3 m^-2 s^-1
 
@@ -45,7 +57,7 @@ contains
 
     subroutine Calc_AOT40()
         use Variables, only: AOT40, O3_ppb, fphen
-        use Inputs, only: Idfuse
+        use Inputs, only: R
 
         real :: OT40
 
@@ -55,7 +67,7 @@ contains
             OT40 = 0
         end if
 
-        if ( Idfuse == 0 .or. fphen == 0 ) then
+        if ( R == 0 .or. fphen == 0 ) then
             OT40 = 0
         end if
 
