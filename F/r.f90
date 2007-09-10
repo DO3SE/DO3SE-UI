@@ -1,7 +1,8 @@
 module R
 
     public :: Calc_Rext, Calc_Rsoil, Calc_ustar, Calc_Ra, Calc_Rb, Calc_Rgs, &
-                Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur
+                Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur, &
+                Calc_Ra_With_Heat_Flux
 
 contains
 
@@ -13,6 +14,7 @@ contains
         use Inputs, only: ustar
         use Params_Site, only: O3zR, O3_d
         use Params_Veg, only: h, d
+        use Variables, only: Ra
 
         !Ra = (1 / (ustar * k)) * log((O3zR - O3_d) / (h - O3_d))
         
@@ -25,10 +27,14 @@ contains
     ! Calculate Ra, Atmospheric resistance, taking into account heat flux data
     !==========================================================================
     subroutine Calc_Ra_With_Heat_Flux()
-        use Constants, only: Rmass, Ts_K, k, g, cp
+        use Constants, only: Rmass, Ts_K, k, g, cp, pi
         use Inputs, only: P, Hd, Ts_C, ustar
         use Variables, only: Ra
         use Params_Site, only: z => uzR
+        use Params_Veg, only: h, d, zo
+
+        real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, rho, L, &
+                Xzo, Xzd
 
         ! TODO: which heights are used where here?!?!
 

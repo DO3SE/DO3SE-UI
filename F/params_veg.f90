@@ -50,6 +50,8 @@ module Params_Veg
     real, public, save :: Lm = 0.05         ! Leaf dimension (m)
     real, public, save :: Y = 1.6           ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
     
+    public :: Derive_d_zo
+
 contains
 
     !==========================================================================

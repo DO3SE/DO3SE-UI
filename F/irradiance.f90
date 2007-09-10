@@ -54,6 +54,10 @@ contains
         use Inputs, only: P, PAR
         use Variables, only: LAI, Flight, leaf_flight
 
+        real :: m, pPARdir, pPARdif, pPARtotal, ST, fPARdir, fPARdif, PARdir, &
+                PARdif, LAIsun, LAIshade, PARshade, PARsun, Flightsun, &
+                Flightshade
+
         if (sinB > 0) then
             m = (P/seaP) / sinB
 
@@ -104,8 +108,9 @@ contains
         ! TODO: document variables
         use Params_Site, only: lat, lon, elev
         use Params_Veg, only: albedo
-        use Inputs, only: R, Ts_C, VPD
+        use Inputs, only: R, Ts_C, VPD, dd
         use Variables, only: Rn
+        use Constants, only: pi
 
         real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns
 
@@ -118,7 +123,7 @@ contains
             R_MJ = R * 0.0036
             Ts_K = Ts_C + 273.15
 
-            dr = 1 + (0.033 * cos(((2 * pi) / 365) * td))
+            dr = 1 + (0.033 * cos(((2 * pi) / 365) * dd))
             Re = max(0.0, ((12 * 60) / pi) * Gsc * dr * sinB)
 
             ! Calculate net longwave radiation

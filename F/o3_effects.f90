@@ -11,7 +11,7 @@ contains
         use Inputs, only: u_zR, ustar
         use Variables, only: Fst, leaf_fphen, leaf_flight, ftemp, fVPD, &
             fSWP, O3_nmol_m3
-        use Params_Veg, only: gmax, Lm
+        use Params_Veg, only: gmax, Lm, h, d
 
         real :: gO3, leaf_rb, leaf_gb, leaf_r, uh
         real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance

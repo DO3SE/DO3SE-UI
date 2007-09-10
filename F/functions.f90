@@ -1,6 +1,9 @@
 module Functions
 
-    public :: Polygon, newPolygon
+    public :: Polygon
+    public :: newPolygon
+    public :: deg2rad
+    public :: rad2deg
 
 contains
     
