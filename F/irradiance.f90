@@ -37,11 +37,9 @@ contains
         h = 15 * (hr - t0)
 
         ! Declination (radians)
-        dec = -23.4 * cos(deg2rad(360 * ((dd + 10) / 365)))
+        dec = deg2rad(-23.4 * cos(deg2rad(360 * ((dd + 10) / 365))))
 
-        ! TODO: check this value!!!
         sinB = sin(deg2rad(lat))*sin(dec) + cos(deg2rad(lat))*cos(dec)*cos(deg2rad(h))
-        print *, sinB
     end subroutine Calc_sinB
 
     
@@ -82,7 +80,6 @@ contains
 
         leaf_flight = Flightsun
         Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
-        ! TODO: leaf_flight ???
     end subroutine Calc_Flight
 
     !==========================================================================
