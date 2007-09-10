@@ -40,6 +40,7 @@ contains
         dec = deg2rad(-23.4 * cos(deg2rad(360 * ((dd + 10) / 365))))
 
         sinB = sin(deg2rad(lat))*sin(dec) + cos(deg2rad(lat))*cos(dec)*cos(deg2rad(h))
+        sinB = max(0.0, sinB)
     end subroutine Calc_sinB
 
     
@@ -53,33 +54,38 @@ contains
         use Inputs, only: P, PAR
         use Variables, only: LAI, Flight, leaf_flight
 
-        m = (P/seaP) / sinB
+        if (sinB > 0) then
+            m = (P/seaP) / sinB
 
-        ! Potential direct and diffuse PAR
-        pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
-        pPARdif = 0.4 * (600 - pPARdir) * sinB
-        pPARtotal = pPARdir + pPARdif
+            ! Potential direct and diffuse PAR
+            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
+            pPARdif = 0.4 * (600 - pPARdir) * sinB
+            pPARtotal = pPARdir + pPARdif
 
-        ST = min(0.9, max(0.21, PAR/pPARtotal))
+            ST = min(0.9, max(0.21, PAR/pPARtotal))
 
-        fPARdir = (pPARdif/pPARtotal) * (1-((0.9-ST)/0.7)**(2/3))
-        fPARdif = 1 - fPARdir
+            fPARdir = (pPARdif/pPARtotal) * (1-((0.9-ST)/0.7)**(2/3))
+            fPARdif = 1 - fPARdir
 
-        PARdir = fPARdir * PAR
-        PARdif = fPARdif * PAR
+            PARdir = fPARdir * PAR
+            PARdif = fPARdif * PAR
 
-        LAIsun = (1 - exp(-0.5 * (LAI/sinB)) * (2*sinB))
-        LAIshade = LAI - LAIsun
+            LAIsun = (1 - exp(-0.5 * (LAI/sinB)) * (2*sinB))
+            LAIshade = LAI - LAIsun
 
-        PARshade = PARdif*exp(-0.5*(LAI**0.8))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-sinB)
-        PARsun = PARdir * 0.8 * (cosA/sinB) + PARshade
+            PARshade = PARdif*exp(-0.5*(LAI**0.8))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-sinB)
+            PARsun = PARdir * 0.8 * (cosA/sinB) + PARshade
 
-        ! TODO: does this need albedo?
-        Flightsun = (1.0 - exp(-f_lightfac * PARsun))
-        Flightshade = (1.0 - exp(-f_lightfac * PARshade))
+            ! TODO: does this need albedo?
+            Flightsun = (1.0 - exp(-f_lightfac * PARsun))
+            Flightshade = (1.0 - exp(-f_lightfac * PARshade))
 
-        leaf_flight = Flightsun
-        Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
+            leaf_flight = Flightsun
+            Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
+        else
+            leaf_flight = 0
+            Flight = 1
+        end if
     end subroutine Calc_Flight
 
     !==========================================================================
@@ -107,22 +113,26 @@ contains
         real, parameter :: Gsc = 0.082            ! Solar constant (MJ/m^2/min)
         real, parameter :: SBC = 4.903e-9 / 24    ! Stephan Boltzman constant
 
-        ! Unit conversions
-        R_MJ = R * 0.0036
-        Ts_K = Ts_C + 273.15
+        if (sinB > 0) then
+            ! Unit conversions
+            R_MJ = R * 0.0036
+            Ts_K = Ts_C + 273.15
 
-        dr = 1 + (0.033 * cos(((2 * pi) / 365) * td))
-        Re = max(0.0, ((12 * 60) / pi) * Gsc * dr * sinB)
+            dr = 1 + (0.033 * cos(((2 * pi) / 365) * td))
+            Re = max(0.0, ((12 * 60) / pi) * Gsc * dr * sinB)
 
-        ! Calculate net longwave radiation
-        pR = (0.75 + (2e-5 * elev)) * Re
-        esat = 0.611 * exp((17.27 * Ts_C)/(Ts_K))
-        eact = esat - VPD
+            ! Calculate net longwave radiation
+            pR = (0.75 + (2e-5 * elev)) * Re
+            esat = 0.611 * exp((17.27 * Ts_C)/(Ts_K))
+            eact = esat - VPD
 
-        Rnl = (SBC*(Ts_c**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35)
-        Rns = (1 - albedo) * R_MJ
+            Rnl = (SBC*(Ts_c**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35)
+            Rns = (1 - albedo) * R_MJ
 
-        Rn = Rns - Rnl
+            Rn = Rns - Rnl
+        else
+            Rn = 0
+        end if
     end subroutine Calc_Rn
 
 end module Irradiance
