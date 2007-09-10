@@ -18,5 +18,7 @@ module Constants
                                                 ! PAR waveband (0.45 to 0.5)
                                     
     real, public, parameter :: Ts_K = 273.15    ! Conversion from ToC to T Kelvin
+    real, public, parameter :: Rmass = 287.0    ! mass gas constant for dry 
+                                                ! air (J/Kg/K)
 
 end module Constants
