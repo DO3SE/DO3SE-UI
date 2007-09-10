@@ -14,11 +14,58 @@ contains
         use Params_Site, only: O3zR, O3_d
         use Params_Veg, only: h, d
 
-        ! TODO: Should the last O3_d be d ?
-        Ra = (1 / (ustar * k)) * log((O3zR - O3_d) / (h - O3_d))
+        !Ra = (1 / (ustar * k)) * log((O3zR - O3_d) / (h - O3_d))
+        
+        ! New calculation scaling between the measurement canopy and the flux 
+        ! model canopy
+        Ra = (1 / (ustar * k)) * log((h - d)/(O3zR - O3_d))
     end subroutine Calc_Ra
 
-    ! TODO: Add new Ra for heat flux
+    !==========================================================================
+    ! Calculate Ra, Atmospheric resistance, taking into account heat flux data
+    !==========================================================================
+    subroutine Calc_Ra_With_Heat_Flux()
+        use Constants, only: Rmass, Ts_K, k, g, cp
+        use Inputs, only: P, Hd, Ts_C, ustar
+        use Variables, only: Ra
+        use Params_Site, only: z => uzR
+
+        ! TODO: which heights are used where here?!?!
+
+        Tk = Ts_C + Ts_K
+        if (Hd == 0) then
+            Hd = 0.000000000001
+        end if
+
+        ! Surface density of dry air
+        rho = P / (Rmass * Tk)
+
+        ! Monin-Obukhov Length
+        L = -(Tk * ustar**3 * rho * cp) / (k * g * Hd)
+
+        Ezd = (z - d) / L
+        Ezo = zo / L
+
+        if (Ezd >= 0) then
+            Psi_h_zd = -5 * Ezd
+            Psi_m_zd = -5 * Ezd
+        else
+            Xzd = (1 - 15*Ezd)**(1/4)
+            Psi_m_zd = log(((1+Xzd**2)/2)*((1+Xzd)/2)**2)-2*ATAN(Xzd)+(PI/2)
+            Psi_h_zd = 2*log((1+Xzd**2)/2)
+        end if
+
+        if (Ezo >= 0) then
+            Psi_h_zo = -5*Ezo
+            Psi_m_zo = -5*Ezo 
+        else
+            Xzo = (1-15*Ezo)**(0.25)
+            Psi_m_zo = log(((1+Xzo**2)/2)*((1+Xzo)/2)**2)-2*ATAN(Xzo)+(PI/2)
+            Psi_h_zo = 2*log((1+Xzo**2)/2)
+        end if
+
+        Ra = (1 / (k * ustar)) * (log((z - d) / zo) - Psi_h_zd + Psi_h_zo)
+    end subroutine Calc_Ra_With_Heat_Flux
 
     !==========================================================================
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m

@@ -17,13 +17,7 @@ contains
         real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance
         
         ! Calculate windspeed at top of canopy
-        if (uzR == h) then
-            uh = u_zR
-        else if (uzR > h) then
-            uh = u_zR + (ustar / k) * log((h - d) / (uzR - d))
-        else
-            uh = u_zR + (ustar / k) * log((h - u_d) / (uzR - u_d))
-        end if
+        uh = u_zR + (ustar / k) * log((h - d) / (uzR - u_d))
 
         gO3 = gmax * leaf_fphen * leaf_flight * ftemp * fVPD * fSWP  ! in mmol O3 m^-2 s^-1
 
