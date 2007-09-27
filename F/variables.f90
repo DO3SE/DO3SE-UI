@@ -55,11 +55,9 @@ module Variables
     real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
     real, public, save :: fSWP
 
-    ! O3_Flux
+    ! O3
     real, public, save :: O3_ppb, O3_nmol_m3, Vd
     real, public, save :: Ftot
-
-    ! O3_Effects
     real, public, save :: Fst, AFstY, AOT40
 
 end module Variables

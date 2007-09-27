@@ -25,7 +25,7 @@ contains
     end subroutine init
 
     subroutine Do_Calcs()
-        use Inputs, only: dd, Derive_R, Derive_PAR, Derive_ustar
+        use Inputs, only: dd, Derive_R, Derive_PAR, Derive_ustar_uh
         use Variables, only: dd_prev
         use Phenology, Calc_SAI => Calc_SAI_Simple
         use R
@@ -33,13 +33,12 @@ contains
         use Environmental
         use Soil
         use Evapotranspiration
-        use O3_Flux
-        use O3_Effects
-        
+        use O3
+    
         ! Run input derivations
         !call Derive_R()
         !call Derive_PAR()
-        call Derive_ustar()
+        call Derive_ustar_uh()
 
         call Calc_LAI()     !
         call Calc_SAI()     !
@@ -68,10 +67,9 @@ contains
         call Calc_SWP()     !
         call Calc_fSWP()    !
 
-        call Calc_Vd()      !
+        !call Calc_Vd()      !
         call Calc_O3_Concentration()    !
         call Calc_Ftot()    !
-
         call Calc_Fst()     !
         call Calc_AFstY()   !
         call Calc_AOT40()

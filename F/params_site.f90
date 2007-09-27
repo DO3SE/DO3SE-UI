@@ -63,8 +63,8 @@ contains
     ! vegetation under the O3 measurement based on its height
     !==========================================================================
     subroutine Derive_O3_d_zo()
-        u_d = u_h * 0.7
-        u_zo = u_h * 0.1
+        O3_d = O3_h * 0.7
+        O3_zo = O3_h * 0.1
     end subroutine Derive_O3_d_zo
 
     !==========================================================================
@@ -74,9 +74,9 @@ contains
     !==========================================================================
     subroutine Copy_O3_h_d_zo()
         use Params_Veg, only: h, d, zo
-        u_h = h
-        u_d = d
-        u_zo = zo
+        O3_h = h
+        O3_d = d
+        O3_zo = zo
     end subroutine Copy_O3_h_d_zo
 
 end module Params_Site

@@ -20,5 +20,8 @@ module Constants
     real, public, parameter :: Ts_K = 273.15    ! Conversion from ToC to T Kelvin
     real, public, parameter :: Rmass = 287.0    ! mass gas constant for dry 
                                                 ! air (J/Kg/K)
+    
+    real, public, parameter :: izR = 50         ! Intermediate "decoupled" height for 
+                                                ! transfer of O3 and windspeed
 
 end module Constants

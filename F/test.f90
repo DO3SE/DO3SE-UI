@@ -12,7 +12,7 @@ program Test
     open (unit=9, file="input_newstyle.csv", &
        status="old", action="read", position="rewind")
 
-    read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_C, VPD, u_zR, &
+    read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_C, VPD, uh_zR, &
             precip_in, P, O3_ppb_zR, foo_a, Hd, R, PAR
 
     dd_prev = dd
@@ -23,9 +23,9 @@ program Test
 
         call Do_Calcs()
 
-        !print *, Rn
+        print *, Fst, AFstY
 
-        read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_C, VPD, u_zR, &
+        read (unit=9, fmt=*, iostat=ios) mm, mdd, dd, hr, Ts_C, VPD, uh_zR, &
                 precip_in, P, O3_ppb_zR, foo_a, Hd, R, PAR
     end do read_loop
 

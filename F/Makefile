@@ -9,7 +9,7 @@ FORTRAN		= F
 common = constants.o params_veg.o params_site.o inputs.o variables.o functions.o
 
 # Higher level modules
-others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3_effects.o o3_flux.o run.o test.o
+others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o run.o test.o
 
 # Set up the module dependancy
 $(others): $(common)

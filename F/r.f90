@@ -10,17 +10,13 @@ contains
     ! Calculate Ra, Atmospheric resistance
     !==========================================================================
     subroutine Calc_Ra()
-        use Constants, only: k
+        use Constants, only: k, izR
         use Inputs, only: ustar
         use Params_Site, only: O3zR, O3_d
         use Params_Veg, only: h, d
         use Variables, only: Ra
 
-        !Ra = (1 / (ustar * k)) * log((O3zR - O3_d) / (h - O3_d))
-        
-        ! New calculation scaling between the measurement canopy and the flux 
-        ! model canopy
-        Ra = (1 / (ustar * k)) * log((h - d)/(O3zR - O3_d))
+        Ra = (1 / (ustar * k)) * log((izR - d) / (h - d))
     end subroutine Calc_Ra
 
     !==========================================================================
