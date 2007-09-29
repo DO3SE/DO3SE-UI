@@ -7,7 +7,7 @@ module Inputs
     real, public, save :: hr            ! Hour
     real, public, save :: Ts_C          ! Surface air temperature (degrees C)
     real, public, save :: VPD           ! Vapour pressure deficit (kPa)
-    real, public, save :: uh_zR          ! Wind speed at measurement height uzR (m/s)
+    real, public, save :: uh_zR         ! Wind speed at measurement height uzR (m/s)
     real, public, save :: precip        ! Precipitation (mm)
     real, public, save :: P             ! Atmospheric pressure (kPa)
     real, public, save :: O3_ppb_zR     ! O3 concentration at height czR (parts per billion)
@@ -41,11 +41,13 @@ module Inputs
 
 
     !==========================================================================
-    ! Derive ustar for the flux canopy and the windspeed at that canopy
+    ! Derive ustar for the flux canopy and the windspeed
+    !
+    !
     !==========================================================================
     subroutine Derive_ustar_uh()
         use Constants, only: k, izR
-        use Params_Site, only: u_d, u_h, u_zo, uzR
+        use Params_Site, only: u_d, u_zo, uzR
         use Params_Veg, only: h, d, zo
 
         real :: ustar_w     ! ustar for where windspeed is measured
@@ -69,18 +71,6 @@ module Inputs
         ustar = max(0.0001, ustar)
         uh = max(0.0001, uh)
     end subroutine Derive_ustar_uh
-
-    !==========================================================================
-    ! Derive u* (ustar) instead of using an input (unused)
-    ! TODO: remove me
-    !==========================================================================
-    subroutine Derive_ustar()
-        use Constants, only: k
-        use Params_Site, only: uzR, u_d, u_zo
-
-        ! Uses max(...) to stop ustar from ever being 0
-        ustar = (max(0.001, uh_zR) * k) / log((uzR - u_d) / u_zo)
-    end subroutine Derive_ustar
 
     !==========================================================================
     ! The derivation for net radiation (Rn) is in the 'Irradiance' module 

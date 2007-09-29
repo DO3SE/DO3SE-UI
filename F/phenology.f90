@@ -34,7 +34,7 @@ contains
     !==========================================================================
     subroutine Calc_SAI_Crops()
         use Inputs, only: dd
-        use Params_Veg, only: SGS, EGS, Ls, Le
+        use Params_Veg, only: SGS, EGS, Ls
         use Functions, only: Polygon
         use Variables, only: LAI, SAI
 

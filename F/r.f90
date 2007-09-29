@@ -1,6 +1,6 @@
 module R
 
-    public :: Calc_Rext, Calc_Rsoil, Calc_ustar, Calc_Ra, Calc_Rb, Calc_Rgs, &
+    public :: Calc_Rext, Calc_Rsoil, Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
                 Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur, &
                 Calc_Ra_With_Heat_Flux
 
@@ -9,38 +9,34 @@ contains
     !==========================================================================
     ! Calculate Ra, Atmospheric resistance
     !==========================================================================
-    subroutine Calc_Ra()
+    subroutine Calc_Ra_Simple()
         use Constants, only: k, izR
         use Inputs, only: ustar
-        use Params_Site, only: O3zR, O3_d
         use Params_Veg, only: h, d
         use Variables, only: Ra
 
         Ra = (1 / (ustar * k)) * log((izR - d) / (h - d))
-    end subroutine Calc_Ra
+    end subroutine Calc_Ra_Simple
 
     !==========================================================================
     ! Calculate Ra, Atmospheric resistance, taking into account heat flux data
     !==========================================================================
     subroutine Calc_Ra_With_Heat_Flux()
-        use Constants, only: Rmass, Ts_K, k, g, cp, pi
+        use Constants, only: Rmass, Ts_K, k, g, cp, pi, z => izR
         use Inputs, only: P, Hd, Ts_C, ustar
         use Variables, only: Ra
-        use Params_Site, only: z => uzR
-        use Params_Veg, only: h, d, zo
+        use Params_Veg, only: d, zo
 
         real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, rho, L, &
                 Xzo, Xzd
-
-        ! TODO: which heights are used where here?!?!
 
         Tk = Ts_C + Ts_K
         if (Hd == 0) then
             Hd = 0.000000000001
         end if
 
-        ! Surface density of dry air
-        rho = P / (Rmass * Tk)
+        ! Surface density of dry air (including conversion from to Pa to kPa)
+        rho = (P * 1000) / (Rmass * Tk)
 
         ! Monin-Obukhov Length
         L = -(Tk * ustar**3 * rho * cp) / (k * g * Hd)
@@ -85,7 +81,7 @@ contains
     !==========================================================================
     subroutine Calc_Rgs()
         use Params_Site, only: Rsoil
-        use Inputs, only: Ts_C, ustar
+        use Inputs, only: Ts_C
         use Variables, only: Rgs
 
         real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
@@ -110,8 +106,8 @@ contains
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
     subroutine Calc_Rsto()
-        use Params_Veg, only: gmax, fmin
-        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, SWP, LAI
+        use Params_Veg, only: gmax
+        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, LAI
 
         real :: Gsto_sm
 

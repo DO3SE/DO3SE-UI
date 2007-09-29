@@ -58,7 +58,7 @@ contains
                 PARdif, LAIsun, LAIshade, PARshade, PARsun, Flightsun, &
                 Flightshade
 
-        if (sinB > 0) then
+        if (sinB > 0 .and. LAI > 0) then
             m = (P/seaP) / sinB
 
             ! Potential direct and diffuse PAR
@@ -88,7 +88,7 @@ contains
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
         else
             leaf_flight = 0
-            Flight = 1
+            Flight = 0
         end if
     end subroutine Calc_Flight
 
@@ -106,7 +106,7 @@ contains
     !==========================================================================
     subroutine Calc_Rn()
         ! TODO: document variables
-        use Params_Site, only: lat, lon, elev
+        use Params_Site, only: elev
         use Params_Veg, only: albedo
         use Inputs, only: R, Ts_C, VPD, dd
         use Variables, only: Rn

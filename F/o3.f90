@@ -52,12 +52,10 @@ contains
     !==========================================================================
     subroutine Calc_Fst()
         use Constants, only: k
-        use Params_Site, only: u_d, uzR
-        use Params_Veg, only: h
-        use Inputs, only: uh, ustar
+        use Params_Veg, only: gmax, Lm
+        use Inputs, only: uh
         use Variables, only: Fst, leaf_fphen, leaf_flight, ftemp, fVPD, &
             fSWP, O3_nmol_m3
-        use Params_Veg, only: gmax, Lm, h, d
 
         real :: gO3, leaf_rb, leaf_gb, leaf_r
         real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance

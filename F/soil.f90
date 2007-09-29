@@ -5,12 +5,9 @@ module Soil
 contains
 
     subroutine Soil_initialize()
-        use Params_Site, only: &
-            Rsoil, soil_BD, soil_a, soil_b, Fc_m
-        use Params_Veg, only: &
-            SWP_min, SWP_max
-        use Variables, only: PWP, ASW, Sn_star, Sn, SWP, WC, per_vol, fSWP, precip, &
-            AEt, PEt, Ei, SMD
+        use Params_Site, only: soil_BD, soil_a, soil_b, Fc_m
+        use Params_Veg, only: SWP_min
+        use Variables, only: PWP, ASW, Sn_star, Sn, SWP, WC, per_vol, fSWP, precip, SMD
 
         ! Calculate Wstar
         PWP = soil_BD*((SWP_min/(soil_a*(0.01)))*1000)**(1/soil_b)
@@ -45,7 +42,7 @@ contains
 
     subroutine Calc_SWP()
         use Inputs, only: dd
-        use Params_Veg, only: root, SWP_min
+        use Params_Veg, only: root
         use Params_Site, only: Fc_m, soil_BD, soil_a, soil_b
         use Variables, only: dd_prev, AEt, Ei, Sn, SMD, WC, per_vol, SWP, precip, PWP, Sn_star
 
