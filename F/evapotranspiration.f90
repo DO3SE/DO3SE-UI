@@ -1,6 +1,6 @@
 module Evapotranspiration
 
-    public :: Calc_PEt, Calc_AEt, Calc_Ei
+    public :: Calc_PEt, Calc_AEt, Calc_Ei, Calc_PEt_PM
 
 contains
     
@@ -76,5 +76,30 @@ contains
             Ei_dd = Ei_hr
         endif
     end subroutine Calc_Ei
+
+    subroutine Calc_PEt_PM()
+        use Constants, only: Ts_K
+        use Inputs, only: Ts_C, VPD, Rn, P
+        use Variables, only: PEt, Ra, Rsto
+
+        real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, ET1, ET2, ET3
+
+        ! TODO: optimise
+        esat = 611 * exp((17.27 * Ts_C) / (Ts_C + Ts_K))
+        eact = esat - VPD
+        Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
+        delta= ((4098*esat)/((Ts_c+Ts_K)**2)) 
+        lambda = (2501000-(2361*Ts_c))
+        psychro = 1630 * (P/lambda)
+        Pair = (0.003486*(P/Tvir))
+        Cair = (0.622*((lambda*psychro)/P))
+        
+        ET1 = (Delta * Rn)
+        ET2 = (3600 * Pair * Cair * (VPD / Ra)) / lambda
+        ET3 = Delta + psychro * (1 + Rsto / Ra)
+
+        PEt = (ET1 + ET2) / ET3
+
+    end subroutine Calc_PEt_PM
 
 end module Evapotranspiration
