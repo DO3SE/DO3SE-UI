@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 from dose_f import *
 
 def SetSiteParam(param, value):

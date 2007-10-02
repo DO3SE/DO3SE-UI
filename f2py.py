@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # See http://cens.ioc.ee/projects/f2py2e/
 import os, sys
 for mode in ["g3-numpy", "2e-numeric", "2e-numarray", "2e-numpy"]:
