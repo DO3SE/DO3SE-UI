@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from do3se import *
+from dose_f import *
 
 def SetSiteParam(param, value):
     setattr(params_site, param, value)
