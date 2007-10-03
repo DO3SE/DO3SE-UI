@@ -7,7 +7,7 @@ import wxext
 import config
 import inputfile
 import maps
-import F as do3se
+import dose
 
 class MainWindow(wx.Frame):
     """Main application window.
@@ -61,8 +61,7 @@ class MainWindow(wx.Frame):
         # --- 'Input' panel ---
         self.input_filename = xrc.XRCCTRL(self, 'text_inputfile')
         self.input_fields = xrc.XRCCTRL(self, 'panel_input_fields')
-        self.input_fields.SetAvailable([maps.input_fields[x] for x in 
-            'yr mm mdd dd hr ts_c vpd precip uh o3_ppb_zr idrctt idfuse zen'.split()])
+        self.input_fields.SetAvailable([maps.input_field_map[x] for x in maps.input_fields])
         self.input_fields.SetFormats(config.state['formats']['input'])
         self.Bind(wx.EVT_BUTTON, self.OnFileOpen, id = xrc.XRCID('button_change_file'))
         

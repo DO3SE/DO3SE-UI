@@ -1,23 +1,46 @@
-input_fields = {
-        'yr'        : 'Year',
-        'mm'        : 'Month',
-        'mdd'       : 'Day of Month',
-        'dd'        : 'Day of Year',
-        'hr'        : 'Hour',
-        'ts_c'      : 'Temperature (Celcius)',
-        'vpd'       : 'Vapour Pressure Deficit (Pa)',
-        'precip'    : 'Precipitation (mm)',
-        'uh'        : 'Wind speed (m/s)',
-        'o3_ppb_zr' : 'O3 density (parts per billion)',
-        'idrctt'    : 'Direct radiation',
-        'idfuse'    : 'Diffuse radiation',
-        'zen'       : 'Zenith angle',
-        }
+input_fields = [
+        'yr',
+        'mm',
+        'mdd',
+        'dd',
+        'hr',
+        'ts_c',
+        'vpd',
+        'uh_zr',
+        'precip',
+        'p',
+        'o3_ppb_zr',
+        'hd',
+        'r',
+        'par',
+        'rn',
+        'ustar',
+        ]
 
-input_fields_reverse = dict([(v, k) for k, v in input_fields.items()])
+input_fields_long = [
+        'Year',
+        'Month',
+        'Day of Month',
+        'Day of Year',
+        'Hour',
+        'Temperature (Celcius)',
+        'Vapour Pressure Deficit (Pa)',
+        'Wind speed (m/s)',
+        'Precipitation (mm)',
+        'Pressure (kPa)',
+        'O3 density (parts per billion)',
+        'Sensible heat flux (W/m^2)',
+        'Global radiation (Wh/m^2)',
+        'PAR radiation (umol/m^2/s)',
+        'Net radiation (Wh/m^2)',
+        'Friction velocity (m/s)',
+        ]
+
+input_field_map = dict(zip(input_fields, input_fields_long))
+input_field_rmap = dict(zip(input_fields_long, input_fields))
 
 def InputFieldsToShort(fields):
-    return [input_fields_reverse[x] for x in fields]
+    return [input_fields_rmap[x] for x in fields]
 
 def InputFieldsToLong(fields):
-    return [input_fields[x] for x in fields]
+    return [input_fields_map[x] for x in fields]
