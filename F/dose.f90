@@ -100,7 +100,7 @@ contains
 
 end module DOSE
 
-program Test
+program Run_DOSE
     use DOSE
 
     integer :: ios
@@ -120,5 +120,5 @@ program Test
     end do read_loop
 
     call Deinit()
-end program Test
+end program Run_DOSE
 

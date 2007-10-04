@@ -11,8 +11,8 @@ $(others): $(common)
 %.o %.mod: %.f90
 	$(F) -c $<
 
-dose: $(others) test.o
-	$(F) -o $@ $(common) $(others) test.o
+dose: $(others) dose.o
+	$(F) -o $@ $(common) $(others) dose.o
 
 clean:
 	rm -f *.o *.mod dose
