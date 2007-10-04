@@ -4,12 +4,30 @@ subdirs = F f2py-build
 export common = constants.o params_veg.o params_site.o inputs.o variables.o functions.o
 export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o run.o
 
+targetmachine = $(shell gcc -dumpmachine)
+
+ifeq ($(targetmachine),mingw32)
+	f95 = g95
+	fcompiler = g95
+	compiler = mingw32
+	pymod = dose_f.pyd
+else
+	f95 = gfortran
+	fcompiler = gnu95
+	compiler = unix
+	pymod = dose_f.so
+endif
+
+export f95
+export fcompiler
+export compiler
+export pymod
 
 
+all: dose
 
-all: dose dose_f.so
 
-
+py: $(pymod)
 
 
 dose_f.pyf:
@@ -21,13 +39,11 @@ f2py-build: dose_f.pyf
 	cp f2py.Makefile $@/Makefile
 	$(MAKE) -C $@
 
-dose_f.so: f2py-build
-	cp f2py-build/dose_f.so dose_f.so
+$(pymod): f2py-build
+	cp f2py-build/$@ $@
 
 clean_dose_f:
 	rm -rf f2py-build dose_f.pyf
-
-
 
 
 F:
@@ -42,7 +58,5 @@ clean_dose:
 clean: clean_dose_f clean_dose
 
 
-
-
 clean_all: clean
-	rm -f dose_f.so dose
+	rm -f $(pymod) dose

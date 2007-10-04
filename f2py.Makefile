@@ -1,18 +1,15 @@
 # Search path for fortran files
 vpath %.f90 ../F
 
-# Compiler
-F = gfortran
-
 # Default target
-all: dose_f.so
+all: $(pymod)
 
 # Dependancy heirarchy
 $(others): $(common)
 
 # Rule for building .o and .mod files
 %.o %.mod: %.f90
-	$(F) -c $<
+	$(f95) -c $<
 
-dose_f.so: dose_f.pyf $(common) $(others)
-	python f2py.py -c --fcompiler=gnu95 dose_f.pyf $(common) $(others)
+$(pymod): dose_f.pyf $(common) $(others)
+	python f2py.py -c --fcompiler=$(fcompiler) --compiler=$(compiler) dose_f.pyf $(common) $(others)
