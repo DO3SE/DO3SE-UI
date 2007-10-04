@@ -1,0 +1,84 @@
+Development (Windows)
+===========
+
+Setting up the environment for F
+--------------------------------
+
+=== Cygwin ===
+
+Cygwin is a collection of Unix-like utilities for Windows.
+
+Download the Cygwin "setup.exe" from http://www.cygwin.com.  Run the 
+installer, telling it to install in "C:\cygwin" and making sure to 
+select the following packages:
+
+ + Archive -> unzip
+ + Devel -> make
+
+*NOTE:* Do *not* install the Cygwin version of Python or MinGW - these 
+        will get used instead of the native Windows versions if installed.
+
+Cygwin will probably sit there for about 20 minutes (for on a reasonably fast 
+internet connection) downloading packages, and then installing them.
+
+Once Cygwin is installed, open the "System Properties" dialog ("System" in 
+Control Panel), go to the "Advanced" tab, and click "Environment Variables".  
+In this new dialog, if there is already an item called "PATH" in the "User
+variables" section, select it and click "Edit", otherwise click "New" and use
+"PATH" as the variable name.  The value for this variable is a list of 
+directory paths to search for executable programs, separated by ";".  Add the
+path "C:\cygwin\bin" to this list and click "OK".  This step is not entirely
+necessary if only working with the Fortran model and not needing to update the
+user interface, but is useful anyway.
+
+=== F Compiler ===
+
+Browse to ftp://ftp.swcp.com/pub/walt/F and download FortranTools_windows_F.zip
+to your Cygwin home directory (C:\cygwin\home\username).  Open a Cygwin 
+terminal, unzip the FortranTools file and go into the new directory:
+
+    unzip FortranTools_windows_F.zip
+    cd FortranTools
+
+There seems to be a problem with the installation script in the Windows version
+of FortranTools, but its possible to fix by running the following:
+
+    sed "s/\r//g" install_fortrantools > install_fortrantools.fixed
+
+Install FortranTools by running the following, answering "yes" when asked to 
+confirm the installation directory:
+
+    ./install_fortrantools.fixed
+
+
+Setting up the environment for Python
+-------------------------------------
+
+=== Python ===
+
+Browse to http://www.python.org/download/, download the Python Windows 
+Installer and install it to its default location.  Open the "System Properties"
+dialog, go to the "Advanced" tab and click "Environment Variables".  In this
+dialog, edit the "PATH" user variable, adding the Python installation directory
+to it (probably "C:\Python25").
+
+=== Numerical Python (numpy) ===
+
+This package is necessary for building the Python module from the F source 
+code.
+
+Browse to http://numpy.scipy.org/ and follow the download links - download the 
+version ending in "win32-py2.5.exe".  Run the installer and let it install into
+the Python directory.
+
+=== MinGW ===
+
+Browse to http://sourceforge.net/projects/mingw/ , follow the link to the 
+downloads page, and download the latest version of the Automated MinGW 
+Installer.  Run it, installing to "C:\MinGW" (a minimal install is fine).
+
+=== G95 Fortran ===
+
+From http://ftp.g95.org download the "Self-extracting Windows x86" version, 
+and install it to "C:\MinGW".  Answer "Yes" when asked about installing into
+"C:\MinGW" and setting the PATH and LIBRARY_PATH variables.
