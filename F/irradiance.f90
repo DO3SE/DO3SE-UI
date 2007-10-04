@@ -1,6 +1,8 @@
 module Irradiance
 
     real, private, save :: sinB   ! Solar elevation angle
+    real, private, save :: h      ! Hour angle of the sun (radians)
+    real, private, save :: dec    ! Declination (radians)
 
     public :: Calc_sinB
     public :: Calc_Flight
@@ -19,7 +21,7 @@ contains
         use Inputs, only: dd, hr
         use Functions, only: deg2rad, rad2deg
 
-        real :: f, e, t0, h, dec, LC, lonm
+        real :: f, e, t0, LC, lonm
 
         ! Calculate the longitudinal meridian
         lonm = nint(lon / 15.0) * 15.0
@@ -34,12 +36,12 @@ contains
         t0 = 12 - LC - e
 
         ! Hour-angle of the sun
-        h = 15 * (hr - t0)
+        h = deg2rad(15 * (hr - t0))
 
         ! Declination (radians)
         dec = deg2rad(-23.4 * cos(deg2rad(360 * ((dd + 10) / 365))))
 
-        sinB = sin(deg2rad(lat))*sin(dec) + cos(deg2rad(lat))*cos(dec)*cos(deg2rad(h))
+        sinB = sin(deg2rad(lat))*sin(dec) + cos(deg2rad(lat))*cos(dec)*cos(h)
         sinB = max(0.0, sinB)
     end subroutine Calc_sinB
 
@@ -106,17 +108,20 @@ contains
     !==========================================================================
     subroutine Calc_Rn()
         ! TODO: document variables
-        use Params_Site, only: elev
+        use Params_Site, only: elev, lat
         use Params_Veg, only: albedo
         use Inputs, only: R, Ts_C, VPD, dd
         use Variables, only: Rn
         use Constants, only: pi
+        use Functions, only: deg2rad, rad2deg
 
-        real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns
+        real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns, lat_rad
 
         ! Constants
         real, parameter :: Gsc = 0.082            ! Solar constant (MJ/m^2/min)
         real, parameter :: SBC = 4.903e-9 / 24    ! Stephan Boltzman constant
+
+        lat_rad = deg2rad(lat)
 
         if (sinB > 0) then
             ! Unit conversions
@@ -124,7 +129,10 @@ contains
             Ts_K = Ts_C + 273.15
 
             dr = 1 + (0.033 * cos(((2 * pi) / 365) * dd))
-            Re = max(0.0, ((12 * 60) / pi) * Gsc * dr * sinB)
+            ! External radiation (with fix to stop div by zero)
+            ! TODO: fix this to be less hackish
+            Re = max(0.00000000001, ((12*60)/pi)*Gsc*dr*(rad2deg(h)*sin(lat_rad)*sin(dec)+cos(lat_rad)*cos(dec)*sin(h)))
+            !Re = max(0.0, ((12*60)/pi)*Gsc*dr*sinB)
 
             ! Calculate net longwave radiation
             pR = (0.75 + (2e-5 * elev)) * Re
