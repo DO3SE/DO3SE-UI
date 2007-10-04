@@ -4,7 +4,7 @@ module Irradiance
 
     public :: Calc_sinB
     public :: Calc_Flight
-    public :: Calc_Rn_Copy
+    public :: Copy_Rn
     public :: Calc_Rn
 
 contains
@@ -95,11 +95,11 @@ contains
     !==========================================================================
     ! Use net radiation input rather than deriving it
     !==========================================================================
-    subroutine Calc_Rn_Copy()
+    subroutine Copy_Rn()
         use Inputs, only: Rn_input => Rn
         use Variables, only: Rn
         Rn = Rn_input
-    end subroutine Calc_Rn_Copy
+    end subroutine Copy_Rn
 
     !==========================================================================
     ! Calculate net radiation

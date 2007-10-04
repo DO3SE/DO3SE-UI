@@ -1,16 +1,20 @@
 module Run
 
-    public :: init, Do_Calcs_Python, Do_Calcs
+    public :: Init, Do_Calcs_Python, Do_Calcs
 
 contains
 
-    subroutine init()
+    subroutine Init(copy_u, copy_o3)
         use Soil
         use Variables
         use Params_Site, only: Derive_Windspeed_d_zo, Copy_Windspeed_h_d_zo, &
                 Derive_O3_d_zo, Copy_O3_h_d_zo
         use Params_Veg, only: Derive_d_zo
+
+        integer,intent(in) :: copy_u, copy_o3
+
         call Soil_initialize()
+        
         AEt = 0
         PEt = 0
         Ei = 0
@@ -18,21 +22,25 @@ contains
         AOT40 = 0
         
         call Derive_d_zo()
-        !call Derive_Windspeed_d_zo()
-        call Copy_Windspeed_h_d_zo()
-        !call Derive_O3_d_zo()
-        call Copy_O3_h_d_zo()
-    end subroutine init
+
+        if (copy_u == 1) then
+            call Copy_Windspeed_h_d_zo()
+        else
+            call Derive_Windspeed_d_zo()
+        endif
+
+        if (copy_o3 == 1) then
+            call Copy_O3_h_d_zo()
+        else
+            call Derive_O3_d_zo()
+        endif
+    end subroutine Init
     
     !==========================================================================
     ! Run the full set of calculations
     !
     ! This subroutine's arguments are subroutines for the following 
     ! calculations that have interchangeable methods:
-    !
-    ! Derive_Inputs
-    !       This should usually be a wrapper function which calls the 
-    !       necessary derivation subroutines depending on the data supplied
     !
     ! Calc_SAI
     !       Method for calculating SAI (simple or crops)
@@ -48,8 +56,7 @@ contains
     !       Method for calculating net radiation (copy or calculate)
     !
     !==========================================================================
-    subroutine Do_Calcs(Derive_Inputs, Calc_SAI, Calc_Ra, Calc_PEt, Calc_AEt, &
-                        Calc_Rn)
+    subroutine Do_Calcs(Calc_SAI, Calc_Ra, Calc_PEt, Calc_AEt, Calc_Rn)
         use Phenology, only: Calc_LAI, Calc_fphen
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
@@ -61,8 +68,6 @@ contains
         use Variables, only: dd_prev
 
         interface
-            subroutine Derive_Inputs()
-            end subroutine Derive_Inputs
             subroutine Calc_SAI()
             end subroutine Calc_SAI
             subroutine Calc_Ra()
@@ -74,8 +79,6 @@ contains
             subroutine Calc_Rn()
             end subroutine Calc_Rn
         end interface
-
-        call Derive_Inputs()    !***
 
         call Calc_LAI()
         call Calc_SAI()         !***
