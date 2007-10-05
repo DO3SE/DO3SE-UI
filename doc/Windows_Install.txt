@@ -1,5 +1,5 @@
 Development (Windows)
-===========
+=====================
 
 Setting up the environment for F
 --------------------------------
@@ -8,7 +8,7 @@ Setting up the environment for F
 
 Cygwin is a collection of Unix-like utilities for Windows.
 
-Download the Cygwin "setup.exe" from http://www.cygwin.com.  Run the 
+Download the Cygwin installer from http://www.cygwin.com.  Run the 
 installer, telling it to install in "C:\cygwin" and making sure to 
 select the following packages:
 
@@ -27,9 +27,9 @@ In this new dialog, if there is already an item called "PATH" in the "User
 variables" section, select it and click "Edit", otherwise click "New" and use
 "PATH" as the variable name.  The value for this variable is a list of 
 directory paths to search for executable programs, separated by ";".  Add the
-path "C:\cygwin\bin" to this list and click "OK".  This step is not entirely
-necessary if only working with the Fortran model and not needing to update the
-user interface, but is useful anyway.
+path "C:\cygwin\bin" to this list and click "OK".
+
+Run the Cygwin shell once to make sure your home directory gets created.
 
 === F Compiler ===
 
@@ -49,6 +49,21 @@ Install FortranTools by running the following, answering "yes" when asked to
 confirm the installation directory:
 
     ./install_fortrantools.fixed
+
+=== MinGW ===
+
+Browse to http://sourceforge.net/projects/mingw/ , follow the link to the 
+downloads page, and download the latest version of the Automated MinGW 
+Installer.  Run it, installing to "C:\MinGW" (a minimal install is fine).
+
+=== G95 Fortran ===
+
+To build the F code into a Python module, a different Fortran compiler is 
+needed.  One which is free and works is the G95 project.
+
+From http://ftp.g95.org download the "Self-extracting Windows x86" version, 
+and install it to "C:\MinGW".  Answer "Yes" when asked about installing into
+"C:\MinGW" and setting the PATH and LIBRARY_PATH variables.
 
 
 Setting up the environment for Python
@@ -70,15 +85,3 @@ code.
 Browse to http://numpy.scipy.org/ and follow the download links - download the 
 version ending in "win32-py2.5.exe".  Run the installer and let it install into
 the Python directory.
-
-=== MinGW ===
-
-Browse to http://sourceforge.net/projects/mingw/ , follow the link to the 
-downloads page, and download the latest version of the Automated MinGW 
-Installer.  Run it, installing to "C:\MinGW" (a minimal install is fine).
-
-=== G95 Fortran ===
-
-From http://ftp.g95.org download the "Self-extracting Windows x86" version, 
-and install it to "C:\MinGW".  Answer "Yes" when asked about installing into
-"C:\MinGW" and setting the PATH and LIBRARY_PATH variables.
