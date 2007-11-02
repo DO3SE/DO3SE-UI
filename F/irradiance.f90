@@ -115,7 +115,7 @@ contains
         use Constants, only: pi
         use Functions, only: deg2rad, rad2deg
 
-        real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns, lat_rad
+        real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns, lat_rad, h1, h2
 
         ! Constants
         real, parameter :: Gsc = 0.082            ! Solar constant (MJ/m^2/min)
@@ -128,10 +128,17 @@ contains
             R_MJ = R * 0.0036
             Ts_K = Ts_C + 273.15
 
+            ! Hour angle stuff
+            h1 = h - (pi/24)
+            h2 = h + (pi/24)
+
             dr = 1 + (0.033 * cos(((2 * pi) / 365) * dd))
             ! External radiation (with fix to stop div by zero)
             ! TODO: fix this to be less hackish
-            Re = max(0.00000000001, ((12*60)/pi)*Gsc*dr*(rad2deg(h)*sin(lat_rad)*sin(dec)+cos(lat_rad)*cos(dec)*sin(h)))
+            Re = max(0.00000000001, &
+                    ((12 * 60) / pi) * Gsc * dr &
+                        * (rad2deg(h2 - h1) * sin(lat_rad) * sin(dec) &
+                            + cos(lat_rad) * cos(dec) * (sin(h2) - sin(h1))))
             !Re = max(0.0, ((12*60)/pi)*Gsc*dr*sinB)
 
             ! Calculate net longwave radiation
