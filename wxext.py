@@ -126,7 +126,7 @@ class ListSelectCtrl(wx.Panel):
 
     def OnCreate(self, evt):
         _verbose('Creating ListSelectCtrl')
-        
+
         mainsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(mainsizer)
 
@@ -137,16 +137,24 @@ class ListSelectCtrl(wx.Panel):
         self.list_avail = wx.ListBox(self, style = wx.LB_SINGLE)
         s1.Add(self.list_avail, 1, wx.EXPAND)
 
-        # Add/remove
+        # Add/remove/up/down
         s2 = wx.BoxSizer(wx.VERTICAL)
         mainsizer.Add(s2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
-        self.button_add = wx.Button(self, label = '>>', 
+        self.button_add = wx.Button(self, label = '&Add', 
                 style = wx.BU_EXACTFIT)
-        s2.Add(self.button_add)
+        s2.Add(self.button_add, 0, wx.EXPAND)
         s2.AddSpacer(4)
-        self.button_remove = wx.Button(self, label = '<<', 
+        self.button_remove = wx.Button(self, label = '&Remove', 
                 style = wx.BU_EXACTFIT)
-        s2.Add(self.button_remove)
+        s2.Add(self.button_remove, 0, wx.EXPAND)
+        s2.AddSpacer(4)
+        self.button_up = wx.Button(self, label = 'Move &up', 
+                style = wx.BU_EXACTFIT)
+        s2.Add(self.button_up, 0, wx.EXPAND)
+        s2.AddSpacer(4)
+        self.button_down = wx.Button(self, label = 'Move &down', 
+                style = wx.BU_EXACTFIT)
+        s2.Add(self.button_down, 0, wx.EXPAND)
 
         # Selected entries
         s3 = wx.BoxSizer(wx.VERTICAL)
@@ -155,32 +163,13 @@ class ListSelectCtrl(wx.Panel):
         self.list_sel = wx.ListBox(self, style = wx.LB_SINGLE)
         s3.Add(self.list_sel, 1, wx.EXPAND)
 
-        # Up/down/save/load
-        s4 = wx.BoxSizer(wx.VERTICAL)
-        mainsizer.Add(s4, 0, wx.LEFT | wx.EXPAND, 4)
-        s4.Add(wx.StaticText(self, label = ''))
-        self.button_up = wx.Button(self, label = 'Move &up', 
-                style = wx.BU_EXACTFIT)
-        s4.Add(self.button_up, 0, wx.EXPAND)
-        s4.AddSpacer(4)
-        self.button_down = wx.Button(self, label = 'Move &down', 
-                style = wx.BU_EXACTFIT)
-        s4.Add(self.button_down, 0, wx.EXPAND)
-        s4.AddSpacer(14)
-        self.button_save = wx.Button(self, label = '&Save format', 
-                style = wx.BU_EXACTFIT)
-        s4.Add(self.button_save, 0, wx.EXPAND)
-        s4.AddSpacer(4)
-        self.button_load = wx.Button(self, label = '&Load format', 
-                style = wx.BU_EXACTFIT)
-        s4.Add(self.button_load, 0, wx.EXPAND)
-
         self.Bind(wx.EVT_BUTTON, self.OnAdd, self.button_add)
         self.Bind(wx.EVT_BUTTON, self.OnRemove, self.button_remove)
         self.Bind(wx.EVT_BUTTON, self.OnUp, self.button_up)
-        self.Bind(wx.EVT_BUTTON, self.OnDown, self.button_down)
-        self.Bind(wx.EVT_BUTTON, self.OnLoad, self.button_load)
-        self.Bind(wx.EVT_BUTTON, self.OnSave, self.button_save)
+        #self.Bind(wx.EVT_BUTTON, self.OnDown, self.button_down)
+        #self.Bind(wx.EVT_BUTTON, self.OnSave, self.button_save)
+
+        #self.Bind(wx.EVT_CHOICE, self.OnLoad, self.choice_preset)
 
         # Make sure this is only called once
         self.Unbind(wx.EVT_SIZE)
@@ -213,6 +202,7 @@ class ListSelectCtrl(wx.Panel):
 
     def SetFormats(self, formats):
         self.formats = formats
+        #self.choice_preset.SetItems(formats.keys())
 
 
     def OnAdd(self, evt):
@@ -260,9 +250,14 @@ class ListSelectCtrl(wx.Panel):
 
 
     def OnLoad(self, evt):
-        choice = GetSingleChoice(self, 'Select format', 'DO3SE', self.formats.keys())
+        choice = self.choice_preset.GetStringSelection()
 
-        if choice: self.SetSelection(self.formats[choice])
+        if not choice == "[Custom]":
+            self.SetSelection(self.formats[choice])
+
+    
+    def OnChange(self, evt):
+        self.choice_preset.SetSelection(0)
 
     
     def OnSave(self, evt):
@@ -279,6 +274,82 @@ class ListSelectCtrl(wx.Panel):
             wx.MessageBox('Format not saved!', 'DO3SE', wx.OK | wx.ICON_WARNING)
 
 
+
+class PresetChooser(wx.Panel):
+
+    def __init__(self):
+        p = wx.PrePanel()
+        self.PostCreate(p)
+
+        # This is the 'official' way to hook the creation of the object
+        #self.Bind(wx.EVT_WINDOW_CREATE, self.OnCreate)
+        # This is the way that actually works, courtesy of:
+        # http://aspn.activestate.com/ASPN/Mail/Message/wxPython-users/2169189
+        self.Bind(wx.EVT_SIZE, self.OnCreate)
+
+    
+    def OnCreate(self, evt):
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.SetSizer(sizer)
+
+        self.choice = wx.Choice(self)
+        sizer.Add(wx.StaticText(self, label = 'Presets:'), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        sizer.Add(self.choice, 1, wx.EXPAND)
+
+        self.button_save = wx.Button(self, wx.ID_SAVE, style = wx.BU_EXACTFIT)
+        sizer.Add(self.button_save, 0, wx.EXPAND | wx.LEFT, 4)
+        self.button_delete = wx.Button(self, wx.ID_DELETE, style = wx.BU_EXACTFIT)
+        sizer.Add(self.button_delete, 0, wx.EXPAND | wx.LEFT, 4)
+
+        # Bindings
+        self.Bind(wx.EVT_CHOICE, self.OnChange, self.choice)
+        self.Bind(wx.EVT_BUTTON, self.OnSave, self.button_save)
+        self.Bind(wx.EVT_BUTTON, self.OnDelete, self.button_delete)
+
+        # Make sure this is only called once
+        self.Unbind(wx.EVT_SIZE)
+        evt.Skip()
+
+
+    def SetPresets(self, presets):
+        self.presets = presets
+        self.choice.Clear()
+        self.choice.SetItems(self.presets.keys())
+
+
+    def Refresh(self):
+        key = self.choice.GetStringSelection()
+        self.choice.Clear()
+        self.choice.SetItems(self.presets.keys())
+        if key and key in self.presets:
+            self.choice.SetStringSelection(key)
+            self.do_load(self.presets[key])
+
+
+    def OnChange(self, evt):
+        self.do_load(self.presets[self.choice.GetStringSelection()])
+
+
+    def OnSave(self, evt):
+        item = self.do_get()
+        key = wx.GetTextFromUser("Save preset as:", "DO3SE", self.choice.GetStringSelection(), self)
+
+        if key and (not key in self.presets or \
+                wx.MessageBox("Overwrite existing preset '%s'?" % (key), 'DO3SE', 
+                    wx.YES_NO | wx.ICON_QUESTION, self) == wx.YES):
+            self.presets[key] = item
+            self.Refresh()
+            self.choice.SetStringSelection(key)
+            self.do_load(self.presets[key])
+
+    
+    def OnDelete(self, evt):
+        key = self.choice.GetStringSelection()
+
+        if key and wx.MessageBox("Delete preset '%s'?" % (key), 'DO3SE', 
+                wx.YES_NO | wx.ICON_WARNING, self) == wx.YES:
+            del self.presets[key]
+            self.Refresh()
 
 
 

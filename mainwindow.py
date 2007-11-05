@@ -61,15 +61,41 @@ class MainWindow(wx.Frame):
         # --- 'Input' panel ---
         self.input_filename = xrc.XRCCTRL(self, 'text_inputfile')
         self.input_fields = xrc.XRCCTRL(self, 'panel_input_fields')
+        self.input_presets = xrc.XRCCTRL(self, 'preset_input')
         self.input_fields.SetAvailable([maps.input_field_map[x] for x in maps.input_fields])
-        self.input_fields.SetFormats(config.state['formats']['input'])
+        # Setup the PresetChooser
+        self.input_presets.SetPresets(config.state['presets']['input'])
+        self.input_presets.do_load = self.input_fields.SetSelection
+        self.input_presets.do_get = self.input_fields.GetSelection
         self.Bind(wx.EVT_BUTTON, self.OnFileOpen, id = xrc.XRCID('button_change_file'))
         
 
         # --- 'Site' panel  ---
+        # Setup the PresetChooser
+        self.site_presets = xrc.XRCCTRL(self, 'preset_site')
+        self.site_presets.SetPresets(config.state['presets']['site'])
+        self.site_presets.do_load = self.SetSiteParams
+        self.site_presets.do_get = self.GetSiteParams
+        
+        # Bind the controls
+        self.site_o3zr = xrc.XRCCTRL(self, 'spin_site_o3zr')
+        self.site_uzr = xrc.XRCCTRL(self, 'spin_site_uzr')
+        self.site_xzr = xrc.XRCCTRL(self, 'spin_site_xzr')
+        self.site_o3canopy = xrc.XRCCTRL(self, 'spin_site_o3canopy')
+        self.site_o3same = xrc.XRCCTRL(self, 'check_site_o3same')
+        self.Bind(wx.EVT_CHECKBOX, 
+                lambda evt: self.site_o3canopy.Enable(not self.site_o3same.IsChecked()),
+                self.site_o3same)
+        self.site_metcanopy = xrc.XRCCTRL(self, 'spin_site_metcanopy')
+        self.site_metsame = xrc.XRCCTRL(self, 'check_site_metsame')
+        self.Bind(wx.EVT_CHECKBOX, 
+                lambda evt: self.site_metcanopy.Enable(not self.site_metsame.IsChecked()),
+                self.site_metsame)
         self.site_latitude = xrc.XRCCTRL(self, 'float_site_latitude')
         self.site_longitude = xrc.XRCCTRL(self, 'float_site_longitude')
         self.site_elevation = xrc.XRCCTRL(self, 'spin_site_elevation')
+        self.site_rsoil = xrc.XRCCTRL(self, 'spin_site_rsoil')
+        self.site_soil = xrc.XRCCTRL(self, 'choice_site_soil')
 
         self.site_latitude.SetRange(-90.0, 90.0)
         self.site_longitude.SetRange(-180.0, 180.0)
@@ -162,8 +188,6 @@ class MainWindow(wx.Frame):
         self.panel_placeholder.Show()
         self.Layout()
         self.menubar.FindItemById(xrc.XRCID('menu_file_close')).Enable(False)
-        foo = wxext.ChoiceDialog(self, 'Choose', [1, 2, 3])
-        foo.ShowModal()
 
 
     def LoadFile(self, path):
@@ -174,13 +198,13 @@ class MainWindow(wx.Frame):
         """
 
         if not os.path.isfile(path):
-            wx.MessageBox('No file selected!', 'DO3SE', wx.OK | wx.ICON_ERROR)
+            wx.MessageBox('No file selected!', 'DO3SE', wx.OK | wx.ICON_ERROR, self)
             config.RemoveRecentFile(path)
             self.RefreshOpenRecent()
 
         elif not os.access(path, os.R_OK):
             wx.MessageBox('Could not read the specified file!', 'DO3SE', 
-                    wx.OK | wx.ICON_ERROR)
+                    wx.OK | wx.ICON_ERROR, self)
             # Remove recent file from menu
             config.RemoveRecentFile(path)
             self.RefreshOpenRecent()
@@ -188,8 +212,8 @@ class MainWindow(wx.Frame):
         else:
             # Prompt use for closing old file if one is already open
             if not self.inputfile or \
-                    wx.MessageBox('Close the current data file?', 
-                            'DO3SE', wx.YES_NO | wx.ICON_QUESTION) == wx.YES:
+                    wx.MessageBox('Close the current data file?', 'DO3SE', 
+                        wx.YES_NO | wx.ICON_QUESTION, self) == wx.YES:
                 _verbose('Loading data file ' + path)
                 self.inputfile = inputfile.InputFile(path)
                 # Show main panel
@@ -205,6 +229,58 @@ class MainWindow(wx.Frame):
                 config.AddRecentFile(path)
                 # Refresh menu
                 self.RefreshOpenRecent()
+
+
+    def SetSiteParams(self, params):
+        self.site_o3zr.SetValue(params['o3zr'])
+        self.site_uzr.SetValue(params['uzr'])
+        self.site_xzr.SetValue(params['xzr'])
+
+        if params['o3_h'] == -1.0:
+            self.site_o3same.SetValue(True)
+            self.site_o3canopy.Enable(False)
+        else:
+            self.site_o3same.SetValue(False)
+            self.site_o3canopy.Enable(True)
+            self.site_o3canopy.SetValue(params['o3_h'])
+
+        if params['u_h'] == -1.0:
+            self.site_metsame.SetValue(True)
+            self.site_metcanopy.Enable(False)
+        else:
+            self.site_metsame.SetValue(False)
+            self.site_metcanopy.Enable(True)
+            self.site_metcanopy.SetValue(params['u_h'])
+
+        self.site_latitude.SetValue(params['lat'])
+        self.site_longitude.SetValue(params['lon'])
+        self.site_elevation.SetValue(params['elev'])
+        self.site_rsoil.SetValue(params['rsoil'])
+        self.site_soil.SetStringSelection(
+                {-4.0: 'Coarse', -5.5: 'Medium', -7.0: 'Fine'}[params['soil_a']])
+
+
+    def GetSiteParams(self):
+        data = {
+                'o3zr'      : float(self.site_o3zr.GetValue()),
+                'uzr'       : float(self.site_uzr.GetValue()),
+                'xzr'       : float(self.site_xzr.GetValue()),
+                'o3_h'      : float(self.site_o3canopy.GetValue()),
+                'u_h'       : float(self.site_metcanopy.GetValue()),
+                'lat'       : self.site_latitude.GetFloat(),
+                'lon'       : self.site_longitude.GetFloat(),
+                'elev'      : float(self.site_elevation.GetValue()),
+                'rsoil'     : float(self.site_rsoil.GetValue()),
+                'soil_bd'   : 1.3,
+                'soil_a'    : {'Coarse': -4.0, 'Medium': -5.5, 'Fine': -7.0}[self.site_soil.GetStringSelection()], 
+                'soil_b'    : {'Coarse': -2.3, 'Medium': -3.3, 'Fine': -5.4}[self.site_soil.GetStringSelection()], 
+                'fc_m'      : 0.193,
+                }
+
+        if self.site_o3same.IsChecked(): data['o3_h'] = -1.0
+        if self.site_metsame.IsChecked(): data['u_h'] = -1.0
+
+        return data;
         
 
     def OnRun(self, evt):
