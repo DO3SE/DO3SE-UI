@@ -44,3 +44,58 @@ def InputFieldsToShort(fields):
 
 def InputFieldsToLong(fields):
     return [input_fields_map[x] for x in fields]
+
+output_fields = [
+        'rn',
+        'ra',
+        'rb',
+        'rsur',
+        'rinc',
+        'rsto',
+        'gsto',
+        'rgs',
+        'vd',
+        'o3_ppb',
+        'o3_nmol_m3',
+        'fst',
+        'afsty',
+        'ftot',
+        'ot40',
+        'aot40',
+        'aet',
+        'swp',
+        'per_vol',
+        'smd', 
+        ]
+
+output_fields_long = [
+        'Net radiation (Rn, Wh/m^2)',
+        'Aerodynamic resistance (Ra, s/m)',
+        'Boundary layer resistance (Rb, s/m)',
+        'Surface resistance (Rsur, s/m)',
+        'In-canopy resistance (Rinc, s/m)',
+        'Stomatal resistance (Rsto, s/m)',
+        'Stomatal conductance (Gsto, m/s)',
+        'Non-vegetative surface resistance (Rgs, s/m)',
+        'Deposition velocity (Vd, m/s)',
+        'Ozone concentration at canopy (O3_ppb, ppb)',
+        'Ozone concentration at canopy (O3_nmol_m3, nmol/m^3)',
+        'Upper leaf stomatal O3 flux (Fst, nmol/m^2/s)',
+        'Accumunlated Fst over threshold (AFstY, nmol/m^2/s)',
+        'Total ozone flux (Ftot, nmol/m^2/s)',
+        'Ozone over 40ppb (OT40, ppb)',
+        'OT40 over growth period (AOT40, ppb)',
+        'Actual evapotranspiration (AEt, ???)',
+        'Soil-water potential (SWP, ???)',
+        'Volumetric water content (per_vol, %)',
+        'Soil moisture deficit (SMD, mm)',
+        ]
+
+output_field_map = dict(zip(output_fields, output_fields_long))
+output_field_rmap = dict(zip(output_fields_long, output_fields))
+
+def OutputFieldsToShort(fields):
+    return [output_fields_rmap[x] for x in fields]
+
+def OutputFieldsToLong(fields):
+    return [output_fields_map[x] for x in fields]

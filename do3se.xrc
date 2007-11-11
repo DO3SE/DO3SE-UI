@@ -86,15 +86,6 @@
                             <option>1</option>
                             <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
                           </object>
-                          <object class="sizeritem">
-                            <object class="wxButton" name="button_change_file">
-                              <label>&amp;Change...</label>
-                              <style>wxBU_EXACTFIT</style>
-                            </object>
-                            <option>0</option>
-                            <flag>wxLEFT|wxEXPAND</flag>
-                            <border>2</border>
-                          </object>
                         </object>
                         <option>0</option>
                         <flag>wxALL|wxEXPAND</flag>
@@ -550,8 +541,60 @@
                   </object>
                 </object>
                 <object class="notebookpage">
-                  <label>Calculations</label>
-                  <object class="wxPanel" name="panel_calculations"/>
+                  <label>Output</label>
+                  <object class="wxPanel" name="panel_output">
+                    <object class="wxBoxSizer">
+                      <orient>wxVERTICAL</orient>
+                      <object class="sizeritem">
+                        <object class="wxPanel" name="preset_output" subclass="wxext.PresetChooser">
+                          <object class="wxBoxSizer">
+                            <orient>wxVERTICAL</orient>
+                          </object>
+                        </object>
+                        <option>0</option>
+                        <flag>wxALL|wxEXPAND</flag>
+                        <border>6</border>
+                      </object>
+                      <object class="sizeritem">
+                        <object class="wxPanel" name="panel_output_fields" subclass="wxext.ListSelectCtrl"/>
+                        <option>1</option>
+                        <flag>wxALL|wxEXPAND</flag>
+                        <border>6</border>
+                      </object>
+                      <object class="sizeritem">
+                        <object class="wxBoxSizer">
+                          <orient>wxHORIZONTAL</orient>
+                          <object class="sizeritem">
+                            <object class="wxStaticText">
+                              <label>Output file:</label>
+                            </object>
+                            <option>0</option>
+                            <flag>wxRIGHT|wxALIGN_CENTRE_VERTICAL</flag>
+                            <border>4</border>
+                          </object>
+                          <object class="sizeritem">
+                            <object class="wxTextCtrl" name="text_outputfile">
+                              <enabled>0</enabled>
+                            </object>
+                            <option>1</option>
+                            <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
+                          </object>
+                          <object class="sizeritem">
+                            <object class="wxButton" name="button_change_outfile">
+                              <label>&amp;Change...</label>
+                              <style>wxBU_EXACTFIT</style>
+                            </object>
+                            <option>0</option>
+                            <flag>wxLEFT|wxEXPAND</flag>
+                            <border>2</border>
+                          </object>
+                        </object>
+                        <option>0</option>
+                        <flag>wxALL|wxEXPAND</flag>
+                        <border>6</border>
+                      </object>
+                    </object>
+                  </object>
                 </object>
               </object>
               <option>1</option>
@@ -562,9 +605,18 @@
               <object class="wxBoxSizer">
                 <orient>wxHORIZONTAL</orient>
                 <object class="sizeritem">
+                  <object class="wxGauge">
+                    <style>wxGA_PROGRESSBAR</style>
+                  </object>
+                  <option>1</option>
+                  <flag>wxEXPAND</flag>
+                </object>
+                <object class="sizeritem">
                   <object class="wxButton" name="button_run">
                     <label>&amp;Run</label>
                   </object>
+                  <flag>wxLEFT</flag>
+                  <border>4</border>
                 </object>
                 <object class="sizeritem">
                   <object class="wxButton" name="button_quit">
@@ -576,7 +628,7 @@
                 </object>
               </object>
               <option>0</option>
-              <flag>wxALL|wxALIGN_RIGHT</flag>
+              <flag>wxALL|wxEXPAND|wxALIGN_RIGHT</flag>
               <border>4</border>
             </object>
           </object>

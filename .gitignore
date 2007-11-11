@@ -1,2 +1,4 @@
 *.so
 2003_output
+f2py-build
+*.pyf

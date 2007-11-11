@@ -67,7 +67,6 @@ class MainWindow(wx.Frame):
         self.input_presets.SetPresets(config.state['presets']['input'])
         self.input_presets.do_load = self.input_fields.SetSelection
         self.input_presets.do_get = self.input_fields.GetSelection
-        self.Bind(wx.EVT_BUTTON, self.OnFileOpen, id = xrc.XRCID('button_change_file'))
         
 
         # --- 'Site' panel  ---
@@ -93,18 +92,22 @@ class MainWindow(wx.Frame):
                 self.site_metsame)
         self.site_latitude = xrc.XRCCTRL(self, 'float_site_latitude')
         self.site_longitude = xrc.XRCCTRL(self, 'float_site_longitude')
+        self.site_latitude.SetRange(-90.0, 90.0)
+        self.site_longitude.SetRange(-180.0, 180.0)
         self.site_elevation = xrc.XRCCTRL(self, 'spin_site_elevation')
         self.site_rsoil = xrc.XRCCTRL(self, 'spin_site_rsoil')
         self.site_soil = xrc.XRCCTRL(self, 'choice_site_soil')
 
-        self.site_latitude.SetRange(-90.0, 90.0)
-        self.site_longitude.SetRange(-180.0, 180.0)
 
-        # Bind parameters to input controls
-        self.site_latitude.Bind(wx.EVT_KILL_FOCUS, 
-                lambda evt: do3se.SetSiteParam('latitude', self.site_latitude.GetFloat()))
-        self.site_longitude.Bind(wx.EVT_KILL_FOCUS, 
-                lambda evt: do3se.SetSiteParam('longitude', self.site_longitude.GetFloat()))
+        # --- 'Output' panel ---
+        self.output_filename = xrc.XRCCTRL(self, 'text_outputfile')
+        self.output_fields = xrc.XRCCTRL(self, 'panel_output_fields')
+        self.output_presets = xrc.XRCCTRL(self, 'preset_output')
+        self.output_fields.SetAvailable(maps.output_fields_long)
+        # Setup the PresetChooser
+        self.output_presets.SetPresets(config.state['presets']['output'])
+        self.output_presets.do_load = self.output_fields.SetSelection
+        self.output_presets.do_get = self.output_fields.GetSelection
 
 
         # Bind other events and controls
@@ -282,6 +285,14 @@ class MainWindow(wx.Frame):
 
         return data;
         
+
+    def SetVegParams(self, params):
+        pass
+
+
+    def GetVegParams(self):
+        pass
+
 
     def OnRun(self, evt):
         print "foo"
