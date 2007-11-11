@@ -336,7 +336,7 @@ class PresetChooser(wx.Panel):
 
         if key and (not key in self.presets or \
                 wx.MessageBox("Overwrite existing preset '%s'?" % (key), 'DO3SE', 
-                    wx.YES_NO | wx.ICON_QUESTION, self) == wx.YES):
+                    wx.YES_NO | wx.ICON_QUESTION | wx.NO_DEFAULT, self) == wx.YES):
             self.presets[key] = item
             self.Refresh()
             self.choice.SetStringSelection(key)
