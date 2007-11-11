@@ -50,6 +50,25 @@ confirm the installation directory:
 
     ./install_fortrantools.fixed
 
+When this is done, to make sure the Windows shell can find the F compiler, 
+run the following in the Cygwin shell:
+
+    cp /usr/local/bin/F /bin/F.exe
+
+
+=== Troubleshooting F ===
+
+If other F programs fail to compile, try the following:
+
+    + If the error is to do with an "invalid format" for a filename, try not 
+      using an absolute path to the file - instead make it relative to where
+      you will be running the program.
+
+    + If the error complains about a file already being open, try changing 
+      the unit numbers you are using when opening the files - 8 and 9 are 
+      usually fine to use.
+
+
 === MinGW ===
 
 Browse to http://sourceforge.net/projects/mingw/ , follow the link to the 
