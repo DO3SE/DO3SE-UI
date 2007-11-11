@@ -1,0 +1,11 @@
+Build and Installation on Linux
+===============================
+
+
+Dependancies
+------------
++ FortranTools
++ gfortran
++ Python (inc. development files)
++ NumPy
++ wxPython-2.8
