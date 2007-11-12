@@ -300,23 +300,12 @@ class MainWindow(wx.Frame):
         self.inputfile.Load()
         # Deal with problems loading the file here
         
-        # Build site params
-        site = {
-                'rsoil'     : float(self.site_rsoil.GetValue()),
-                'soil_bd'   : 1.3,
-                'soil_a'    : {'Coarse': -4.0, 'Medium': -5.5, 'Fine': -7.0}[self.site_soil.GetChoice()], 
-                'soil_b'    : {'Coarse': -2.3, 'Medium': -3.3, 'Fine': -5.4}[self.site_soil.GetChoice()], 
-                'fc_m'      : 0.193,
-                }
+        # Get the parameters
+        site = self.GetSiteParams()
+        veg = self.GetVegParams()
 
-        veg = {
-                't_min'     : float(self.veg_t_min.GetValue()),
-                't_opt'     : float(self.veg_t_opt.GetValue()),
-                't_max'     : float(self.veg_t_max.GetValue()),
-                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
-                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
-                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
-                'vpd_min'   : float(self.veg_vpd_min.GetValue()),
-
-                }
-
+        # Handle some special cases in the parameters
+        if site['o3_h'] == -1.0:
+            site['o3_h'] = veg['h']
+        if site['u_h'] == -1.0:
+            site['u_h'] = veg['h']
