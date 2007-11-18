@@ -353,7 +353,7 @@
                         <object class="wxGridBagSizer">
                           <object class="sizeritem">
                             <object class="wxStaticBoxSizer">
-                              <label>Growing season</label>
+                              <label>Vegetation characteristics</label>
                               <orient>wxVERTICAL</orient>
                               <object class="sizeritem">
                                 <object class="wxFlexGridSizer">
@@ -363,127 +363,49 @@
                                   <growablecols>1</growablecols>
                                   <object class="sizeritem">
                                     <object class="wxStaticText">
-                                      <label>Start:</label>
+                                      <label>Canopy height (m)</label>
                                     </object>
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name="spin_veg_sgs">
-                                      <value>121</value>
-                                      <min>1</min>
-                                      <max>366</max>
+                                    <object class="wxTextCtrl" name="float_veg_h" subclass="wxext.FloatCtrl">
+                                      <value>20</value>
                                     </object>
                                     <flag>wxEXPAND</flag>
                                   </object>
                                   <object class="sizeritem">
                                     <object class="wxStaticText">
-                                      <label>End:</label>
+                                      <label>Root depth (m):</label>
                                     </object>
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name="spin_veg_egs">
-                                      <value>273</value>
-                                      <min>1</min>
-                                      <max>366</max>
+                                    <object class="wxTextCtrl" name="float_veg_root" subclass="wxext.FloatCtrl">
+                                      <value>1.2</value>
                                     </object>
                                     <flag>wxEXPAND</flag>
                                   </object>
                                   <object class="sizeritem">
                                     <object class="wxStaticText">
-                                      <label>Start (upper leaf):</label>
+                                      <label>Min. LAI (m^2/m^2):</label>
                                     </object>
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name="spin_veg_astart">
-                                      <value>121</value>
-                                      <min>1</min>
-                                      <max>366</max>
-                                    </object>
-                                    <flag>wxEXPAND</flag>
-                                  </object>
-                                  <object class="sizeritem">
-                                    <object class="wxStaticText">
-                                      <label>End (upper leaf):</label>
-                                    </object>
-                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
-                                  </object>
-                                  <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name="spin_veg_aend">
-                                      <value>273</value>
-                                      <min>1</min>
-                                      <max>366</max>
-                                    </object>
-                                    <flag>wxEXPAND</flag>
-                                  </object>
-                                </object>
-                                <option>1</option>
-                                <flag>wxALL|wxEXPAND</flag>
-                                <border>4</border>
-                              </object>
-                            </object>
-                            <flag>wxALL|wxEXPAND</flag>
-                            <cellpos>0,0</cellpos>
-                          </object>
-                          <vgap>4</vgap>
-                          <hgap>4</hgap>
-                          <growablecols>0,1</growablecols>
-                          <object class="sizeritem">
-                            <object class="wxStaticBoxSizer">
-                              <label>Growth parameters</label>
-                              <orient>wxVERTICAL</orient>
-                              <object class="sizeritem">
-                                <object class="wxFlexGridSizer">
-                                  <cols>2</cols>
-                                  <vgap>4</vgap>
-                                  <hgap>8</hgap>
-                                  <growablecols>1</growablecols>
-                                  <object class="sizeritem">
-                                    <object class="wxStaticText">
-                                      <label>Min. temp. (Celcius):</label>
-                                    </object>
-                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
-                                  </object>
-                                  <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name="spin_veg_t_min">
+                                    <object class="wxTextCtrl" name="float_veg_lai_min" subclass="wxext.FloatCtrl">
                                       <value>0</value>
                                     </object>
                                     <flag>wxEXPAND</flag>
                                   </object>
                                   <object class="sizeritem">
                                     <object class="wxStaticText">
-                                      <label>Max. temp. (Celcius):</label>
+                                      <label>Max. LAI (m^2/m^2):</label>
                                     </object>
                                     <flag>wxALIGN_CENTRE_VERTICAL</flag>
                                   </object>
                                   <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name="spin_veg_t_max">
-                                      <value>35</value>
-                                    </object>
-                                    <flag>wxEXPAND</flag>
-                                  </object>
-                                  <object class="sizeritem">
-                                    <object class="wxStaticText">
-                                      <label>Optimum temp. (Celcius):</label>
-                                    </object>
-                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
-                                  </object>
-                                  <object class="sizeritem">
-                                    <object class="wxSpinCtrl" name="spin_veg_t_opt">
-                                      <value>21</value>
-                                    </object>
-                                    <flag>wxEXPAND</flag>
-                                  </object>
-                                  <object class="sizeritem">
-                                    <object class="wxStaticText">
-                                      <label>VPD for minimum:</label>
-                                    </object>
-                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
-                                  </object>
-                                  <object class="sizeritem">
-                                    <object class="wxTextCtrl" name="float_veg_vpd_min" subclass="wxext.FloatCtrl">
-                                      <value>3.25</value>
+                                    <object class="wxTextCtrl" name="float_veg_lai_max" subclass="wxext.FloatCtrl">
+                                      <value>4</value>
                                     </object>
                                     <flag>wxEXPAND</flag>
                                   </object>
@@ -530,8 +452,189 @@
                               </object>
                             </object>
                             <flag>wxALL|wxEXPAND</flag>
+                            <cellpos>0,0</cellpos>
+                          </object>
+                          <object class="sizeritem">
+                            <object class="wxStaticBoxSizer">
+                              <label>Growth parameters</label>
+                              <orient>wxVERTICAL</orient>
+                              <object class="sizeritem">
+                                <object class="wxFlexGridSizer">
+                                  <cols>2</cols>
+                                  <vgap>4</vgap>
+                                  <hgap>8</hgap>
+                                  <growablecols>1</growablecols>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Min. temp. (T_min, Celcius):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl" name="spin_veg_t_min">
+                                      <value>0</value>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Max. temp. (T_max, Celcius):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl" name="spin_veg_t_max">
+                                      <value>35</value>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Optimum temp. (T_opt, Celcius):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl" name="spin_veg_t_opt">
+                                      <value>21</value>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>VPD for minimum (VPD_min):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" name="float_veg_vpd_min" subclass="wxext.FloatCtrl">
+                                      <value>3.25</value>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>VPD for maximum (VPD_max):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" name="float_veg_vpd_max" subclass="wxext.FloatCtrl">
+                                      <value>1.0</value>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>SWP for minimum (SWP_min):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" name="float_veg_swp_min" subclass="wxext.FloatCtrl">
+                                      <value>-1.25</value>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>SWP for maximum (SWP_max):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxTextCtrl" name="float_veg_swp_max" subclass="wxext.FloatCtrl">
+                                      <value>-0.05</value>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                </object>
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>4</border>
+                              </object>
+                            </object>
+                            <flag>wxALL|wxEXPAND</flag>
+                            <cellpos>0,1</cellpos>
+                          </object>
+                          <object class="sizeritem">
+                            <object class="wxStaticBoxSizer">
+                              <label>Growing season</label>
+                              <orient>wxVERTICAL</orient>
+                              <object class="sizeritem">
+                                <object class="wxFlexGridSizer">
+                                  <cols>2</cols>
+                                  <vgap>4</vgap>
+                                  <hgap>8</hgap>
+                                  <growablecols>1</growablecols>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Start (SGS):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl" name="spin_veg_sgs">
+                                      <value>121</value>
+                                      <min>1</min>
+                                      <max>366</max>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>End (EGS):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl" name="spin_veg_egs">
+                                      <value>273</value>
+                                      <min>1</min>
+                                      <max>366</max>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>Start (upper leaf) (Astart):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl" name="spin_veg_astart">
+                                      <value>121</value>
+                                      <min>1</min>
+                                      <max>366</max>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxStaticText">
+                                      <label>End (upper leaf) (Aend):</label>
+                                    </object>
+                                    <flag>wxALIGN_CENTRE_VERTICAL</flag>
+                                  </object>
+                                  <object class="sizeritem">
+                                    <object class="wxSpinCtrl" name="spin_veg_aend">
+                                      <value>273</value>
+                                      <min>1</min>
+                                      <max>366</max>
+                                    </object>
+                                    <flag>wxEXPAND</flag>
+                                  </object>
+                                </object>
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <border>4</border>
+                              </object>
+                            </object>
+                            <flag>wxALL|wxEXPAND</flag>
                             <cellpos>1,0</cellpos>
                           </object>
+                          <vgap>4</vgap>
+                          <hgap>4</hgap>
+                          <growablecols>0,1</growablecols>
                         </object>
                         <option>1</option>
                         <flag>wxALL|wxEXPAND</flag>
@@ -605,13 +708,6 @@
               <object class="wxBoxSizer">
                 <orient>wxHORIZONTAL</orient>
                 <object class="sizeritem">
-                  <object class="wxGauge">
-                    <style>wxGA_PROGRESSBAR</style>
-                  </object>
-                  <option>1</option>
-                  <flag>wxEXPAND</flag>
-                </object>
-                <object class="sizeritem">
                   <object class="wxButton" name="button_run">
                     <label>&amp;Run</label>
                   </object>
@@ -628,7 +724,7 @@
                 </object>
               </object>
               <option>0</option>
-              <flag>wxALL|wxEXPAND|wxALIGN_RIGHT</flag>
+              <flag>wxALL|wxALIGN_RIGHT</flag>
               <border>4</border>
             </object>
           </object>

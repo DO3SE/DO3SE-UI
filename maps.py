@@ -40,10 +40,10 @@ input_field_map = dict(zip(input_fields, input_fields_long))
 input_field_rmap = dict(zip(input_fields_long, input_fields))
 
 def InputFieldsToShort(fields):
-    return [input_fields_rmap[x] for x in fields]
+    return [input_field_rmap[x] for x in fields]
 
 def InputFieldsToLong(fields):
-    return [input_fields_map[x] for x in fields]
+    return [input_field_map[x] for x in fields]
 
 output_fields = [
         'rn',
@@ -95,7 +95,7 @@ output_field_map = dict(zip(output_fields, output_fields_long))
 output_field_rmap = dict(zip(output_fields_long, output_fields))
 
 def OutputFieldsToShort(fields):
-    return [output_fields_rmap[x] for x in fields]
+    return [output_field_rmap[x] for x in fields]
 
 def OutputFieldsToLong(fields):
-    return [output_fields_map[x] for x in fields]
+    return [output_field_map[x] for x in fields]

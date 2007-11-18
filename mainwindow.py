@@ -5,7 +5,7 @@ import os
 from tools import _verbose
 import wxext
 import config
-import inputfile
+from dataset import Dataset
 import maps
 import dose
 
@@ -99,6 +99,10 @@ class MainWindow(wx.Frame):
         self.site_soil = xrc.XRCCTRL(self, 'choice_site_soil')
 
 
+        # --- 'Vegetation' panel ---
+        self.veg_h = xrc.XRCCTRL(self, 'float_veg_h')
+
+
         # --- 'Output' panel ---
         self.output_filename = xrc.XRCCTRL(self, 'text_outputfile')
         self.output_fields = xrc.XRCCTRL(self, 'panel_output_fields')
@@ -108,6 +112,9 @@ class MainWindow(wx.Frame):
         self.output_presets.SetPresets(config.state['presets']['output'])
         self.output_presets.do_load = self.output_fields.SetSelection
         self.output_presets.do_get = self.output_fields.GetSelection
+
+
+        self.progress_running = xrc.XRCCTRL(self, 'progress_running')
 
 
         # Bind other events and controls
@@ -218,7 +225,7 @@ class MainWindow(wx.Frame):
                     wx.MessageBox('Close the current data file?', 'DO3SE', 
                         wx.YES_NO | wx.ICON_QUESTION, self) == wx.YES:
                 _verbose('Loading data file ' + path)
-                self.inputfile = inputfile.InputFile(path)
+                self.inputfile = path
                 # Show main panel
                 self.panel_placeholder.Hide()
                 self.panel_main.Show()
@@ -291,15 +298,15 @@ class MainWindow(wx.Frame):
 
 
     def GetVegParams(self):
-        pass
+        data = {
+                'h'         : float(self.veg_h.GetValue()),
+                }
+        
+        return data
 
 
     def OnRun(self, evt):
         print "foo"
-        self.inputfile.SetFields(maps.InputFieldsToShort(self.input_fields.GetSelection()))
-        self.inputfile.Load()
-        # Deal with problems loading the file here
-        
         # Get the parameters
         site = self.GetSiteParams()
         veg = self.GetVegParams()
@@ -309,3 +316,15 @@ class MainWindow(wx.Frame):
             site['o3_h'] = veg['h']
         if site['u_h'] == -1.0:
             site['u_h'] = veg['h']
+
+        d = Dataset(site, veg, maps.OutputFieldsToShort(self.output_fields.GetSelection()))
+        d.SetInputFile(self.inputfile, maps.InputFieldsToShort(self.input_fields.GetSelection()))
+
+        # set up calculation stuff here
+        
+        # Run it! (disable the main window, but keep the user notified of progress)
+        #self.Enable(False)
+        d.Run(self)
+        #self.Enable(True)
+        #d.Show()
+

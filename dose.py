@@ -1,7 +1,19 @@
 from dose_f import *
 
-def SetSiteParam(param, value):
-    setattr(params_site, param, value)
+def SetSiteParams(params):
+    for k, v in params.iteritems():
+        setattr(params_site, k, v)
 
-def SetVegParam(param, value):
-    setattr(params_veg, param, value)
+def SetVegParams(params):
+    for k, v in params.iteritems():
+        setattr(params_veg, k, v)
+
+def SetInputValues(values):
+    for k, v in values.iteritems():
+        setattr(inputs, k, float(v))
+
+def GetValues(keys):
+    data = {}
+    for k in keys:
+        data[k] = getattr(variables, k)
+    return data
