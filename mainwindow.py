@@ -114,9 +114,6 @@ class MainWindow(wx.Frame):
         self.output_presets.do_get = self.output_fields.GetSelection
 
 
-        self.progress_running = xrc.XRCCTRL(self, 'progress_running')
-
-
         # Bind other events and controls
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, lambda evt: self.Close(), 
@@ -136,7 +133,12 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, lambda evt: self.Close(), 
                 id = xrc.XRCID('menu_file_quit'))
 
-        self.RefreshOpenRecent()
+        self.recentfiles = wx.FileHistory(9, wx.ID_FILE1)
+        self.recentfiles.UseMenu(self.GetMenuBar().FindItemById(xrc.XRCID('menu_file_openrecent')).GetSubMenu())
+        self.recentfiles.AddFilesToMenu()
+        for f in config.GetRecentFiles():
+            self.recentfiles.AddFileToHistory(f)
+        self.Bind(wx.EVT_MENU, self.OnFileRecent, id = wx.ID_FILE1, id2 = wx.ID_FILE9)
 
 
     def InitFinal(self):
@@ -149,23 +151,6 @@ class MainWindow(wx.Frame):
         self.panel_placeholder.Show()
         self.panel_main.Hide()
 
-
-    def RefreshOpenRecent(self):
-        """Reload the 'Open recent' submenu."""
-
-        # Get the submenu
-        recent = self.menubar.FindItemById(xrc.XRCID('menu_file_openrecent')).GetSubMenu()
-
-        # Empty the submenu
-        for i in recent.GetMenuItems():
-            recent.DestroyItem(i)
-
-        # Add the entries
-        for r in config.GetRecentFiles():
-            id = wx.NewId()
-            recent.Append(id, r)
-            self.Bind(wx.EVT_MENU, lambda evt: self.LoadFile(r), id = id)
-        
 
     def OnClose(self, evt):
         """On-close cleanup."""
@@ -190,6 +175,10 @@ class MainWindow(wx.Frame):
         self.LoadFile(path)
 
 
+    def OnFileRecent(self, evt):
+        self.LoadFile(self.recentfiles.GetHistoryFile(evt.GetId() - wx.ID_FILE1))
+
+
     def OnFileClose(self, evt):
         # TODO: An are-you-sure check if site/veg/calc parameters haven't 
         #       been saved yet.
@@ -209,15 +198,10 @@ class MainWindow(wx.Frame):
 
         if not os.path.isfile(path):
             wx.MessageBox('No file selected!', 'DO3SE', wx.OK | wx.ICON_ERROR, self)
-            config.RemoveRecentFile(path)
-            self.RefreshOpenRecent()
 
         elif not os.access(path, os.R_OK):
             wx.MessageBox('Could not read the specified file!', 'DO3SE', 
                     wx.OK | wx.ICON_ERROR, self)
-            # Remove recent file from menu
-            config.RemoveRecentFile(path)
-            self.RefreshOpenRecent()
             
         else:
             # Prompt use for closing old file if one is already open
@@ -236,9 +220,8 @@ class MainWindow(wx.Frame):
                 # Enable 'Close' on menu
                 self.menubar.FindItemById(xrc.XRCID('menu_file_close')).Enable(True)
                 # Add recent file entry
+                self.recentfiles.AddFileToHistory(path)
                 config.AddRecentFile(path)
-                # Refresh menu
-                self.RefreshOpenRecent()
 
 
     def SetSiteParams(self, params):
@@ -322,9 +305,4 @@ class MainWindow(wx.Frame):
 
         # set up calculation stuff here
         
-        # Run it! (disable the main window, but keep the user notified of progress)
-        #self.Enable(False)
         d.Run(self)
-        #self.Enable(True)
-        #d.Show()
-

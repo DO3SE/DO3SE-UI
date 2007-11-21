@@ -72,17 +72,13 @@ def GetRecentFiles():
 def AddRecentFile(path):
     """Add a path to the recent file list.
 
-    The recent file list is maintained in reverse chronological order by most
-    recent access, and limited to 10 items.
+    The recent file list is maintained in chronological order by most
+    recent access, and limited to 9 items.
     """
     try:
         x = state['recentfiles'].index(path)
-        state['recentfiles'] = [path] + state['recentfiles'][:x] + state['recentfiles'][x+1:]
+        state['recentfiles'] = state['recentfiles'][:x] + state['recentfiles'][x+1:] + [path]
     except:
-        state['recentfiles'].insert(0, path)
+        state['recentfiles'].append(path)
 
-    state['recentfiles'] = state['recentfiles'][:10]
-
-def RemoveRecentFile(path):
-    if path in state['recentfiles']:
-        state['recentfiles'].remove(path)
+    state['recentfiles'] = state['recentfiles'][-9:]
