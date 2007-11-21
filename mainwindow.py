@@ -158,7 +158,7 @@ class MainWindow(wx.Frame):
 
         # Empty the submenu
         for i in recent.GetMenuItems():
-            recent.RemoveItem(i)
+            recent.DestroyItem(i)
 
         # Add the entries
         for r in config.GetRecentFiles():

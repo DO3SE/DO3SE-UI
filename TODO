@@ -1,2 +1,3 @@
 Convert line endings to Windows format and re-send!
 Fix association between recent files and their load actions
+wxFileHistory

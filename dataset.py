@@ -1,8 +1,9 @@
 import csv, copy, exceptions
 import wx
-import dose
 
+import dose
 from tools import _verbose
+from resultswindow import ResultsWindow
 
 class InputFileError(exceptions.Exception):
     pass
@@ -96,7 +97,13 @@ class Dataset:
                     dose.evapotranspiration.calc_aet,
                     dose.evapotranspiration.calc_pet,
                     dose.irradiance.calc_rn)
-            results.append(dose.GetValues(self.output_fields))
+            results.append(dose.variables.__dict__)
             pd.Update(line['lineno'])
 
-        #print results
+        self.results = results
+        print "\n".join([",".join([str(r[k]) for k in self.output_fields]) for r in results])
+
+
+    def SaveAs(self, filename):
+        pass
+
