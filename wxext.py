@@ -166,10 +166,7 @@ class ListSelectCtrl(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnAdd, self.button_add)
         self.Bind(wx.EVT_BUTTON, self.OnRemove, self.button_remove)
         self.Bind(wx.EVT_BUTTON, self.OnUp, self.button_up)
-        #self.Bind(wx.EVT_BUTTON, self.OnDown, self.button_down)
-        #self.Bind(wx.EVT_BUTTON, self.OnSave, self.button_save)
-
-        #self.Bind(wx.EVT_CHOICE, self.OnLoad, self.choice_preset)
+        self.Bind(wx.EVT_BUTTON, self.OnDown, self.button_down)
 
         # Make sure this is only called once
         self.Unbind(wx.EVT_SIZE)
@@ -184,11 +181,6 @@ class ListSelectCtrl(wx.Panel):
             self.list_avail.Append(i)
 
 
-    def SetAvailable(self, items):
-        self.available_items = items
-        self.Reset()
-
-
     def SetSelection(self, items):
         self.Reset()
         
@@ -196,13 +188,9 @@ class ListSelectCtrl(wx.Panel):
             self.list_avail.SetStringSelection(i)
             self.OnAdd(None)
 
+
     def GetSelection(self):
         return self.list_sel.GetItems()
-
-
-    def SetFormats(self, formats):
-        self.formats = formats
-        #self.choice_preset.SetItems(formats.keys())
 
 
     def OnAdd(self, evt):
@@ -247,31 +235,6 @@ class ListSelectCtrl(wx.Panel):
             self.list_sel.Delete(sel)
             self.list_sel.Insert(item, sel + 1)
             self.list_sel.SetSelection(sel + 1)
-
-
-    def OnLoad(self, evt):
-        choice = self.choice_preset.GetStringSelection()
-
-        if not choice == "[Custom]":
-            self.SetSelection(self.formats[choice])
-
-    
-    def OnChange(self, evt):
-        self.choice_preset.SetSelection(0)
-
-    
-    def OnSave(self, evt):
-        key = wx.GetTextFromUser('Format name', 'DO3SE', '', self)
-
-        if key:
-            if not key in self.formats or \
-                    wx.MessageBox('Overwrite existing format with same name?', 
-                            'DO3SE', wx.YES_NO | wx.ICON_QUESTION) == wx.YES:
-                self.formats[key] = self.list_sel.GetItems()
-            else:
-                wx.MessageBox('Format not saved!', 'DO3SE', wx.OK | wx.ICON_WARNING)
-        else:
-            wx.MessageBox('Format not saved!', 'DO3SE', wx.OK | wx.ICON_WARNING)
 
 
 
