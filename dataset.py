@@ -88,7 +88,6 @@ class Dataset:
         pd.Show()
 
         for line in self.file:
-            #print line
             dose.SetInputValues(line['data'])
             dose.inputs.derive_ustar_uh()
             dose.run.do_calcs(
@@ -97,13 +96,7 @@ class Dataset:
                     dose.evapotranspiration.calc_aet,
                     dose.evapotranspiration.calc_pet,
                     dose.irradiance.calc_rn)
-            results.append(dose.variables.__dict__)
+            results.append(dose.GetAllValues())
             pd.Update(line['lineno'])
 
         self.results = results
-        print "\n".join([",".join([str(r[k]) for k in self.output_fields]) for r in results])
-
-
-    def SaveAs(self, filename):
-        pass
-

@@ -15,5 +15,11 @@ def SetInputValues(values):
 def GetValues(keys):
     data = {}
     for k in keys:
-        data[k] = getattr(variables, k)
+        data[k] = float(getattr(variables, k))
+    return data
+
+def GetAllValues():
+    data = {}
+    for k in variables.__dict__.keys():
+        data[k] = float(getattr(variables, k))
     return data
