@@ -181,6 +181,11 @@ class ListSelectCtrl(wx.Panel):
             self.list_avail.Append(i)
 
 
+    def SetAvailable(self, items):
+        self.available_items = items
+        self.Reset()
+
+
     def SetSelection(self, items):
         self.Reset()
         
