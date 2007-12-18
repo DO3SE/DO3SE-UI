@@ -9,6 +9,8 @@ from dataset import Dataset
 import maps
 import dose
 
+import application
+
 class MainWindow(wx.Frame):
     """Main application window.
 
@@ -16,14 +18,12 @@ class MainWindow(wx.Frame):
     the model and showing the outputs.
     """
 
-    def __init__(self, res):
+    def __init__(self):
         """Constructor
 
         Initialise the window (via the smaller Init* procedures)
         """
-
         wx.Frame.__init__(self, None)
-        self.res = res
 
         # Local variables
         self.open_prev_dir = ""
@@ -44,9 +44,9 @@ class MainWindow(wx.Frame):
         # Get the main panel
         mainsizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(mainsizer)
-        self.panel = self.res.LoadPanel(self, 'window_main')
+        self.panel = application.xrcres.LoadPanel(self, 'window_main')
         mainsizer.Add(self.panel, 1, wx.EXPAND)
-        self.menubar = self.res.LoadMenuBar('menu')
+        self.menubar = application.xrcres.LoadMenuBar('menu')
         self.SetMenuBar(self.menubar)
 
         # Set some frame attributes
@@ -305,4 +305,4 @@ class MainWindow(wx.Frame):
 
         # set up calculation stuff here
         
-        d.Run(self)
+        d.Run()

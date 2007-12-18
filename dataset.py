@@ -4,6 +4,7 @@ import wx
 import dose
 from tools import _verbose
 from resultswindow import ResultsWindow
+import application
 
 class InputFileError(exceptions.Exception):
     pass
@@ -69,9 +70,8 @@ class Dataset:
     def SetInputFile(self, path, fields):
         self.file = InputFile(path)
         self.file.SetFields(fields)
-        self.file.Load()
 
-    def Run(self, parent):
+    def Run(self):
         # TODO: Check the fieldset
         
         dose.SetVegParams(self.veg)
@@ -82,10 +82,15 @@ class Dataset:
 
         results = []
 
-        pd = wx.ProgressDialog('DOSE - running', 'Running calculations on input data...', 
-                self.file.linecount, parent, wx.PD_APP_MODAL | wx.PD_REMAINING_TIME)
+        pd1 = wx.ProgressDialog('DOSE - Running...', 'Loading file ...', 
+                100, application.toplevel, wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
+        pd1.Pulse()
+        self.file.Load()
+        pd1.Destroy()
 
-        pd.Show()
+        pd2 = wx.ProgressDialog('DOSE - Running...', 'Running calculations ...', 
+                self.file.linecount, application.toplevel, 
+                wx.PD_APP_MODAL | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE | wx.PD_SMOOTH)
 
         for line in self.file:
             dose.SetInputValues(line['data'])
@@ -97,6 +102,19 @@ class Dataset:
                     dose.evapotranspiration.calc_pet,
                     dose.irradiance.calc_rn)
             results.append(dose.GetAllValues())
-            pd.Update(line['lineno'])
+            pd2.Update(line['lineno'])
 
         self.results = results
+
+        rw = ResultsWindow(self)
+        rw.Show()
+
+
+    def Save(self, path):
+        _verbose("Writing data to %s" % path)
+        file = open(path, "w")
+        w = csv.DictWriter(file, self.output_fields)
+        for r in [dict([(f, x[f]) for f in self.output_fields]) for x in self.results]:
+            w.writerow(r)
+        file.close()
+        

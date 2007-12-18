@@ -664,38 +664,6 @@
                         <flag>wxALL|wxEXPAND</flag>
                         <border>6</border>
                       </object>
-                      <object class="sizeritem">
-                        <object class="wxBoxSizer">
-                          <orient>wxHORIZONTAL</orient>
-                          <object class="sizeritem">
-                            <object class="wxStaticText">
-                              <label>Output file:</label>
-                            </object>
-                            <option>0</option>
-                            <flag>wxRIGHT|wxALIGN_CENTRE_VERTICAL</flag>
-                            <border>4</border>
-                          </object>
-                          <object class="sizeritem">
-                            <object class="wxTextCtrl" name="text_outputfile">
-                              <enabled>0</enabled>
-                            </object>
-                            <option>1</option>
-                            <flag>wxEXPAND|wxALIGN_CENTRE_VERTICAL</flag>
-                          </object>
-                          <object class="sizeritem">
-                            <object class="wxButton" name="button_change_outfile">
-                              <label>&amp;Change...</label>
-                              <style>wxBU_EXACTFIT</style>
-                            </object>
-                            <option>0</option>
-                            <flag>wxLEFT|wxEXPAND</flag>
-                            <border>2</border>
-                          </object>
-                        </object>
-                        <option>0</option>
-                        <flag>wxALL|wxEXPAND</flag>
-                        <border>6</border>
-                      </object>
                     </object>
                   </object>
                 </object>
@@ -735,122 +703,37 @@
     </object>
     <style></style>
   </object>
-  <object class="wxPanel" name="window_output">
+  <object class="wxPanel" name="window_results">
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
       <object class="sizeritem">
-        <object class="wxPanel">
-          <object class="wxBoxSizer">
-            <orient>wxVERTICAL</orient>
-            <object class="sizeritem">
-              <object class="wxNotebook">
-                <object class="notebookpage">
-                  <label>Browse results</label>
-                  <object class="wxPanel"/>
-                </object>
-                <object class="notebookpage">
-                  <label>Statistics</label>
-                  <object class="wxPanel">
-                    <object class="wxBoxSizer">
-                      <orient>wxVERTICAL</orient>
-                      <object class="sizeritem">
-                        <object class="wxNotebook">
-                          <object class="notebookpage">
-                            <label>Graph1</label>
-                            <object class="wxPanel"/>
-                          </object>
-                          <object class="notebookpage">
-                            <label>Graph2</label>
-                            <object class="wxPanel"/>
-                          </object>
-                          <object class="notebookpage">
-                            <label>Graph3</label>
-                            <object class="wxPanel"/>
-                          </object>
-                        </object>
-                        <option>1</option>
-                        <flag>wxALL|wxEXPAND</flag>
-                        <border>4</border>
-                      </object>
-                    </object>
+        <object class="wxNotebook">
+          <object class="notebookpage">
+            <label>Placeholder...</label>
+            <object class="wxPanel" name="panel_results_placeholder">
+              <object class="wxBoxSizer">
+                <orient>wxHORIZONTAL</orient>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Results will go in this space...</label>
+                    <style>wxALIGN_CENTRE</style>
                   </object>
-                </object>
-                <object class="notebookpage">
-                  <label>Save</label>
-                  <object class="wxPanel" name="panel_save">
-                    <object class="wxBoxSizer">
-                      <orient>wxVERTICAL</orient>
-                      <object class="sizeritem">
-                        <object class="wxPanel" name="panel_output_fields" subclass="wxext.ListSelectCtrl"/>
-                      </object>
-                      <object class="sizeritem">
-                        <object class="wxBoxSizer">
-                          <orient>wxHORIZONTAL</orient>
-                          <object class="sizeritem">
-                            <object class="wxButton">
-                              <label>Save to CSV</label>
-                            </object>
-                          </object>
-                          <object class="sizeritem">
-                            <object class="wxButton">
-                              <label>Save to Excel</label>
-                            </object>
-                            <flag>wxLEFT</flag>
-                            <border>4</border>
-                          </object>
-                        </object>
-                        <flag>wxALL|wxALIGN_RIGHT</flag>
-                        <border>4</border>
-                      </object>
-                    </object>
-                  </object>
+                  <option>1</option>
+                  <flag>wxALIGN_CENTRE_VERTICAL</flag>
                 </object>
               </object>
-              <option>1</option>
-              <flag>wxALL|wxEXPAND</flag>
-              <border>4</border>
             </object>
           </object>
         </object>
         <option>1</option>
-        <flag>wxEXPAND</flag>
-      </object>
-    </object>
-  </object>
-  <object class="wxDialog" name="DIALOG1">
-    <title></title>
-    <object class="wxBoxSizer">
-      <orient>wxVERTICAL</orient>
-      <object class="sizeritem">
-        <object class="wxChoice">
-          <content/>
-        </object>
-        <option>0</option>
         <flag>wxALL|wxEXPAND</flag>
         <border>4</border>
       </object>
       <object class="sizeritem">
-        <object class="wxStdDialogButtonSizer">
-          <object class="button">
-            <object class="wxButton" name="wxID_OK">
-              <label></label>
-              <label>&amp;Ok</label>
-            </object>
-          </object>
-          <object class="button">
-            <object class="wxButton" name="wxID_CANCEL">
-              <label></label>
-              <label>&amp;Cancel</label>
-            </object>
-          </object>
-        </object>
-        <flag>wxBOTTOM|wxLEFT|wxRIGHT</flag>
+        <object class="wxPanel" name="panel_results_buttons"/>
+        <option>0</option>
+        <flag>wxEXPAND</flag>
         <border>4</border>
-      </object>
-      <object class="sizeritem">
-        <object class="wxButton">
-          <label>BUTTON</label>
-        </object>
       </object>
     </object>
   </object>

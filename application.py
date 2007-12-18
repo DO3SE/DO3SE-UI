@@ -5,8 +5,12 @@ from wx import xrc
 import os
 
 import config
+from mainwindow import MainWindow
 
 _verbose("Initializing application...")
+
+xrcres = xrc.XmlResource("do3se.xrc")
+toplevel = None
 
 class Application(wx.App):
     """Main application class.
@@ -14,15 +18,16 @@ class Application(wx.App):
     Loads the main window.
     """
     def OnInit(self):
-        self.res = xrc.EmptyXmlResource()
-        self.res.LoadFromString(open("do3se.xrc").read())
+        global xrcres, toplevel
 
-        from mainwindow import MainWindow
-
-        self.frame = MainWindow(self.res)
+        self.frame = toplevel = MainWindow()
         self.frame.Show()
 
         self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
+
+        from resultswindow import ResultsWindow
+        foo = ResultsWindow(None)
+        foo.Show()
 
         return True
 
