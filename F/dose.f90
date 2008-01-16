@@ -75,7 +75,7 @@ contains
         ! Run the calculations, specifying which interchangeable calculations
         ! to use (for: SAI, Ra, PEt, AEt, Rn)
         call Do_Calcs(Calc_SAI_Simple, &
-                      Calc_Ra_With_Heat_Flux, &
+                      Calc_Ra_Simple, & !Calc_Ra_With_Heat_Flux, &
                       Calc_PEt, &
                       Calc_AEt, &
                       Calc_Rn)
@@ -87,7 +87,28 @@ contains
     subroutine WriteData()
         use Variables
 
-        write(unit=outunit, fmt=*) o3_ppb
+        write(unit=outunit, fmt=*) &
+        !rn, &
+        !ra, &
+        !rb, &
+        !rsur, &
+        !rinc, &
+        !rsto, &
+        !gsto, &
+        !rgs, &
+        !vd, & 
+        !o3_ppb, &
+        !o3_nmol_m3, &
+        !fst, &
+        !afsty, &
+        !ftot, &
+        ot40, &
+        !aot40, &
+        !aet, &
+        !swp, &
+        !per_vol, &
+        !smd, &
+        " "
     end subroutine WriteData
 
     !==========================================================================

@@ -1,25 +1,11 @@
 from dose_f import *
 
-def SetSiteParams(params):
-    for k, v in params.iteritems():
-        setattr(params_site, k, v)
-
-def SetVegParams(params):
-    for k, v in params.iteritems():
-        setattr(params_veg, k, v)
-
-def SetInputValues(values):
-    for k, v in values.iteritems():
-        setattr(inputs, k, float(v))
-
-def GetValues(keys):
-    data = {}
-    for k in keys:
-        data[k] = float(getattr(variables, k))
-    return data
-
-def GetAllValues():
-    data = {}
-    for k in variables.__dict__.keys():
-        data[k] = float(getattr(variables, k))
-    return data
+if __name__ == "__main__":
+    params_site.__dict__['u_h'] = 11
+    params_site.derive_windspeed_d_zo()
+    print "u_h:", params_site.u_h, params_site.__dict__['u_h'], getattr(params_site, 'u_h')
+    print "u_d:", params_site.u_d, params_site.__dict__['u_d'], getattr(params_site, 'u_d')
+    setattr(params_site, 'u_h', 12)
+    params_site.derive_windspeed_d_zo()
+    print "u_h:", params_site.u_h, params_site.__dict__['u_h'], getattr(params_site, 'u_h')
+    print "u_d:", params_site.u_d, params_site.__dict__['u_d'], getattr(params_site, 'u_d')

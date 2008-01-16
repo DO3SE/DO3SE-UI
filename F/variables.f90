@@ -55,7 +55,7 @@ module Variables
     ! O3
     real, public, save :: O3_ppb, O3_nmol_m3, Vd
     real, public, save :: Ftot
-    real, public, save :: Fst, AFstY, AOT40
+    real, public, save :: Fst, AFstY, OT40, AOT40
 
 end module Variables
 

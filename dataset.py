@@ -1,120 +1,111 @@
-import csv, copy, exceptions
+import csv
 import wx
+import logging
 
+import util
 import dose
-from tools import _verbose
-from resultswindow import ResultsWindow
-import application
-
-class InputFileError(exceptions.Exception):
-    pass
-
-class InputFile:
-    def __init__(self, path):
-        """Only store the path to the file here.
-        """
-        self.path = path
-        self.fields = None
-        self.data = None
-        
-    def __iter__(self):
-        """Allow 'for row in myinputfile:' constructs.
-        """
-        if not self.data:
-            raise InputFileError("Data not yet loaded")
-        else:
-            return iter(self.data)
-
-    def SetFields(self, fields):
-        """Set the field order for the CSV.
-        """
-        self.fields = fields
-
-    def GetFields(self):
-        """Retrieve the CSV field order.
-        """
-        return self.fields
-
-    def Load(self):
-        """Load the data from the CSV file.
-        """
-
-        if not self.fields:
-            raise InputFileError("Field order not yet set")
-
-        file = open(self.path)
-
-        self.linecount = 0
-        self.data = []
-        
-        r = csv.DictReader(file, fieldnames = self.fields)
-
-        for l in r:
-            self.linecount = self.linecount + 1
-            self.data.append({'lineno': self.linecount, 'data': copy.deepcopy(l)})
-
-        file.close()
-
-        _verbose("Loaded %s lines from %s" % (self.linecount, self.path))
-
-
-class DatasetInvalidFieldset(exceptions.Exception):
-    pass
 
 class Dataset:
-    def __init__(self, site_params, veg_params, output_fields):
-        self.site = site_params
-        self.veg = veg_params
-        self.output_fields = output_fields
+    def __init__(self, filename, fields, trim=1):
+        """Constructor
 
-    def SetInputFile(self, path, fields):
-        self.file = InputFile(path)
-        self.file.SetFields(fields)
-
-    def Run(self):
-        # TODO: Check the fieldset
+        Initialise the Dataset object and load the data from the file.
         
-        dose.SetVegParams(self.veg)
-        dose.params_veg.derive_d_zo()
-        dose.SetSiteParams(self.site)
-        dose.params_site.derive_windspeed_d_zo()
-        dose.params_site.derive_o3_d_zo()
+        filename:   The path to the file to load
+        fields:     Fields contained in the file, to be used as dict keys
+        trim:       The number of lines to trim from the beginning of the file
+        """
+        self.filename = filename
 
-        results = []
+        # Open the file
+        file = open(self.filename)
+        # Skip the trimmed lines
+        for n in xrange(0,trim): file.next()
+        # Load all of the data
+        logging.debug("Input data format: %s" % (",".join(fields)))
+        self.input = list(csv.DictReader(file, fieldnames = fields, 
+            quoting=csv.QUOTE_NONNUMERIC))
+        # Close the file
+        file.close()
 
-        pd1 = wx.ProgressDialog('DOSE - Running...', 'Loading file ...', 
-                100, application.toplevel, wx.PD_APP_MODAL | wx.PD_AUTO_HIDE)
-        pd1.Pulse()
-        self.file.Load()
-        pd1.Destroy()
+        logging.info("Loaded %d lines from '%s'" % (len(self.input), self.filename))
+        #logging.debug(self.input)
 
-        pd2 = wx.ProgressDialog('DOSE - Running...', 'Running calculations ...', 
-                self.file.linecount, application.toplevel, 
-                wx.PD_APP_MODAL | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE | wx.PD_SMOOTH)
+    def run(self):
+        # Setup parameters
+        
+        # ...
 
-        for line in self.file:
-            dose.SetInputValues(line['data'])
+        # Initialise the module
+        logging.info("Initialising DOSE Fortran model")
+        dose.run.init(1, 1)
+
+        self.results = []
+        # Iterate through dataset
+        logging.info("Running calculations ...")
+        for row in d.input:
+            util.setattrs(dose.inputs, row)
             dose.inputs.derive_ustar_uh()
             dose.run.do_calcs(
                     dose.phenology.calc_sai_simple,
                     dose.r.calc_ra_simple,
                     dose.evapotranspiration.calc_aet,
                     dose.evapotranspiration.calc_pet,
-                    dose.irradiance.calc_rn)
-            results.append(dose.GetAllValues())
-            pd2.Update(line['lineno'])
+                    dose.irradiance.calc_rn
+            )
+            self.results.append(util.getattrs_f(dose.variables, 
+                ['ftemp', 'fvpd', 'pet', 'aet', 'ei', 'flight', 'leaf_flight', 
+                    'rn', 'lai', 'sai', 'fphen', 'leaf_fphen', 'ra', 'rb', 
+                    'rsur', 'rinc', 'rsto', 'rgs', 'gsto', 'gsto_pet', 'pwp', 
+                    'asw', 'sn_star', 'sn', 'per_vol', 'smd', 'swp', 'wc', 
+                    'precip', 'rsto_pet', 'fswp', 'o3_ppb', 'o3_nmol_m3', 'vd', 
+                    'ftot', 'fst', 'afsty', 'ot40', 'aot40']
+            ))
 
-        self.results = results
-
-        rw = ResultsWindow(self)
-        rw.Show()
+        logging.info("Got %d results" % len(self.results))
 
 
-    def Save(self, path):
-        _verbose("Writing data to %s" % path)
-        file = open(path, "w")
-        w = csv.DictWriter(file, self.output_fields)
-        for r in [dict([(f, x[f]) for f in self.output_fields]) for x in self.results]:
-            w.writerow(r)
+    def save(self, filename, fields):
+        logging.info("Writing data to '%s' ..." % filename)
+
+        file = open(filename, "w")
+        w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
+                quoting=csv.QUOTE_NONNUMERIC)
+        w.writerows(self.results)
         file.close()
+        logging.info("Wrote %d records" % len(self.results))
         
+
+if __name__ == '__main__':
+    d = Dataset(
+            'notes/sample_hourly_noLAI.csv',
+            ['mm', 'mdd', 'dd', 'hr', 'ts_c', 'vpd', 'uh_zr', 'precip', 'p',
+                'o3_ppb_zr', 'hd', 'r', 'par'],
+            2
+    )
+
+    d.run()
+
+    d.save('dataset-test.csv', [
+        #'rn',
+        #'ra',
+        #'rb',
+        #'rsur',
+        #'rinc',
+        #'rsto',
+        #'gsto',
+        #'rgs',
+        #'vd',
+        #'o3_ppb',
+        #'o3_nmol_m3',
+        #'fst',
+        #'afsty',
+        #'ftot',
+        'ot40', #**************
+        #'aot40',
+        #'aet',
+        #'swp',
+        #'per_vol',
+        #'smd', 
+        ])
+

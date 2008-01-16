@@ -97,10 +97,8 @@ contains
     ! Calculate the accumulated OT40
     !==========================================================================
     subroutine Calc_AOT40()
-        use Variables, only: AOT40, O3_ppb, fphen
+        use Variables, only: OT40, AOT40, O3_ppb, fphen
         use Inputs, only: R
-
-        real :: OT40
 
         if ( O3_ppb > 40 ) then
             OT40 = (O3_ppb - 40) / 1000
