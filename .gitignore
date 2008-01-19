@@ -2,3 +2,4 @@
 *.pyf
 f2py-build
 tags
+dose.cfg
