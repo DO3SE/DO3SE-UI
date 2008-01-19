@@ -1,5 +1,4 @@
-from app import Application
+from app import logging, app
 
 def run():
-    a = Application(False)
-    a.MainLoop()
+    app.Run()

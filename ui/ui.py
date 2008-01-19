@@ -1,7 +1,6 @@
 import wx
 
-from app import logging
-from config import config, add_recent_file
+from app import logging, app
 import wxext
 
 class FileHistory(wx.FileHistory):
@@ -17,7 +16,7 @@ class FileHistory(wx.FileHistory):
         Create the wxFileHistory in the way we want and load from the config.
         """
         wx.FileHistory.__init__(self, 9, wx.ID_FILE)
-        for p in config['filehistory']: wx.FileHistory.AddFileToHistory(self, p)
+        for p in app.config['filehistory']: wx.FileHistory.AddFileToHistory(self, p)
 
     def AddFileToHistory(self, path):
         """Add file to history
@@ -26,7 +25,7 @@ class FileHistory(wx.FileHistory):
         to the config.
         """
         wx.FileHistory.AddFileToHistory(self, path)
-        add_recent_file(path)
+        app.AddFileToHistory(path)
 
 
 
@@ -104,12 +103,17 @@ class MainWindow(wx.Frame):
 
         # 'File' menu
         mFile = wx.Menu()
+        # File -> Open
         mFile.Append(wx.ID_OPEN)
+        # File -> Open recent
         mFileRecent = wx.Menu()
         mFile.AppendSubMenu(mFileRecent, 'Open &Recent')
         self.filehistory.UseMenu(mFileRecent)
         self.filehistory.AddFilesToMenu()
+        # File -> Close
         mFile.Append(wx.ID_CLOSE)
         mFile.AppendSeparator()
+        # File -> Quit
         mFile.Append(wx.ID_EXIT)
         mb.Append(mFile, '&File')
+        self.Bind(wx.EVT_MENU, lambda evt: self.Close(), id = wx.ID_EXIT)

@@ -10,7 +10,7 @@
 import csv
 import wx
 
-from app import logging
+from app import logging, app
 import util
 import dose
 
