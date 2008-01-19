@@ -1,3 +1,12 @@
+################################################################################
+# Data set handler
+#
+# This is the class responsible for loading input data, running the model, and 
+# saving the results.
+#
+# TODO: Add parameters to the run() method
+################################################################################
+
 import csv
 import wx
 import logging

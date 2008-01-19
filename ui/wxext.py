@@ -229,6 +229,29 @@ class ListSelectCtrl(wx.Panel):
 
 
 class PresetChooser(wx.Panel):
+    """Preset manager widget
+
+    A simple generic preset manager widget with save and delete buttons.  A few
+    things must be set externally to make this work:
+
+        getvalues()     - A procedure to get the values from whatever is being 
+                          managed by the PresetChooser
+        setvalues(v)    - A procedure to load the values from the current preset 
+                          into the managed entity
+
+    Optionally, the following can also be overridden to add extra functionality:
+
+        post_save()     - Called after saving a preset - ideal for some kind of 
+                          saving of configuration to a file
+
+    Typical usage might look like:
+        
+        import wxext
+        foo = wxext.PresetChooser(self)
+        foo.getvalues = self.GetValues
+        foo.setvalues = self.SetValues
+        foo.post_save = lambda: config['foo'] = foo.GetPresets()
+    """
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
@@ -252,9 +275,13 @@ class PresetChooser(wx.Panel):
 
 
     def SetPresets(self, presets):
-        self.presets = presets
+        self.presets = presets.copy()
         self.choice.Clear()
         self.choice.SetItems(self.presets.keys())
+
+    
+    def GetPresets(self):
+        return self.presets
 
 
     def Refresh(self):
@@ -263,15 +290,15 @@ class PresetChooser(wx.Panel):
         self.choice.SetItems(self.presets.keys())
         if key and key in self.presets:
             self.choice.SetStringSelection(key)
-            self.do_load(self.presets[key])
+            self.setvalues(self.presets[key])
 
 
     def OnChange(self, evt):
-        self.do_load(self.presets[self.choice.GetStringSelection()])
+        self.setvalues(self.presets[self.choice.GetStringSelection()])
 
 
     def OnSave(self, evt):
-        item = self.do_get()
+        item = self.getvalues()
         key = wx.GetTextFromUser("Save preset as:", "DO3SE", self.choice.GetStringSelection(), self)
 
         if key and (not key in self.presets or \
@@ -280,7 +307,8 @@ class PresetChooser(wx.Panel):
             self.presets[key] = item
             self.Refresh()
             self.choice.SetStringSelection(key)
-            self.do_load(self.presets[key])
+            self.setvalues(self.presets[key])
+            self.post_save()
 
     
     def OnDelete(self, evt):
@@ -290,3 +318,14 @@ class PresetChooser(wx.Panel):
                 wx.YES_NO | wx.ICON_WARNING, self) == wx.YES:
             del self.presets[key]
             self.Refresh()
+
+
+    def getvalues(self):
+        pass
+
+
+    def setvalues(self, v):
+        pass
+
+    def post_save(self):
+        pass

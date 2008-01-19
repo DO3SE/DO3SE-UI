@@ -10,12 +10,12 @@ ifeq ($(targetmachine),mingw32)
 	f95 = g95
 	fcompiler = g95
 	compiler = mingw32
-	pymod = dose_f.pyd
+	pymod = ui/dose_f.pyd
 else
 	f95 = gfortran
 	fcompiler = gnu95
 	compiler = unix
-	pymod = dose_f.so
+	pymod = ui/dose_f.so
 endif
 
 export f95
@@ -40,7 +40,7 @@ f2py-build: dose_f.pyf
 	$(MAKE) -C $@
 
 $(pymod): f2py-build
-	cp f2py-build/$@ $@
+	cp f2py-build/`basename $@` $@
 
 clean_dose_f:
 	rm -rf f2py-build dose_f.pyf
