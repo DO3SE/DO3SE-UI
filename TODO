@@ -1,9 +1,5 @@
 Convert line endings to Windows format and re-send!
 
-*** Prompt user for which line to start at - strip headers!
-*** Add headers into output
-*** Debug Rsto, Gsto...
-
 
 Ideas from wxPython demo...
 ---------------------------

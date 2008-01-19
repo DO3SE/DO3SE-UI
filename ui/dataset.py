@@ -74,12 +74,14 @@ class Dataset:
         logging.info("Got %d results" % len(self.results))
 
 
-    def save(self, filename, fields):
+    def save(self, filename, fields, headers=False):
         logging.info("Writing data to '%s' ..." % filename)
 
         file = open(filename, "w")
         w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
+        if headers:
+            w.writerow(dict(zip(fields, fields)))
         w.writerows(self.results)
         file.close()
         logging.info("Wrote %d records" % len(self.results))
@@ -110,11 +112,11 @@ if __name__ == '__main__':
         #'fst',
         #'afsty',
         #'ftot',
-        'ot40', #**************
-        #'aot40',
+        'ot40',
+        'aot40',
         #'aet',
         #'swp',
         #'per_vol',
         #'smd', 
-        ])
+        ], headers=True)
 
