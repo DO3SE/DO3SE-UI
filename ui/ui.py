@@ -1,6 +1,6 @@
 import wx
 
-from util import logging
+from app import logging
 from config import config, add_recent_file
 import wxext
 
@@ -113,17 +113,3 @@ class MainWindow(wx.Frame):
         mFile.AppendSeparator()
         mFile.Append(wx.ID_EXIT)
         mb.Append(mFile, '&File')
-
-
-
-
-if __name__ == "__main__":
-    class Application(wx.App):
-        def OnInit(self):
-            frame = MainWindow()
-            frame.Bind(wx.EVT_CLOSE, self.Exit)
-            frame.Show()
-            return True
-
-    app = Application(False)
-    app.MainLoop()

@@ -1,10 +1,3 @@
-import logging
-logging.basicConfig(
-    level = logging.DEBUG,
-    format = '%(levelname)-8s %(message)s'
-)
-
-
 def setattrs(obj, d):
     for k,v in d.iteritems():
         setattr(obj, k, v)

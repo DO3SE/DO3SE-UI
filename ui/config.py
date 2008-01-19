@@ -8,7 +8,7 @@
 
 import shelve
 import os
-from util import logging
+from app import logging
 
 # Get the OS-dependant path to use for the configuration file
 if os.name == 'nt':

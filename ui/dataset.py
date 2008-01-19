@@ -9,8 +9,8 @@
 
 import csv
 import wx
-import logging
 
+from app import logging
 import util
 import dose
 
