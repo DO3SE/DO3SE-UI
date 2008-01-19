@@ -4,10 +4,6 @@
 ###############################################################################
 
 import wx
-#from tools import _verbose
-
-def _verbose(*args, **kwargs):
-    pass
 
 class FloatCtrl(wx.TextCtrl):
     """Range-checked floating-point input control."""
@@ -115,10 +111,6 @@ class ListSelectCtrl(wx.Panel):
     
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
-
-
-    def OnCreate(self, evt):
-        _verbose('Creating ListSelectCtrl')
 
         mainsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(mainsizer)
