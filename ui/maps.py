@@ -10,7 +10,7 @@ class Map:
         return [self._map[i] for i in x]
 
     def rmap(self, x):
-        return [self._rmap[i] for i in k]
+        return [self._rmap[i] for i in x]
 
     def keys(self):
         return self._from

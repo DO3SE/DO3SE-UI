@@ -2,6 +2,7 @@ import wx
 
 from app import logging, app
 import wxext
+import maps
 
 class FileHistory(wx.FileHistory):
     """Recent file history
@@ -49,6 +50,7 @@ class MainWindow(wx.Frame):
         # Initialise
         self._init_frame()
         self._init_menu()
+        self.pPlaceholder.Hide()
 
     def _init_frame(self):
         """Initialise the user interface
@@ -78,13 +80,20 @@ class MainWindow(wx.Frame):
 
         ### Main panel ###
         self.pMain = wx.Panel(self)
-        s0.Add(self.pMain, 1, wx.ALL|wx.EXPAND, 6)
+        s0.Add(self.pMain, 1, wx.EXPAND)
         s2 = wx.BoxSizer(wx.VERTICAL)
         self.pMain.SetSizer(s2)
         # Create notebook
         nbMain = wx.Notebook(self.pMain)
-        nbMain.SetBackgroundColour((0,0,0))
-        s2.Add(nbMain, 1, wx.EXPAND)
+        s2.Add(nbMain, 1, wx.EXPAND|wx.ALL, 6)
+        # Create bottom buttons
+        s3 = wx.BoxSizer(wx.HORIZONTAL)
+        s2.Add(s3, 0, wx.ALL|wx.ALIGN_RIGHT, 6)
+        bClose = wx.Button(self.pMain, wx.ID_CLOSE)
+        s3.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
+        self.Bind(wx.EVT_BUTTON, lambda evt: self.Close(), bClose)
+        bRun = wx.Button(self.pMain, label='&Run')
+        s3.Add(bRun, 0, wx.EXPAND|wx.LEFT, 6)
 
 
         ### 'Input' tab ###
@@ -92,8 +101,49 @@ class MainWindow(wx.Frame):
         nbMain.AddPage(p1, 'Input')
         s3 = wx.BoxSizer(wx.VERTICAL)
         p1.SetSizer(s3)
+        # Preset manager
         presets = wxext.PresetChooser(p1)
         s3.Add(presets, 0, wx.EXPAND|wx.ALL, 6)
+        presets.SetPresets(app.config['preset.inputs'])
+        # Preset manager post_update() callback
+        def f():
+            app.config['preset.inputs'] = presets.GetPresets()
+            app.config.sync()
+        presets.post_update = f
+        # List selector
+        fields = wxext.ListSelectCtrl(p1)
+        s3.Add(fields, 1, wx.EXPAND|wx.ALL, 6)
+        fields.SetAvailable(maps.inputs.values())
+        # List selector get-/setvalues callbacks
+        def f(): return maps.inputs.rmap(fields.GetSelection())
+        presets.getvalues = f
+        def f(v): fields.SetSelection(maps.inputs.map(v))
+        presets.setvalues = f
+
+
+        ### 'Output' tab ###
+        p2 = wx.Panel(nbMain)
+        nbMain.AddPage(p2, 'Output')
+        s4 = wx.BoxSizer(wx.VERTICAL)
+        p2.SetSizer(s4)
+        # Preset manager
+        presets1 = wxext.PresetChooser(p2)
+        s4.Add(presets1, 0, wx.EXPAND|wx.ALL, 6)
+        presets1.SetPresets(app.config['preset.outputs'])
+        # Preset manager post_update() callback
+        def f():
+            app.config['preset.outputs'] = presets1.GetPresets()
+            app.config.sync()
+        presets1.post_update = f
+        # List selector
+        fields1 = wxext.ListSelectCtrl(p2)
+        s4.Add(fields1, 1, wx.EXPAND|wx.ALL, 6)
+        fields1.SetAvailable(maps.outputs.values())
+        # List selector get-/setvalues callbacks
+        def f(): return maps.outputs.rmap(fields1.GetSelection())
+        presets1.getvalues = f
+        def f(v): fields1.SetSelection(maps.outputs.map(v))
+        presets1.setvalues = f
 
 
     def _init_menu(self):

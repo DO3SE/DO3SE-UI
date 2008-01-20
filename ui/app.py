@@ -2,6 +2,9 @@
 # The main application handler
 ################################################################################
 
+# Configuration file version
+CFGVERSION = "0.2"
+
 # Set up logging
 import logging
 logging.basicConfig(
@@ -14,6 +17,8 @@ logging.basicConfig(
 import wx
 import shelve
 import os
+
+import util
 
 class wtf:
     pass
@@ -45,11 +50,20 @@ class Application(wx.App):
 
         self.config = shelve.open(os.path.join(dirname, 'dose.cfg'))
 
-        if len(self.config) == 0: self._config_init()
+        if (not 'version' in self.config) \
+                or (util.versioncmp(CFGVERSION, self.config['version'])):
+            logging.info("Upgrading configuration file ...")
+            self._config_init()
 
 
     def _config_init(self):
-        self.config['filehistory'] = []
+        if not 'filehistory' in self.config:
+            self.config['filehistory'] = list([])
+        if not 'preset.inputs' in self.config:
+            self.config['preset.inputs'] = dict([])
+        if not 'preset.outputs' in self.config:
+            self.config['preset.outputs'] = dict([])
+        self.config['version'] = CFGVERSION
 
 
     def AddFileToHistory(self, path):

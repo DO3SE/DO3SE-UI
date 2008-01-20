@@ -125,19 +125,19 @@ class ListSelectCtrl(wx.Panel):
         # Add/remove/up/down
         s2 = wx.BoxSizer(wx.VERTICAL)
         mainsizer.Add(s2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
-        self.button_add = wx.Button(self, label = '&Add', 
+        self.button_add = wx.Button(self, wx.ID_ADD, 
                 style = wx.BU_EXACTFIT)
         s2.Add(self.button_add, 0, wx.EXPAND)
         s2.AddSpacer(4)
-        self.button_remove = wx.Button(self, label = '&Remove', 
+        self.button_remove = wx.Button(self, wx.ID_REMOVE, 
                 style = wx.BU_EXACTFIT)
         s2.Add(self.button_remove, 0, wx.EXPAND)
         s2.AddSpacer(4)
-        self.button_up = wx.Button(self, label = 'Move &up', 
+        self.button_up = wx.Button(self, wx.ID_UP, 
                 style = wx.BU_EXACTFIT)
         s2.Add(self.button_up, 0, wx.EXPAND)
         s2.AddSpacer(4)
-        self.button_down = wx.Button(self, label = 'Move &down', 
+        self.button_down = wx.Button(self, wx.ID_DOWN, 
                 style = wx.BU_EXACTFIT)
         s2.Add(self.button_down, 0, wx.EXPAND)
 
@@ -152,10 +152,6 @@ class ListSelectCtrl(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnRemove, self.button_remove)
         self.Bind(wx.EVT_BUTTON, self.OnUp, self.button_up)
         self.Bind(wx.EVT_BUTTON, self.OnDown, self.button_down)
-
-        # Make sure this is only called once
-        self.Unbind(wx.EVT_SIZE)
-        evt.Skip()
 
     
     def Reset(self):
@@ -308,7 +304,7 @@ class PresetChooser(wx.Panel):
             self.Refresh()
             self.choice.SetStringSelection(key)
             self.setvalues(self.presets[key])
-            self.post_save()
+            self.post_update()
 
     
     def OnDelete(self, evt):
@@ -318,6 +314,7 @@ class PresetChooser(wx.Panel):
                 wx.YES_NO | wx.ICON_WARNING, self) == wx.YES:
             del self.presets[key]
             self.Refresh()
+            self.post_update()
 
 
     def getvalues(self):
@@ -327,5 +324,5 @@ class PresetChooser(wx.Panel):
     def setvalues(self, v):
         pass
 
-    def post_save(self):
+    def post_update(self):
         pass
