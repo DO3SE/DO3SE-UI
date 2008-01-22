@@ -52,7 +52,7 @@ class Dataset:
         self.results = []
         # Iterate through dataset
         logging.info("Running calculations ...")
-        for row in d.input:
+        for row in self.input:
             util.setattrs(dose.inputs, row)
             dose.inputs.derive_ustar_uh()
             dose.run.do_calcs(
@@ -76,6 +76,7 @@ class Dataset:
 
     def save(self, filename, fields, headers=False):
         logging.info("Writing data to '%s' ..." % filename)
+        logging.debug("Output data format: %s" % (",".join(fields)))
 
         file = open(filename, "w")
         w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
@@ -99,21 +100,21 @@ if __name__ == '__main__':
 
     d.save('dataset-test.csv', [
         #'rn',
-        #'ra',
-        #'rb',
-        #'rsur',
-        #'rinc',
-        #'rsto',
+        'ra',
+        'rb',
+        'rsur',
+        'rinc',
+        'rsto',
         #'gsto',
-        #'rgs',
-        #'vd',
+        'rgs',
+        'vd',
         #'o3_ppb',
         #'o3_nmol_m3',
         #'fst',
         #'afsty',
         #'ftot',
-        'ot40',
-        'aot40',
+        #'ot40',
+        #'aot40',
         #'aet',
         #'swp',
         #'per_vol',

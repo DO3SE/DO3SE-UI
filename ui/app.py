@@ -88,6 +88,7 @@ class Application(wx.App):
         Clean up configurating, SingleInstanceChecker, etc. on application exit
         """
         self.config.close()
+        logging.debug("Configuration file closed")
         del self.sichecker
 
 
