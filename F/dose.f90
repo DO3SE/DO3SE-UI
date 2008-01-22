@@ -40,11 +40,9 @@ contains
         use Inputs
 
         integer,intent(out) :: ios
-        real :: d1, d2, d3      ! Some dummy variables for cases when the input 
-                                ! file doesn't match the required format
 
         read(unit=inunit, fmt=*,  iostat=ios) mm, mdd, dd, hr, Ts_C, VPD, &
-                uh_zR, precip, P, O3_ppb_zR, d1, Hd, R, PAR
+                uh_zR, precip, P, O3_ppb_zR, Hd, R, PAR
     end subroutine ReadData
 
 
@@ -75,7 +73,8 @@ contains
         ! Run the calculations, specifying which interchangeable calculations
         ! to use (for: SAI, Ra, PEt, AEt, Rn)
         call Do_Calcs(Calc_SAI_Simple, &
-                      Calc_Ra_Simple, & !Calc_Ra_With_Heat_Flux, &
+                      Calc_Ra_Simple, &
+                      !Calc_Ra_With_Heat_Flux, &
                       Calc_PEt, &
                       Calc_AEt, &
                       Calc_Rn)
@@ -102,7 +101,7 @@ contains
         !fst, &
         !afsty, &
         !ftot, &
-        ot40, &
+        !ot40, &
         !aot40, &
         !aet, &
         !swp, &
