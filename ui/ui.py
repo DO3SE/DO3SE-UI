@@ -72,92 +72,87 @@ class MainWindow(wx.Frame):
         self.SetSize((800,600))
         self.SetTitle('DOSE Model')
 
-        # Main window sizer
-        s0 = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(s0)
-
-
         ### Main panel ###
-        self.pMain = wx.Panel(self)
-        s0.Add(self.pMain, 1, wx.EXPAND)
-        s2 = wx.BoxSizer(wx.VERTICAL)
-        self.pMain.SetSizer(s2)
+        sMain = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sMain)
         # Create notebook
-        nbMain = wx.Notebook(self.pMain)
-        s2.Add(nbMain, 1, wx.EXPAND|wx.ALL, 6)
+        nbMain = wx.Notebook(self)
+        sMain.Add(nbMain, 1, wx.EXPAND|wx.ALL, 6)
         # Create bottom buttons
-        s3 = wx.BoxSizer(wx.HORIZONTAL)
-        s2.Add(s3, 0, wx.ALL|wx.ALIGN_RIGHT, 6)
-        bClose = wx.Button(self.pMain, wx.ID_EXIT)
-        s3.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
+        sButtons = wx.BoxSizer(wx.HORIZONTAL)
+        sMain.Add(sButtons, 0, wx.ALL|wx.ALIGN_RIGHT, 6)
+        bClose = wx.Button(self, wx.ID_EXIT)
+        sButtons.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, self._on_exit, bClose)
-        bRun = wx.Button(self.pMain, label='&Run')
-        s3.Add(bRun, 0, wx.EXPAND|wx.LEFT, 6)
+        bRun = wx.Button(self, label='&Run')
+        sButtons.Add(bRun, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, self._on_run, bRun)
 
 
         ### 'Input' tab ###
-        p1 = wx.Panel(nbMain)
-        nbMain.AddPage(p1, 'Input')
-        s3 = wx.BoxSizer(wx.VERTICAL)
-        p1.SetSizer(s3)
+        pInput = wx.Panel(nbMain)
+        nbMain.AddPage(pInput, 'Input')
+        sInput = wx.BoxSizer(wx.VERTICAL)
+        pInput.SetSizer(sInput)
         # Preset manager
-        presets = wxext.PresetChooser(p1)
-        s3.Add(presets, 0, wx.EXPAND|wx.ALL, 6)
-        presets.SetPresets(app.config['preset.inputs'])
+        presetInput = wxext.PresetChooser(pInput)
+        sInput.Add(presetInput, 0, wx.EXPAND|wx.ALL, 6)
+        presetInput.SetPresets(app.config['preset.inputs'])
         # Preset manager post_update() callback
         def f():
-            app.config['preset.inputs'] = presets.GetPresets()
+            app.config['preset.inputs'] = presetInput.GetPresets()
             app.config.sync()
-        presets.post_update = f
+        presetInput.post_update = f
         # List selector
-        self.inputs = wxext.ListSelectCtrl(p1)
-        s3.Add(self.inputs, 1, wx.EXPAND|wx.ALL, 6)
-        self.inputs.SetAvailable(maps.inputs.values())
+        self.lsInputs = wxext.ListSelectCtrl(pInput)
+        sInput.Add(self.lsInputs, 1, wx.EXPAND|wx.ALL, 6)
+        self.lsInputs.SetAvailable(maps.inputs.values())
         # Header trim
-        s4 = wx.BoxSizer(wx.HORIZONTAL)
-        s3.Add(s4, 0, wx.ALL|wx.ALIGN_LEFT, 6)
-        s4.Add(wx.StaticText(p1, \
+        sTrim = wx.BoxSizer(wx.HORIZONTAL)
+        sInput.Add(sTrim, 0, wx.ALL|wx.ALIGN_LEFT, 6)
+        sTrim.Add(wx.StaticText(pInput, \
             label='Number of lines to trim from beginning of file (e.g. for column headers)'),
             0, wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 6)
-        self.inputs_trim = wx.SpinCtrl(p1, min=0, max=10, initial=0, style=wx.SP_ARROW_KEYS)
-        s4.Add(self.inputs_trim, 0, wx.EXPAND)
-        # List selector get-/setvalues callbacks
+        self.spinInputTrim = wx.SpinCtrl(pInput, min=0, max=10, initial=0, style=wx.SP_ARROW_KEYS)
+        sTrim.Add(self.spinInputTrim, 0, wx.EXPAND)
+        # Preset manager get-/setvalues callbacks
         def f():
             return {
-                'fields': maps.inputs.rmap(self.inputs.GetSelection()),
-                'trim': self.inputs_trim.GetValue(),
+                'fields': maps.inputs.rmap(self.lsInputs.GetSelection()),
+                'trim': self.spinInputTrim.GetValue(),
             }
-        presets.getvalues = f
+        presetInput.getvalues = f
         def f(v):
-            self.inputs.SetSelection(maps.inputs.map(v['fields']))
-            self.inputs_trim.SetValue(v['trim'])
-        presets.setvalues = f
+            self.lsInputs.SetSelection(maps.inputs.map(v['fields']))
+            self.spinInputTrim.SetValue(v['trim'])
+        presetInput.setvalues = f
 
 
         ### 'Output' tab ###
-        p2 = wx.Panel(nbMain)
-        nbMain.AddPage(p2, 'Output')
-        s4 = wx.BoxSizer(wx.VERTICAL)
-        p2.SetSizer(s4)
+        pOutput = wx.Panel(nbMain)
+        nbMain.AddPage(pOutput, 'Output')
+        sOutput = wx.BoxSizer(wx.VERTICAL)
+        pOutput.SetSizer(sOutput)
         # Preset manager
-        presets1 = wxext.PresetChooser(p2)
-        s4.Add(presets1, 0, wx.EXPAND|wx.ALL, 6)
-        presets1.SetPresets(app.config['preset.outputs'])
+        presetOutput = wxext.PresetChooser(pOutput)
+        sOutput.Add(presetOutput, 0, wx.EXPAND|wx.ALL, 6)
+        presetOutput.SetPresets(app.config['preset.outputs'])
         # Preset manager post_update() callback
         def f():
-            app.config['preset.outputs'] = presets1.GetPresets()
+            app.config['preset.outputs'] = presetOutput.GetPresets()
             app.config.sync()
-        presets1.post_update = f
+        presetOutput.post_update = f
         # List selector
-        self.outputs = wxext.ListSelectCtrl(p2)
-        s4.Add(self.outputs, 1, wx.EXPAND|wx.ALL, 6)
-        self.outputs.SetAvailable(maps.outputs.values())
-        # List selector get-/setvalues callbacks
-        def f(): return maps.outputs.rmap(self.outputs.GetSelection())
-        presets1.getvalues = f
-        def f(v): self.outputs.SetSelection(maps.outputs.map(v))
-        presets1.setvalues = f
+        self.slOutputs = wxext.ListSelectCtrl(pOutput)
+        sOutput.Add(self.slOutputs, 1, wx.EXPAND|wx.ALL, 6)
+        self.slOutputs.SetAvailable(maps.outputs.values())
+        # "Include column headers?"
+        
+        # Preset manager get-/setvalues callbacks
+        def f(): return maps.outputs.rmap(self.slOutputs.GetSelection())
+        presetOutput.getvalues = f
+        def f(v): self.slOutputs.SetSelection(maps.outputs.map(v))
+        presetOutput.setvalues = f
 
 
     def _init_menu(self):
@@ -215,14 +210,14 @@ class MainWindow(wx.Frame):
                     wx.OK|wx.ICON_ERROR, self)
             return
 
-        d = Dataset(path, maps.inputs.rmap(self.inputs.GetSelection()),
-                self.inputs_trim.GetValue())
+        d = Dataset(path, maps.inputs.rmap(self.lsInputs.GetSelection()),
+                self.spinInputTrim.GetValue())
         self.filehistory.AddFileToHistory(path)
         d.run()
         r = ResultsWindow(d, {
-            'inputs': list(maps.inputs.rmap(self.inputs.GetSelection())),
-            'inputs_trim': int(self.inputs_trim.GetValue()),
-            'outputs': list(maps.outputs.rmap(self.outputs.GetSelection())),
+            'inputs': list(maps.inputs.rmap(self.lsInputs.GetSelection())),
+            'inputs_trim': int(self.spinInputTrim.GetValue()),
+            'outputs': list(maps.outputs.rmap(self.slOutputs.GetSelection())),
         })
         r.Show()
 
