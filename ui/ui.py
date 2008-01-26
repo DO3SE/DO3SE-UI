@@ -147,11 +147,21 @@ class MainWindow(wx.Frame):
         sOutput.Add(self.slOutputs, 1, wx.EXPAND|wx.ALL, 6)
         self.slOutputs.SetAvailable(maps.outputs.values())
         # "Include column headers?"
-        
+        sHeaders = wx.BoxSizer(wx.HORIZONTAL)
+        sOutput.Add(sHeaders, 0, wx.ALL|wx.ALIGN_LEFT, 6)
+        self.chkOutputHeaders = wx.CheckBox(pOutput, label="Include column headers")
+        sHeaders.Add(self.chkOutputHeaders, 0, wx.EXPAND)
+        self.chkOutputHeaders.SetValue(True)
         # Preset manager get-/setvalues callbacks
-        def f(): return maps.outputs.rmap(self.slOutputs.GetSelection())
+        def f():
+            return {
+                'fields': maps.outputs.rmap(self.slOutputs.GetSelection()),
+                'headers': self.chkOutputHeaders.GetValue()
+            }
         presetOutput.getvalues = f
-        def f(v): self.slOutputs.SetSelection(maps.outputs.map(v))
+        def f(v):
+            self.slOutputs.SetSelection(maps.outputs.map(v['fields']))
+            self.chkOutputHeaders.SetValue(v['headers'])
         presetOutput.setvalues = f
 
 
