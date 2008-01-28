@@ -228,6 +228,7 @@ class MainWindow(wx.Frame):
             'inputs': list(maps.inputs.rmap(self.lsInputs.GetSelection())),
             'inputs_trim': int(self.spinInputTrim.GetValue()),
             'outputs': list(maps.outputs.rmap(self.slOutputs.GetSelection())),
+            'outputs_headers': self.chkOutputHeaders.GetValue(),
         })
         r.Show()
 
@@ -286,7 +287,7 @@ class ResultsWindow(wx.Frame):
             result_recent_dir = fd.GetDirectory()
             path = fd.GetPath()
             if not path.split('.')[-1] == 'csv': path = path + '.csv'
-            self.dataset.save(path, self.settings['outputs'], headers=True)
+            self.dataset.save(path, self.settings['outputs'], headers=self.settings['outputs_headers'])
             wx.MessageDialog(self, message = 'Results saved!',
                     style = wx.OK|wx.ICON_INFORMATION)
         
