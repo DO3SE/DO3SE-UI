@@ -1,6 +1,7 @@
 import wx
 import os
 
+from FloatSpin import FloatSpin
 from app import logging, app
 import wxext
 import maps
@@ -57,6 +58,8 @@ class MainWindow(wx.Frame):
         self.filehistory = FileHistory()
         # Recently opened directory
         self.recent_dir = ''
+
+        self.site = {}
 
         # Initialise
         self._init_frame()
@@ -126,6 +129,25 @@ class MainWindow(wx.Frame):
             self.lsInputs.SetSelection(maps.inputs.map(v['fields']))
             self.spinInputTrim.SetValue(v['trim'])
         presetInput.setvalues = f
+
+
+        ### 'Site parameters' tab ###
+        pSite = wx.Panel(nbMain)
+        nbMain.AddPage(pSite, "Site parameters")
+        sSite = wx.BoxSizer(wx.VERTICAL)
+        pSite.SetSizer(sSite)
+        presetSite = wxext.PresetChooser(pSite)
+        sSite.Add(presetSite, 0, wx.ALL|wx.EXPAND, 6)
+        sSiteParams = wx.GridSizer(cols=2, vgap=6, hgap=6)
+        sSite.Add(sSiteParams, 1, wx.ALL|wx.EXPAND, 6)
+        sbLocation = wx.StaticBox(pSite, label="Location")
+        sbsLocation = wx.StaticBoxSizer(sbLocation, wx.VERTICAL)
+        fgsLocation = wx.FlexGridSizer(cols=2, vgap=6, hgap=6)
+        fgsLocation.AddGrowableCol(0)
+        sSiteParams.Add(sbsLocation, 0, wx.EXPAND)
+        self.site['lat'] = FloatSpin(pSite, value=45.0, 
+                min_val=-90.0, max_val=90.0, increment=0.1, digits=3)
+        fgsLocation.Add(self.site['lat'], 0, wx.EXPAND)
 
 
         ### 'Output' tab ###
