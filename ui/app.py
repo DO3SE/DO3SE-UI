@@ -3,7 +3,7 @@
 ################################################################################
 
 # Configuration file version
-CFGVERSION = "0.2"
+CFGVERSION = "0.3"
 
 # Set up logging
 import logging
@@ -63,6 +63,8 @@ class Application(wx.App):
             self.config['preset.inputs'] = dict([])
         if not 'preset.outputs' in self.config:
             self.config['preset.outputs'] = dict([])
+        if not 'preset.site' in self.config:
+            self.config['preset.site'] = dict([])
         self.config['version'] = CFGVERSION
 
 
