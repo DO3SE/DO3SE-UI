@@ -40,14 +40,17 @@ class Dataset:
         logging.info("Loaded %d lines from '%s'" % (len(self.input), self.filename))
         #logging.debug(self.input)
 
-    def run(self):
+    def run(self, siteparams, vegparams):
         # Setup parameters
         
+        # Do vegetation parameters first, as some site parameters depend on this
+        dose.params_veg.derive_d_zo()
         # ...
+        util.setattrs(dose.params_site, siteparams)
 
         # Initialise the module
         logging.info("Initialising DOSE Fortran model")
-        dose.run.init(1, 1)
+        dose.run.init(int(siteparams['u_h_copy']), int(siteparams['o3_h_copy']))
 
         self.results = []
         # Iterate through dataset

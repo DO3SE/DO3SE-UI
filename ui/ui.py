@@ -138,6 +138,8 @@ class MainWindow(wx.Frame):
         pSite.SetSizer(sSite)
         presetSite = wxext.PresetChooser(pSite)
         presetSite.SetPresets(app.config['preset.site'])
+        presetSite.getvalues = self.get_site_params
+        presetSite.setvalues = self.set_site_params
         def f():
             app.config['preset.site'] = presetSite.GetPresets()
             app.config.sync()
@@ -233,46 +235,6 @@ class MainWindow(wx.Frame):
                 wx.EVT_CHECKBOX,
                 lambda evt: self.site['u_h'].Enable(not self.site['u_h_copy'].IsChecked()),
                 self.site['u_h_copy'])
-
-        def f():
-            return {
-                'lat'       : float(self.site['lat'].GetValue()),
-                'lon'       : float(self.site['lon'].GetValue()),
-                'elev'      : float(self.site['elev'].GetValue()),
-                'o3zr'      : float(self.site['o3zr'].GetValue()),
-                'uzr'       : float(self.site['uzr'].GetValue()),
-                'xzr'       : float(self.site['xzr'].GetValue()),
-                'o3_h'      : float(self.site['o3_h'].GetValue()),
-                'u_h'       : float(self.site['u_h'].GetValue()),
-                'o3_h_copy' : self.site['o3_h_copy'].GetValue(),
-                'u_h_copy' : self.site['u_h_copy'].GetValue(),
-                'rsoil'     : float(self.site['rsoil'].GetValue()),
-                'soil_a'    : {'Coarse': -4.0, 'Medium': -5.5, 'Fine': -7.0}
-                                [self.site['soil_tex'].GetStringSelection()],
-                'soil_b'    : {'Coarse': -2.3, 'Medium': -3.3, 'Fine': -5.4}
-                                [self.site['soil_tex'].GetStringSelection()],
-                'soil_bd'   : 1.3,
-                'fc_m'      : 0.193,
-            }
-        presetSite.getvalues = f
-        def f(v):
-            self.site['lat'].SetValue(v['lat'])
-            self.site['lon'].SetValue(v['lon'])
-            self.site['elev'].SetValue(v['elev'])
-            self.site['o3zr'].SetValue(v['o3zr'])
-            self.site['uzr'].SetValue(v['uzr'])
-            self.site['xzr'].SetValue(v['xzr'])
-            self.site['o3_h'].SetValue(v['o3_h'])
-            self.site['u_h'].SetValue(v['u_h'])
-            self.site['o3_h_copy'].SetValue(v['o3_h_copy'])
-            self.site['u_h_copy'].SetValue(v['u_h_copy'])
-            self.site['soil_tex'].SetStringSelection(
-                {-4.0: 'Coarse', -5.5: 'Medium', -7.0: 'Fine'}[v['soil_a']]
-            )
-            self.site['rsoil'].SetValue(v['rsoil'])
-            self.site['o3_h'].Enable(not self.site['o3_h_copy'].IsChecked())
-            self.site['u_h'].Enable(not self.site['u_h_copy'].IsChecked())
-        presetSite.setvalues = f
             
 
         ### 'Output' tab ###
@@ -370,7 +332,7 @@ class MainWindow(wx.Frame):
         d = Dataset(path, maps.inputs.rmap(self.lsInputs.GetSelection()),
                 self.spinInputTrim.GetValue())
         self.filehistory.AddFileToHistory(path)
-        d.run()
+        d.run(self.get_site_params(), None)
         r = ResultsWindow(d, {
             'inputs': list(maps.inputs.rmap(self.lsInputs.GetSelection())),
             'inputs_trim': int(self.spinInputTrim.GetValue()),
@@ -378,6 +340,48 @@ class MainWindow(wx.Frame):
             'outputs_headers': self.chkOutputHeaders.GetValue(),
         })
         r.Show()
+
+
+    def get_site_params(self):
+        return {
+            'lat'       : float(self.site['lat'].GetValue()),
+            'lon'       : float(self.site['lon'].GetValue()),
+            'elev'      : float(self.site['elev'].GetValue()),
+            'o3zr'      : float(self.site['o3zr'].GetValue()),
+            'uzr'       : float(self.site['uzr'].GetValue()),
+            'xzr'       : float(self.site['xzr'].GetValue()),
+            'o3_h'      : float(self.site['o3_h'].GetValue()),
+            'u_h'       : float(self.site['u_h'].GetValue()),
+            'o3_h_copy' : self.site['o3_h_copy'].GetValue(),
+            'u_h_copy' : self.site['u_h_copy'].GetValue(),
+            'rsoil'     : float(self.site['rsoil'].GetValue()),
+            'soil_a'    : {'Coarse': -4.0, 'Medium': -5.5, 'Fine': -7.0}
+                            [self.site['soil_tex'].GetStringSelection()],
+            'soil_b'    : {'Coarse': -2.3, 'Medium': -3.3, 'Fine': -5.4}
+                            [self.site['soil_tex'].GetStringSelection()],
+            'soil_bd'   : 1.3,
+            'fc_m'      : 0.193,
+        }
+
+
+    def set_site_params(self, v):
+        self.site['lat'].SetValue(v['lat'])
+        self.site['lon'].SetValue(v['lon'])
+        self.site['elev'].SetValue(v['elev'])
+        self.site['o3zr'].SetValue(v['o3zr'])
+        self.site['uzr'].SetValue(v['uzr'])
+        self.site['xzr'].SetValue(v['xzr'])
+        self.site['o3_h'].SetValue(v['o3_h'])
+        self.site['u_h'].SetValue(v['u_h'])
+        self.site['o3_h_copy'].SetValue(v['o3_h_copy'])
+        self.site['u_h_copy'].SetValue(v['u_h_copy'])
+        self.site['soil_tex'].SetStringSelection(
+            {-4.0: 'Coarse', -5.5: 'Medium', -7.0: 'Fine'}[v['soil_a']]
+        )
+        self.site['rsoil'].SetValue(v['rsoil'])
+        self.site['o3_h'].Enable(not self.site['o3_h_copy'].IsChecked())
+        self.site['u_h'].Enable(not self.site['u_h_copy'].IsChecked())
+
 
 
 class ResultsWindow(wx.Frame):
