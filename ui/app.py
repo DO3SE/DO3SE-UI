@@ -3,7 +3,7 @@
 ################################################################################
 
 # Configuration file version
-CFGVERSION = "0.3"
+CFGVERSION = "0.4"
 
 # Set up logging
 import logging
@@ -19,9 +19,6 @@ import shelve
 import os
 
 import util
-
-class wtf:
-    pass
 
 class Application(wx.App):
     def OnInit(self):
@@ -65,6 +62,8 @@ class Application(wx.App):
             self.config['preset.outputs'] = dict([])
         if not 'preset.site' in self.config:
             self.config['preset.site'] = dict([])
+        if not 'preset.veg' in self.config:
+            self.config['preset.veg'] = dict([])
         self.config['version'] = CFGVERSION
 
 
