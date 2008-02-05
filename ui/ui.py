@@ -96,7 +96,7 @@ class MainWindow(wx.Frame):
 
         ### 'Input' tab ###
         pInput = panels.InputParams(nbMain)
-        nbMain.AddPage(pInput, "Input")
+        nbMain.AddPage(pInput, "Input format")
 
         ### 'Site parameters' tab ###
         pSite = panels.SiteParams(nbMain)
