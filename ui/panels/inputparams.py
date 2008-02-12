@@ -48,3 +48,9 @@ class InputParams(wx.Panel):
             self.lsInputs.SetSelection(maps.inputs.map(v['fields']))
             self.spinInputTrim.SetValue(v['trim'])
         self.presets.setvalues = f
+
+    def GetFields(self):
+        return maps.inputs.rmap(self.lsInputs.GetSelection())
+
+    def GetTrim(self):
+        return int(self.spinInputTrim.GetValue())

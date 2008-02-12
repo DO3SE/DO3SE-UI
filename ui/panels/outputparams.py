@@ -46,3 +46,9 @@ class OutputParams(wx.Panel):
             self.slOutputs.SetSelection(maps.outputs.map(v['fields']))
             self.chkOutputHeaders.SetValue(v['headers'])
         self.presets.setvalues = f
+
+    def GetFields(self):
+        return maps.outputs.rmap(self.slOutputs.GetSelection())
+
+    def GetAddHeaders(self):
+        return self.chkOutputHeaders.GetValue()

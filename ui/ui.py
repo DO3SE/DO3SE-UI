@@ -78,37 +78,42 @@ class MainWindow(wx.Frame):
         self.SetTitle('DOSE Model')
 
         ### Main panel ###
+        s = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(s)
+        p = wx.Panel(self)
+        s.Add(p, 1, wx.EXPAND)
         sMain = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(sMain)
+        p.SetSizer(sMain)
+        
         # Create notebook
-        nbMain = wx.Notebook(self)
+        nbMain = wx.Notebook(p)
         sMain.Add(nbMain, 1, wx.EXPAND|wx.ALL, 6)
         # Create bottom buttons
         sButtons = wx.BoxSizer(wx.HORIZONTAL)
         sMain.Add(sButtons, 0, wx.ALL|wx.ALIGN_RIGHT, 6)
-        bClose = wx.Button(self, wx.ID_EXIT)
+        bClose = wx.Button(p, wx.ID_EXIT)
         sButtons.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, self._on_exit, bClose)
-        bRun = wx.Button(self, label='&Run')
+        bRun = wx.Button(p, label='&Run')
         sButtons.Add(bRun, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, self._on_run, bRun)
 
 
         ### 'Input' tab ###
-        pInput = panels.InputParams(nbMain)
-        nbMain.AddPage(pInput, "Input format")
+        self.Input = panels.InputParams(nbMain)
+        nbMain.AddPage(self.Input, "Input format")
 
         ### 'Site parameters' tab ###
-        pSite = panels.SiteParams(nbMain)
-        nbMain.AddPage(pSite, "Site parameters")
+        self.Site = panels.SiteParams(nbMain)
+        nbMain.AddPage(self.Site, "Site parameters")
 
         ### 'Vegetation parameters' tab ###
-        pVeg = panels.VegParams(nbMain)
-        nbMain.AddPage(pVeg, "Vegetation parameters")
+        self.Veg = panels.VegParams(nbMain)
+        nbMain.AddPage(self.Veg, "Vegetation parameters")
             
         ### 'Output' tab ###
-        pOutput = panels.OutputParams(nbMain)
-        nbMain.AddPage(pOutput, 'Output')
+        self.Output = panels.OutputParams(nbMain)
+        nbMain.AddPage(self.Output, 'Output')
 
 
     def _init_menu(self):
@@ -166,15 +171,14 @@ class MainWindow(wx.Frame):
                     wx.OK|wx.ICON_ERROR, self)
             return
 
-        d = Dataset(path, maps.inputs.rmap(self.lsInputs.GetSelection()),
-                self.spinInputTrim.GetValue())
+        d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim())
         self.filehistory.AddFileToHistory(path)
-        d.run(self.get_site_params(), None)
+        d.run(self.Site.getvalues(), None)
         r = ResultsWindow(d, {
-            'inputs': list(maps.inputs.rmap(self.lsInputs.GetSelection())),
-            'inputs_trim': int(self.spinInputTrim.GetValue()),
-            'outputs': list(maps.outputs.rmap(self.slOutputs.GetSelection())),
-            'outputs_headers': self.chkOutputHeaders.GetValue(),
+            'inputs': self.Input.GetFields(),
+            'inputs_trim': self.Input.GetTrim(),
+            'outputs': self.Output.GetFields(),
+            'outputs_headers': self.Output.GetAddHeaders(),
         })
         r.Show()
 
