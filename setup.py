@@ -9,6 +9,32 @@ try:
 except ImportError:
     pass
 
+manifest = '''
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+<assemblyIdentity
+    version="5.0.0.0"
+    processorArchitecture="x86"
+    name="%(app)s"
+    type="win32"
+/>
+<description>%(description)s</description>
+<dependency>
+    <dependentAssembly>
+        <assemblyIdentity
+            type="win32"
+            name="Microsoft.Windows.Common-Controls"
+            version="6.0.0.0"
+            processorArchitecture="X86"
+            publicKeyToken="6595b64144ccf1df"
+            language="*"
+        />
+    </dependentAssembly>
+</dependency>
+</assembly>
+''' % dict(app = "DOSE UI",
+        description = "DOSE Model User Interface")
+
 build_opts = dict()
 if os.name == 'nt':
     build_opts['compiler'] = 'mingw32'
@@ -60,5 +86,8 @@ if __name__ == "__main__":
             ext_modules     = [
                 Extension('dose_f', buildpyf(files, 'dose_f.pyf'))
             ],
-            windows=["dose-ui"],
+            windows=[{
+                'script': "dose-ui",
+                'other_resources': [(24, 1, manifest)],
+            }],
     )
