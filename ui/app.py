@@ -7,10 +7,25 @@ CFGVERSION = "0.4"
 
 # Set up logging
 import logging
-logging.basicConfig(
-    level = logging.DEBUG,
-    format = '%(levelname)-8s %(message)s'
-)
+import sys
+try:
+    if sys.frozen:
+        # If we are running standalone, don't annoy the user with pointless debug
+        # messages
+        logging.basicConfig(
+            level = logging.CRITICAL,
+            format = '%(levelname)-8s %(message)s'
+        )
+    else:
+        logging.basicConfig(
+            level = logging.DEBUG,
+            format = '%(levelname)-8s %(message)s'
+        )
+except AttributeError:
+    logging.basicConfig(
+        level = logging.DEBUG,
+        format = '%(levelname)-8s %(message)s'
+    )
 
 
 # The application
