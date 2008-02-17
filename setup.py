@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+application = "DO3SE"
+description = "Deposition of Ozone and Stomatal Exchange"
+version     = "0.2"
 
 from numpy.distutils.core import setup, Extension
 import os
@@ -32,8 +35,7 @@ manifest = '''
     </dependentAssembly>
 </dependency>
 </assembly>
-''' % dict(app = "DOSE UI",
-        description = "DOSE Model User Interface")
+''' % dict(app=application, description=description)
 
 build_opts = dict()
 if os.name == 'nt':
@@ -72,9 +74,9 @@ def buildpyf(filelist, target):
 
 if __name__ == "__main__":
     setup(
-            name            = 'DOSE-UI',
-            description     = 'DOSE Model User Interface',
-            version         = '0.1',
+            name            = application,
+            description     = description,
+            version         = version,
             author          = 'Alan Briolat',
             author_email    = 'ab544@cs.york.ac.uk',
             packages        = ['ui', 'ui.panels'],
