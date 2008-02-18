@@ -110,10 +110,6 @@ class MainWindow(wx.Frame):
         ### 'Vegetation parameters' tab ###
         self.Veg = panels.VegParams(nbMain)
         nbMain.AddPage(self.Veg, "Vegetation parameters")
-            
-        ### 'Output' tab ###
-        self.Output = panels.OutputParams(nbMain)
-        nbMain.AddPage(self.Output, 'Output')
 
 
     def _init_menu(self):
@@ -171,23 +167,19 @@ class MainWindow(wx.Frame):
                     wx.OK|wx.ICON_ERROR, self)
             return
 
-        d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim())
         self.filehistory.AddFileToHistory(path)
-        d.run(self.Site.getvalues(), None)
-        r = ResultsWindow(d, {
-            'inputs': self.Input.GetFields(),
-            'inputs_trim': self.Input.GetTrim(),
-            'outputs': self.Output.GetFields(),
-            'outputs_headers': self.Output.GetAddHeaders(),
-        })
+        d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
+                self.Site.getvalues(), self.Veg.getvalues())
+        r = ResultsWindow(d, self.recent_dir)
         r.Show()
 
 
 class ResultsWindow(wx.Frame):
-    def __init__(self, dataset, settings):
+    def __init__(self, dataset, startdir):
         wx.Frame.__init__(self, app.toplevel)
+
         self.dataset = dataset
-        self.settings = settings
+        self.startdir = startdir
 
         self._init_frame()
 
@@ -195,27 +187,37 @@ class ResultsWindow(wx.Frame):
 
     
     def _init_frame(self):
+        # Give the window a number, and store a reference to it
         global result_windows, result_windowcount
         result_windows.append(self)
         result_windowcount += 1
 
+        # Set size and title
         self.SetSize((800, 600))
         self.SetTitle("DOSE - Results (%d)" % result_windowcount)
 
-        s0 = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(s0)
-
-        placeholder = wx.Panel(self)
-        s0.Add(placeholder, 1, wx.EXPAND)
-
-        s1 = wx.BoxSizer(wx.HORIZONTAL)
-        s0.Add(s1, 0, wx.ALIGN_RIGHT|wx.ALL, 6)
-        bClose = wx.Button(self, wx.ID_CLOSE)
-        s1.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
+        ### Main panel ###
+        s = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(s)
+        p = wx.Panel(self)
+        s.Add(p, 1, wx.EXPAND)
+        sMain = wx.BoxSizer(wx.VERTICAL)
+        p.SetSizer(sMain)
+        
+        # Create notebook
+        nbMain = wx.Notebook(p)
+        sMain.Add(nbMain, 1, wx.EXPAND|wx.ALL, 6)
+        # Create bottom buttons
+        sButtons = wx.BoxSizer(wx.HORIZONTAL)
+        sMain.Add(sButtons, 0, wx.ALL|wx.ALIGN_RIGHT, 6)
+        bClose = wx.Button(p, wx.ID_CLOSE)
+        sButtons.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, lambda evt: self.Close(), bClose)
-        bSave = wx.Button(self, wx.ID_SAVE)
-        s1.Add(bSave, 0, wx.EXPAND|wx.LEFT, 6)
-        self.Bind(wx.EVT_BUTTON, self._on_save, bSave)
+
+        pSave = panels.Save(nbMain, self.dataset, self.startdir)
+        nbMain.AddPage(pSave, "Save to file")
+        
+        self.dataset.run()
 
 
     def _on_close(self, evt):
@@ -223,21 +225,3 @@ class ResultsWindow(wx.Frame):
         logging.debug("Cleaning up results window")
         result_windows.remove(self)
         evt.Skip()
-
-
-    def _on_save(self, evt):
-        global result_recent_dir
-        fd = wx.FileDialog(self, message = 'Save results',
-                defaultDir = result_recent_dir,
-                wildcard = 'Comma-separated values (*.csv)|*.csv|All files (*.*)|*',
-                style = wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
-        response = fd.ShowModal()
-
-        if response == wx.ID_OK:
-            result_recent_dir = fd.GetDirectory()
-            path = fd.GetPath()
-            if not path.split('.')[-1] == 'csv': path = path + '.csv'
-            self.dataset.save(path, self.settings['outputs'], headers=self.settings['outputs_headers'])
-            wx.MessageDialog(self, message = 'Results saved!',
-                    style = wx.OK|wx.ICON_INFORMATION)
-        
