@@ -15,7 +15,7 @@ import util
 import dose
 
 class Dataset:
-    def __init__(self, filename, fields, trim=1):
+    def __init__(self, filename, fields, trim, siteparams, vegparams):
         """Constructor
 
         Initialise the Dataset object and load the data from the file.
@@ -23,8 +23,12 @@ class Dataset:
         filename:   The path to the file to load
         fields:     Fields contained in the file, to be used as dict keys
         trim:       The number of lines to trim from the beginning of the file
+        siteparams: Site parameters
+        vegparams:  Vegetation parameters
         """
         self.filename = filename
+        self.siteparams = siteparams
+        self.vegparams = vegparams
 
         # Open the file
         file = open(self.filename)
@@ -38,19 +42,19 @@ class Dataset:
         file.close()
 
         logging.info("Loaded %d lines from '%s'" % (len(self.input), self.filename))
-        #logging.debug(self.input)
 
-    def run(self, siteparams, vegparams):
+    def run(self):
         # Setup parameters
         
         # Do vegetation parameters first, as some site parameters depend on this
+        #util.setattrs(dose.params_veg, self.vegparams)
         dose.params_veg.derive_d_zo()
         # ...
-        util.setattrs(dose.params_site, siteparams)
+        util.setattrs(dose.params_site, self.siteparams)
 
         # Initialise the module
         logging.info("Initialising DOSE Fortran model")
-        dose.run.init(int(siteparams['u_h_copy']), int(siteparams['o3_h_copy']))
+        dose.run.init(int(self.siteparams['u_h_copy']), int(self.siteparams['o3_h_copy']))
 
         self.results = []
         # Iterate through dataset
