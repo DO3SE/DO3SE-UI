@@ -1,3 +1,5 @@
+# TODO: Load defaults from the F model
+
 import wx
 
 from .. import wxext
@@ -33,42 +35,57 @@ class VegParams(wx.Panel):
         # Characteristics
         sChar = wxext.StaticBox2Col(self, "Characteristics")
         sVegParams.Add(sChar, 0, wx.EXPAND)
+        
         sChar.fgs.Add(wx.StaticText(self, label="Canopy height (m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['h'] = wx.SpinCtrl(self, min=1, max=100, initial=25)
         sChar.fgs.Add(self.fields['h'], 0)
+        
         sChar.fgs.Add(wx.StaticText(self, label="Root depth (m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['root'] = FloatSpin(self, value=1.2, min_val=0.01, 
                 increment=0.1, digits=1)
         sChar.fgs.Add(self.fields['root'], 0)
+        
         sChar.fgs.Add(wx.StaticText(self, label="Min. Leaf Area Index (m^2/m^2)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['lai_min'] = FloatSpin(self, value=0.0, min_val=0,
                 increment=0.1, digits=1)
         sChar.fgs.Add(self.fields['lai_min'], 0)
+        
         sChar.fgs.Add(wx.StaticText(self, label="Max. Leaf Area Index (m^2/m^2)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['lai_max'] = FloatSpin(self, value=4.0, min_val=0,
                 increment=0.1, digits=1)
         sChar.fgs.Add(self.fields['lai_max'], 0)
 
+        sChar.fgs.Add(wx.StaticText(self, label="Leaf dimension (Lm, m)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['lm'] = FloatSpin(self, min_val=0.01, value=0.05, increment=0.01, digits=2)
+        sChar.fgs.Add(self.fields['lm'], 0)
+
+        sChar.fgs.Add(wx.StaticText(self, label="External plant cuticle resistance (Rext, s/m)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['rext'] = wx.SpinCtrl(self, min=0, max=20000, initial=2500)
+        sChar.fgs.Add(self.fields['rext'], 0)
+
+
         # Growing season
         sSeason = wxext.StaticBox2Col(self, "Growing season")
         sVegParams.Add(sSeason, 0, wx.EXPAND)
-        sSeason.fgs.Add(wx.StaticText(self, label="Start (day of year)"),
+        sSeason.fgs.Add(wx.StaticText(self, label="Start (SGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['sgs'] = wx.SpinCtrl(self, min=1, max=365, initial=121)
         sSeason.fgs.Add(self.fields['sgs'])
-        sSeason.fgs.Add(wx.StaticText(self, label="End (day of year)"),
+        sSeason.fgs.Add(wx.StaticText(self, label="End (EGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['egs'] = wx.SpinCtrl(self, min=1, max=365, initial=273)
         sSeason.fgs.Add(self.fields['egs'])
-        sSeason.fgs.Add(wx.StaticText(self, label="Start - upper leaf"),
+        sSeason.fgs.Add(wx.StaticText(self, label="Upper leaf start (Astart, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['astart'] = wx.SpinCtrl(self, min=1, max=365, initial=121)
         sSeason.fgs.Add(self.fields['astart'])
-        sSeason.fgs.Add(wx.StaticText(self, label="End - upper leaf"),
+        sSeason.fgs.Add(wx.StaticText(self, label="Upper leaf end (Aend, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['aend'] = wx.SpinCtrl(self, min=1, max=365, initial=273)
         sSeason.fgs.Add(self.fields['aend'])
@@ -140,6 +157,46 @@ class VegParams(wx.Panel):
             if self.fields['t_max'].GetValue() < self.fields['t_opt'].GetValue():
                 self.fields['t_max'].SetValue(self.fields['t_opt'].GetValue())
         self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_max'])
+        
+        # Fphen parameters
+        sFphen = wxext.StaticBox2Col(self, "Fphen parameters")
+        sVegParams.Add(sFphen, 0, wx.EXPAND)
+
+        sFphen.fgs.Add(wx.StaticText(self, label="Fphen at SGS"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['fphen_a'] = FloatSpin(self, value=0.0, increment=0.1, 
+                min_val=0.0, max_val=1.0, digits=1)
+        sFphen.fgs.Add(self.fields['fphen_a'], 0)
+        
+        sFphen.fgs.Add(wx.StaticText(self, label="Fphen at Astart"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['fphen_b'] = FloatSpin(self, value=0.0, increment=0.1, 
+                min_val=0.0, max_val=1.0, digits=1)
+        sFphen.fgs.Add(self.fields['fphen_b'], 0)
+        
+        sFphen.fgs.Add(wx.StaticText(self, label="Fphen at middle of season"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['fphen_c'] = FloatSpin(self, value=1.0, increment=0.1, 
+                min_val=0.0, max_val=1.0, digits=1)
+        sFphen.fgs.Add(self.fields['fphen_c'], 0)
+        
+        sFphen.fgs.Add(wx.StaticText(self, label="Fphen at Aend and EGS"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['fphen_d'] = FloatSpin(self, value=0.0, increment=0.1, 
+                min_val=0.0, max_val=1.0, digits=1)
+        sFphen.fgs.Add(self.fields['fphen_d'], 0)
+        
+        # TODO: Put some constraints on these
+        sFphen.fgs.Add(wx.StaticText(self, label="Period from Astart to mid-season Fphen"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['fphens'] = wx.SpinCtrl(self, min=1, initial=15)
+        sFphen.fgs.Add(self.fields['fphens'], 0)
+        
+        sFphen.fgs.Add(wx.StaticText(self, label="Period from mid-season to EGS Fphen"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['fphene'] = wx.SpinCtrl(self, min=1, initial=20)
+        sFphen.fgs.Add(self.fields['fphene'], 0)
+
 
     def getvalues(self):
         return { 
