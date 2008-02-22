@@ -47,9 +47,8 @@ class Dataset:
         # Setup parameters
         
         # Do vegetation parameters first, as some site parameters depend on this
-        #util.setattrs(dose.params_veg, self.vegparams)
+        util.setattrs(dose.params_veg, self.vegparams)
         dose.params_veg.derive_d_zo()
-        # ...
         util.setattrs(dose.params_site, self.siteparams)
 
         # Initialise the module

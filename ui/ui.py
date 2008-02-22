@@ -74,7 +74,7 @@ class MainWindow(wx.Frame):
         """
 
         # Set window size and title
-        self.SetSize((800,600))
+        self.SetSize((500,600))
         self.SetTitle('DOSE Model')
 
         ### Main panel ###
