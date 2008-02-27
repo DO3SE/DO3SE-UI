@@ -7,6 +7,7 @@ import wxext
 import maps
 from dataset import Dataset
 import panels
+import dose
 
 
 # Keep track of all the results windows
@@ -74,7 +75,7 @@ class MainWindow(wx.Frame):
         """
 
         # Set window size and title
-        self.SetSize((500,600))
+        self.SetSize((600,600))
         self.SetTitle('DOSE Model')
 
         ### Main panel ###
@@ -162,14 +163,38 @@ class MainWindow(wx.Frame):
 
 
     def _run_file(self, path):
+        class RequiredFieldError:
+            def __init__(self, field):
+                wx.MessageBox("Required field missing: %s" % maps.inputs.map([field])[0],
+                        'DOSE Model', wx.OK|wx.ICON_ERROR, app.toplevel)
+
+        self.filehistory.AddFileToHistory(path)
+
+        fields = self.Input.GetFields()
+
+        # Requiried fields
+        required = ['dd', 'hr', 'ts_c', 'vpd', 'uh_zr', 'precip', 'p', 'o3_ppb_zr']
+        try:
+            for f in required:
+                if not f in fields:
+                    raise RequiredFieldError(f)
+        except RequiredFieldError:
+            return
+
+        d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
+                self.Site.getvalues(), self.Veg.getvalues())
+
         if not os.access(path, os.R_OK):
             wx.MessageBox("Could not read the specified file", 
                     wx.OK|wx.ICON_ERROR, self)
             return
 
-        self.filehistory.AddFileToHistory(path)
-        d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
-                self.Site.getvalues(), self.Veg.getvalues())
+        # Calculate net radiation if not supplied
+        if 'rn' in fields:
+            d.rn = dose.irradiance.copy_rn
+        else:
+            d.rn = dose.irradiance.calc_rn
+
         r = ResultsWindow(d, self.recent_dir)
         r.Show()
 

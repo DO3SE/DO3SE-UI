@@ -30,6 +30,13 @@ class Dataset:
         self.siteparams = siteparams
         self.vegparams = vegparams
 
+        # Set up default procedures
+        self.sai = dose.phenology.calc_sai_simple
+        self.ra = dose.r.calc_ra_simple
+        self.aet = dose.evapotranspiration.calc_aet
+        self.pet = dose.evapotranspiration.calc_pet
+        self.rn = dose.irradiance.calc_rn
+
         # Open the file
         file = open(self.filename)
         # Skip the trimmed lines
@@ -61,13 +68,7 @@ class Dataset:
         for row in self.input:
             util.setattrs(dose.inputs, row)
             dose.inputs.derive_ustar_uh()
-            dose.run.do_calcs(
-                    dose.phenology.calc_sai_simple,
-                    dose.r.calc_ra_simple,
-                    dose.evapotranspiration.calc_aet,
-                    dose.evapotranspiration.calc_pet,
-                    dose.irradiance.calc_rn
-            )
+            dose.run.do_calcs(self.sai, self.ra, self.aet, self.pet, self.rn)
             self.results.append(util.getattrs_f(dose.variables, 
                 ['ftemp', 'fvpd', 'pet', 'aet', 'ei', 'flight', 'leaf_flight', 
                     'rn', 'lai', 'sai', 'fphen', 'leaf_fphen', 'ra', 'rb', 
