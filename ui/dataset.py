@@ -89,7 +89,7 @@ class Dataset:
         logging.info("Writing data to '%s' ..." % filename)
         logging.debug("Output data format: %s" % (",".join(fields)))
 
-        file = open(filename, "w")
+        file = open(filename, "wb")
         w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
         if headers:
