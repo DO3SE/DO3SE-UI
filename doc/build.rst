@@ -1,13 +1,57 @@
 .. vim: fo=aw2tq tw=100
 
-======================================
-Building the DOSE model User Interface
-======================================
+=================================
+Building the DOSE model - Windows
+=================================
 
 .. contents::
 
-Windows
-=======
+Just the F model
+================
+
+Preparing the environment
+-------------------------
+
+1.  Download and run setup.exe_ from the Cygwin_ website.
+
+2.  Select the "Archive -> unzip" and "Devel -> make" packages.  **Note:** Do not install Python or 
+    MinGW from this screen
+
+3.  Click "Next" and let it install the packages - this may take a while!
+
+4.  Run the Cygwin shell once to make sure your "home" directory gets created
+
+5.  Download FortranTools_windows_F.zip_ from the FortranTools FTP server into your Cygwin home 
+    directory (e.g. ``C:\cygwin\home\your_username``)
+
+6.  Open the Cygwin shell
+
+7.  Run the following to unpack and install the F compiler::
+
+      unzip FortranTools_windows_F.zip
+      cd FortranTools
+      sed "s/\r//g" install_fortrantools > install_fortrantools.fixed
+      ./install_fortrantools.fixed
+
+.. _Cygwin: http://www.cygwin.com/
+.. _setup.exe: http://www.cygwin.com/setup.exe
+.. _FortranTools_windows_F.zip: ftp://ftp.swcp.com/pub/walt/F/FortranTools_windows_F.zip
+
+Building the model
+------------------
+
+1.  Unzip the source code somewhere
+
+2.  Take a look at ``F\dose.f90`` to see the filename that should be used for the input file (and 
+    what filename to expect for the output file)
+
+3.  Open a Cygwin shell and change directory to where the source code is
+
+4.  Run the ``make`` command - the compiled program will be called ``dose``
+
+
+The User Interface
+==================
 
 Preparing the environment
 -------------------------
@@ -77,27 +121,3 @@ Building the application
 
 
 
-1.  Download and run setup.exe_ from the Cygwin_ website.
-
-2.  Select the "Archive -> unzip" and "Devel -> make" packages.  **Note:** Do not install Python or 
-    MinGW from this screen
-
-3.  Click "Next" and let it install the packages - this may take a while!
-
-4.  Run the Cygwin shell once to make sure your "home" directory gets created
-
-5.  Download FortranTools_windows_F.zip_ from the FortranTools FTP server into your Cygwin home 
-    directory (e.g. ``C:\cygwin\home\your_username``)
-
-6.  Open the Cygwin shell
-
-7.  Run the following to unpack and install the F compiler::
-
-      unzip FortranTools_windows_F.zip
-      cd FortranTools
-      sed "s/\r//g" install_fortrantools > install_fortrantools.fixed
-      ./install_fortrantools.fixed
-
-.. _Cygwin: http://www.cygwin.com/
-.. _setup.exe: http://www.cygwin.com/setup.exe
-.. _FortranTools_windows_F.zip: ftp://ftp.swcp.com/pub/walt/F/FortranTools_windows_F.zip
