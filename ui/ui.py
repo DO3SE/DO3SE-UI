@@ -164,9 +164,15 @@ class MainWindow(wx.Frame):
 
     def _run_file(self, path):
         class RequiredFieldError:
-            def __init__(self, field):
-                wx.MessageBox("Required field missing: %s" % maps.inputs.map([field])[0],
-                        'DOSE Model', wx.OK|wx.ICON_ERROR, app.toplevel)
+            def __init__(self, fields):
+                if len(fields) == 1:
+                    wx.MessageBox("Required field missing: %s" % maps.inputs.map(fields)[0],
+                            'DOSE Model', wx.OK|wx.ICON_ERROR, app.toplevel)
+
+                else:
+                    wx.MessageBox("At least one of the following fields are required:\n\n" + 
+                            "\n".join(maps.inputs.map(fields)), 'DOSE Model', 
+                            wx.OK|wx.ICON_ERROR, app.toplevel)
 
         self.filehistory.AddFileToHistory(path)
 
@@ -177,12 +183,26 @@ class MainWindow(wx.Frame):
         try:
             for f in required:
                 if not f in fields:
-                    raise RequiredFieldError(f)
+                    raise RequiredFieldError([f])
         except RequiredFieldError:
             return
 
         d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
                 self.Site.getvalues(), self.Veg.getvalues())
+
+        # PAR/Global radiation
+        try:
+            if 'par' in fields and 'r' in fields:
+                def f(): pass
+                d.par_r = f
+            elif 'par' not in fields:
+                d.par_r = lambda : dose.inputs.derive_par()
+            elif 'r' not in fields:
+                d.par_r = lambda : dose.inputs.derive_r()
+            else:
+                raise RequiredFieldError(['par', 'r'])
+        except RequiredFieldError:
+            return
 
         if not os.access(path, os.R_OK):
             wx.MessageBox("Could not read the specified file", 
