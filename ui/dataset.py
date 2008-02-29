@@ -36,6 +36,9 @@ class Dataset:
         self.aet = dose.evapotranspiration.calc_aet
         self.pet = dose.evapotranspiration.calc_pet
         self.rn = dose.irradiance.calc_rn
+        # Calculation between PAR and R
+        def f(): pass
+        self.par_r = f
 
         # Open the file
         file = open(self.filename)
@@ -67,6 +70,7 @@ class Dataset:
         logging.info("Running calculations ...")
         for row in self.input:
             util.setattrs(dose.inputs, row)
+            self.par_r()
             dose.inputs.derive_ustar_uh()
             dose.run.do_calcs(self.sai, self.ra, self.aet, self.pet, self.rn)
             self.results.append(util.getattrs_f(dose.variables, 
