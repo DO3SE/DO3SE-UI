@@ -5,7 +5,7 @@ from FloatSpin import FloatSpin
 from app import logging, app
 import wxext
 import maps
-from dataset import Dataset
+from dataset import Dataset, InsufficientTrimError, InvalidFieldCountError
 import panels
 import dose
 
@@ -76,7 +76,7 @@ class MainWindow(wx.Frame):
 
         # Set window size and title
         self.SetSize((600,600))
-        self.SetTitle('DOSE Model')
+        self.SetTitle(app.title)
 
         ### Main panel ###
         s = wx.BoxSizer(wx.VERTICAL)
@@ -167,11 +167,11 @@ class MainWindow(wx.Frame):
             def __init__(self, fields):
                 if len(fields) == 1:
                     wx.MessageBox("Required field missing: %s" % maps.inputs.map(fields)[0],
-                            'DOSE Model', wx.OK|wx.ICON_ERROR, app.toplevel)
+                            app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
 
                 else:
                     wx.MessageBox("At least one of the following fields are required:\n\n" + 
-                            "\n".join(maps.inputs.map(fields)), 'DOSE Model', 
+                            "\n".join(maps.inputs.map(fields)), app.title, 
                             wx.OK|wx.ICON_ERROR, app.toplevel)
 
         self.filehistory.AddFileToHistory(path)
@@ -187,45 +187,58 @@ class MainWindow(wx.Frame):
         except RequiredFieldError:
             return
 
-        d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
-                self.Site.getvalues(), self.Veg.getvalues())
-
         # PAR/Global radiation
         try:
             if 'par' in fields and 'r' in fields:
                 def f(): pass
-                d.par_r = f
-            elif 'par' not in fields:
-                d.par_r = lambda : dose.inputs.derive_par()
-            elif 'r' not in fields:
-                d.par_r = lambda : dose.inputs.derive_r()
+                par_r = f
+            elif 'par' in fields:
+                par_r = lambda : dose.inputs.derive_r()
+            elif 'r' in fields:
+                par_r = lambda : dose.inputs.derive_par()
             else:
                 raise RequiredFieldError(['par', 'r'])
         except RequiredFieldError:
             return
+
+        # Calculate net radiation if not supplied
+        if 'rn' in fields:
+            rn = dose.irradiance.copy_rn
+        else:
+            rn = dose.irradiance.calc_rn
 
         if not os.access(path, os.R_OK):
             wx.MessageBox("Could not read the specified file", 
                     wx.OK|wx.ICON_ERROR, self)
             return
 
-        # Calculate net radiation if not supplied
-        if 'rn' in fields:
-            d.rn = dose.irradiance.copy_rn
-        else:
-            d.rn = dose.irradiance.calc_rn
+        # Load the data, set the parameters
+        try:
+            d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
+                    self.Site.getvalues(), self.Veg.getvalues())
+        # We already warn the user about these, so don't raise them - just fail
+        # to run the dataset
+        except InsufficientTrimError: return
+        # Set up the calculation changes
+        d.par_r = par_r
+        d.rn = rn
 
-        r = ResultsWindow(d, self.recent_dir)
+        try:
+            r = ResultsWindow(d, self.recent_dir)
+        except InvalidFieldCountError: return
         r.Show()
 
 
 class ResultsWindow(wx.Frame):
     def __init__(self, dataset, startdir):
-        wx.Frame.__init__(self, app.toplevel)
-
         self.dataset = dataset
         self.startdir = startdir
 
+        # Run the dataset before anything else - if there was an error, don't 
+        # bother creating the window at all (caught by the creator)
+        self.dataset.run()
+
+        wx.Frame.__init__(self, app.toplevel)
         self._init_frame()
 
         self.Bind(wx.EVT_CLOSE, self._on_close)
@@ -239,7 +252,7 @@ class ResultsWindow(wx.Frame):
 
         # Set size and title
         self.SetSize((800, 600))
-        self.SetTitle("DOSE - Results (%d)" % result_windowcount)
+        self.SetTitle("%s - Results (%d)" % (app.title, result_windowcount))
 
         ### Main panel ###
         s = wx.BoxSizer(wx.VERTICAL)
@@ -261,8 +274,6 @@ class ResultsWindow(wx.Frame):
 
         pSave = panels.Save(nbMain, self.dataset, self.startdir)
         nbMain.AddPage(pSave, "Save to file")
-        
-        self.dataset.run()
 
 
     def _on_close(self, evt):

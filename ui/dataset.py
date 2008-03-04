@@ -14,6 +14,16 @@ from app import logging, app
 import util
 import dose
 
+class InvalidFieldCountError:
+    def __init__(self):
+        wx.MessageBox("Number of fields in the input file does not match the number of fields selected!", 
+                app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
+
+class InsufficientTrimError:
+    def __init__(self):
+        wx.MessageBox("Some of the data was the wrong type - is the number of lines to trim from the input set correctly?",
+                app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
+
 class Dataset:
     def __init__(self, filename, fields, trim, siteparams, vegparams):
         """Constructor
@@ -46,8 +56,13 @@ class Dataset:
         for n in xrange(0,trim): file.next()
         # Load all of the data
         logging.debug("Input data format: %s" % (",".join(fields)))
-        self.input = list(csv.DictReader(file, fieldnames = fields, 
-            quoting=csv.QUOTE_NONNUMERIC))
+        try:
+            self.input = list(csv.DictReader(file, fieldnames = fields, 
+                quoting=csv.QUOTE_NONNUMERIC))
+        except ValueError:
+            # ValueError here usually means the headers didn't get trimmed
+            raise InsufficientTrimError()
+
         # Close the file
         file.close()
 
@@ -69,7 +84,12 @@ class Dataset:
         # Iterate through dataset
         logging.info("Running calculations ...")
         for row in self.input:
-            util.setattrs(dose.inputs, row)
+            # Catch TypeError - usually caused by some attributes being None 
+            # because there weren't enough fields in the input
+            # TODO: Handle this differently?
+            try: util.setattrs(dose.inputs, row)
+            except TypeError: raise InvalidFieldCountError()
+
             self.par_r()
             dose.inputs.derive_ustar_uh()
             dose.run.do_calcs(self.sai, self.ra, self.aet, self.pet, self.rn)

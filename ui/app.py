@@ -38,6 +38,7 @@ import util
 class Application(wx.App):
     def OnInit(self):
         self.SetAppName('DOSE')
+        self.title = 'DOSE Model'
 
         # Single instance checker - only allow one instance of the program
         self.sichecker = wx.SingleInstanceChecker("%s-%s.lock" % 
