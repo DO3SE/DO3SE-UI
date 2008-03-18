@@ -69,6 +69,8 @@ class Dataset:
         logging.info("Loaded %d lines from '%s'" % (len(self.input), self.filename))
 
     def run(self):
+        skippedrows = 0
+
         # Setup parameters
         
         # Do vegetation parameters first, as some site parameters depend on this
@@ -84,6 +86,10 @@ class Dataset:
         # Iterate through dataset
         logging.info("Running calculations ...")
         for row in self.input:
+            # Skip rows that are missing values
+            if '' in row.values():
+                skippedrows += 1
+                continue
             # Catch TypeError - usually caused by some attributes being None 
             # because there weren't enough fields in the input
             # TODO: Handle this differently?
@@ -103,6 +109,7 @@ class Dataset:
             ))
 
         logging.info("Got %d results" % len(self.results))
+        return (len(self.results), skippedrows)
 
 
     def save(self, filename, fields, headers=False):

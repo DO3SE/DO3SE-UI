@@ -236,7 +236,16 @@ class ResultsWindow(wx.Frame):
 
         # Run the dataset before anything else - if there was an error, don't 
         # bother creating the window at all (caught by the creator)
-        self.dataset.run()
+        resultcount, skippedrows = self.dataset.run()
+
+        # Notify the user of any problems encountered while running the dataset
+        if skippedrows > 0:
+            wx.MessageBox(("%s incomplete data rows were skipped, but %s rows "+ \
+                    "were processed normally.  If this matches the number of "+ \
+                    "data rows in your file (not including headers) then "+ \
+                    "there is nothing to worry about, otherwise check your "+ \
+                    "data file for missing values.") % (skippedrows, resultcount), 
+                    app.title, wx.OK|wx.ICON_WARNING, app.toplevel)
 
         wx.Frame.__init__(self, app.toplevel)
         self._init_frame()
