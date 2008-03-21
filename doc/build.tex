@@ -1,0 +1,294 @@
+\documentclass[10pt,a4paper,english]{article}
+\usepackage{babel}
+\usepackage{ae}
+\usepackage{aeguill}
+\usepackage{shortvrb}
+\usepackage[latin1]{inputenc}
+\usepackage{tabularx}
+\usepackage{longtable}
+\setlength{\extrarowheight}{2pt}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{multirow}
+\usepackage{ifthen}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage[DIV12]{typearea}
+%% generator Docutils: http://docutils.sourceforge.net/
+\newlength{\admonitionwidth}
+\setlength{\admonitionwidth}{0.9\textwidth}
+\newlength{\docinfowidth}
+\setlength{\docinfowidth}{0.9\textwidth}
+\newlength{\locallinewidth}
+\newcommand{\optionlistlabel}[1]{\bf #1 \hfill}
+\newenvironment{optionlist}[1]
+{\begin{list}{}
+  {\setlength{\labelwidth}{#1}
+   \setlength{\rightmargin}{1cm}
+   \setlength{\leftmargin}{\rightmargin}
+   \addtolength{\leftmargin}{\labelwidth}
+   \addtolength{\leftmargin}{\labelsep}
+   \renewcommand{\makelabel}{\optionlistlabel}}
+}{\end{list}}
+\newlength{\lineblockindentation}
+\setlength{\lineblockindentation}{2.5em}
+\newenvironment{lineblock}[1]
+{\begin{list}{}
+  {\setlength{\partopsep}{\parskip}
+   \addtolength{\partopsep}{\baselineskip}
+   \topsep0pt\itemsep0.15\baselineskip\parsep0pt
+   \leftmargin#1}
+ \raggedright}
+{\end{list}}
+% begin: floats for footnotes tweaking.
+\setlength{\floatsep}{0.5em}
+\setlength{\textfloatsep}{\fill}
+\addtolength{\textfloatsep}{3em}
+\renewcommand{\textfraction}{0.5}
+\renewcommand{\topfraction}{0.5}
+\renewcommand{\bottomfraction}{0.5}
+\setcounter{totalnumber}{50}
+\setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50}
+% end floats for footnotes
+% some commands, that could be overwritten in the style file.
+\newcommand{\rubric}[1]{\subsection*{~\hfill {\it #1} \hfill ~}}
+\newcommand{\titlereference}[1]{\textsl{#1}}
+% end of "some commands"
+\title{Building the DOSE model - Windows}
+\author{}
+\date{}
+\hypersetup{
+pdftitle={Building the DOSE model - Windows}
+}
+\raggedbottom
+\begin{document}
+\maketitle
+
+
+\setlength{\locallinewidth}{\linewidth}
+% vim: fo=aw2tq tw=100 
+\hypertarget{contents}{}
+\pdfbookmark[0]{Contents}{contents}
+\subsubsection*{~\hfill Contents\hfill ~}
+\begin{list}{}{}
+\item {} \href{\#just-the-f-model}{Just the F model}
+\begin{list}{}{}
+\item {} \href{\#preparing-the-environment}{Preparing the environment}
+
+\item {} \href{\#building-the-model}{Building the model}
+
+\end{list}
+
+\item {} \href{\#the-user-interface}{The User Interface}
+\begin{list}{}{}
+\item {} \href{\#id1}{Preparing the environment}
+
+\item {} \href{\#building-the-application}{Building the application}
+
+\end{list}
+
+\end{list}
+
+
+
+%___________________________________________________________________________
+
+\hypertarget{just-the-f-model}{}
+\pdfbookmark[0]{Just the F model}{just-the-f-model}
+\section*{Just the F model}
+
+
+%___________________________________________________________________________
+
+\hypertarget{preparing-the-environment}{}
+\pdfbookmark[1]{Preparing the environment}{preparing-the-environment}
+\subsection*{Preparing the environment}
+\newcounter{listcnt0}
+\begin{list}{\arabic{listcnt0}.}
+{
+\usecounter{listcnt0}
+\setlength{\rightmargin}{\leftmargin}
+}
+\item {} 
+Download and run \href{http://www.cygwin.com/setup.exe}{setup.exe} from the \href{http://www.cygwin.com/}{Cygwin} website.
+
+\item {} 
+Select the ``Archive -{\textgreater} unzip'' and ``Devel -{\textgreater} make'' packages.  \textbf{Note:} Do not install Python or
+MinGW from this screen
+
+\item {} 
+Click ``Next'' and let it install the packages - this may take a while!
+
+\item {} 
+Run the Cygwin shell once to make sure your ``home'' directory gets created
+
+\item {} 
+Download \href{ftp://ftp.swcp.com/pub/walt/F/FortranTools_windows_F.zip}{FortranTools{\_}windows{\_}F.zip} from the FortranTools FTP server into your Cygwin home
+directory (e.g. \texttt{C:{\textbackslash}cygwin{\textbackslash}home{\textbackslash}your{\_}username})
+
+\item {} 
+Open the Cygwin shell
+
+\item {} 
+Run the following to unpack and install the F compiler:
+\begin{quote}{\ttfamily \raggedright \noindent
+unzip~FortranTools{\_}windows{\_}F.zip~\\
+cd~FortranTools~\\
+sed~"s/{\textbackslash}r//g"~install{\_}fortrantools~>~install{\_}fortrantools.fixed~\\
+./install{\_}fortrantools.fixed
+}\end{quote}
+
+\end{list}
+
+
+%___________________________________________________________________________
+
+\hypertarget{building-the-model}{}
+\pdfbookmark[1]{Building the model}{building-the-model}
+\subsection*{Building the model}
+\setcounter{listcnt0}{0}
+\begin{list}{\arabic{listcnt0}.}
+{
+\usecounter{listcnt0}
+\setlength{\rightmargin}{\leftmargin}
+}
+\item {} 
+Unzip the source code somewhere
+
+\item {} 
+Take a look at \texttt{F{\textbackslash}dose.f90} to see the filename that should be used for the input file (and
+what filename to expect for the output file)
+
+\item {} 
+Open a Cygwin shell and change directory to where the source code is
+
+\item {} 
+Run the \texttt{make} command - the compiled program will be called \texttt{dose}
+
+\end{list}
+
+
+%___________________________________________________________________________
+
+\hypertarget{the-user-interface}{}
+\pdfbookmark[0]{The User Interface}{the-user-interface}
+\section*{The User Interface}
+
+
+%___________________________________________________________________________
+
+\hypertarget{id1}{}
+\pdfbookmark[1]{Preparing the environment}{id1}
+\subsection*{Preparing the environment}
+\setcounter{listcnt0}{0}
+\begin{list}{\arabic{listcnt0}.}
+{
+\usecounter{listcnt0}
+\setlength{\rightmargin}{\leftmargin}
+}
+\item {} 
+From the \href{http://www.python.org/download/}{Python download} site, download the latest Python Windows Installer and run it,
+paying attention to the path it installs into (for example \texttt{C:{\textbackslash}Python25})
+
+\item {} 
+Add Python directory to your environment:
+\newcounter{listcnt1}
+\begin{list}{\arabic{listcnt1}.}
+{
+\usecounter{listcnt1}
+\setlength{\rightmargin}{\leftmargin}
+}
+\item {} 
+Open the Windows Control Panel
+
+\item {} 
+Open ``System Properties''
+
+\item {} 
+Click on the ``Advanced'' tab
+
+\item {} 
+Click ``Environment Variables''
+
+\item {} 
+Click on the ``Path'' system variable
+
+\item {} 
+Click ``Edit''
+
+\item {} 
+Add a semicolon followed by the directory Python was installed in (e.g. \texttt{;c:{\textbackslash}Python25})
+
+\end{list}
+
+\item {} 
+From the \href{http://sourceforge.net/project/showfiles.php?group_id=1369&package_id=175103}{Numerical Python download} site, download the latest version of the NumPy Windows
+installer (ending in \texttt{.win32-py2.5.msi}) and run it - it should automatically choose the
+correct installation directory
+\begin{itemize}
+\item {} 
+\textbf{Note:} The 1.0.4 version is broken (\href{http://cens.ioc.ee/pipermail/f2py-users/2007-November/001487.html}{bug on f2py mailing list})
+
+\end{itemize}
+
+\item {} 
+From the \href{http://wxpython.org/download.php\#binaries}{wxPython download} site, download and install the ``win32-unicode'' version of wxPython
+for Python 2.5
+
+\item {} 
+Go to the \href{http://sourceforge.net/project/showfiles.php?group_id=2435&package_id=240780}{MinGW download} site and download the latest version of the Automated MinGW
+Installer
+
+\item {} 
+Run the MinGW installer, selecting only a ``Minimal'' install and using the \texttt{C:{\textbackslash}MinGW} directory
+
+\item {} 
+From the \href{http://ftp.g95.org/}{G95 download} site, download the ``Self-extracting Windows x86'' version of the G95
+Fortran compiler
+
+\item {} 
+Run the G95 installer, installing to \texttt{C:{\textbackslash}MinGW} - answer ``Yes'' when prompted about setting the
+\texttt{PATH} and \texttt{LIBRARY{\_}PATH} variables
+
+\item {} 
+From the \href{http://sourceforge.net/project/showfiles.php?group_id=15583}{py2exe download} site, download the latest version of the py2exe installer (ending in
+\texttt{.win32-py2.5.exe}) and run it
+
+\end{list}
+
+
+%___________________________________________________________________________
+
+\hypertarget{building-the-application}{}
+\pdfbookmark[1]{Building the application}{building-the-application}
+\subsection*{Building the application}
+\setcounter{listcnt0}{0}
+\begin{list}{\arabic{listcnt0}.}
+{
+\usecounter{listcnt0}
+\setlength{\rightmargin}{\leftmargin}
+}
+\item {} 
+Extract the DOSE source code somewhere
+
+\item {} 
+Open a Windows command prompt (Start menu -{\textgreater} Run..., type ``cmd'', click OK)
+
+\item {} 
+Change to the directory the program is in (using ``\texttt{cd}'')
+
+\item {} 
+Run the following:
+\begin{quote}{\ttfamily \raggedright \noindent
+python~setup.py~py2exe~\\
+python~fix-dlls.py
+}\end{quote}
+
+\item {} 
+Go to the ``\texttt{dist}'' directory under where you unpacked the DOSE source code (either in Windows
+Explorer or the command prompt) and run \texttt{dose-ui.exe}
+
+\end{list}
+
+\end{document}
