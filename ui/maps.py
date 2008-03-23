@@ -6,6 +6,9 @@ class Map:
         self._map = dict(mapping)
         self._rmap = dict([(b,a) for a,b in mapping])
 
+    def __len__(self):
+        return len(self._mapping)
+
     def map(self, x):
         return [self._map[i] for i in x]
 
