@@ -284,6 +284,11 @@ class ResultsWindow(wx.Frame):
         sButtons.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, lambda evt: self.Close(), bClose)
 
+        ### Data panel ###
+        pData = panels.Data(nbMain, self.dataset)
+        nbMain.AddPage(pData, "Data")
+
+        ### Save to File panel ###
         pSave = panels.Save(nbMain, self.dataset, self.startdir)
         nbMain.AddPage(pSave, "Save to file")
 
