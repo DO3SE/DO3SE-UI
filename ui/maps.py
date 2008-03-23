@@ -41,6 +41,21 @@ inputs = Map([
 ])
 
 outputs = Map([
+        ('yr',          'Year'),
+        ('mm',          'Month'),
+        ('mdd',         'Day of Month'),
+        ('dd',          'Day of Year'),
+        ('hr',          'Hour'),
+        ('ts_c',        'Temperature (Celcius)'),
+        ('vpd',         'Vapour Pressure Deficit (Pa)'),
+        ('uh_zr',       'Wind speed (m/s)'),
+        ('precip',      'Precipitation (mm)'),
+        ('p',           'Pressure (kPa)'),
+        ('o3_ppb_zr',   'Measured O3 density (ppb)'),
+        ('hd',          'Sensible heat flux (W/m^2)'),
+        ('r',           'Global radiation (Wh/m^2)'),
+        ('par',         'PAR radiation (umol/m^2/s)'),
+        ('ustar',       'Friction velocity (m/s)'),
         ('rn',          'Net radiation (Rn, Wh/m^2)'),
         ('ra',          'Aerodynamic resistance (Ra, s/m)'),
         ('rb',          'Boundary layer resistance (Rb, s/m)'),

@@ -192,10 +192,13 @@ class MainWindow(wx.Frame):
             if 'par' in fields and 'r' in fields:
                 def f(): pass
                 par_r = f
+                logging.info("Both R and PAR present")
             elif 'par' in fields:
                 par_r = lambda : dose.inputs.derive_r()
+                logging.info("Deriving R from PAR")
             elif 'r' in fields:
                 par_r = lambda : dose.inputs.derive_par()
+                logging.info("Deriving PAR from R")
             else:
                 raise RequiredFieldError(['par', 'r'])
         except RequiredFieldError:
@@ -209,7 +212,7 @@ class MainWindow(wx.Frame):
 
         if not os.access(path, os.R_OK):
             wx.MessageBox("Could not read the specified file", 
-                    wx.OK|wx.ICON_ERROR, self)
+                    app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
             return
 
         # Load the data, set the parameters
