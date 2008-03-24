@@ -1,0 +1,71 @@
+% vim: fo=aw2tq tw=100
+
+\documentclass[10pt,a4paper,english]{article}
+\usepackage{html}
+
+\newcommand{\href}[2]{\htmladdnormallink{#2}{#1}}
+\newcommand{\bslash}{\symbol{92}}
+
+\title{DOSE User Interface Documentation}
+\author{Stockholm Environmental Institute, Alan Briolat}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Development}
+
+\subsection{Building the F Model}
+
+\subsubsection{Preparing the environment}
+
+\begin{enumerate}
+
+\item Download and run \href{http://www.cygwin.com/setup.exe}{setup.exe} from the 
+\href{http://www.cygwin.com/}{Cygwin website}
+
+\item Select the "Archive -> unzip" and "Devel -> make" packages.  \textbf{Note:} Do not install 
+Python or MinGW from this screen
+
+\item Click "Next" and let it install the packages - this may take a while!
+
+\item Run the Cygwin shell once to make sure your "home" directory gets created
+
+\item Download 
+\href{ftp://ftp.swcp.com/pub/walt/F/FortranTools\_windows\_F.zip}{FortranTools\_windows\_F.zip} from 
+the FortranTools FTP server into your Cygwin home directory (e.g.  
+\texttt{C:{\bslash}cygwin{\bslash}home{\bslash}your\_username})
+
+\item Open the Cygwin shell
+
+\item Run the following to unpack and install the F compiler: \begin{verbatim}
+unzip FortranTools_windows_F.zip
+cd FortranTools
+sed "s/\r//g" install_fortrantools > install_fortrantools.fixed
+./install_fortrantools.fixed \end{verbatim}
+
+\end{enumerate}
+
+
+\subsubsection{Building the model}
+
+\begin{enumerate}
+
+\item Unzip the source code somewhere
+
+\item Take a look at \texttt{F{\bslash}dose.f90} to see the filename that should be used for the 
+input file (and what filename to expect for the output file)
+
+\item Open a Cygwin shell and change directory to where the source code is
+
+\item Run the \texttt{make} command - the compiled program will be called \texttt{dose}
+
+\end{enumerate}
+
+
+\subsection{Building the User Interface}
+
+foo bar
+
+\end{document}
