@@ -1,31 +1,38 @@
 % vim: fo=aw2tq tw=100
 
-\documentclass[10pt,a4paper,english]{article}
+\documentclass[10pt,a4paper]{article}
+%\usepackage{pslatex}
 \usepackage{html}
+\hypersetup{colorlinks=true}
 
-\newcommand{\href}[2]{\htmladdnormallink{#2}{#1}}
+% Hyperlinks suitable for both HTML and PDF
+\newcommand{\fhref}[2]{\htmladdnormallinkfoot{#2}{#1}}
+% Easier way of using backslash (damn Windows file paths)
 \newcommand{\bslash}{\symbol{92}}
 
 \title{DOSE User Interface Documentation}
 \author{Stockholm Environmental Institute, Alan Briolat}
-\date{}
+%\date{}
 
 \begin{document}
 
 \maketitle
+\pagebreak
+\tableofcontents
+\pagebreak
 
 \section{Development}
 
 \subsection{Building the F Model}
 
-\subsubsection{Preparing the environment}
+\subsubsection*{Preparing the environment}
 
 \begin{enumerate}
 
-\item Download and run \href{http://www.cygwin.com/setup.exe}{setup.exe} from the 
-\href{http://www.cygwin.com/}{Cygwin website}
+\item Download and run \fhref{http://www.cygwin.com/setup.exe}{setup.exe} from the 
+\fhref{http://www.cygwin.com/}{Cygwin website}
 
-\item Select the "Archive -> unzip" and "Devel -> make" packages.  \textbf{Note:} Do not install 
+\item Select the "Archive > unzip" and "Devel > make" packages.  \textbf{Note:} Do not install 
 Python or MinGW from this screen
 
 \item Click "Next" and let it install the packages - this may take a while!
@@ -33,8 +40,8 @@ Python or MinGW from this screen
 \item Run the Cygwin shell once to make sure your "home" directory gets created
 
 \item Download 
-\href{ftp://ftp.swcp.com/pub/walt/F/FortranTools\_windows\_F.zip}{FortranTools\_windows\_F.zip} from 
-the FortranTools FTP server into your Cygwin home directory (e.g.  
+\fhref{ftp://ftp.swcp.com/pub/walt/F/FortranTools\_windows\_F.zip}{FortranTools\_windows\_F.zip} 
+from the FortranTools FTP server into your Cygwin home directory (e.g.  
 \texttt{C:{\bslash}cygwin{\bslash}home{\bslash}your\_username})
 
 \item Open the Cygwin shell
@@ -48,7 +55,7 @@ sed "s/\r//g" install_fortrantools > install_fortrantools.fixed
 \end{enumerate}
 
 
-\subsubsection{Building the model}
+\subsubsection*{Building the model}
 
 \begin{enumerate}
 
