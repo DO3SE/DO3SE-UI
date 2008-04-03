@@ -91,6 +91,25 @@ class VegParams(wx.Panel):
         self.fields['rext'] = wx.SpinCtrl(p, min=0, max=20000, initial=2500)
         s.Add(self.fields['rext'], 0, wx.ALIGN_RIGHT)
 
+        s.Add(wx.StaticText(p, label="light_a"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['f_lightfac'] = FloatSpin(p, min_val=0.001, value=0.006, max_val=0.999, 
+                increment=0.001, digits=3)
+        s.Add(self.fields['f_lightfac'], 0, wx.ALIGN_RIGHT)
+
+        s.Add(wx.StaticText(p, label="gmax"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['gmax'] = wx.SpinCtrl(p, min=1, initial=148, max=10000)
+        s.Add(self.fields['gmax'], 0, wx.ALIGN_RIGHT)
+
+        s.Add(wx.StaticText(p, label="gmin"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['fmin'] = FloatSpin(p, min_val=0.01, value=0.13, max_val=0.99, 
+                increment=0.01, digits=2)
+        s.Add(self.fields['fmin'], 0, wx.ALIGN_RIGHT)
+
+        s.Add(wx.StaticText(p, label="Threshold Y for AFstY (nmol/m^2/s)"), 
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields['y'] = FloatSpin(p, min_val=0.1, value=1.6, max_val=100.0,
+                increment=0.1, digits=1)
+        s.Add(self.fields['y'], 0, wx.ALIGN_RIGHT)
 
         # Growing season
         p, s = makepage("Season")
@@ -269,6 +288,10 @@ class VegParams(wx.Panel):
                 'fphen_d': float(self.fields['fphen_d'].GetValue()),
                 'fphens': float(self.fields['fphens'].GetValue()),
                 'fphene': float(self.fields['fphene'].GetValue()),
+                'f_lightfac': float(self.fields['f_lightfac'].GetValue()),
+                'gmax': float(self.fields['gmax'].GetValue()),
+                'fmin': float(self.fields['fmin'].GetValue()),
+                'y': float(self.fields['y'].GetValue()),
         }
 
     def setvalues(self, v):
@@ -298,3 +321,7 @@ class VegParams(wx.Panel):
         self.fields['fphen_d'].SetValue(v['fphen_d'])
         self.fields['fphens'].SetValue(v['fphens'])
         self.fields['fphene'].SetValue(v['fphene'])
+        self.fields['f_lightfac'].SetValue(v['f_lightfac'])
+        self.fields['gmax'].SetValue(v['gmax'])
+        self.fields['fmin'].SetValue(v['fmin'])
+        self.fields['y'].SetValue(v['y'])
