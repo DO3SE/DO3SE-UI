@@ -3,7 +3,7 @@
 ################################################################################
 
 # Configuration file version
-CFGVERSION = "0.4"
+CFGVERSION = "0.5"
 
 # Set up logging
 import logging
@@ -34,6 +34,7 @@ import shelve
 import os
 
 import util
+import dose
 
 class Application(wx.App):
     def OnInit(self):
@@ -65,22 +66,102 @@ class Application(wx.App):
 
         if (not 'version' in self.config) \
                 or (util.versioncmp(CFGVERSION, self.config['version'])):
-            logging.info("Upgrading configuration file ...")
             self._config_init()
 
 
     def _config_init(self):
-        if not 'filehistory' in self.config:
-            self.config['filehistory'] = list([])
-        if not 'preset.inputs' in self.config:
-            self.config['preset.inputs'] = dict([])
-        if not 'preset.outputs' in self.config:
-            self.config['preset.outputs'] = dict([])
-        if not 'preset.site' in self.config:
-            self.config['preset.site'] = dict([])
-        if not 'preset.veg' in self.config:
-            self.config['preset.veg'] = dict([])
-        self.config['version'] = CFGVERSION
+        logging.info("Upgrading configuration format (%s -> %s) ..." % 
+                (self.config['version'], CFGVERSION))
+
+        # Blank configuration format
+        new = {
+                'filehistory':      list(),
+                'preset.inputs':    dict(),
+                'preset.outputs':   dict(),
+                'preset.model':     dict(),
+                'preset.site':      dict(),
+                'preset.veg':       dict(),
+        }
+
+        blank = {
+                'preset.site': {
+                    'lat': float(getattr(dose.params_site, 'lat')),
+                    'lon': float(getattr(dose.params_site, 'lon')),
+                    'elev': float(getattr(dose.params_site, 'elev')),
+                    'o3zr': float(getattr(dose.params_site, 'o3zr')),
+                    'uzr': float(getattr(dose.params_site, 'uzr')),
+                    'xzr': float(getattr(dose.params_site, 'xzr')),
+                    'o3_h': float(getattr(dose.params_site, 'o3_h')),
+                    'u_h': float(getattr(dose.params_site, 'u_h')),
+                    'o3_h_copy': False,
+                    'u_h_copy': False,
+                    'rsoil': float(getattr(dose.params_site, 'rsoil')),
+                    'soil_a': float(getattr(dose.params_site, 'soil_a')),
+                    'soil_b': float(getattr(dose.params_site, 'soil_b')),
+                    'soil_bd': float(getattr(dose.params_site, 'soil_bd')),
+                    'fc_m': float(getattr(dose.params_site, 'fc_m')),
+                },
+                'preset.veg': {
+                    'h': float(getattr(dose.params_veg, 'h')),
+                    'root': float(getattr(dose.params_veg, 'root')),
+                    'lai_min': float(getattr(dose.params_veg, 'lai_min')),
+                    'lai_max': float(getattr(dose.params_veg, 'lai_max')),
+                    'lm': float(getattr(dose.params_veg, 'lm')),
+                    'albedo': float(getattr(dose.params_veg, 'albedo')),
+                    'rext': float(getattr(dose.params_veg, 'rext')),
+                    'sgs': float(getattr(dose.params_veg, 'sgs')),
+                    'egs': float(getattr(dose.params_veg, 'egs')),
+                    'astart': float(getattr(dose.params_veg, 'astart')),
+                    'aend': float(getattr(dose.params_veg, 'aend')),
+                    'ls': float(getattr(dose.params_veg, 'ls')),
+                    'le': float(getattr(dose.params_veg, 'le')),
+                    't_min': float(getattr(dose.params_veg, 't_min')),
+                    't_opt': float(getattr(dose.params_veg, 't_opt')),
+                    't_max': float(getattr(dose.params_veg, 't_max')),
+                    'vpd_min': float(getattr(dose.params_veg, 'vpd_min')),
+                    'vpd_max': float(getattr(dose.params_veg, 'vpd_max')),
+                    'swp_min': float(getattr(dose.params_veg, 'swp_min')),
+                    'swp_max': float(getattr(dose.params_veg, 'swp_max')),
+                    'fphen_a': float(getattr(dose.params_veg, 'fphen_a')),
+                    'fphen_b': float(getattr(dose.params_veg, 'fphen_b')),
+                    'fphen_c': float(getattr(dose.params_veg, 'fphen_c')),
+                    'fphen_d': float(getattr(dose.params_veg, 'fphen_d')),
+                    'fphens': float(getattr(dose.params_veg, 'fphens')),
+                    'fphene': float(getattr(dose.params_veg, 'fphene')),
+                    'y': float(getattr(dose.params_veg, 'y')),
+                    'f_lightfac': float(getattr(dose.params_veg, 'f_lightfac')),
+                    'fmin': float(getattr(dose.params_veg, 'fmin')),
+                    'gmax': float(getattr(dose.params_veg, 'gmax')),
+                },
+        }
+
+        # Copy the recent file list
+        logging.info("\tCopying filehistory")
+        new['filehistory'] = list(self.config['filehistory'])
+
+        # Simple conversions: default + update
+        for cat in ('preset.site', 'preset.veg'):
+            logging.info("\tCreating %s.%s" % (cat, 'Default'))
+            new[cat]['Default'] = dict(blank[cat])
+            for k, v in self.config[cat].iteritems():
+                logging.info("\tUpdating %s.%s" % (cat, k))
+                new[cat][k] = dict(blank[cat])
+                new[cat][k].update(v)
+
+        # Copy other presets
+        for cat in ('preset.outputs', 'preset.inputs'):
+            logging.info("\tCopying %s" % cat)
+            new[cat].update(self.config[cat])
+
+        # Set new version
+        new['version'] = CFGVERSION
+
+        # Make changes and save
+        logging.info("\tSaving changes")
+        #import pprint
+        #pprint.pprint(dict(self.config))
+        #pprint.pprint(new)
+        self.config.update(new)
 
 
     def AddFileToHistory(self, path):
