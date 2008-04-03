@@ -6,6 +6,9 @@ class Map:
         self._map = dict(mapping)
         self._rmap = dict([(b,a) for a,b in mapping])
 
+    def __len__(self):
+        return len(self._mapping)
+
     def map(self, x):
         return [self._map[i] for i in x]
 
@@ -41,6 +44,21 @@ inputs = Map([
 ])
 
 outputs = Map([
+        ('yr',          'Year'),
+        ('mm',          'Month'),
+        ('mdd',         'Day of Month'),
+        ('dd',          'Day of Year'),
+        ('hr',          'Hour'),
+        ('ts_c',        'Temperature (Celcius)'),
+        ('vpd',         'Vapour Pressure Deficit (Pa)'),
+        ('uh_zr',       'Wind speed (m/s)'),
+        ('precip',      'Precipitation (mm)'),
+        ('p',           'Pressure (kPa)'),
+        ('o3_ppb_zr',   'Measured O3 density (ppb)'),
+        ('hd',          'Sensible heat flux (W/m^2)'),
+        ('r',           'Global radiation (Wh/m^2)'),
+        ('par',         'PAR radiation (umol/m^2/s)'),
+        ('ustar',       'Friction velocity (m/s)'),
         ('rn',          'Net radiation (Rn, Wh/m^2)'),
         ('ra',          'Aerodynamic resistance (Ra, s/m)'),
         ('rb',          'Boundary layer resistance (Rb, s/m)'),

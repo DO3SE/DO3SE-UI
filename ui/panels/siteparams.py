@@ -128,8 +128,10 @@ class SiteParams(wx.Panel):
                             [self.fields['soil_tex'].GetStringSelection()],
             'soil_b'    : {'Coarse': -2.3, 'Medium': -3.3, 'Fine': -5.4}
                             [self.fields['soil_tex'].GetStringSelection()],
-            'soil_bd'   : 1.3,
-            'fc_m'      : 0.193,
+            'soil_bd'   : {'Coarse': 1.6, 'Medium': 1.3, 'Fine': 1.1}
+                            [self.fields['soil_tex'].GetStringSelection()],
+            'fc_m'      : {'Coarse': 0.107, 'Medium': 0.193, 'Fine': 0.339}
+                            [self.fields['soil_tex'].GetStringSelection()],
         }
 
 
