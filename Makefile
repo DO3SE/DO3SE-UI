@@ -5,6 +5,7 @@ export common = constants.o params_veg.o params_site.o inputs.o variables.o func
 export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o run.o
 
 targetmachine = $(shell gcc -dumpmachine)
+date = $(shell date +"%Y%m%d")
 
 ifeq ($(targetmachine),mingw32)
 	f95 = g95
@@ -51,6 +52,13 @@ F:
 
 dose: F
 	cp F/$@ $@
+
+dist_f:
+	mkdir -p dose-f-$(date)
+	cp F/*.f90 dose-f-$(date)/
+	todos dose-f-$(date)/*.f90
+	zip -r dose-f-$(date).zip dose-f-$(date)
+	rm -r dose-f-$(date)
 
 clean_dose:
 	$(MAKE) -C F clean
