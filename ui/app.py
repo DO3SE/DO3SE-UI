@@ -66,12 +66,16 @@ class Application(wx.App):
 
         if (not 'version' in self.config) \
                 or (util.versioncmp(CFGVERSION, self.config['version'])):
-            self._config_init()
+            self._config_upgrade()
 
 
-    def _config_init(self):
-        logging.info("Upgrading configuration format (%s -> %s) ..." % 
-                (self.config['version'], CFGVERSION))
+    def _config_upgrade(self):
+        if 'version' in self.config:
+            logging.info('Creating configuration file (format version %s)' 
+                    % CFGVERSION)
+        else:
+            logging.info("Upgrading configuration format (%s -> %s) ..." 
+                    % (self.config['version'], CFGVERSION))
 
         # Blank configuration format
         new = {
