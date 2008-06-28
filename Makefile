@@ -61,6 +61,7 @@ dist-f-win:
 	rm -r dose-f-$(date)
 
 dist-ui-win:
+	rm -f dose-ui-$(date).zip
 	python setup.py py2exe -d dose-ui-$(date)
 	python fix-dlls.py dose-ui-$(date)
 	zip -r dose-ui-$(date).zip dose-ui-$(date)
