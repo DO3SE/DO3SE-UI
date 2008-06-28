@@ -87,6 +87,7 @@ class Application(wx.App):
                 'preset.veg':       dict(),
         }
 
+        # Get default parameter values from the model itself
         blank = {
                 'preset.site': {
                     'lat': float(getattr(dose.params_site, 'lat')),
@@ -140,31 +141,31 @@ class Application(wx.App):
         }
 
         # Copy the recent file list
-        logging.info("\tCopying filehistory")
-        new['filehistory'] = list(self.config['filehistory'])
+        if 'filehistory' in self.config:
+            logging.info("\tCopying filehistory")
+            new['filehistory'] = list(self.config['filehistory'])
 
         # Simple conversions: default + update
         for cat in ('preset.site', 'preset.veg'):
             logging.info("\tCreating %s.%s" % (cat, 'Default'))
             new[cat]['Default'] = dict(blank[cat])
-            for k, v in self.config[cat].iteritems():
-                logging.info("\tUpdating %s.%s" % (cat, k))
-                new[cat][k] = dict(blank[cat])
-                new[cat][k].update(v)
+            if cat in self.config:
+                for k, v in self.config[cat].iteritems():
+                    logging.info("\tUpdating %s.%s" % (cat, k))
+                    new[cat][k] = dict(blank[cat])
+                    new[cat][k].update(v)
 
         # Copy other presets
         for cat in ('preset.outputs', 'preset.inputs'):
-            logging.info("\tCopying %s" % cat)
-            new[cat].update(self.config[cat])
+            if cat in self.config:
+                logging.info("\tCopying %s" % cat)
+                new[cat].update(self.config[cat])
 
         # Set new version
         new['version'] = CFGVERSION
 
         # Make changes and save
         logging.info("\tSaving changes")
-        #import pprint
-        #pprint.pprint(dict(self.config))
-        #pprint.pprint(new)
         self.config.update(new)
 
 
