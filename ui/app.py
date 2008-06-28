@@ -71,11 +71,11 @@ class Application(wx.App):
 
     def _config_upgrade(self):
         if 'version' in self.config:
-            logging.info('Creating configuration file (format version %s)' 
-                    % CFGVERSION)
-        else:
             logging.info("Upgrading configuration format (%s -> %s) ..." 
                     % (self.config['version'], CFGVERSION))
+        else:
+            logging.info('Creating configuration file (format version %s)' 
+                    % CFGVERSION)
 
         # Blank configuration format
         new = {
