@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import os.path, glob, wx, shutil
+import os.path, glob, wx, shutil, sys
 
 wxpath = os.path.dirname(wx.__file__)
-distpath = os.path.join(os.path.dirname(__file__), "dist")
+distpath = sys.argv[1]
 
 dlls = glob.glob(os.path.join(wxpath, "msvcp??.dll")) \
         + [os.path.join(wxpath, "gdiplus.dll")]

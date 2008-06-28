@@ -13,7 +13,7 @@ ifeq ($(targetmachine),mingw32)
 	compiler = mingw32
 	pymod = ui/dose_f.pyd
 else
-	f95 = gfortran
+	f95 = gfortran -fPIC
 	fcompiler = gnu95
 	compiler = unix
 	pymod = ui/dose_f.so
@@ -53,12 +53,18 @@ F:
 dose: F
 	cp F/$@ $@
 
-dist_f:
+dist-f-win:
 	mkdir -p dose-f-$(date)
 	cp F/*.f90 dose-f-$(date)/
 	todos dose-f-$(date)/*.f90
 	zip -r dose-f-$(date).zip dose-f-$(date)
 	rm -r dose-f-$(date)
+
+dist-ui-win:
+	python setup.py py2exe -d dose-ui-$(date)
+	python fix-dlls.py dose-ui-$(date)
+	zip -r dose-ui-$(date).zip dose-ui-$(date)
+	rm -r dose-ui-$(date)
 
 clean_dose:
 	$(MAKE) -C F clean
