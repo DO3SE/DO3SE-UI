@@ -11,15 +11,8 @@ Site and Vegetation parameter editing
 -   Validation
     -   Cascading range check on fphen_*
 
-Input fields validation
--   Check for valid/invalid combinations of fields
-
 Output fields validation
 -   Check that some are set!
-
-Dataset error raising/handling
--   Raise exceptions on failing to load a data file
-    -   Convert the exceptions into notifying the user and aborting the process
 
 Calculate results in a thread
 -   Some form of UI notification of this?  Or allow concurrency?
@@ -39,6 +32,9 @@ Load parameters from a result set back into the main window
 
 Re-run same input data with new parameters from a result set
 -   For those tweak-run-tweak-run-tweak-run moments...
+
+Switchable functions
+-   Calc_fSWP, Ra with Hd, *Et_PM
 
 Memory
 ------

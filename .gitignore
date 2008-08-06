@@ -3,3 +3,11 @@
 f2py-build
 tags
 dose.cfg
+*.aux
+*.html
+*.pdf
+*.log
+*~
+*.out
+*.toc
+dose

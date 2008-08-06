@@ -4,24 +4,36 @@
 %\usepackage{pslatex}
 \usepackage{html}
 \hypersetup{colorlinks=true}
+\usepackage[vmargin=1in,hcentering]{geometry}
 
 % Hyperlinks suitable for both HTML and PDF
 \newcommand{\fhref}[2]{\htmladdnormallinkfoot{#2}{#1}}
 % Easier way of using backslash (damn Windows file paths)
 \newcommand{\bslash}{\symbol{92}}
+% The DO3SE thingy
+\newcommand{\dose}{{DO$_3$SE}}
 
-\title{DOSE User Interface Documentation}
+\title{\dose\ Model Documentation}
 \author{Stockholm Environmental Institute, Alan Briolat}
-%\date{}
+\date{}
 
 \begin{document}
 
 \maketitle
-\pagebreak
-\tableofcontents
-\pagebreak
+%\pagebreak
+%\tableofcontents
+%\pagebreak
 
 \section{Development}
+
+\subsection{Requirements}
+
+\begin{itemize}
+\item Python 2.5
+\item Numpy 1.1.0
+\item wxWidgets 2.8
+\item wxPython 2.8
+\end{itemize}
 
 \subsection{Building the F Model}
 
@@ -30,21 +42,30 @@
 \begin{enumerate}
 
 \item Download and run \fhref{http://www.cygwin.com/setup.exe}{setup.exe} from the 
-\fhref{http://www.cygwin.com/}{Cygwin website}
+\fhref{http://www.cygwin.com/}{Cygwin website}.
 
-\item Select the "Archive --- unzip" and "Devel --- make" packages.  \textbf{Note:} Do not install 
-Python or MinGW from this screen
+\item Select ``Install from Internet'' and click ``Next''.
+
+\item Leave all settings as they are and click ``Next'' until prompted to ``Choose A Download 
+Site''.
+
+\item Select any download site and click ``Next'' --- if this fails, go back and select a different 
+site.
+
+\item Select the ``Archive --- unzip'' and ``Devel --- make'' packages (expand a category by 
+clicking the plus next to it, click the ``Skip'' next to the package to select it --- it will change 
+to a version number).  \textbf{Note:} Do not install Python or MinGW from this screen.
 
 \item Click "Next" and let it install the packages - this may take a while!
 
-\item Run the Cygwin shell once to make sure your "home" directory gets created
+\item Run the Cygwin shell once to make sure your "home" directory gets created.
 
 \item Download 
 \fhref{ftp://ftp.swcp.com/pub/walt/F/FortranTools\_windows\_F.zip}{FortranTools\_windows\_F.zip} 
 from the FortranTools FTP server into your Cygwin home directory (e.g.  
-\texttt{C:{\bslash}cygwin{\bslash}home{\bslash}your\_username})
+\texttt{C:{\bslash}cygwin{\bslash}home{\bslash}your\_username}).
 
-\item Open the Cygwin shell
+\item Open the Cygwin shell.
 
 \item Run the following to unpack and install the F compiler: \begin{verbatim}
 unzip FortranTools_windows_F.zip
