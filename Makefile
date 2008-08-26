@@ -56,7 +56,8 @@ dose: F
 dist-f-win:
 	mkdir -p dose-f-$(date)
 	cp F/*.f90 dose-f-$(date)/
-	todos dose-f-$(date)/*.f90
+	cp F/Makefile dose-f-$(date)/
+	todos dose-f-$(date)/*
 	zip -r dose-f-$(date).zip dose-f-$(date)
 	rm -r dose-f-$(date)
 

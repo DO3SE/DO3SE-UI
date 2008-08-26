@@ -26,14 +26,14 @@
 
 \section{Development}
 
-\subsection{Requirements}
+%\subsection{Requirements}
 
-\begin{itemize}
-\item Python 2.5
-\item Numpy 1.1.0
-\item wxWidgets 2.8
-\item wxPython 2.8
-\end{itemize}
+%\begin{itemize}
+%\item Python 2.5
+%\item Numpy 1.1.0
+%\item wxWidgets 2.8
+%\item wxPython 2.8
+%\end{itemize}
 
 \subsection{Building the F Model}
 
@@ -41,53 +41,87 @@
 
 \begin{enumerate}
 
-\item Download and run \fhref{http://www.cygwin.com/setup.exe}{setup.exe} from the 
-\fhref{http://www.cygwin.com/}{Cygwin website}.
+\item Install MinGW (Minimal GNU for Windows)
+    \begin{enumerate}
+    \item Download and run ``MinGW-5.1.4.exe'' from the 
+\fhref{http://sourceforge.net/project/showfiles.php?group\_id=2435\&package\_id=240780}{MinGW 
+download page}.
+    \item Click ``Next'' as necessary (and ``I Agree'' at the license page) --- the default options 
+are all that's needed.
+    \item Click ``Install'' on the final screen.
+    \item Wait for all the necessary files to be downloaded and installed --- this will probably 
+take a few minutes on a fast Internet connection.
+    \item Click ``Next'' and then ``Finish''.
+    \end{enumerate}
 
-\item Select ``Install from Internet'' and click ``Next''.
+\item Install MSYS (A minimal build environment)
+    \begin{enumerate}
+    \item Download and run ``MSYS-1.0.10.exe'' from the 
+    \fhref{http://sourceforge.net/project/showfiles.php?group\_id=2435\&package\_id=24963\&release\_id=89960}{MSYS 
+download page}.
+    \item Keep clicking ``Next'' and ``Yes'' as appropriate and then click ``Install'' at the final 
+screen --- the default options are probably all that's needed.
+    \item After the installation, a console window will open for the ``post-install'' process.  
+Answer ``y'' when asked if you would like to continue.
+    \item The next question asks if MinGW is installed --- answer ``y'' here too.
+    \item When asked for the location of the MinGW installation, if you didn't change anything 
+during the MinGW install you will want to answer \texttt{c:/mingw} (if you changed the installation 
+directory, enter what you changed it to here instead, but remember that the directory separator 
+should be \texttt{/}, not \texttt{\bslash}).
+    \item ``Press any key to continue . . .''
+    \item You probably don't want to read all the technical stuff that comes with MSYS right now, so 
+uncheck the two boxes on the final installer screen before clicking ``Finish''.
+    \end{enumerate}
 
-\item Leave all settings as they are and click ``Next'' until prompted to ``Choose A Download 
-Site''.
+\item Install G95 (A free Fortran95 compiler)
+    \begin{enumerate}
+    \item Go to the \fhref{http://ftp.g95.org/}{G95 downloads page}, click on the first ``Stable 
+Version'' link, and then from that section download and run ``Self-extracting Windows x86'' 
+(clicking either ``HTTP'' or ``FTP'' next to it).
+    \item Leave the ``Destination Folder'' at it's default unless you changed the directory you 
+installed MinGW to (in which case you should enter that path here) and click ``Install''.
+    \item Click ``Yes'' when asked about installing into the MinGW directory structure.
+    \item Also click ``Yes'' when asked about setting PATH and LIBRARY\_PATH.
+    \item When the installation is finished, click ``Close''.
+    \end{enumerate}
 
-\item Select any download site and click ``Next'' --- if this fails, go back and select a different 
-site.
-
-\item Select the ``Archive --- unzip'' and ``Devel --- make'' packages (expand a category by 
-clicking the plus next to it, click the ``Skip'' next to the package to select it --- it will change 
-to a version number).  \textbf{Note:} Do not install Python or MinGW from this screen.
-
-\item Click "Next" and let it install the packages - this may take a while!
-
-\item Run the Cygwin shell once to make sure your "home" directory gets created.
-
-\item Download 
-\fhref{ftp://ftp.swcp.com/pub/walt/F/FortranTools\_windows\_F.zip}{FortranTools\_windows\_F.zip} 
-from the FortranTools FTP server into your Cygwin home directory (e.g.  
-\texttt{C:{\bslash}cygwin{\bslash}home{\bslash}your\_username}).
-
-\item Open the Cygwin shell.
-
-\item Run the following to unpack and install the F compiler: \begin{verbatim}
-unzip FortranTools_windows_F.zip
-cd FortranTools
-sed "s/\r//g" install_fortrantools > install_fortrantools.fixed
-./install_fortrantools.fixed \end{verbatim}
+\item Setting the environment variables
+    \begin{enumerate}
+    \item Open the ``System Properties'' dialog (for example by pressing the ``Win+Break'' key 
+combination).
+    \item Click on the ``Advanced'' tab, and then on ``Environment Variables''.
+    \item Check that the variable ``LIBRARY\_PATH'' exists in either the user or system variables, 
+and that it contains \texttt{c:\bslash{}mingw\bslash{}lib} (if your MinGW directory is 
+\texttt{c:\bslash{}mingw}, otherwise modify as appropriate).
+    \item If it does not, but the variable exists, click on it and then on the ``Edit'' button and 
+    add the path, preceeded by a semicolon (``;'').
+    \item If the variable does not exist, click ``New'' under system variables, giving the new 
+variable the name ``LIBRARY\_PATH'' and the path as the value.
+    \item Check that the variable ``PATH'' (or ``Path'') variable under either user or system 
+variables contains \texttt{c:\bslash{}mingw\bslash{}bin}.  If it does not, add it in the same way as 
+in (d).
+    \item Add the MSYS binary path \texttt{c:\bslash{}msys\bslash{}1.0\bslash{}bin} to the ``PATH'' 
+variable in the same way as before.
+    \end{enumerate}
 
 \end{enumerate}
-
 
 \subsubsection*{Building the model}
 
 \begin{enumerate}
 
-\item Unzip the source code somewhere
+\item Unzip the source code somewhere.
 
 \item Take a look at \texttt{F{\bslash}dose.f90} to see the filename that should be used for the 
-input file (and what filename to expect for the output file)
+input file (and what filename to expect for the output file).
 
-\item Open a Cygwin shell and change directory to where the source code is
+\item Open a Windows terminal prompt (for example by going to Start---Run... and typing 
+\texttt{cmd.exe}).
 
-\item Run the \texttt{make} command - the compiled program will be called \texttt{dose}
+\item Change directory to where you unzipped the source code (the \texttt{dir} command should show 
+several \texttt{.f90} files).
+
+\item Run the \texttt{make} command - the compiled program will be called \texttt{dose.exe}.
 
 \end{enumerate}
 
