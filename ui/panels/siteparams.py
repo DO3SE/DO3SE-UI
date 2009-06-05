@@ -59,7 +59,7 @@ class SiteParams(wx.Panel):
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['o3zr'] = wx.SpinCtrl(self, min=1, max=200, initial=25)
         sHeights.fgs.Add(self.fields['o3zr'], 0)
-        sHeights.fgs.Add(wx.StaticText(self, label="Meteorlogical data"),
+        sHeights.fgs.Add(wx.StaticText(self, label="Meteorological data"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['uzr'] = wx.SpinCtrl(self, min=1, max=200, initial=25)
         sHeights.fgs.Add(self.fields['uzr'], 0)
@@ -97,7 +97,7 @@ class SiteParams(wx.Panel):
                 wx.EVT_CHECKBOX,
                 lambda evt: self.fields['o3_h'].Enable(not self.fields['o3_h_copy'].IsChecked()),
                 self.fields['o3_h_copy'])
-        sCanopies.fgs.Add(wx.StaticText(self, label="Meteorlogical data"),
+        sCanopies.fgs.Add(wx.StaticText(self, label="Meteorological data"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteMetCanopy = wx.BoxSizer(wx.HORIZONTAL)
         sCanopies.fgs.Add(sSiteMetCanopy, 0)
