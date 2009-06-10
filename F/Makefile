@@ -1,6 +1,3 @@
-# Compiler
-F = g95 -std=F
-
 # Default target
 all: dose
 

@@ -1,34 +1,79 @@
+#####################################################################
+# DOSE model build system
+#####################################################################
+
+#####################################################################
+# Set paths and compilers
+#####################################################################
+
+# Build system paths for Windows
+WIN32_LIB_MINGW = c:\\mingw\\lib
+WIN32_BIN_MINGW = c:\\mingw\\bin
+WIN32_BIN_MSYS  = c:\\msys\\1.0\\bin
+
+# Compiler commands for Windows
+WIN32_F                 = g95 -std=F
+WIN32_F95               = g95
+WIN32_F2PY_COMPILER     = mingw32
+WIN32_F2PY_FCOMPILER    = g95
+
+# Compiler commands for Linux
+LINUX_F                 = g95 -std=F
+LINUX_F95               = gfortran -fPIC
+LINUX_F2PY_COMPILER     = unix
+LINUX_F2PY_FCOMPILER    = gnu95
+
+#####################################################################
+# Set build system variables depending on the platform.
+# 
+# Currently supported platforms are "linux" and "win32", with the
+# default being "linux".  Run "make PLATFORM=win32" to build for
+# Windows.
+#####################################################################
+
+# Default to "linux" if no platform is set
+ifndef PLATFORM
+	PLATFORM=linux
+endif
+export PLATFORM
+
+ifeq ($(PLATFORM),win32)
+	# Modify environment variables so the user doesn't need to
+	export LIBRARY_PATH := $(WIN32_LIB_MINGW);$(LIBRARY_PATH)
+	export PATH := $(WIN32_BIN_MINGW);$(WIN32_BIN_MSYS);$(PATH)
+	# Set the compilers
+	export F=$(WIN32_F)
+	export F95=$(WIN32_F95)
+	export F2PY_COMPILER=$(WIN32_F2PY_COMPILER)
+	export F2PY_FCOMPILER=$(WIN32_F2PY_FCOMPILER)
+	# Set the python module path
+	export PYMOD=ui/dose_f.pyd
+else
+	# Set the compilers
+	export F=$(LINUX_F)
+	export F95=$(LINUX_F95)
+	export F2PY_COMPILER=$(LINUX_F2PY_COMPILER)
+	export F2PY_FCOMPILER=$(LINUX_F2PY_FCOMPILER)
+	# Set the python module path
+	export PYMOD=ui/dose_f.so
+endif
+    
+
+
+
 subdirs = F f2py-build
 .PHONY: $(subdirs)
 
 export common = constants.o params_veg.o params_site.o inputs.o variables.o functions.o
 export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o run.o
 
-targetmachine = $(shell gcc -dumpmachine)
 date = $(shell date +"%Y%m%d")
-
-ifeq ($(targetmachine),mingw32)
-	f95 = g95
-	fcompiler = g95
-	compiler = mingw32
-	pymod = ui/dose_f.pyd
-else
-	f95 = gfortran -fPIC
-	fcompiler = gnu95
-	compiler = unix
-	pymod = ui/dose_f.so
-endif
-
-export f95
-export fcompiler
-export compiler
-export pymod
 
 
 all: dose
 
 
-py: $(pymod)
+py: $(PYMOD)
 
 
 dose_f.pyf:
@@ -40,12 +85,11 @@ f2py-build: dose_f.pyf
 	cp f2py.Makefile $@/Makefile
 	$(MAKE) -C $@
 
-$(pymod): f2py-build
+$(PYMOD): f2py-build
 	cp f2py-build/`basename $@` $@
 
 clean_dose_f:
 	rm -rf f2py-build dose_f.pyf
-
 
 F:
 	$(MAKE) -C $@
@@ -53,6 +97,21 @@ F:
 dose: F
 	cp F/$@ $@
 
+
+clean_dose:
+	$(MAKE) -C F clean
+
+clean: clean_dose_f clean_dose
+
+
+clean_all: clean
+	rm -f $(PYMOD) dose
+	
+
+#####################################################################
+# Rules for building distribution packages
+#####################################################################
+	
 dist-f-win:
 	mkdir -p dose-f-$(date)
 	cp F/*.f90 dose-f-$(date)/
@@ -67,12 +126,3 @@ dist-ui-win:
 	python fix-dlls.py dose-ui-$(date)
 	zip -r dose-ui-$(date).zip dose-ui-$(date)
 	rm -r dose-ui-$(date)
-
-clean_dose:
-	$(MAKE) -C F clean
-
-clean: clean_dose_f clean_dose
-
-
-clean_all: clean
-	rm -f $(pymod) dose

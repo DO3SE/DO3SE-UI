@@ -2,14 +2,14 @@
 vpath %.f90 ../F
 
 # Default target
-all: $(pymod)
+all: $(PYMOD)
 
 # Dependancy heirarchy
 $(others): $(common)
 
 # Rule for building .o and .mod files
 %.o %.mod: %.f90
-	$(f95) -c $<
+	$(F95) -c $<
 
-$(pymod): dose_f.pyf $(common) $(others)
-	python f2py.py -c --fcompiler=$(fcompiler) --compiler=$(compiler) dose_f.pyf $(common) $(others)
+$(PYMOD): dose_f.pyf $(common) $(others)
+	python f2py.py -c --fcompiler=$(F2PY_FCOMPILER) --compiler=$(F2PY_COMPILER) dose_f.pyf $(common) $(others)
