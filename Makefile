@@ -7,9 +7,9 @@
 #####################################################################
 
 # Build system paths for Windows
-WIN32_LIB_MINGW = c:\\mingw\\lib
-WIN32_BIN_MINGW = c:\\mingw\\bin
-WIN32_BIN_MSYS  = c:\\msys\\1.0\\bin
+WIN32_LIB_MINGW = /c/mingw/lib
+WIN32_BIN_MINGW = /c/mingw/bin
+WIN32_BIN_MSYS  = /c/msys/1.0/bin
 
 # Compiler commands for Windows
 WIN32_F                 = g95 -std=F
@@ -39,8 +39,8 @@ export PLATFORM
 
 ifeq ($(PLATFORM),win32)
 	# Modify environment variables so the user doesn't need to
-	export LIBRARY_PATH := $(WIN32_LIB_MINGW);$(LIBRARY_PATH)
-	export PATH := $(WIN32_BIN_MINGW);$(WIN32_BIN_MSYS);$(PATH)
+	export LIBRARY_PATH := $(WIN32_LIB_MINGW):$(LIBRARY_PATH)
+	export PATH := $(WIN32_BIN_MINGW):$(WIN32_BIN_MSYS):$(PATH)
 	# Set the compilers
 	export F=$(WIN32_F)
 	export F95=$(WIN32_F95)
