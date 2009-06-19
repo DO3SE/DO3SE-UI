@@ -1,104 +1,213 @@
+% vim: fo=aw2tq tw=100
 \chapter{Developer Guide}
 
 
-\section{Building the F model}
+%\section{Software Structure}
 
-%\subsection{Requirements}
+%\subsection{F Model}
 
-%\begin{itemize}
-%\item Python 2.5
-%\item Numpy 1.1.0
-%\item wxWidgets 2.8
-%\item wxPython 2.8
-%\end{itemize}
+%\subsection{Graphical User Interface}
 
-\subsection{Preparing the environment}
+%\subsection{Fortran-Python Integration}
+
+%\subsection{Build System}
+
+
+
+\section{Development Environment}
+\label{dev:env}
+
+To build any of the software, at the very least the software the build system is based on and the 
+dependencies for the software must be present.
+
+The build system is a collection of ``Makefiles'', as used by GNU Make.  Therefore any platform on 
+which the software is to built must have GNU Make installed.
+
+To build the F model, a Fortran compiler which understands the F standard is needed.  Currently the 
+only freely-available such compiler is G95, which is built on GCC (the GNU Compiler Collection), 
+therefore both GCC and G95 must be installed in some form to build the F model.
+
+The GUI (Graphical User Interface) is written in the Python programming language, using the 
+wxWidgets cross-platform GUI toolkit.  The interface between Python and the F model is created by 
+F2PY (Fortran-to-Python) which is part of the NumPy (Numerical Python) library.  The full 
+dependencies are:
+
+\begin{itemize}
+\item A working environment for building the F model
+\item Python $>=$ 2.5 (but not Python 3.x)
+\item NumPy $>=$ 1.1.0
+\item wxWidgets 2.8
+\item wxPython 2.8 (the Python bindings for wxWidgets)
+\end{itemize}
+
+The following sections describe how to install the necessary dependencies for both software builds 
+on common platforms.
+
+
+\subsection{Preparing a Windows Environment}
+\label{dev:env:windows}
+
+\subsubsection{F Model Dependencies}
+
+G95 for Windows depends on MinGW (``Minimalist GNU for Windows'') to provide GCC.  MinGW also 
+provides GNU Make, a port of GCC to the Windows platform, so this must be installed first.  GNU Make 
+is provided by MSYS\footnote{MinGW also provides Make, but does not have a full shell environment 
+and therefore lacks important utilities.} (``Minimal System''), a basic Linux-like environment for 
+Windows. 
+
+\paragraph{Installing MinGW}
 
 \begin{enumerate}
 
-\item Install MinGW (Minimal GNU for Windows)
-    \begin{enumerate}
-    \item Download and run ``MinGW-5.1.4.exe'' from the 
+\item Download and run the latest Automated MinGW Installer from the 
 \fhref{http://sourceforge.net/project/showfiles.php?group\_id=2435\&package\_id=240780}{MinGW 
-download page}.
-    \item Click ``Next'' as necessary (and ``I Agree'' at the license page) --- the default options 
-are all that's needed.
-    \item Click ``Install'' on the final screen.
-    \item Wait for all the necessary files to be downloaded and installed --- this will probably 
-take a few minutes on a fast Internet connection.
-    \item Click ``Next'' and then ``Finish''.
-    \end{enumerate}
+download page} (e.g. \verb|MinGW-5.1.4.exe|).
 
-\item Install MSYS (A minimal build environment)
-    \begin{enumerate}
-    \item Download and run ``MSYS-1.0.10.exe'' from the 
-    \fhref{http://sourceforge.net/project/showfiles.php?group\_id=2435\&package\_id=24963\&release\_id=89960}{MSYS 
-download page}.
-    \item Keep clicking ``Next'' and ``Yes'' as appropriate and then click ``Install'' at the final 
-screen --- the default options are probably all that's needed.
-    \item After the installation, a console window will open for the ``post-install'' process.  
-Answer ``y'' when asked if you would like to continue.
-    \item The next question asks if MinGW is installed --- answer ``y'' here too.
-    \item When asked for the location of the MinGW installation, if you didn't change anything 
-during the MinGW install you will want to answer \texttt{c:/mingw} (if you changed the installation 
-directory, enter what you changed it to here instead, but remember that the directory separator 
-should be \texttt{/}, not \texttt{\bslash}).
-    \item ``Press any key to continue . . .''
-    \item You probably don't want to read all the technical stuff that comes with MSYS right now, so 
-uncheck the two boxes on the final installer screen before clicking ``Finish''.
-    \end{enumerate}
+\item Click through the installer; the options are self-explanatory in most cases.
 
-\item Install G95 (A free Fortran95 compiler)
-    \begin{enumerate}
-    \item Go to the \fhref{http://ftp.g95.org/}{G95 downloads page}, click on the first ``Stable 
-Version'' link, and then from that section download and run ``Self-extracting Windows x86'' 
-(clicking either ``HTTP'' or ``FTP'' next to it).
-    \item Leave the ``Destination Folder'' at it's default unless you changed the directory you 
-installed MinGW to (in which case you should enter that path here) and click ``Install''.
-    \item Click ``Yes'' when asked about installing into the MinGW directory structure.
-    \item Also click ``Yes'' when asked about setting PATH and LIBRARY\_PATH.
-    \item When the installation is finished, click ``Close''.
-    \end{enumerate}
+\item When given a choice of which components to install, the ``Minimal'' install is sufficient.  
+Select additional features if desired.
 
-\item Setting the environment variables
-    \begin{enumerate}
-    \item Open the ``System Properties'' dialog (for example by pressing the ``Win+Break'' key 
-combination).
-    \item Click on the ``Advanced'' tab, and then on ``Environment Variables''.
-    \item Check that the variable ``LIBRARY\_PATH'' exists in either the user or system variables, 
-and that it contains \texttt{c:\bslash{}mingw\bslash{}lib} (if your MinGW directory is 
-\texttt{c:\bslash{}mingw}, otherwise modify as appropriate).
-    \item If it does not, but the variable exists, click on it and then on the ``Edit'' button and 
-    add the path, preceeded by a semicolon (``;'').
-    \item If the variable does not exist, click ``New'' under system variables, giving the new 
-variable the name ``LIBRARY\_PATH'' and the path as the value.
-    \item Check that the variable ``PATH'' (or ``Path'') variable under either user or system 
-variables contains \texttt{c:\bslash{}mingw\bslash{}bin}.  If it does not, add it in the same way as 
-in (d).
-    \item Add the MSYS binary path \texttt{c:\bslash{}msys\bslash{}1.0\bslash{}bin} to the ``PATH'' 
-variable in the same way as before.
-    \end{enumerate}
+\item Click ``Install'' and wait for the necessary files to be downloaded and installed.  This will 
+probably take a few minutes on a fast Internet connection.
 
 \end{enumerate}
 
-\subsubsection*{Building the model}
+\paragraph{Installing G95}
 
 \begin{enumerate}
 
-\item Unzip the source code somewhere.
+\item Navigate to the \fhref{http://www.g95.org/downloads.shtml}{G95 downloads page}, click on the 
+most recent ``Stable Version'' link.
 
-\item Take a look at \texttt{F{\bslash}dose.f90} to see the filename that should be used for the 
-input file (and what filename to expect for the output file).
+\item Download the installer by clicking one of the links next to ``Self-extracting Windows x86'' 
+and run it.
 
-\item Open a Windows terminal prompt (for example by going to Start---Run... and typing 
-\texttt{cmd.exe}).
+\item Make sure the ``Destination Folder'' is the same as where MinGW was installed to, and click 
+``Install'', and click ``Yes'' when notified that it will install into the MinGW directory 
+structure.
 
-\item Change directory to where you unzipped the source code (the \texttt{dir} command should show 
-several \texttt{.f90} files).
-
-\item Run the \texttt{make} command - the compiled program will be called \texttt{dose.exe}.
+\item When asked about setting \verb|PATH| and \verb|LIBRARY_PATH| variables, it is not essential to 
+answer ``OK'' here, but may be desirable---adding the ``bin'' directory to the \verb|PATH| variable 
+removes the need to use the full path to the compilers when using them for other projects.
 
 \end{enumerate}
+
+\paragraph{Installing MSYS}
+
+\begin{enumerate}
+
+\item Download and run the MSYS Base System installer marked as ``Current Release'' from the 
+\fhref{http://sourceforge.net/project/showfiles.php?group\_id=2435\&package\_id=24963}{MSYS download 
+page} (e.g. \verb|MSYS-1.0.10.exe|).
+
+\item Click through the installer; the options are self-explanatory in most cases.
+
+\item In the command prompt window that appears after installing MSYS, it is safe to answer ``n'' to 
+skip the post-install process.
+
+\item It's probably undesirable to read all the technical documents that come with MSYS at this 
+point, so uncheck the two boxes on the final screen before clicking ``Finish''.
+
+\end{enumerate}
+
+\paragraph{Adding MSYS to the PATH Variable (Optional)}
+
+It may be desirable to add MSYS to the \verb|PATH| environment variable so it is not necessary to 
+use the full path to \verb|make| when running the build system.
+
+\begin{enumerate}
+
+\item Open the ``System Properties'' dialog, for example by pressing the ``Win+Break'' key 
+combination or right-clicking on ``My Computer'' and clicking ``Properties''.
+
+\item Click the ``Advanced'' tab, and then the ``Environment Variables'' button.
+
+\item If the \verb|PATH| variable already exists in the ``User variables'' section, click it and 
+click ``Edit'', otherwise click ``New'' and use \verb|PATH| as the variable name.
+
+\item Add the path to the MSYS binary path to the value (prefixing it with a semicolon---``;''---if 
+a value already exists).  The MSYS binary path should look something like \verb|c:\msys\1.0\bin|.
+
+\end{enumerate}
+
+
+%\subsubsection{GUI Dependencies}
+
+
+%\subsection{Preparing a Linux Environment}
+
+%\subsubsection{F Model Dependencies}
+
+%\subsubsection{GUI Dependencies}
+
+
+
+\section{Building the Software}
+\label{dev:build}
+
+This section describes how to use the build system to build the software in different environments, 
+but not how to modify the software or set it up to do something useful---this is covered in later 
+sections.  This is because the build step varies between platforms, whereas modifying the software 
+does not.
+
+It is assumed that a ``zip file'' containing the source code has already been obtained and unzipped 
+somewhere.
+
+\subsection{In a Windows Environment}
+
+\subsubsection{Building the F Model}
+
+\begin{enumerate}
+
+\item Open the Makefile from the source directory in a text editor and check that the 
+\verb|WIN32_LIB_...| and \verb|WIN32_BIN_...| paths ``look right'' for how MinGW and MSYS was 
+installed.
+
+\item Open a Windows terminal prompt, for example by clicking the ``Start'' button and then 
+``Run...'' and typing \verb|cmd.exe|.
+
+\item Change directory to where the source code was unzipped (running the \verb|dir| command should 
+show ``Makefile'', ``f2py.Makefile'', etc.)
+
+\item Run GNU Make.  If MSYS was added to the \verb|PATH| variable, this will just be \verb|make|, 
+otherwise the full path will be needed, which look like \verb|c:\msys\1.0\bin\make.exe|.  Either 
+way, the make command should be followed by \verb|PLATFORM=win32|\footnote{This method is less 
+hassle overall than attempting to automatically detect the platform.} to let the build system know 
+the correct platform to build for.
+
+\item If there are no errors, the program \verb|dose.exe| should be created in the current 
+directory.
+
+\end{enumerate}
+
+
+%\subsection{In a Linux Environment}
+
+
+
+\section{Using the Model---Quick Start}
+
+The most important file for anybody wanting to use the \DOSE{} F model is \verb|F/dose.f90|.
+
+\begin{itemize}
+
+\item The input and output filenames are set near the bottom of the file, in the \verb|Run_DOSE| 
+section.
+
+\item The columns to include in the output are set in the \verb|WriteData| subroutine.
+
+\item The input format is defined in the \verb|ReadData| subroutine.  \emph{This should be used for 
+guidance, but not modified.}
+
+\item Where certain calculations have multiple implementations, these can be chosen between in the 
+\verb|Calculate| subroutine.
+
+\end{itemize}
+
+Edit the file, adjust parameters as necessary, save it, and then (re)build the model (see 
+\ref{dev:build}).  Once the model is built, make sure the input file is available and execute 
+\verb|dose| to run the model and generate the output.
 
 
 %\subsection{Building the User Interface}
