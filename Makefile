@@ -70,8 +70,10 @@ export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.
 
 export DIST_SRC_DIR = DO3SE-src-$(shell date +"%Y%m%d")
 export DIST_SRC_FILE = $(DIST_SRC_DIR).zip
-export DIST_DIR = DO3SE-$(shell date +"%Y%m%d")
-export DIST_FILE = $(DIST_DIR).zip
+export DIST_F_SRC_DIR = DO3SE-src-F-$(shell date +"%Y%m%d")
+export DIST_F_SRC_FILE = $(DIST_F_SRC_DIR).zip
+export DIST_UI_DIR = DO3SE-$(shell date +"%Y%m%d")
+export DIST_UI_FILE = $(DIST_UI_DIR).zip
 
 
 all: dose
@@ -124,9 +126,17 @@ dist-src-win: clean_all
 	zip -r $(DIST_SRC_FILE) $(DIST_SRC_DIR)
 	rm -rf $(DIST_SRC_DIR)
 
+dist-f-src-win: clean_all
+	rm -rf $(DIST_F_SRC_DIR) $(DIST_F_SRC_FILE)
+	mkdir -p $(DIST_F_SRC_DIR)
+	cp -a F/ Makefile $(DIST_F_SRC_DIR)
+	todos $(DIST_F_SRC_DIR)/F/*.f90
+	zip -r $(DIST_F_SRC_FILE) $(DIST_F_SRC_DIR)
+	rm -rf $(DIST_F_SRC_DIR)
+
 dist-ui-win:
-	rm -rf $(DIST_DIR) $(DIST_FILE)
-	python setup.py py2exe -d $(DIST_DIR)
-	python fix-dlls.py $(DIST_DIR)
-	zip -r $(DIST_FILE) $(DIST_DIR)
-	rm -rf $(DIST_DIR)
+	rm -rf $(DIST_UI_DIR) $(DIST_UI_FILE)
+	python setup.py py2exe -d $(DIST_UI_DIR)
+	python fix-dlls.py $(DIST_UI_DIR)
+	zip -r $(DIST_UI_FILE) $(DIST_UI_DIR)
+	rm -rf $(DIST_UI_DIR)
