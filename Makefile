@@ -67,7 +67,11 @@ subdirs = F f2py-build
 export common = constants.o params_veg.o params_site.o inputs.o variables.o functions.o
 export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o run.o
 
-date = $(shell date +"%Y%m%d")
+
+export DIST_SRC_DIR = DO3SE-src-$(shell date +"%Y%m%d")
+export DIST_SRC_FILE = $(DIST_SRC_DIR).zip
+export DIST_DIR = DO3SE-$(shell date +"%Y%m%d")
+export DIST_FILE = $(DIST_DIR).zip
 
 
 all: dose
@@ -111,18 +115,18 @@ clean_all: clean
 #####################################################################
 # Rules for building distribution packages
 #####################################################################
-	
-dist-f-win:
-	mkdir -p dose-f-$(date)
-	cp F/*.f90 dose-f-$(date)/
-	cp F/Makefile dose-f-$(date)/
-	todos dose-f-$(date)/*
-	zip -r dose-f-$(date).zip dose-f-$(date)
-	rm -r dose-f-$(date)
+
+dist-src-win: clean_all
+	rm -rf $(DIST_SRC_DIR) $(DIST_SRC_FILE)
+	mkdir -p $(DIST_SRC_DIR)
+	cp -a F/ ui/ dose-ui f2py.Makefile f2py.py fix-dlls.py Makefile setup.py $(DIST_SRC_DIR)
+	todos $(DIST_SRC_DIR)/F/*.f90
+	zip -r $(DIST_SRC_FILE) $(DIST_SRC_DIR)
+	rm -rf $(DIST_SRC_DIR)
 
 dist-ui-win:
-	rm -f dose-ui-$(date).zip
-	python setup.py py2exe -d dose-ui-$(date)
-	python fix-dlls.py dose-ui-$(date)
-	zip -r dose-ui-$(date).zip dose-ui-$(date)
-	rm -r dose-ui-$(date)
+	rm -rf $(DIST_DIR) $(DIST_FILE)
+	python setup.py py2exe -d $(DIST_DIR)
+	python fix-dlls.py $(DIST_DIR)
+	zip -r $(DIST_FILE) $(DIST_DIR)
+	rm -rf $(DIST_DIR)
