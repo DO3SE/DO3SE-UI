@@ -101,7 +101,7 @@ F:
 	$(MAKE) -C $@
 
 dose: F
-	cp F/$@ $@
+	mv F/$@ $@
 
 
 clean_dose:
