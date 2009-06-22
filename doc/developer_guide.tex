@@ -165,19 +165,40 @@ somewhere.
 installed.
 
 \item Open a Windows terminal prompt, for example by clicking the ``Start'' button and then 
-``Run...'' and typing \verb|cmd.exe|.
+``Run...'' and typing \verb|cmd.exe|, and change directory into the directory that was extracted 
+from the zip file.  For example, if the zip file was \verb|DO3SE-src-F-20090620| and was extracted 
+to ``My Documents'', your terminal session might look like this:
+\begin{lstlisting}
+C:\Documents and Settings\Alan>cd "My Documents\DO3SE-src-F-20090620"
+C:\Documents and Settings\Alan\My Documents\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+...
+\end{lstlisting}
+For Windows Vista and above, replace ``Documents and Settings'' and ``My Documents'' with ``Users'' 
+and ``Documents''.
 
-\item Change directory to where the source code was unzipped (running the \verb|dir| command should 
-show ``Makefile'', ``f2py.Makefile'', etc.)
+\item Run \verb|make PLATFORM=win32| to build the F model for 32-bit Windows.  If MSYS was not added 
+to the \verb|PATH|, supply the full path to the \verb|make| executable:
+\begin{lstlisting}
+C:\...\DO3SE-src-F-20090620>c:\msys\1.0\make PLATFORM=win32
+\end{lstlisting}
 
-\item Run GNU Make.  If MSYS was added to the \verb|PATH| variable, this will just be \verb|make|, 
-otherwise the full path will be needed, which look like \verb|c:\msys\1.0\bin\make.exe|.  Either 
-way, the make command should be followed by \verb|PLATFORM=win32|\footnote{This method is less 
-hassle overall than attempting to automatically detect the platform.} to let the build system know 
-the correct platform to build for.
-
-\item If there are no errors, the program \verb|dose.exe| should be created in the current 
+\item If there are no errors, the program \verb|dose.exe| should have be created in the current 
 directory.
+\begin{lstlisting}
+C:\Documents and Settings\Alan\My Documents\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+20/06/2009  18:56               dose.exe
+...
+\end{lstlisting}
 
 \end{enumerate}
 
@@ -186,29 +207,65 @@ directory.
 
 
 
-\section{Using the Model---Quick Start}
+\section{Using the F Model---Quick Start}
 
-The most important file for anybody wanting to use the \DOSE{} F model is \verb|F/dose.f90|.
+The F model, when built, is a stand-alone command-line program.  To run it, make sure there is an 
+input file of the correct filename in the current directory and then execute the program from the 
+command line:
+\begin{lstlisting}
+C:\...\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+20/06/2009  18:56               dose.exe
+20/06/2009  18:56               input_newstyle.csv
+...
+C:\...\DO3SE-src-F-20090620>dose.exe
+C:\...\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+20/06/2009  18:56               dose.exe
+20/06/2009  18:56               input_newstyle.csv
+20/06/2009  18:59               output.csv
+...
+\end{lstlisting}
+
+Alternatively, double-click on \verb|dose.exe| to run it---be aware that this will hide any errors 
+that might have been visible on the command line.
+
+If the output file (\verb|output.csv| by default) is empty, it is most likely that no output columns 
+have been specified (see the next section).
+
+\subsection{Configuring Input and Output}
+
+The input and output of the F model is configured in \verb|F/dose.f90|.
 
 \begin{itemize}
 
 \item The input and output filenames are set near the bottom of the file, in the \verb|Run_DOSE| 
 section.
 
-\item The columns to include in the output are set in the \verb|WriteData| subroutine.
+\item The columns to include in the output are set in the \verb|WriteData| subroutine.  Uncomment a 
+line to include that variable in the output.  The variables and their meanings are documented in 
+\verb|F/variables.f90|.
 
 \item The input format is defined in the \verb|ReadData| subroutine.  \emph{This should be used for 
-guidance, but not modified.}  Use the comments next to the definitions of the variables in 
-\verb|F/inputs.f90| to clarify their meaning.
+guidance, but not modified.}  The variables and their meanings are documented in 
+\verb|F/inputs.f90|.
 
 \item Where certain calculations have multiple implementations, these can be chosen between in the 
 \verb|Calculate| subroutine.
 
 \end{itemize}
 
-Edit the file, adjust parameters as necessary, save it, and then (re)build the model (see 
-\ref{dev:build}).  Once the model is built, make sure the input file is available and execute 
-\verb|dose| to run the model and generate the output.
+To change any of these options, edit \verb|F/dose.f90| as necessary and save it.  To use the 
+changes, rebuild the model (see \ref{dev:build}) and run it again.  \emph{If the output filename has 
+not been changed and the previous results have not been moved, they will be overwritten.}
 
 
 %\subsection{Building the User Interface}
