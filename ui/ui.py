@@ -156,7 +156,6 @@ class MainWindow(wx.Frame):
 
 
     def _on_exit(self, evt):
-        # TODO: Close all results windows first
         global results_windows
         for w in result_windows: w.Close()
         self.Close()

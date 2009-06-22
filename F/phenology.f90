@@ -71,7 +71,7 @@ contains
             fphen = fphen_d
         end if
 
-        ! TODO: Change this to calculate fphen for upper canopy leaf
+        ! TODO: Change this to calculate fphen for upper canopy leaf?
         leaf_fphen = fphen
     end subroutine Calc_fphen
 

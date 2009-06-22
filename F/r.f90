@@ -87,7 +87,7 @@ contains
         real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
  
         Rlow = (1000 * exp(-(Ts_c + 4)))
-        ! TODO:   ????
+        ! TODO: What is the point of 2000*0?
         Rgs = Rsoil + Rlow + 2000*0
     end subroutine Calc_Rgs
 
