@@ -1,5 +1,5 @@
 # Default target
-all: dose
+all: $(DO3SE_BIN)
 
 # Objects
 common = constants.o params_veg.o params_site.o inputs.o variables.o functions.o
@@ -12,8 +12,8 @@ $(others): $(common)
 %.o %.mod: %.f90
 	$(F) -c $<
 
-dose: $(others) dose.o
+$(DO3SE_BIN): $(others) dose.o
 	$(F) -o $@ $(common) $(others) dose.o
 
 clean:
-	rm -f *.o *.mod dose
+	rm -f *.o *.mod $(DO3SE_BIN)

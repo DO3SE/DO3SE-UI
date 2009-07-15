@@ -46,7 +46,8 @@ ifeq ($(PLATFORM),win32)
 	export F95=$(WIN32_F95)
 	export F2PY_COMPILER=$(WIN32_F2PY_COMPILER)
 	export F2PY_FCOMPILER=$(WIN32_F2PY_FCOMPILER)
-	# Set the python module path
+	# Set paths to compiled objects
+	export DO3SE_BIN=dose.exe
 	export PYMOD=ui/dose_f.pyd
 else
 	# Set the compilers
@@ -54,7 +55,8 @@ else
 	export F95=$(LINUX_F95)
 	export F2PY_COMPILER=$(LINUX_F2PY_COMPILER)
 	export F2PY_FCOMPILER=$(LINUX_F2PY_FCOMPILER)
-	# Set the python module path
+	# Set paths to compiled objects
+	export DO3SE_BIN=dose
 	export PYMOD=ui/dose_f.so
 endif
     
@@ -76,7 +78,7 @@ export DIST_UI_DIR = DO3SE-$(shell date +"%Y%m%d")
 export DIST_UI_FILE = $(DIST_UI_DIR).zip
 
 
-all: dose
+all: $(DO3SE_BIN)
 
 
 py: $(PYMOD)
@@ -100,7 +102,7 @@ clean_dose_f:
 F:
 	$(MAKE) -C $@
 
-dose: F
+$(DO3SE_BIN): F
 	mv F/$@ $@
 
 
@@ -111,7 +113,7 @@ clean: clean_dose_f clean_dose
 
 
 clean_all: clean
-	rm -f $(PYMOD) dose
+	rm -f $(PYMOD) $(DO3SE_BIN)
 	
 
 #####################################################################
