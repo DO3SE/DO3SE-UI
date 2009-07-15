@@ -49,10 +49,9 @@ on common platforms.
 
 \subsubsection{F Model Dependencies}
 
-G95 for Windows depends on MinGW (``Minimalist GNU for Windows'') to provide GCC.  MinGW also 
-provides GNU Make, a port of GCC to the Windows platform, so this must be installed first.  GNU Make 
-is provided by MSYS\footnote{MinGW also provides Make, but does not have a full shell environment 
-and therefore lacks important utilities.} (``Minimal System''), a basic Linux-like environment for 
+G95 for Windows depends on MinGW (``Minimalist GNU for Windows'') to provide GCC.  GNU Make is 
+provided by MSYS\footnote{MinGW also provides Make, but does not have a full shell environment and 
+therefore lacks important utilities.} (``Minimal System''), a basic Linux-like environment for 
 Windows. 
 
 \paragraph{Installing MinGW}
@@ -60,13 +59,15 @@ Windows.
 \begin{enumerate}
 
 \item Download and run the latest Automated MinGW Installer from the 
-\fhref{http://sourceforge.net/project/showfiles.php?group\_id=2435\&package\_id=240780}{MinGW 
-download page} (e.g. \verb|MinGW-5.1.4.exe|).
+\fhref{http://sourceforge.net/project/mingw/files/}{MinGW download page}---click on ``Automated 
+MinGW Installer'' and then on the latest \verb|.exe| file, e.g. \verb|MinGW-5.1.4.exe|.
 
 \item Click through the installer; the options are self-explanatory in most cases.
 
 \item When given a choice of which components to install, the ``Minimal'' install is sufficient.  
 Select additional features if desired.
+
+\item When asked for a ``Destination Folder'', use \verb|C:\MinGW|
 
 \item Click ``Install'' and wait for the necessary files to be downloaded and installed.  This will 
 probably take a few minutes on a fast Internet connection.
@@ -83,9 +84,9 @@ most recent ``Stable Version'' link.
 \item Download the installer by clicking one of the links next to ``Self-extracting Windows x86'' 
 and run it.
 
-\item Make sure the ``Destination Folder'' is the same as where MinGW was installed to, and click 
-``Install'', and click ``Yes'' when notified that it will install into the MinGW directory 
-structure.
+\item Make sure the ``Destination Folder'' is the same as where MinGW was installed to 
+(\verb|C:\MinGW|) and click ``Install'', then click ``Yes'' when notified that it will install into 
+the MinGW directory structure.
 
 \item When asked about setting \verb|PATH| and \verb|LIBRARY_PATH| variables, it is not essential to 
 answer ``OK'' here, but may be desirable---adding the ``bin'' directory to the \verb|PATH| variable 
@@ -97,11 +98,13 @@ removes the need to use the full path to the compilers when using them for other
 
 \begin{enumerate}
 
-\item Download and run the MSYS Base System installer marked as ``Current Release'' from the 
-\fhref{http://sourceforge.net/project/showfiles.php?group\_id=2435\&package\_id=24963}{MSYS download 
-page} (e.g. \verb|MSYS-1.0.10.exe|).
+\item Download and run the MSYS Base System installer from the 
+\fhref{http://sourceforge.net/project/mingw/files/}{MinGW download page}---click on ``MSYS Base 
+System'', then ``Current Release'', then the \verb|.exe| file, e.g.  \verb|MSYS-1.0.10.exe|.
 
 \item Click through the installer; the options are self-explanatory in most cases.
+
+\item When asked for a ``Destination Directory'', use \verb|C:\msys\1.0|
 
 \item In the command prompt window that appears after installing MSYS, it is safe to answer ``n'' to 
 skip the post-install process.
