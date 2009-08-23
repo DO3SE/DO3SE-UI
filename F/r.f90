@@ -12,10 +12,10 @@ contains
     subroutine Calc_Ra_Simple()
         use Constants, only: k, izR
         use Inputs, only: ustar
-        use Params_Veg, only: h, d
+        use Params_Veg, only: h, d, zo
         use Variables, only: Ra
 
-        Ra = (1 / (ustar * k)) * log((izR - d) / (h - d))
+        Ra = (1 / (ustar * k)) * log((izR - d) / zo)
     end subroutine Calc_Ra_Simple
 
     !==========================================================================

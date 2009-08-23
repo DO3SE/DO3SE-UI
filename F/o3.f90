@@ -27,7 +27,7 @@ contains
         ! ustar over O3 measurement vegetation
         ustar_o = (uh_i * k) / log((izR - O3_d) / O3_zo)
         ! Ra over O3 measurement veg.
-        Ra_i = (1 / (ustar_o * k)) * log((izR - O3_d) / (O3zR - O3_d))
+        Ra_i = (1 / (ustar_o * k)) * log((izR - O3_d) / O3_zo)
         ! O3 concentration at intermediate height
         O3_i = O3_ppb_zR / (1 - (Ra_i * Vd))
 
