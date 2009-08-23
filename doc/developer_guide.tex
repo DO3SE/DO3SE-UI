@@ -28,9 +28,9 @@ only freely-available such compiler is G95, which is built on GCC (the GNU Compi
 therefore both GCC and G95 must be installed in some form to build the F model.
 
 The GUI (Graphical User Interface) is written in the Python programming language, using the 
-wxWidgets cross-platform GUI toolkit.  The interface between Python and the F model is created by 
-F2PY (Fortran-to-Python) which is part of the NumPy (Numerical Python) library.  The full 
-dependencies are:
+wxWidgets cross-platform GUI toolkit.  The bridge between Python and the F model is created by F2PY 
+(Fortran-to-Python) which is part of the NumPy (Numerical Python) library.  The full dependencies 
+are:
 
 \begin{itemize}
 \item A working environment for building the F model
@@ -138,11 +138,68 @@ a value already exists).  The MSYS binary path should look something like \verb|
 %\subsubsection{GUI Dependencies}
 
 
-%\subsection{Preparing a Linux Environment}
+\subsection{Preparing a Linux Environment}
+\label{dev:linux}
 
-%\subsubsection{F Model Dependencies}
+\subsubsection{F Model Dependencies}
 
-%\subsubsection{GUI Dependencies}
+Building the F model on a Linux system requires the presence of both GNU Make and G95 (which in turn 
+depends on GCC).  Make and GCC can usually be installed via the package manager, using the ``make'' 
+and ``gcc'' packages.  (If you are using a distribution which does not have these packages, you most 
+likely know how to build them yourself.)
+
+\paragraph{Installing G95}
+
+\begin{enumerate}
+
+\item Navigate to the \fhref{http://www.g95.org/downloads.shtml}{G95 downloads page}, click on the 
+most recent ``Stable Version'' link.
+
+\item Download the ``Linux x86'' version if you are running 32-bit Linux, or a ``Linux 
+x86\_64/EMT64'' version if you are running 64-bit Linux.  If you do not know which you are running, 
+run \verb|uname -m| (i686 is 32-bit, x86\_64 is 64-bit).
+
+\item Unpack the files, which should create a \verb|g95-install| directory:
+\begin{lstlisting}
+$ tar xzf g95-x86-linux.tgz
+\end{lstlisting}
+Or, to put it somewhere more permanent,
+\begin{lstlisting}
+$ tar xzf g95-x86-linux.tgz -C /opt/
+\end{lstlisting}
+
+\item Create a symbolic link for the \verb|g95| binary (the filename will be different for 64-bit, 
+but there will be only one file in \verb|g95-install/bin|):
+\begin{lstlisting}
+$ ln -s /opt/g95-install/bin/i686-pc-linux-gnu-g95 /usr/local/bin/g95
+\end{lstlisting}
+
+\item Check that G95 was installed correctly by attempting to run it:
+\begin{lstlisting}
+$ g95
+g95: no input files
+\end{lstlisting}
+
+\end{enumerate}
+
+
+\subsubsection{GUI Dependencies}
+
+The dependencies for building and running the GUI are specified in \ref{dev:env}, and can usually be 
+installed using your Linux distribution's package manager.  The development files for Python are 
+required to run F2PY and are usually in a separate package, so this needs to be installed even if 
+Python is already installed.  For example, under Ubuntu or Debian:
+
+\begin{lstlisting}
+$ sudo apt-get install python-dev python-wxgtk2.8 python-numpy
+\end{lstlisting}
+
+In addition, the only Fortran compiler on Linux that appears to work with F2PY correctly is 
+\verb|gfortran|, so this also needs to be installed:
+
+\begin{lstlisting}
+$ sudo apt-get install gfortran
+\end{lstlisting}
 
 
 
