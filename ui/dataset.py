@@ -106,7 +106,7 @@ class Dataset:
                 util.getattrs_f(dose.variables, ['ftemp', 'fvpd', 'pet', 'aet',
                     'ei', 'flight', 'leaf_flight', 'rn', 'lai', 'sai', 'fphen',
                     'leaf_fphen', 'ra', 'rb', 'rsur', 'rinc', 'rsto', 'rgs',
-                    'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star', 'sn', 
+                    'ra_i', 'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star', 'sn', 
                     'per_vol', 'smd', 'swp', 'wc', 'precip', 'rsto_pet', 'fswp',
                     'o3_ppb', 'o3_nmol_m3', 'vd', 'ftot', 'fst', 'afsty',
                     'ot40', 'aot40'])))

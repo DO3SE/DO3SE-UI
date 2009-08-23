@@ -36,6 +36,8 @@ module Variables
     real, public, save  :: Rinc
     real, public, save  :: Rsto
     real, public, save  :: Rgs
+    ! Intermediate R variables
+    real, public, save  :: Ra_i
 
     real, public, save  :: Gsto, Gsto_PEt
 

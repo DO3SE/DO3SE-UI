@@ -61,6 +61,7 @@ outputs = Map([
         ('ustar',       'Friction velocity (m/s)'),
         ('rn',          'Net radiation (Rn, Wh/m^2)'),
         ('ra',          'Aerodynamic resistance (Ra, s/m)'),
+        ('ra_i',        'Aerodynamic resistance at Ozone measurement (Ra_i, s/m)'),
         ('rb',          'Boundary layer resistance (Rb, s/m)'),
         ('rsur',        'Surface resistance (Rsur, s/m)'),
         ('rinc',        'In-canopy resistance (Rinc, s/m)'),

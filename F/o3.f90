@@ -15,10 +15,10 @@ contains
     subroutine Calc_O3_Concentration()
         use Constants, only: k, izR
         use Inputs, only: O3_ppb_zR, uh_i
-        use Variables, only: O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Vd
+        use Variables, only: O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Ra_i, Vd
         use Params_Site, only: O3zR, O3_d, O3_zo
 
-        real :: ustar_o, Ra_i, O3_i
+        real :: ustar_o, O3_i
 
         ! Deposition velocity over target veg
         ! (we assume that this is "close enough" for over the measurement veg.)
