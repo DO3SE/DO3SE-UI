@@ -9,6 +9,8 @@ module Params_Site
     real, public, save  :: soil_b = -3.3    ! SWC constant b - coarse = -2.3, 
                                             ! medium = -3.3, fine = -5.4
     real, public, save  :: Fc_m = 0.193     ! Field capacity (m^3/m^3)
+                                            !  - coarse = 0.16, medium = 0.26,
+                                            !    fine = 0.30
 
     ! Measurement heights
     real, public, save :: uzR = 25      ! Windspeed measurement height (m)
