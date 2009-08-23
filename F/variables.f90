@@ -21,7 +21,8 @@ module Variables
     ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
     real, public, save  :: leaf_flight  ! light related g
-    real, public, save  :: Rn       ! net radiation
+    real, public, save  :: Rn       ! Net radiation (MJ/m2/h)
+    real, public, save  :: Rn_W     ! Net radiation (W/m2)
 
     ! Phenology
     real, public, save  :: LAI

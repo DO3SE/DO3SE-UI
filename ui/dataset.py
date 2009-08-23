@@ -104,12 +104,12 @@ class Dataset:
                 util.getattrs_f(dose.inputs, ['ts_c', 'vpd', 'uh_zr', 'precip',
                     'p', 'o3_ppb_zr', 'hd', 'r', 'par', 'ustar']),
                 util.getattrs_f(dose.variables, ['ftemp', 'fvpd', 'pet', 'aet',
-                    'ei', 'flight', 'leaf_flight', 'rn', 'lai', 'sai', 'fphen',
-                    'leaf_fphen', 'ra', 'rb', 'rsur', 'rinc', 'rsto', 'rgs',
-                    'ra_i', 'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star', 'sn', 
-                    'per_vol', 'smd', 'swp', 'wc', 'precip', 'rsto_pet', 'fswp',
-                    'o3_ppb', 'o3_nmol_m3', 'vd', 'ftot', 'fst', 'afsty',
-                    'ot40', 'aot40'])))
+                    'ei', 'flight', 'leaf_flight', 'rn', 'rn_w', 'lai', 'sai',
+                    'fphen', 'leaf_fphen', 'ra', 'rb', 'rsur', 'rinc', 'rsto',
+                    'rgs', 'ra_i', 'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star',
+                    'sn', 'per_vol', 'smd', 'swp', 'wc', 'precip', 'rsto_pet',
+                    'fswp', 'o3_ppb', 'o3_nmol_m3', 'vd', 'ftot', 'fst',
+                    'afsty', 'ot40', 'aot40'])))
 
         logging.info("Got %d results" % len(self.results))
         return (len(self.results), skippedrows)

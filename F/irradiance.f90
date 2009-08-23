@@ -99,8 +99,9 @@ contains
     !==========================================================================
     subroutine Copy_Rn()
         use Inputs, only: Rn_input => Rn
-        use Variables, only: Rn
+        use Variables, only: Rn, Rn_W
         Rn = Rn_input
+        Rn_W = Rn * 277.8
     end subroutine Copy_Rn
 
     !==========================================================================
@@ -111,7 +112,7 @@ contains
         use Params_Site, only: elev, lat
         use Params_Veg, only: albedo
         use Inputs, only: R, Ts_C, VPD, dd
-        use Variables, only: Rn
+        use Variables, only: Rn, Rn_W
         use Constants, only: pi
         use Functions, only: deg2rad, rad2deg
 
@@ -153,6 +154,9 @@ contains
         else
             Rn = 0
         end if
+
+        ! Calculate Rn in W/m2
+        Rn_W = Rn * 277.8
     end subroutine Calc_Rn
 
 end module Irradiance
