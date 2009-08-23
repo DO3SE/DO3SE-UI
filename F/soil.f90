@@ -18,7 +18,7 @@ contains
         SWP         = (soil_a*0.01)*((Fc_m/soil_BD))**soil_b/1000
         Sn          = Sn_star
         WC          = Fc_m - PWP
-        per_vol     = (Fc_m + PWP) * 100 
+        per_vol     = (Fc_m - PWP) * 100 
         fSWP        = 1
         precip = 0
         SMD = 0
