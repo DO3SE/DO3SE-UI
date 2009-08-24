@@ -107,7 +107,7 @@ class Dataset:
                     'ei', 'flight', 'leaf_flight', 'rn', 'rn_w', 'lai', 'sai',
                     'fphen', 'leaf_fphen', 'ra', 'rb', 'rsur', 'rinc', 'rsto',
                     'rgs', 'ra_i', 'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star',
-                    'sn', 'per_vol', 'smd', 'swp', 'wc', 'precip', 'rsto_pet',
+                    'sn', 'per_vol', 'smd', 'swp', 'wc', 'rsto_pet',
                     'fswp', 'o3_ppb', 'o3_nmol_m3', 'vd', 'ftot', 'fst',
                     'afsty', 'ot40', 'aot40'])))
 
