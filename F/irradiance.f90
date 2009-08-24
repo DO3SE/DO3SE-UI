@@ -127,7 +127,7 @@ contains
         if (sinB > 0) then
             ! Unit conversions
             R_MJ = R * 0.0036
-            Ts_K = Ts_C + 273.15
+            Ts_K = Ts_C + 273.16
 
             ! Hour angle stuff
             h1 = h - (pi/24)
@@ -138,7 +138,7 @@ contains
             ! TODO: fix this to be less hackish
             Re = max(0.00000000001, &
                     ((12 * 60) / pi) * Gsc * dr &
-                        * (rad2deg(h2 - h1) * sin(lat_rad) * sin(dec) &
+                        * ((h2 - h1) * sin(lat_rad) * sin(dec) &
                             + cos(lat_rad) * cos(dec) * (sin(h2) - sin(h1))))
             !Re = max(0.0, ((12*60)/pi)*Gsc*dr*sinB)
 
@@ -147,7 +147,7 @@ contains
             esat = 0.611 * exp((17.27 * Ts_C)/(Ts_K))
             eact = esat - VPD
 
-            Rnl = (SBC*(Ts_c**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35)
+            Rnl = max(0.0, (SBC*(Ts_K**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35))
             Rns = (1 - albedo) * R_MJ
 
             Rn = Rns - Rnl
