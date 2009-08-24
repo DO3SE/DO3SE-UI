@@ -40,7 +40,6 @@ inputs = Map([
         ('r',           'Global radiation (Wh/m^2)'),
         ('par',         'PAR radiation (umol/m^2/s)'),
         ('rn',          'Net radiation (Wh/m^2)'),
-        ('ustar',       'Friction velocity (m/s)'),
 ])
 
 outputs = Map([
