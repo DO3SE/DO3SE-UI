@@ -73,7 +73,7 @@ contains
         use Inputs, only: ustar
         use Variables, only: Rb
 
-        Rb = (2/(k*ustar)) * ((v/DO3/Pr)**(2/3))
+        Rb = (2.0/(k*ustar)) * (((v/DO3)/Pr)**(2.0/3.0))
     end subroutine Calc_Rb
 
     !==========================================================================
