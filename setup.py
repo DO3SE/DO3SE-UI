@@ -4,7 +4,7 @@ application = "DO3SE"
 description = "Deposition of Ozone and Stomatal Exchange"
 version     = "0.2"
 
-from numpy.distutils.core import setup, Extension
+from numpy.distutils.core import setup, Extension, Distribution
 import os
 
 try:
@@ -73,6 +73,19 @@ def buildpyf(filelist, target):
     return [target] + filelist
 
 if __name__ == "__main__":
+
+    # NumPy is stupid, so we have to hack the stuff in here instead
+    Distribution.zipfile = None
+    Distribution.com_server = []
+    Distribution.ctypes_com_server = []
+    Distribution.service = []
+    Distribution.console = []
+    Distribution.isapi = []
+    Distribution.windows = [{
+            'script': "dose-ui",
+            'other_resources': [(24, 1, manifest)],
+    }]
+
     setup(
             name            = application,
             description     = description,
@@ -88,8 +101,4 @@ if __name__ == "__main__":
             ext_modules     = [
                 Extension('dose_f', buildpyf(files, 'dose_f.pyf'))
             ],
-            windows=[{
-                'script': "dose-ui",
-                'other_resources': [(24, 1, manifest)],
-            }],
     )
