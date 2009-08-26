@@ -135,7 +135,37 @@ a value already exists).  The MSYS binary path should look something like \verb|
 \end{enumerate}
 
 
-%\subsubsection{GUI Dependencies}
+\subsubsection{GUI Dependencies}
+
+Before installing the GUI build dependencies, it is necessary to install the F model dependencies 
+first.  You \emph{should} follow all instructions for adding to the \verb|PATH| environment variable 
+in the guide for installing the F model dependencies.
+
+\begin{enumerate}
+
+\item From the \fhref{http://python.org/download/}{Python download page}, download and run the 
+``Python 2.x.x Windows installer'' (where 2.x.x is the version number, e.g. 2.6.2).
+
+\item Install Python with the default settings, but make a note of the installation directory, e.g.
+\verb|C:\Python26|.
+
+\item Edit the \verb|PATH| variable (as described above) and add the Python installation directory 
+noted in the previous step.
+
+\item Navigate to the \fhref{http://sourceforge.net/projects/numpy/files}{NumPy files page}, expand 
+the folder for the latest version, and download the version that matches your platform and Python 
+version.  For Windows, the filename will contain \verb|win32|, and for Python 2.6 it will end with 
+\verb|python2.6.exe|.
+
+\item Run the NumPy installer and click through it---it will install the necessary files to the 
+correct location after automatically detecting where Python was installed.
+
+\item From the \fhref{http://www.wxpython.org/download.php#binaries}{wxPython download page}, 
+download and run the installer appropriate to the version of Python that was installed (use the 
+installer ending in \verb|-unicode|, not \verb|-ansi|).  Yet again, just click through the 
+installer.
+
+\end{enumerate}
 
 
 \subsection{Preparing a Linux Environment}
