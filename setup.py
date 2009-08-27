@@ -91,11 +91,20 @@ if __name__ == "__main__":
             description     = description,
             version         = version,
             author          = 'Alan Briolat',
-            author_email    = 'ab544@cs.york.ac.uk',
+            author_email    = 'sei@alanbriolat.co.uk',
             packages        = ['ui', 'ui.panels'],
             options         = {
                 'build': build_opts,
-                'py2exe': {'includes': ['dbhash', 'numpy']},
+                'py2exe': {
+		    'includes': [
+		        'dbhash',
+	            ],
+		    'packages': [
+		        'numpy',
+		    ],
+		    'bundle_files': 1,
+		    'optimize': 2,
+		},
             },
             ext_package     = 'ui',
             ext_modules     = [
