@@ -12,6 +12,12 @@ try:
 except ImportError:
     pass
 
+# NumPy doesn't play nice with py2exe, an __init__.py is missing - let's fix it!
+import numpy
+path = os.path.join(os.path.dirname(numpy.__file__),
+                    'distutils', 'tests', '__init__.py')
+open(path, 'a').close()
+
 manifest = '''
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
