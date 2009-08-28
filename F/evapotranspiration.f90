@@ -85,7 +85,9 @@ contains
         real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, ET1, ET2, ET3
 
         ! TODO: optimise
-        esat = 611 * exp((17.27 * Ts_C) / (Ts_C + Ts_K))
+        esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
+        ! Convert from kPa to Pa
+        esat = esat * 1000
         eact = esat - VPD
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
         delta= ((4098*esat)/((Ts_c+Ts_K)**2)) 
@@ -110,7 +112,9 @@ contains
         real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, ET1, ET2, ET3
 
         ! TODO: optimise
-        esat = 611 * exp((17.27 * Ts_C) / (Ts_C + Ts_K))
+        esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
+        ! Convert from kPa to Pa
+        esat = esat * 1000
         eact = esat - VPD
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
         delta= ((4098*esat)/((Ts_c+Ts_K)**2)) 

@@ -148,7 +148,7 @@ contains
 
             ! Calculate net longwave radiation
             pR = (0.75 + (2e-5 * elev)) * Re
-            esat = 0.611 * exp((17.27 * Ts_C)/(Ts_K))
+            esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
             eact = esat - VPD
 
             Rnl = max(0.0, (SBC*(Ts_K**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35))
