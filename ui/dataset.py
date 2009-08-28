@@ -102,7 +102,7 @@ class Dataset:
             self.results.append(util.dictjoin(
                 util.getattrs_i(dose.inputs, ['yr', 'mm', 'mdd', 'dd', 'hr']),
                 util.getattrs_f(dose.inputs, ['ts_c', 'vpd', 'uh_zr', 'precip',
-                    'p', 'o3_ppb_zr', 'hd', 'r', 'par', 'ustar']),
+                    'p', 'o3_ppb_zr', 'hd', 'r', 'par', 'ustar', 'uh']),
                 util.getattrs_f(dose.variables, ['ftemp', 'fvpd', 'pet', 'aet',
                     'ei', 'flight', 'leaf_flight', 'rn', 'rn_w', 'lai', 'sai',
                     'fphen', 'leaf_fphen', 'ra', 'rb', 'rsur', 'rinc', 'rsto',
