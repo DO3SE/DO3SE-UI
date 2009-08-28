@@ -118,15 +118,18 @@ contains
         use Variables, only: Rn, Rn_W
         use Constants, only: pi
         use Functions, only: deg2rad, rad2deg
-        use Variables, only: sinB
+        use Variables, only: sinB, eact
 
-        real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns, lat_rad, h1, h2
+        real :: R_MJ, Ts_K, dr, Re, pR, esat, Rnl, Rns, lat_rad, h1, h2
 
         ! Constants
         real, parameter :: Gsc = 0.082            ! Solar constant (MJ/m^2/min)
         real, parameter :: SBC = 4.903e-9 / 24    ! Stephan Boltzman constant
 
         lat_rad = deg2rad(lat)
+
+        esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
+        eact = esat - VPD
 
         if (sinB > 0) then
             ! Unit conversions
@@ -148,8 +151,6 @@ contains
 
             ! Calculate net longwave radiation
             pR = (0.75 + (2e-5 * elev)) * Re
-            esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
-            eact = esat - VPD
 
             Rnl = max(0.0, (SBC*(Ts_K**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35))
             Rns = (1 - albedo) * R_MJ

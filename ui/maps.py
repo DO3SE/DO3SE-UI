@@ -82,6 +82,7 @@ outputs = Map([
         ('per_vol',     'Volumetric water content (per_vol, %)'),
         ('smd',         'Soil moisture deficit (SMD, mm)'),
         # More outputs, for testing
+        ('eact',        '[TESTING] eact'),
         ('lai',         '[TESTING] LAI'),
         ('sai',         '[TESTING] SAI'),
         ('flight',      '[TESTING] flight'),
