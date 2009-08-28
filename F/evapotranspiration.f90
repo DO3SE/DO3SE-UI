@@ -123,7 +123,7 @@ contains
         ET2 = (3600 * Pair * Cair * (VPD / Ra)) / lambda
         ET3 = Delta + psychro * (1 + Rsto / Ra)
 
-        PEt = (ET1 + ET2) / ET3
+        AEt = (ET1 + ET2) / ET3
 
     end subroutine Calc_AEt_PM
 
