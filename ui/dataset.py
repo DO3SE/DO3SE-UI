@@ -109,7 +109,12 @@ class Dataset:
                     'rgs', 'ra_i', 'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star',
                     'sn', 'per_vol', 'smd', 'swp', 'wc', 'rsto_pet',
                     'fswp', 'o3_ppb', 'o3_nmol_m3', 'vd', 'ftot', 'fst',
-                    'afsty', 'ot40', 'aot40'])))
+                    'afsty', 'ot40', 'aot40']),
+                # More variables, for testing
+                util.getattrs_f(dose.variables, ['flight', 'ftemp', 'fvpd',
+                    'fswp', 'sinb', 'ppardir', 'ppardif', 'fpardir', 'fpardif',
+                    'laisun', 'laishade', 'parsun', 'parshade']),
+            ))
 
         logging.info("Got %d results" % len(self.results))
         return (len(self.results), skippedrows)

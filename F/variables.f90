@@ -60,5 +60,16 @@ module Variables
     real, public, save :: Ftot
     real, public, save :: Fst, AFstY, OT40, AOT40
 
+    ! More variables, for testing
+    real, public, save :: sinB
+    real, public, save :: pPARdir
+    real, public, save :: pPARdif
+    real, public, save :: fPARdir
+    real, public, save :: fPARdif
+    real, public, save :: LAIsun
+    real, public, save :: LAIshade
+    real, public, save :: PARsun
+    real, public, save :: PARshade
+
 end module Variables
 

@@ -81,6 +81,22 @@ outputs = Map([
         ('swp',         'Soil-water potential (SWP, ???)'),
         ('per_vol',     'Volumetric water content (per_vol, %)'),
         ('smd',         'Soil moisture deficit (SMD, mm)'),
+        # More outputs, for testing
+        ('lai',         '[TESTING] LAI'),
+        ('sai',         '[TESTING] SAI'),
+        ('flight',      '[TESTING] flight'),
+        ('ftemp',       '[TESTING] ftemp'),
+        ('fvpd',        '[TESTING] fVPD'),
+        ('fswp',        '[TESTING] fSWP'),
+        ('sinb',        '[TESTING] sinB'),
+        ('ppardir',     '[TESTING] pPARdir'),
+        ('ppardif',     '[TESTING] pPARdiff'),
+        ('fpardir',     '[TESTING] fPARdir'),
+        ('fpardif',     '[TESTING] fPARdiff'),
+        ('laisun',      '[TESTING] LAIsun'),
+        ('laishade',    '[TESTING] LAIshade'),
+        ('parsun',      '[TESTING] PARsun'),
+        ('parshade',    '[TESTING] PARshade'),
 ])
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 module Irradiance
 
-    real, private, save :: sinB   ! Solar elevation angle
+    !real, private, save :: sinB   ! Solar elevation angle
     real, private, save :: h      ! Hour angle of the sun (radians)
     real, private, save :: dec    ! Declination (radians)
 
@@ -20,6 +20,7 @@ contains
         use Params_Site, only: lat, lon
         use Inputs, only: dd, hr
         use Functions, only: deg2rad, rad2deg
+        use Variables, only: sinB
 
         real :: f, e, t0, LC, lonm
 
@@ -55,9 +56,11 @@ contains
         use Params_Veg, only: f_lightfac, cosA
         use Inputs, only: P, PAR
         use Variables, only: LAI, Flight, leaf_flight
+        use Variables, only: sinB
+        use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
+                LAIsun, LAIshade, PARsun, PARshade
 
-        real :: m, pPARdir, pPARdif, pPARtotal, ST, fPARdir, fPARdif, PARdir, &
-                PARdif, LAIsun, LAIshade, PARshade, PARsun, Flightsun, &
+        real :: m, pPARtotal, ST, PARdir, PARdif, Flightsun, &
                 Flightshade
 
         if (sinB > 0 .and. LAI > 0) then
@@ -115,6 +118,7 @@ contains
         use Variables, only: Rn, Rn_W
         use Constants, only: pi
         use Functions, only: deg2rad, rad2deg
+        use Variables, only: sinB
 
         real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns, lat_rad, h1, h2
 
