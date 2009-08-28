@@ -82,13 +82,16 @@ contains
         use Inputs, only: Ts_C, VPD, Rn, P
         use Variables, only: PEt, Ra, Rsto => Rsto_PEt
 
-        real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, ET1, ET2, ET3
+        real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, &
+                ET1, ET2, ET3, VPD_Pa
+
+        VPD_Pa = VPD * 1000
 
         ! TODO: optimise
         esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
         ! Convert from kPa to Pa
         esat = esat * 1000
-        eact = esat - VPD
+        eact = esat - VPD_Pa
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
         delta= ((4098*esat)/((Ts_c+237.3)**2)) 
         lambda = (2501000-(2361*Ts_c))
@@ -97,7 +100,7 @@ contains
         Cair = (0.622*((lambda*psychro)/P))
         
         ET1 = (Delta * Rn)
-        ET2 = (3600 * Pair * Cair * (VPD / Ra)) / lambda
+        ET2 = (3600 * Pair * Cair * (VPD_Pa / Ra)) / lambda
         ET3 = Delta + psychro * (1 + Rsto / Ra)
 
         PEt = (ET1 + ET2) / ET3
@@ -109,13 +112,16 @@ contains
         use Inputs, only: Ts_C, VPD, Rn, P
         use Variables, only: PEt, Ra, Rsto
 
-        real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, ET1, ET2, ET3
+        real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, &
+                ET1, ET2, ET3, VPD_Pa
+
+        VPD_Pa = VPD * 1000
 
         ! TODO: optimise
         esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
         ! Convert from kPa to Pa
         esat = esat * 1000
-        eact = esat - VPD
+        eact = esat - VPD_Pa
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
         delta= ((4098*esat)/((Ts_c+237.3)**2)) 
         lambda = (2501000-(2361*Ts_c))
@@ -124,7 +130,7 @@ contains
         Cair = (0.622*((lambda*psychro)/P))
         
         ET1 = (Delta * Rn)
-        ET2 = (3600 * Pair * Cair * (VPD / Ra)) / lambda
+        ET2 = (3600 * Pair * Cair * (VPD_Pa / Ra)) / lambda
         ET3 = Delta + psychro * (1 + Rsto / Ra)
 
         AEt = (ET1 + ET2) / ET3
