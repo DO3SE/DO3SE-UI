@@ -90,9 +90,9 @@ contains
         esat = esat * 1000
         eact = esat - VPD
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
-        delta= ((4098*esat)/((Ts_c+Ts_K)**2)) 
+        delta= ((4098*esat)/((Ts_c+237.3)**2)) 
         lambda = (2501000-(2361*Ts_c))
-        psychro = 1630 * (P/lambda)
+        psychro = 1628.6 * (P/lambda)
         Pair = (0.003486*(P/Tvir))
         Cair = (0.622*((lambda*psychro)/P))
         
@@ -117,9 +117,9 @@ contains
         esat = esat * 1000
         eact = esat - VPD
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
-        delta= ((4098*esat)/((Ts_c+Ts_K)**2)) 
+        delta= ((4098*esat)/((Ts_c+237.3)**2)) 
         lambda = (2501000-(2361*Ts_c))
-        psychro = 1630 * (P/lambda)
+        psychro = 1628.6 * (P/lambda)
         Pair = (0.003486*(P/Tvir))
         Cair = (0.622*((lambda*psychro)/P))
         
