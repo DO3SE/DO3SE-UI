@@ -75,8 +75,10 @@ contains
         call Do_Calcs(Calc_SAI_Simple, &
                       Calc_Ra_Simple, &
                       !Calc_Ra_With_Heat_Flux, &
-                      Calc_PEt, &
-                      Calc_AEt, &
+                      Calc_PEt_PM, &
+                      !Calc_PEt, &
+                      Calc_AEt_PM, &
+                      !Calc_AEt, &
                       Calc_Rn)
     end subroutine Calculate
 
