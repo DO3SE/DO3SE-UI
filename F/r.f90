@@ -95,11 +95,11 @@ contains
     ! Calculate Rinc, in-canopy aerodynamic resistance
     !==========================================================================
     subroutine Calc_Rinc()
-        use Params_Veg, only: Rinc_b
+        use Params_Veg, only: Rinc_b, h
         use Inputs, only: ustar
         use Variables, only: SAI, Rinc
 
-        Rinc = Rinc_b * SAI * Rinc_b/ustar
+        Rinc = Rinc_b * SAI * h/ustar
     end subroutine Calc_Rinc
 
     !==========================================================================
