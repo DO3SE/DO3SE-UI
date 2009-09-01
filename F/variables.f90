@@ -17,6 +17,7 @@ module Variables
     real, public, save  :: PEt  ! Potential evapotranspiration
     real, public, save  :: AEt  ! Actual evapotranspiration
     real, public, save  :: Ei   ! Evaporation of intercepted precip
+    real, public, save  :: Es   ! Evaporation of soil water
 
     ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light

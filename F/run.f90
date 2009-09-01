@@ -58,7 +58,7 @@ contains
         use Environmental, only: Calc_ftemp, Calc_fVPD
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
         use Soil, only: Calc_precip, Calc_SWP, Calc_fSWP
-        use Evapotranspiration, only: Calc_Ei_PEt_AEt_PM
+        use Evapotranspiration, only: Calc_Penman_Monteith
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
         use Inputs, only: dd
         use Variables, only: dd_prev
@@ -92,7 +92,7 @@ contains
 
         call Calc_precip()
 
-        call Calc_Ei_PEt_AEt_PM()
+        call Calc_Penman_Monteith()
 
         call Calc_SWP()
         call Calc_fSWP()
