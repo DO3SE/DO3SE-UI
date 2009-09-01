@@ -74,7 +74,7 @@ contains
             leaf_gO3 = gO3 / 41000  ! leaf stomatal conductance in m/s
             leaf_rO3 = 1 / leaf_gO3 ! leaf stomatal resistance in s/m
 
-            leaf_r = 1 / (leaf_gO3 + (1/2500))  ! leaf resistance in s/m
+            leaf_r = 1.0 / (leaf_gO3 + (1.0/2500.0))  ! leaf resistance in s/m
 
             if ( leaf_fphen > 0 ) then
                 Fst = O3_nmol_m3 * leaf_gO3 * (leaf_r/(leaf_rb + leaf_r))  ! Fst in nmol/m2/s

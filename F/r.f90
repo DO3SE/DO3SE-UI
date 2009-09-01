@@ -48,7 +48,7 @@ contains
             Psi_h_zd = -5 * Ezd
             Psi_m_zd = -5 * Ezd
         else
-            Xzd = (1 - 15*Ezd)**(1/4)
+            Xzd = (1 - 15*Ezd)**(1.0/4.0)
             Psi_m_zd = log(((1+Xzd**2)/2)*((1+Xzd)/2)**2)-2*ATAN(Xzd)+(PI/2)
             Psi_h_zd = 2*log((1+Xzd**2)/2)
         end if
