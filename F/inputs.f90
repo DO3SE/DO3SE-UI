@@ -16,7 +16,7 @@ module Inputs
     real, public, save :: PAR           ! PAR (umol/m^2/s)
 
     ! These input variables usually aren't available, but have derivations
-    real, public, save :: Rn            ! Net radiation (Wh/m^2)
+    real, public, save :: Rn            ! Net radiation (MJ/m^2/h)
     real, public, save :: ustar         ! Friction velocity (m/s)
     real, public, save :: uh_i          ! Windspeed at intermediate height
     real, public, save :: uh            ! Windspeed at canopy

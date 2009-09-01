@@ -39,7 +39,7 @@ inputs = Map([
         ('hd',          'Sensible heat flux (W/m^2)'),
         ('r',           'Global radiation (Wh/m^2)'),
         ('par',         'PAR radiation (umol/m^2/s)'),
-        ('rn',          'Net radiation (Wh/m^2)'),
+        ('rn',          'Net radiation (MJ/m^2/h)'),
 ])
 
 outputs = Map([
