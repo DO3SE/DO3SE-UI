@@ -43,8 +43,6 @@ class Dataset:
         # Set up default procedures
         self.sai = dose.phenology.calc_sai_simple
         self.ra = dose.r.calc_ra_simple
-        self.aet = dose.evapotranspiration.calc_aet_pm
-        self.pet = dose.evapotranspiration.calc_pet_pm
         self.rn = dose.irradiance.calc_rn
         # Calculation between PAR and R
         def f(): pass
@@ -98,7 +96,7 @@ class Dataset:
 
             self.par_r()
             dose.inputs.derive_ustar_uh()
-            dose.run.do_calcs(self.sai, self.ra, self.aet, self.pet, self.rn)
+            dose.run.do_calcs(self.sai, self.ra, self.rn)
             self.results.append(util.dictjoin(
                 util.getattrs_i(dose.inputs, ['yr', 'mm', 'mdd', 'dd', 'hr']),
                 util.getattrs_f(dose.inputs, ['ts_c', 'vpd', 'uh_zr', 'precip',

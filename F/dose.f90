@@ -66,7 +66,6 @@ contains
         use Run, only: Do_Calcs
         
         use Phenology, only: Calc_SAI_Simple, Calc_SAI_Crops
-        use Evapotranspiration, only: Calc_PEt, Calc_PEt_PM, Calc_AEt, Calc_AEt_PM
         use Irradiance, only: Calc_Rn, Copy_Rn
         use R, only: Calc_Ra_Simple, Calc_Ra_With_Heat_Flux
 
@@ -75,10 +74,6 @@ contains
         call Do_Calcs(Calc_SAI_Simple, &
                       Calc_Ra_Simple, &
                       !Calc_Ra_With_Heat_Flux, &
-                      Calc_PEt_PM, &
-                      !Calc_PEt, &
-                      Calc_AEt_PM, &
-                      !Calc_AEt, &
                       Calc_Rn)
     end subroutine Calculate
 

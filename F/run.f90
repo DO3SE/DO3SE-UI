@@ -48,21 +48,17 @@ contains
     ! Calc_Ra
     !       Method for calculating Ra (simple or including heat flux data)
     !
-    ! Calc_PEt
-    ! Calc_AEt
-    !       Methods for calculating potential and actual evapotranspiration
-    !
     ! Calc_Rn
     !       Method for calculating net radiation (copy or calculate)
     !
     !==========================================================================
-    subroutine Do_Calcs(Calc_SAI, Calc_Ra, Calc_PEt, Calc_AEt, Calc_Rn)
+    subroutine Do_Calcs(Calc_SAI, Calc_Ra, Calc_Rn)
         use Phenology, only: Calc_LAI, Calc_fphen
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
         use Soil, only: Calc_precip, Calc_SWP, Calc_fSWP
-        use Evapotranspiration, only: Calc_Ei
+        use Evapotranspiration, only: Calc_Ei_PEt_AEt_PM
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
         use Inputs, only: dd
         use Variables, only: dd_prev
@@ -72,10 +68,6 @@ contains
             end subroutine Calc_SAI
             subroutine Calc_Ra()
             end subroutine Calc_Ra
-            subroutine Calc_PEt()
-            end subroutine Calc_PEt
-            subroutine Calc_AEt()
-            end subroutine Calc_AEt
             subroutine Calc_Rn()
             end subroutine Calc_Rn
         end interface
@@ -100,9 +92,7 @@ contains
 
         call Calc_precip()
 
-        call Calc_PEt()         !***
-        call Calc_AEt()         !***
-        call Calc_Ei()
+        call Calc_Ei_PEt_AEt_PM()
 
         call Calc_SWP()
         call Calc_fSWP()
