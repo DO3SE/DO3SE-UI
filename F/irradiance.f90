@@ -73,7 +73,7 @@ contains
 
             ST = min(0.9, max(0.21, PAR/pPARtotal))
 
-            fPARdir = (pPARdif/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
+            fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
             fPARdif = 1 - fPARdir
 
             PARdir = fPARdir * PAR
