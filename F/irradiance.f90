@@ -64,7 +64,7 @@ contains
                 Flightshade
 
         if (sinB > 0 .and. LAI > 0) then
-            m = (P/seaP) / sinB
+            m = 1.0 / sinB
 
             ! Potential direct and diffuse PAR
             pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
