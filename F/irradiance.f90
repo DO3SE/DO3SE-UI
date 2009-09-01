@@ -71,7 +71,8 @@ contains
             pPARdif = 0.4 * (600 - pPARdir) * sinB
             pPARtotal = pPARdir + pPARdif
 
-            ST = min(0.9, max(0.21, PAR/pPARtotal))
+            ! Sky transmissivity (with PAR converted to W/m^2)
+            ST = min(0.9, max(0.21, (PAR/4.57)/pPARtotal))
 
             fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
             fPARdif = 1 - fPARdir
