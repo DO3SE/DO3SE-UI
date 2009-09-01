@@ -13,12 +13,12 @@ contains
     ! nmol/m^3
     !==========================================================================
     subroutine Calc_O3_Concentration()
-        use Constants, only: k, izR
+        use Constants, only: k, izR, v, DO3, Pr
         use Inputs, only: O3_ppb_zR, uh_i
         use Variables, only: O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Ra_i, Vd
         use Params_Site, only: O3zR, O3_d, O3_zo
 
-        real :: ustar_o, O3_i
+        real :: ustar_o, O3_i, Rb_i, Vd_i
 
         ! Deposition velocity over target veg
         ! (we assume that this is "close enough" for over the measurement veg.)
@@ -28,8 +28,13 @@ contains
         ustar_o = (uh_i * k) / log((izR - O3_d) / O3_zo)
         ! Ra over O3 measurement veg.
         Ra_i = (1 / (ustar_o * k)) * log((izR - O3_d) / (O3zR - O3_d))
+        ! Rb over O3 measurement veg.
+        Rb_i = (2.0/(k*ustar_o)) * (((v/DO3)/Pr)**(2.0/3.0))
+        ! Estimated deposition velocity over O3 measurement veg.
+        Vd_i = 1 / (Ra_i + Rb_i + Rsur)
+
         ! O3 concentration at intermediate height
-        O3_i = O3_ppb_zR / (1 - (Ra_i * Vd))
+        O3_i = O3_ppb_zR / (1 - (Ra_i * Vd_i))
 
         O3_ppb = O3_i * (1 - (Ra * Vd))
 
