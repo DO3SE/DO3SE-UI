@@ -56,7 +56,7 @@ contains
         ! Only once per day
         if (dd /= dd_prev) then
             if (precip == 0) then
-                Sn_diff = -(AEt/root) - Es
+                Sn_diff = (-AEt - Es) / root
             else
                 Sn_diff = (precip - (0.0001*LAI)) &
                         + ((0.0001*LAI) - min(Ei, 0.0001*LAI)) / root
