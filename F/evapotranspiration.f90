@@ -12,8 +12,8 @@ contains
     subroutine Calc_Penman_Monteith()
         use Constants, only: seaP, Ts_K
         use Inputs, only: VPD, Ts_C, P, Rn, dd
-        use Variables, only: Ei, AEt, PEt, Rb, LAI, Rsto, Rsto_PEt, dd_prev, &
-                             WC, Rsur
+        use Variables, only: Ei, AEt, PEt, Es, Rb, LAI, Rsto, Rsto_PEt, &
+                             dd_prev, WC, Rsur
         use Params_Site, only: Fc_m
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
