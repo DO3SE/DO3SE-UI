@@ -80,7 +80,7 @@ contains
             PARdir = fPARdir * PAR
             PARdif = fPARdif * PAR
 
-            LAIsun = (1 - exp(-0.5 * (LAI/sinB)) * (2*sinB))
+            LAIsun = (1 - exp(-0.5 * LAI / sinB)) * (2 * sinB)
             LAIshade = LAI - LAIsun
 
             PARshade = PARdif*exp(-0.5*(LAI**0.8))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-sinB)
