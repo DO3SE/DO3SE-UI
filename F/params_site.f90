@@ -3,14 +3,16 @@ module Params_Site
     real, public, save  :: Rsoil = 200      ! Soil resistance in (s/m)
 
     ! Soil properties all set based on "Soil texture"
-    real, public, save  :: soil_BD = 1.3    ! Soil bulk density (g/cm^3)
-    real, public, save  :: soil_a = -5.5    ! SWC constant a - coarse = -4,
-                                            ! medium = -5.5, fine = -7
     real, public, save  :: soil_b = -3.3    ! SWC constant b - coarse = -2.3, 
                                             ! medium = -3.3, fine = -5.4
     real, public, save  :: Fc_m = 0.193     ! Field capacity (m^3/m^3)
                                             !  - coarse = 0.16, medium = 0.26,
                                             !    fine = 0.30
+    real, public, save  :: SWP_AE = -0.00091    ! Water potential at air entry (MPa)
+                                                !  - sandy loam = -0.00091
+                                                !  - silt loam = -0.00158
+                                                !  - loam = -0.00188
+                                                !  - clay loam = -0.00588
 
     ! Measurement heights
     real, public, save :: uzR = 25      ! Windspeed measurement height (m)

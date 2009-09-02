@@ -57,7 +57,7 @@ contains
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
-        use Soil, only: Calc_precip, Calc_SWP, Calc_fSWP
+        use Soil, only: Calc_precip, Calc_SWP
         use Evapotranspiration, only: Calc_Penman_Monteith
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
         use Inputs, only: dd
@@ -95,7 +95,6 @@ contains
         call Calc_Penman_Monteith()
 
         call Calc_SWP()
-        call Calc_fSWP()
 
         call Calc_O3_Concentration()
         call Calc_Ftot()

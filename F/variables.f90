@@ -44,14 +44,13 @@ module Variables
     real, public, save  :: Gsto, Gsto_PEt
 
     ! Soil
-    real, public, save :: PWP        ! Calculated PWP in m3/3
-    real, public, save :: ASW        ! Calculated ASW in m3/m3
+    real, public, save :: SWP_min_vol ! SWP_min in m3/m3
     real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
-    real, public, save :: Sn         ! soil Water storage capacity
+    real, public, save :: ASW        ! Calculated ASW in m
+    real, public, save :: Sn         ! Soil water in m3/m3
     real, public, save :: per_vol    ! % volumetric water content
-    real, public, save :: SMD        ! soil moisture deficit in mm
+    real, public, save :: SMD        ! soil moisture deficit in m
     real, public, save :: SWP        ! Soil water potential in MPa
-    real, public, save :: WC         ! water content
     real, public, save :: precip     ! Previous day's total precipitation
     real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
     real, public, save :: fSWP

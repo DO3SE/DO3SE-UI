@@ -13,7 +13,7 @@ contains
         use Constants, only: seaP, Ts_K
         use Inputs, only: VPD, Ts_C, P, Rn, dd
         use Variables, only: Ei, AEt, PEt, Es, Rb, LAI, Rsto, Rsto_PEt, &
-                             dd_prev, WC, Rsur
+                             dd_prev, Sn, Rsur
         use Params_Site, only: Fc_m
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
@@ -52,7 +52,7 @@ contains
         AEt_3 = delta * psychro * (1 + (Rsto * (0.61 / LAI)) / (Rb * 0.61))
         AEt_hr = (Et_1 + Et_2) / AEt_3 / 1000
 
-        if (WC < Fc_m) then
+        if (Sn < Fc_m) then
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)

@@ -23,5 +23,8 @@ module Constants
     
     real, public, parameter :: izR = 50         ! Intermediate "decoupled" height for 
                                                 ! transfer of O3 and windspeed
+    
+    real, public, parameter :: SWC_sat = 0.4    ! Saturated soil water content, for
+                                                ! soil water release curve
 
 end module Constants
