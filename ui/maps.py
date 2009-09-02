@@ -80,7 +80,7 @@ outputs = Map([
         ('aet',         'Actual evapotranspiration (AEt, ???)'),
         ('swp',         'Soil-water potential (SWP, ???)'),
         ('per_vol',     'Volumetric water content (per_vol, %)'),
-        ('smd',         'Soil moisture deficit (SMD, mm)'),
+        ('smd',         'Soil moisture deficit (SMD, m)'),
         # More outputs, for testing
         ('eact',        '[TESTING] eact'),
         ('lai',         '[TESTING] LAI'),
