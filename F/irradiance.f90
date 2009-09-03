@@ -90,7 +90,7 @@ contains
             Flightsun = (1.0 - exp(-f_lightfac * PARsun))
             Flightshade = (1.0 - exp(-f_lightfac * PARshade))
 
-            leaf_flight = Flightsun
+            leaf_flight = (1.0 - exp(-f_lightfac * (PARsun + PARshade)))
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
         else
             leaf_flight = 0

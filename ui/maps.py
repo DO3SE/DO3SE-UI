@@ -86,6 +86,7 @@ outputs = Map([
         ('lai',         '[TESTING] LAI'),
         ('sai',         '[TESTING] SAI'),
         ('flight',      '[TESTING] flight'),
+        ('leaf_flight', '[TESTING] leaf_flight'),
         ('ftemp',       '[TESTING] ftemp'),
         ('fvpd',        '[TESTING] fVPD'),
         ('fswp',        '[TESTING] fSWP'),
@@ -98,6 +99,8 @@ outputs = Map([
         ('laishade',    '[TESTING] LAIshade'),
         ('parsun',      '[TESTING] PARsun'),
         ('parshade',    '[TESTING] PARshade'),
+        ('fphen',       '[TESTING] fphen'),
+        ('leaf_fphen',  '[TESTING] leaf_fphen'),
 ])
 
 if __name__ == "__main__":
