@@ -21,7 +21,7 @@ contains
         real        :: Tvir, delta, lambda, psychro, Pair, Cair, G
         
         real        :: Et_1, Et_2, Ei_3, PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr
-        real        :: t, Es_G, Es_1, Es_2, Es_3, Es_hr
+        real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3, Es_hr
 
         real, save  :: Ei_dd = 0, PEt_dd = 0, AEt_dd = 0, Es_dd = 0
 
@@ -56,8 +56,9 @@ contains
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)
-            Es_G = Rn * t
-            Es_1 = (delta * Es_G) / lambda
+            Es_Rn = Rn * t
+            Es_G = 0.1 * Es_Rn
+            Es_1 = (delta * (Es_Rn - Es_G)) / lambda
             Es_2 = 3600 * Pair * Cair * VPD_Pa / (Rsur * 0.61) / lambda
             Es_3 = delta + psychro
             Es_hr = (Es_1 + Es_2) / Es_3 / 1000
