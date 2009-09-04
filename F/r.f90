@@ -69,11 +69,12 @@ contains
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
     !==========================================================================
     subroutine Calc_Rb()
-        use Constants, only: k, v, DO3, Pr
+        use Constants, only: k, v, DO3, DH2O, Pr
         use Inputs, only: ustar
-        use Variables, only: Rb
+        use Variables, only: Rb, Rb_H2O
 
         Rb = (2.0/(k*ustar)) * (((v/DO3)/Pr)**(2.0/3.0))
+        Rb_H2O = (2.0/(k*ustar)) * (((v/DH2O)/Pr)**(2.0/3.0))
     end subroutine Calc_Rb
 
     !==========================================================================

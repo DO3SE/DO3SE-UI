@@ -33,7 +33,8 @@ module Variables
 
     ! R
     real, public, save  :: Ra
-    real, public, save  :: Rb
+    real, public, save  :: Rb       ! Boundary resistance to O3
+    real, public, save  :: Rb_H2O   ! Boundary resistance to H2O
     real, public, save  :: Rsur
     real, public, save  :: Rinc
     real, public, save  :: Rsto
