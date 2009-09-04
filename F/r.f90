@@ -106,12 +106,12 @@ contains
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
     subroutine Calc_Rsto()
-        use Params_Veg, only: gmax
+        use Params_Veg, only: gmax, fmin
         use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, LAI
 
         real :: Gsto_sm
 
-        Gsto = gmax * fphen * flight * ftemp * fVPD * fSWP
+        Gsto = gmax * fphen * flight * max(fmin, ftemp * fVPD * fSWP)
 
         ! Gsto for PEt - assume non-limiting SWP
         Gsto_PEt = gmax * fphen * flight * ftemp * fVPD
