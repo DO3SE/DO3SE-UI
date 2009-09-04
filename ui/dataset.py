@@ -111,7 +111,7 @@ class Dataset:
                 # More variables, for testing
                 util.getattrs_f(dose.variables, ['flight', 'ftemp', 'fvpd',
                     'fswp', 'sinb', 'ppardir', 'ppardif', 'fpardir', 'fpardif',
-                    'laisun', 'laishade', 'parsun', 'parshade', 'eact']),
+                    'laisun', 'laishade', 'parsun', 'parshade', 'eact', 'go3']),
             ))
 
         logging.info("Got %d results" % len(self.results))

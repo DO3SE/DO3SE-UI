@@ -57,6 +57,7 @@ module Variables
 
     ! O3
     real, public, save :: O3_ppb, O3_nmol_m3, Vd
+    real, public, save :: gO3       ! Leaf-level gsto
     real, public, save :: Ftot
     real, public, save :: Fst, AFstY, OT40, AOT40
 
