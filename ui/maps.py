@@ -101,6 +101,7 @@ outputs = Map([
         ('parshade',    '[TESTING] PARshade'),
         ('fphen',       '[TESTING] fphen'),
         ('leaf_fphen',  '[TESTING] leaf_fphen'),
+        ('go3',         '[TESTING] gO3'),
 ])
 
 if __name__ == "__main__":
