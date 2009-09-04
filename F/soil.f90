@@ -75,6 +75,7 @@ contains
 
             ! Calculate fSWP and SMD for new water content
             fSWP = max(fmin, ((1 - fmin) / (SWP_min - SWP_max) * (SWP_min - SWP) + fmin))
+            fSWP = min(fSWP, 1.0)
             SMD = (Fc_m - Sn) * root
         endif
     end subroutine Calc_SWP
