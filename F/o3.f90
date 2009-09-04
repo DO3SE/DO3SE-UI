@@ -57,7 +57,7 @@ contains
     !==========================================================================
     subroutine Calc_Fst()
         use Constants, only: k
-        use Params_Veg, only: gmax, Lm
+        use Params_Veg, only: gmax, Lm, fmin
         use Inputs, only: uh
         use Variables, only: Fst, leaf_fphen, leaf_flight, ftemp, fVPD, &
             fSWP, O3_nmol_m3, gO3
@@ -65,7 +65,7 @@ contains
         real :: leaf_rb, leaf_gb, leaf_r
         real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance
         
-        gO3 = gmax * leaf_fphen * leaf_flight * ftemp * fVPD * fSWP  ! in mmol O3 m^-2 s^-1
+        gO3 = gmax * leaf_fphen * leaf_flight * max(fmin, ftemp * fVPD * fSWP)  ! in mmol O3 m^-2 s^-1
 
         leaf_rb = 1.3 * 150 * sqrt(Lm/uh)   ! leaf boundary layer resistance in s/m
         leaf_gb = 1 / leaf_rb               ! leaf boundary layer conductance in m/s
