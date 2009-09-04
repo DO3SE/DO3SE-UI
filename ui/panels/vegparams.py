@@ -201,7 +201,7 @@ class VegParams(wx.Panel):
         
         s.Add(wx.StaticText(p, label="SWP for maximum growth"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['swp_max'] = FloatSpin(p, value=-0.5, increment=0.01, digits=2)
+        self.fields['swp_max'] = FloatSpin(p, value=-0.05, increment=0.01, digits=2)
         s.Add(self.fields['swp_max'], 0, wx.ALIGN_RIGHT)
 
         # Maintain integrity on environmental dependence
