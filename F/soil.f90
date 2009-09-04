@@ -22,7 +22,10 @@ contains
         use Constants, only: SWC_sat
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
-        use Variables, only: SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, fSWP, SMD
+        use Variables, only: precip_acc, SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, fSWP, SMD
+
+        ! Initialise accumulated precipitation
+        precip_acc = 0
 
         ! Convert SWP_min to volumetric (MPa -> m^3/m^3)
         SWP_min_vol = 1.0 / (((SWP_min/SWP_AE)**(1.0/soil_b)) / SWC_sat)
@@ -48,17 +51,17 @@ contains
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
         use Inputs, only: dd
-        use Variables, only: dd_prev, precip, AEt, Es, Ei, LAI, SWP_min_vol
+        use Variables, only: dd_prev, precip_acc, AEt, Es, Ei, LAI, SWP_min_vol
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
 
         real :: Sn_diff
 
         ! Only once per day
         if (dd /= dd_prev) then
-            if (precip == 0) then
+            if (precip_acc == 0) then
                 Sn_diff = (-AEt - Es) / root
             else
-                Sn_diff = (precip - (0.0001*LAI)) &
+                Sn_diff = (precip_acc - (0.0001*LAI)) &
                         + ((0.0001*LAI) - min(Ei, 0.0001*LAI)) / root
             endif
 
@@ -77,18 +80,18 @@ contains
     end subroutine Calc_SWP
 
     subroutine Calc_precip()
-        use Inputs, only: dd, precip_in => precip
-        use Variables, only: dd_prev, precip
+        use Inputs, only: dd, precip
+        use Variables, only: dd_prev, precip_acc
 
         real, save :: precip_dd = 0
 
         if ( dd == dd_prev ) then
             ! Same day, accumulate (converts mm to m)
-            precip_dd = precip_dd + (precip_in/1000)
+            precip_dd = precip_dd + (precip/1000)
         else
             ! Next day, store and reset
-            precip = precip_dd
-            precip_dd = precip_in/1000
+            precip_acc = precip_dd
+            precip_dd = precip/1000
         endif
     end subroutine Calc_precip
 

@@ -16,7 +16,7 @@ module Variables
     ! Evapotranspiration
     real, public, save  :: PEt  ! Potential evapotranspiration
     real, public, save  :: AEt  ! Actual evapotranspiration
-    real, public, save  :: Ei   ! Evaporation of intercepted precip
+    real, public, save  :: Ei   ! Evaporation of intercepted precipitation
     real, public, save  :: Es   ! Evaporation of soil water
 
     ! Irradiance
@@ -51,7 +51,7 @@ module Variables
     real, public, save :: per_vol    ! % volumetric water content
     real, public, save :: SMD        ! soil moisture deficit in m
     real, public, save :: SWP        ! Soil water potential in MPa
-    real, public, save :: precip     ! Previous day's total precipitation
+    real, public, save :: precip_acc ! Previous day's accumulated precipitation
     real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
     real, public, save :: fSWP
 
