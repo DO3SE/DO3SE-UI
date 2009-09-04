@@ -31,7 +31,7 @@ contains
         esat = esat * 1000  ! Convert to Pa
         eact = esat - VPD_Pa
 
-        Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P)))
+        Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/(P*1000)))) ! Pressure converted to Pa
         delta= ((4098*esat)/((Ts_c+237.3)**2)) 
         lambda = (2501000-(2361*Ts_c))
         psychro = 1628.6 * (P/lambda)
