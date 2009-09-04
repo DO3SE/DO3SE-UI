@@ -100,7 +100,7 @@ class VegParams(wx.Panel):
         self.fields['gmax'] = wx.SpinCtrl(p, min=1, initial=148, max=10000)
         s.Add(self.fields['gmax'], 0, wx.ALIGN_RIGHT)
 
-        s.Add(wx.StaticText(p, label="gmin"), 0, wx.ALIGN_CENTER_VERTICAL)
+        s.Add(wx.StaticText(p, label="fmin"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields['fmin'] = FloatSpin(p, min_val=0.01, value=0.13, max_val=0.99, 
                 increment=0.01, digits=2)
         s.Add(self.fields['fmin'], 0, wx.ALIGN_RIGHT)
