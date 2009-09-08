@@ -98,10 +98,10 @@ _output_fields = (
 
 # Available output fields as a list of dicts
 output_fields = [{'module':      x[0],
-                 'variable':    x[1],
-                 'type':        x[2],
-                 'short':       x[3],
-                 'long':        x[4]} for x in _output_fields]
+                  'variable':    x[1],
+                  'type':        x[2],
+                  'short':       x[3],
+                  'long':        x[4]} for x in _output_fields]
 
 # Mapping from output field variable name to full field info
 output_field_map = dict( (x['variable'], x) for x in output_fields )
