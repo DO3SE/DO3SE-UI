@@ -106,33 +106,37 @@ output_fields = [{'module':      x[0],
 # Mapping from output field variable name to full field info
 output_field_map = dict( (x['variable'], x) for x in output_fields )
 
-# Soil class data
-soil_classes = {
-        'sand_loam': {
-            'name':     'Sandy Loam (coarse)',
+# Soil class data in (id, name, data) format
+_soil_classes = (
+        ('sand_loam',   'Sandy Loam (coarse)', {
             'soil_b':   3.31,
             'fc_m':     0.16,
             'swp_ae':   -0.00091,
-        },
-        'silt_loam': {
-            'name':     'Silt loam (medium coarse)',
+        }),
+        ('silt_loam',   'Silt loam (medium coarse)', {
             'soil_b':   4.38,
             'fc_m':     0.26,
             'swp_ae':   -0.00158,
-        },
-        'loam': {
-            'name':     'Loam (medium)',
+        }),
+        ('loam',        'Loam (medium)', {
             'soil_b':   6.58,
             'fc_m':     0.29,
             'swp_ae':   -0.00188,
-        },
-        'clay_loam': {
-            'name':     'Clay loam (fine)',
+        }),
+        ('clay_loam',   'Clay loam (fine)', {
             'soil_b':   7.00,
             'fc_m':     0.37,
             'swp_ae':   -0.00588,
-        },
-}
+        }),
+)
+
+# Soil classes as a list of dicts
+soil_classes = [{'id':      x[0],
+                 'name':    x[1],
+                 'data':    x[2]} for x in _soil_classes]
+
+# Mapping from soil class id to full info
+soil_class_map = dict( (x['id'], x) for x in soil_classes )
 
 
 def extract_outputs():
