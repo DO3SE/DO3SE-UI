@@ -115,38 +115,3 @@ class Dataset:
         w.writerows(self.results)
         file.close()
         logging.info("Wrote %d records" % len(self.results))
-        
-
-if __name__ == '__main__':
-    d = Dataset(
-            'notes/sample_hourly_noLAI.csv',
-            ['mm', 'mdd', 'dd', 'hr', 'ts_c', 'vpd', 'uh_zr', 'precip', 'p',
-                'o3_ppb_zr', 'hd', 'r', 'par'],
-            2
-    )
-
-    d.run()
-
-    d.save('dataset-test.csv', [
-        #'rn',
-        'ra',
-        'rb',
-        'rsur',
-        'rinc',
-        'rsto',
-        #'gsto',
-        'rgs',
-        'vd',
-        #'o3_ppb',
-        #'o3_nmol_m3',
-        #'fst',
-        #'afsty',
-        #'ftot',
-        #'ot40',
-        #'aot40',
-        #'aet',
-        #'swp',
-        #'per_vol',
-        #'smd', 
-        ], headers=True)
-
