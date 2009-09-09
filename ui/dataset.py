@@ -69,12 +69,18 @@ class Dataset:
     def run(self):
         skippedrows = 0
 
+        # Copy parameters (to avoid breaking whatever else might be using them)
+        vegparams = self.vegparams.copy()
+        siteparams = self.siteparams.copy()
+        # Replace soil_tex (if it exists) with soil parameters
+        siteparams.update(dose.soil_class_map[siteparams.pop('soil_tex', dose.default_soil_class)]['data'])
+
         # Setup parameters
         
         # Do vegetation parameters first, as some site parameters depend on this
-        util.setattrs(dose.params_veg, self.vegparams)
+        util.setattrs(dose.params_veg, vegparams)
         dose.params_veg.derive_d_zo()
-        util.setattrs(dose.params_site, self.siteparams)
+        util.setattrs(dose.params_site, siteparams)
 
         # Initialise the module
         logging.info("Initialising DOSE Fortran model")

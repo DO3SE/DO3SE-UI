@@ -1,6 +1,7 @@
 import wx
 
 from .. import wxext
+from .. import dose
 from ..FloatSpin import FloatSpin
 from ..app import logging, app
 
@@ -73,9 +74,11 @@ class SiteParams(wx.Panel):
         sSiteParams.Add(sSoil, 0, wx.EXPAND)
         sSoil.fgs.Add(wx.StaticText(self, label="Texture"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['soil_tex'] = wx.Choice(self, 
-                choices=['Fine', 'Medium', 'Coarse'])
-        self.fields['soil_tex'].SetStringSelection('Medium')
+        self.fields['soil_tex'] = wx.Choice(self)
+        for x in dose.soil_classes:
+            self.fields['soil_tex'].Append(x['name'], x['id'])
+        self.fields['soil_tex'].SetStringSelection(
+                dose.soil_class_map[dose.default_soil_class]['name'])
         sSoil.fgs.Add(self.fields['soil_tex'], 0)
         sSoil.fgs.Add(wx.StaticText(self, label="Rsoil"),
                 0, wx.ALIGN_CENTER_VERTICAL)
@@ -124,14 +127,8 @@ class SiteParams(wx.Panel):
             'o3_h_copy' : self.fields['o3_h_copy'].GetValue(),
             'u_h_copy'  : self.fields['u_h_copy'].GetValue(),
             'rsoil'     : float(self.fields['rsoil'].GetValue()),
-            'soil_a'    : {'Coarse': -4.0, 'Medium': -5.5, 'Fine': -7.0}
-                            [self.fields['soil_tex'].GetStringSelection()],
-            'soil_b'    : {'Coarse': -2.3, 'Medium': -3.3, 'Fine': -5.4}
-                            [self.fields['soil_tex'].GetStringSelection()],
-            'soil_bd'   : {'Coarse': 1.6, 'Medium': 1.3, 'Fine': 1.1}
-                            [self.fields['soil_tex'].GetStringSelection()],
-            'fc_m'      : {'Coarse': 0.15, 'Medium': 0.26, 'Fine': 0.30}
-                            [self.fields['soil_tex'].GetStringSelection()],
+            # Replaced with real soil parameters in Dataset.run()
+            'soil_tex'  : self.fields['soil_tex'].GetClientData(self.fields['soil_tex'].GetSelection()),
         }
 
 
@@ -146,9 +143,7 @@ class SiteParams(wx.Panel):
         self.fields['u_h'].SetValue(v['u_h'])
         self.fields['o3_h_copy'].SetValue(v['o3_h_copy'])
         self.fields['u_h_copy'].SetValue(v['u_h_copy'])
-        self.fields['soil_tex'].SetStringSelection(
-            {-4.0: 'Coarse', -5.5: 'Medium', -7.0: 'Fine'}[v['soil_a']]
-        )
+        self.fields['soil_tex'].SetStringSelection(dose.soil_class_map[v['soil_tex']]['name'])
         self.fields['rsoil'].SetValue(v['rsoil'])
         self.fields['o3_h'].Enable(not self.fields['o3_h_copy'].IsChecked())
         self.fields['u_h'].Enable(not self.fields['u_h_copy'].IsChecked())
