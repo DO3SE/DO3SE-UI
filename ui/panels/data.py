@@ -2,7 +2,7 @@ import wx
 import wx.grid as gridlib
 
 from .. import wxext
-from .. import maps
+from .. import dose
 from ..app import logging, app
 
 class Data(wx.Panel):
@@ -17,16 +17,16 @@ class Data(wx.Panel):
         grid = gridlib.Grid(self)
         s.Add(grid, 1, wx.EXPAND|wx.ALL, 6)
 
-        grid.CreateGrid(len(self.dataset.results), len(maps.outputs))
+        grid.CreateGrid(len(self.dataset.results), len(dose.output_fields))
         grid.SetColLabelAlignment(wx.ALIGN_LEFT, wx.ALIGN_BOTTOM)
         #grid.SetDefaultRenderer(gridlib.GridCellNumberRenderer())
         grid.EnableEditing(False)
 
         colmap = dict()
         i = 0
-        for x in maps.outputs.keys():
-            colmap[x] = i
-            grid.SetColLabelValue(i, x)
+        for x in dose.output_fields:
+            colmap[x['variable']] = i
+            grid.SetColLabelValue(i, x['short'])
             i += 1
 
         i = 0

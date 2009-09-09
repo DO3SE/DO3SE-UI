@@ -97,22 +97,7 @@ class Dataset:
             self.par_r()
             dose.inputs.derive_ustar_uh()
             dose.run.do_calcs(self.sai, self.ra, self.rn)
-            self.results.append(util.dictjoin(
-                util.getattrs_i(dose.inputs, ['yr', 'mm', 'mdd', 'dd', 'hr']),
-                util.getattrs_f(dose.inputs, ['ts_c', 'vpd', 'uh_zr', 'precip',
-                    'p', 'o3_ppb_zr', 'hd', 'r', 'par', 'ustar', 'uh']),
-                util.getattrs_f(dose.variables, ['ftemp', 'fvpd', 'pet', 'aet',
-                    'ei', 'flight', 'leaf_flight', 'rn', 'rn_w', 'lai', 'sai',
-                    'fphen', 'leaf_fphen', 'ra', 'rb', 'rsur', 'rinc', 'rsto',
-                    'rgs', 'ra_i', 'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star',
-                    'sn', 'per_vol', 'smd', 'swp', 'wc', 'rsto_pet',
-                    'fswp', 'o3_ppb', 'o3_nmol_m3', 'vd', 'ftot', 'fst',
-                    'afsty', 'ot40', 'aot40']),
-                # More variables, for testing
-                util.getattrs_f(dose.variables, ['flight', 'ftemp', 'fvpd',
-                    'fswp', 'sinb', 'ppardir', 'ppardif', 'fpardir', 'fpardif',
-                    'laisun', 'laishade', 'parsun', 'parshade', 'eact']),
-            ))
+            self.results.append(dose.extract_outputs())
 
         logging.info("Got %d results" % len(self.results))
         return (len(self.results), skippedrows)
