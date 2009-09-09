@@ -1,7 +1,7 @@
 defaults = {
     'file_history': list(),
-    'input_fields': dict(),
-    'output_fields': dict(),
+    'input_format': dict(),
+    'output_format': dict(),
     'site_params': dict(),
     'veg_params': {
         'Coniferous Forests (CF)': {
@@ -41,8 +41,8 @@ def sanitise_config(config):
     Perform little cleanups like removing references to fields that don't exist
     """
     # Remove references to non-existant input fields
-    for key, preset in config['input_fields'].iteritems():
-        config['input_fields'][key] = [x for x in preset if x in input_field_map]
+    for key, preset in config['input_format'].iteritems():
+        config['input_format'][key] = [x for x in preset if x in input_field_map]
     # Remove references to non-existant output fields
-    for key, preset in config['output_fields'].iteritems():
-        config['output_fields'][key] = [x for x in preset if x in output_field_map]
+    for key, preset in config['output_format'].iteritems():
+        config['output_format'][key] = [x for x in preset if x in output_field_map]
