@@ -1,9 +1,10 @@
 import wx
 
 from .. import wxext
-from .. import maps
+from .. import dose
 from ..FloatSpin import FloatSpin
 from ..app import logging, app
+
 
 class InputParams(wx.Panel):
     def __init__(self, *args, **kwargs):
@@ -26,7 +27,7 @@ class InputParams(wx.Panel):
         # List selector
         self.lsInputs = wxext.ListSelectCtrl(self)
         s.Add(self.lsInputs, 1, wx.EXPAND|wx.ALL, 6)
-        self.lsInputs.SetAvailable(maps.inputs.values())
+        self.lsInputs.SetAvailable([(x['long'], x['variable']) for x in dose.input_fields])
         
         # Header trim
         sTrim = wx.BoxSizer(wx.HORIZONTAL)
@@ -40,17 +41,17 @@ class InputParams(wx.Panel):
         # Preset manager get-/setvalues callbacks
         def f():
             return {
-                'fields': maps.inputs.rmap(self.lsInputs.GetSelection()),
-                'trim': self.spinInputTrim.GetValue(),
+                    'fields': self.GetFields(),
+                    'trim': self.GetTrim(),
             }
         self.presets.getvalues = f
         def f(v):
-            self.lsInputs.SetSelection(maps.inputs.map(v['fields']))
+            self.lsInputs.SetSelection((dose.input_field_map[x]['long'] for x in v['fields']))
             self.spinInputTrim.SetValue(v['trim'])
         self.presets.setvalues = f
 
     def GetFields(self):
-        return maps.inputs.rmap(self.lsInputs.GetSelection())
+        return [b for a,b in self.lsInputs.GetSelectionWithData()]
 
     def GetTrim(self):
         return int(self.spinInputTrim.GetValue())

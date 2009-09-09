@@ -48,19 +48,34 @@ class ListSelectCtrl(wx.Panel):
 
     
     def Reset(self):
+        """
+        Reset the ListSelectCtrl to its initial state (with no items selected)
+        """
         self.list_avail.Clear()
         self.list_sel.Clear()
 
         for i in self.available_items:
-            self.list_avail.Append(i)
+            self.list_avail.Append(i[0], i[1])
 
 
     def SetAvailable(self, items):
+        """
+        Set the available choices
+        
+        Replace the list of choices that are available.  "items" is a list of
+        (text, clientdata) pairs.
+        """
         self.available_items = items
         self.Reset()
 
 
     def SetSelection(self, items):
+        """
+        Set the current selection
+
+        Set the currently selected items by simulating the way the user would
+        select them and click the add button.
+        """
         self.Reset()
         
         for i in items:
@@ -72,11 +87,20 @@ class ListSelectCtrl(wx.Panel):
         return self.list_sel.GetItems()
 
 
+    def GetSelectionWithData(self):
+        """
+        Get the current selection as (text, clientdata) pairs
+        """
+        return ((self.list_sel.GetString(n), self.list_sel.GetClientData(n))
+                for n in xrange(self.list_sel.GetCount()))
+
+
     def OnAdd(self, evt):
         sel = self.list_avail.GetSelection()
 
         if sel != -1:
-            self.list_sel.Append(self.list_avail.GetString(sel))
+            self.list_sel.Append(self.list_avail.GetString(sel),
+                                 self.list_avail.GetClientData(sel))
             self.list_avail.Delete(sel)
             if sel == self.list_avail.GetCount():
                 self.list_avail.SetSelection(sel - 1)
@@ -88,7 +112,8 @@ class ListSelectCtrl(wx.Panel):
         sel = self.list_sel.GetSelection()
 
         if sel != -1:
-            self.list_avail.Append(self.list_sel.GetString(sel))
+            self.list_avail.Append(self.list_sel.GetString(sel),
+                                   self.list_sel.GetClientData(sel))
             self.list_sel.Delete(sel)
             if sel == self.list_sel.GetCount():
                 self.list_sel.SetSelection(sel - 1)
@@ -101,8 +126,9 @@ class ListSelectCtrl(wx.Panel):
 
         if sel > 0:
             item = self.list_sel.GetString(sel)
+            cdata = self.list_sel.GetClientData(sel)
             self.list_sel.Delete(sel)
-            self.list_sel.Insert(item, sel - 1)
+            self.list_sel.Insert(item, sel - 1, cdata)
             self.list_sel.SetSelection(sel - 1)
 
 
@@ -111,6 +137,7 @@ class ListSelectCtrl(wx.Panel):
 
         if sel != -1 and sel < (self.list_sel.GetCount() - 1):
             item = self.list_sel.GetString(sel)
+            cdata = self.list_sel.GetClientData(sel)
             self.list_sel.Delete(sel)
-            self.list_sel.Insert(item, sel + 1)
+            self.list_sel.Insert(item, sel + 1, cdata)
             self.list_sel.SetSelection(sel + 1)

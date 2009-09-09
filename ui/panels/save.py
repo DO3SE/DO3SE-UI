@@ -1,7 +1,7 @@
 import wx
 
 from .. import wxext
-from .. import maps
+from .. import dose
 from ..FloatSpin import FloatSpin
 from ..app import logging, app
 
@@ -29,7 +29,7 @@ class Save(wx.Panel):
         # List selector
         self.slOutputs = wxext.ListSelectCtrl(self)
         s.Add(self.slOutputs, 1, wx.EXPAND|wx.ALL, 6)
-        self.slOutputs.SetAvailable(maps.outputs.values())
+        self.slOutputs.SetAvailable([(x['long'], x['variable']) for x in dose.output_fields])
         
         # "Include column headers?"
         sHeaders = wx.BoxSizer(wx.HORIZONTAL)
@@ -48,18 +48,18 @@ class Save(wx.Panel):
         # Preset manager get-/setvalues callbacks
         def f():
             return {
-                'fields': maps.outputs.rmap(self.slOutputs.GetSelection()),
-                'headers': self.chkOutputHeaders.GetValue()
+                'fields': self.GetFields(),
+                'headers': self.GetAddHeaders()
             }
         self.presets.getvalues = f
         def f(v):
-            self.slOutputs.SetSelection(maps.outputs.map(v['fields']))
+            self.slOutputs.SetSelection((dose.output_field_map[x]['long'] for x in v['fields']))
             self.chkOutputHeaders.SetValue(v['headers'])
         self.presets.setvalues = f
 
     
     def GetFields(self):
-        return maps.outputs.rmap(self.slOutputs.GetSelection())
+        return [b for a,b in self.slOutputs.GetSelectionWithData()]
 
     
     def GetAddHeaders(self):
@@ -77,7 +77,6 @@ class Save(wx.Panel):
             self.prevdir = fd.GetDirectory()
             path = fd.GetPath()
             if not path.split('.')[-1] == 'csv': path = path + '.csv'
-            self.dataset.save(path, maps.outputs.rmap(self.slOutputs.GetSelection()), 
-                    headers=self.chkOutputHeaders.GetValue)
+            self.dataset.save(path, self.GetFields(), headers=self.GetAddHeaders())
             wx.MessageDialog(self, message = 'Results saved!',
                     style = wx.OK|wx.ICON_INFORMATION)
