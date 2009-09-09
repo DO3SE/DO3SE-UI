@@ -138,6 +138,8 @@ soil_classes = [{'id':      x[0],
 # Mapping from soil class id to full info
 soil_class_map = dict( (x['id'], x) for x in soil_classes )
 
+default_soil_class = 'loam'
+
 
 def extract_outputs():
     """
