@@ -54,6 +54,7 @@ _output_fields = (
 
         # Calculated variables
         (inputs,        'ustar',    float,  'u* (m/s)',         'Friction velocity (u*, m/s)'),
+        (inputs,        'uh',       float,  'uh (m/s)',         'Wind speed at target canopy (uh, m/s)'),
         (variables,     'rn',       float,  'Rn (MJ/m^2/h)',    'Net radiation (Rn, MJ/m^2/h)'),
         (variables,     'rn_w',     float,  'Rn_W (Wh/m^2)',    'Net radiation (Rn, Wh/m^2)'),
         (variables,     'ra',       float,  'Ra (s/m)',         'Aerodynamic resistance (Ra, s/m)'),
@@ -94,6 +95,11 @@ _output_fields = (
         (variables,     'laishade', float,  'LAIshade',         '[DEBUG] LAIshade'),
         (variables,     'parsun',   float,  'PARsun',           '[DEBUG] PARsun'),
         (variables,     'parshade', float,  'PARshade',         '[DEBUG] PARshade'),
+
+        (variables,     'leaf_flight',float,'leaf_flight',      '[DEBUG] leaf_flight'),
+        (variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
+        (variables,     'leaf_fphen',float, 'leaf_fphen',       '[DEBUG] leaf_fphen'),
+        (variables,     'go3',      float,  'gO3',              '[DEBUG] Leaf-level gsto (gO3)'),
 
         (variables,     'rb_h2o',   float,  'Rb_H2O (s/m)',     '[DEBUG] Rb_H2O (boundary resistance to water)'),
         (variables,     'asw',      float,  'ASW',              '[DEBUG] ASW'),
