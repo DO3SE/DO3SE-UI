@@ -18,6 +18,13 @@ module Variables
     real, public, save  :: AEt  ! Actual evapotranspiration
     real, public, save  :: Ei   ! Evaporation of intercepted precipitation
     real, public, save  :: Es   ! Evaporation of soil water
+    ! Intermediate evapotranspiration variables (TODO: remove these)
+    real, public, save  :: Ei_hr
+    real, public, save  :: Es_hr
+    real, public, save  :: PEt_hr
+    real, public, save  :: AEt_hr
+    real, public, save  :: PEt_3
+    real, public, save  :: AEt_3
 
     ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
@@ -55,6 +62,7 @@ module Variables
     real, public, save :: precip_acc ! Previous day's accumulated precipitation
     real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
     real, public, save :: fSWP
+    real, public, save :: Sn_diff
 
     ! O3
     real, public, save :: O3_ppb, O3_nmol_m3, Vd

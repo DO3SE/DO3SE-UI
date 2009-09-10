@@ -53,8 +53,7 @@ contains
         use Inputs, only: dd
         use Variables, only: dd_prev, precip_acc, AEt, Es, Ei, LAI, SWP_min_vol
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
-
-        real :: Sn_diff
+        use Variables, only: Sn_diff
 
         ! Only once per day
         if (dd /= dd_prev) then

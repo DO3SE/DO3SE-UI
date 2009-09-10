@@ -15,13 +15,14 @@ contains
         use Variables, only: Ei, AEt, PEt, Es, Rb_H2O, LAI, Rsto, Rsto_PEt, &
                              dd_prev, Sn, Rinc, Rgs
         use Params_Site, only: Fc_m
+        use Variables, only: PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr, Es_hr
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
         real        :: esat, eact   ! esat and eact in Pa
         real        :: Tvir, delta, lambda, psychro, Pair, Cair, G
         
-        real        :: Et_1, Et_2, Ei_3, PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr
-        real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3, Es_hr
+        real        :: Et_1, Et_2, Ei_3 !, PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr
+        real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3 !, Es_hr
 
         real, save  :: Ei_dd = 0, PEt_dd = 0, AEt_dd = 0, Es_dd = 0
 

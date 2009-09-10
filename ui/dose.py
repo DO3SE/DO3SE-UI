@@ -94,6 +94,22 @@ _output_fields = (
         (variables,     'laishade', float,  'LAIshade',         '[DEBUG] LAIshade'),
         (variables,     'parsun',   float,  'PARsun',           '[DEBUG] PARsun'),
         (variables,     'parshade', float,  'PARshade',         '[DEBUG] PARshade'),
+
+        (variables,     'rb_h2o',   float,  'Rb_H2O (s/m)',     '[DEBUG] Rb_H2O (boundary resistance to water)'),
+        (variables,     'asw',      float,  'ASW',              '[DEBUG] ASW'),
+        (variables,     'sn',       float,  'Sn',               '[DEBUG] Sn'),
+        (variables,     'sn_diff',  float,  'Sn_diff',          '[DEBUG] Sn_diff'),
+        (variables,     'ei',       float,  'Ei',               '[DEBUG] Ei'),
+        (variables,     'es',       float,  'Es',               '[DEBUG] Es'),
+        (variables,     'pet',      float,  'PEt',              '[DEBUG] PEt'),
+        (variables,     'rsto_pet', float,  'Rsto_PEt',         '[DEBUG] Rsto_PEt'),
+        (variables,     'precip_acc',float, 'precip_acc',       '[DEBUG] Accumulated precipitation (precip_acc, m)'),
+        (variables,     'ei_hr',    float,  'Ei_hr',            '[DEBUG] Ei_hr'),
+        (variables,     'es_hr',    float,  'Es_hr',            '[DEBUG] Es_hr'),
+        (variables,     'pet_hr',   float,  'PEt_hr',           '[DEBUG] PEt_hr'),
+        (variables,     'aet_hr',   float,  'AEt_hr',           '[DEBUG] AEt_hr'),
+        (variables,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
+        (variables,     'aet_3',    float,  'AEt_3',            '[DEBUG] AEt_3'),
 )
 
 # Available output fields as a list of dicts
