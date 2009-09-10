@@ -1,82 +1,99 @@
+!
+! Soil water calculations
+!
+! Terminology:
+!   Fc_m    = Volumetric field capacity
+!   Sn_star = Initial volumetric water content, <= Fc_m
+!   Sn      = Current volumetric water content, <= Fc_m
+!   Sn_diff = Today's volumetric water content change (+ve = gain)
+!   SWP_min_vol = Minimum SWP for vegetation as volumetric content
+!   ASW     = Available soil water (m), = Sn - SWP_min_vol
+!   SWP     = Soil water potential (MPa)
+!   per_vol = Volumetric water content as a percentage
+!   SMD     = Soil moisture deficit (m), relative to field capacity
+!
 module Soil
 
-    public :: Soil_initialize, Calc_precip, Calc_SWP, Calc_fSWP
+    public :: Soil_initialize, Calc_precip, Calc_SWP
 
 contains
 
     subroutine Soil_initialize()
-        use Params_Site, only: soil_BD, soil_a, soil_b, Fc_m
-        use Params_Veg, only: SWP_min
-        use Variables, only: PWP, ASW, Sn_star, Sn, SWP, WC, per_vol, fSWP, precip, SMD
+        use Constants, only: SWC_sat
+        use Params_Site, only: Fc_m, soil_b, SWP_AE
+        use Params_Veg, only: SWP_min, SWP_max, fmin, root
+        use Variables, only: precip_acc, SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, fSWP, SMD
 
-        ! Calculate Wstar
-        PWP = soil_BD*((SWP_min/(soil_a*(0.01)))*1000)**(1/soil_b)
-        ASW = Fc_m - PWP
-        Sn_star = ASW
+        ! Initialise accumulated precipitation
+        precip_acc = 0
 
-        ! Initialise other variables
-        SWP         = (soil_a*0.01)*((Fc_m/soil_BD))**soil_b/1000
-        Sn          = Sn_star
-        WC          = Fc_m - PWP
-        per_vol     = (Fc_m - PWP) * 100 
-        fSWP        = 1
-        precip = 0
-        SMD = 0
+        ! Convert SWP_min to volumetric (MPa -> m^3/m^3)
+        SWP_min_vol = 1.0 / (((SWP_min/SWP_AE)**(1.0/soil_b)) / SWC_sat)
+
+        ! Volumetric water content, initially at field capacity
+        Sn_star = Fc_m
+        Sn = Sn_star
+
+        ! As a percentage
+        per_vol = Sn * 100
+
+        ! ASW and SWP for initial volumetric water content
+        ASW = (Sn - SWP_min_vol) * root
+        SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
+
+        ! Calculate fSWP and SMD for initial water content
+        fSWP = max(fmin, ((1 - fmin) / (SWP_min - SWP_max) * (SWP_min - SWP) + fmin))
+        SMD = (Fc_m - Sn) * root
     end subroutine Soil_initialize
 
+    subroutine Calc_SWP()
+        use Constants, only: SWC_sat
+        use Params_Site, only: Fc_m, soil_b, SWP_AE
+        use Params_Veg, only: SWP_min, SWP_max, fmin, root
+        use Inputs, only: dd
+        use Variables, only: dd_prev, precip_acc, AEt, Es, Ei, LAI, SWP_min_vol
+        use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
+
+        real :: Sn_diff
+
+        ! Only once per day
+        if (dd /= dd_prev) then
+            if (precip_acc == 0) then
+                Sn_diff = (-AEt - Es) / root
+            else
+                Sn_diff = (precip_acc - (0.0001*LAI)) &
+                        + ((0.0001*LAI) - min(Ei, 0.0001*LAI)) / root
+            endif
+
+            ! Calculate new Sn, with field capacity as a maximum
+            Sn = min(Fc_m, Sn + Sn_diff)
+            per_vol = Sn * 100
+
+            ! Calculate ASW and SWP for new water content
+            ASW = (Sn - SWP_min_vol) * root
+            SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
+
+            ! Calculate fSWP and SMD for new water content
+            fSWP = max(fmin, ((1 - fmin) / (SWP_min - SWP_max) * (SWP_min - SWP) + fmin))
+            fSWP = min(fSWP, 1.0)
+            SMD = (Fc_m - Sn) * root
+        endif
+    end subroutine Calc_SWP
+
     subroutine Calc_precip()
-        use Inputs, only: dd, precip_in => precip
-        use Variables, only: dd_prev, precip
+        use Inputs, only: dd, precip
+        use Variables, only: dd_prev, precip_acc
 
         real, save :: precip_dd = 0
 
         if ( dd == dd_prev ) then
             ! Same day, accumulate (converts mm to m)
-            precip_dd = precip_dd + (precip_in/1000)
+            precip_dd = precip_dd + (precip/1000)
         else
             ! Next day, store and reset
-            precip = precip_dd
-            precip_dd = precip_in/1000
+            precip_acc = precip_dd
+            precip_dd = precip/1000
         endif
     end subroutine Calc_precip
-
-    subroutine Calc_SWP()
-        use Inputs, only: dd
-        use Params_Veg, only: root
-        use Params_Site, only: Fc_m, soil_BD, soil_a, soil_b
-        use Variables, only: dd_prev, AEt, Ei, Sn, SMD, WC, per_vol, SWP, precip, PWP, Sn_star
-
-        real :: Sn_diff
-
-        ! These only change once per day
-        if ( dd /= dd_prev ) then
-            if ( precip == 0 ) then
-                Sn_diff = -((AEt)/root)
-            else
-                Sn_diff = (precip * 0.3) + ((precip * 0.7) - (min(Ei, (precip * 0.7)))) / root
-            end if
-
-            Sn = min(Sn_star, Sn + Sn_diff)
-            SMD = Sn_star - Sn
-            WC = Fc_m - (SMD)
-            per_vol = ((Fc_m - SMD) + PWP) * 100
-            SWP = (soil_a * 0.01) * ((WC/soil_BD))**soil_b/1000
-        end if
-    end subroutine Calc_SWP
-
-    subroutine Calc_fSWP()
-        use Variables, only: SWP, fSWP
-        fswp=1/(0.75+(SWP/(-0.25))**1.7)   ! sloped fSWP relationship better fit to wheat data
-                                     ! (used to parameterise model)
-
-        ! If using default DO3SE model use:
-
-        !fswp = (1-fmin) / (SWP_min - SWP_max) * (SWP_min - SWP) + fmin
-        !fsWP = max(fswp, fmin)
-
-        if (fswp > 1) then
-            fswp = 1
-        end if
-    end subroutine Calc_fSWP
 
 end module Soil

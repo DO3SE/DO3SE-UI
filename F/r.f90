@@ -69,26 +69,23 @@ contains
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
     !==========================================================================
     subroutine Calc_Rb()
-        use Constants, only: k, v, DO3, Pr
+        use Constants, only: k, v, DO3, DH2O, Pr
         use Inputs, only: ustar
-        use Variables, only: Rb
+        use Variables, only: Rb, Rb_H2O
 
         Rb = (2.0/(k*ustar)) * (((v/DO3)/Pr)**(2.0/3.0))
+        Rb_H2O = (2.0/(k*ustar)) * (((v/DH2O)/Pr)**(2.0/3.0))
     end subroutine Calc_Rb
 
     !==========================================================================
     ! Calculate Rgs, non-vegetative surface resistance
     !==========================================================================
     subroutine Calc_Rgs()
-        use Params_Site, only: Rsoil
-        use Inputs, only: Ts_C
         use Variables, only: Rgs
-
-        real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
- 
-        Rlow = (1000 * exp(-(Ts_c + 4)))
-        ! TODO: What is the point of 2000*0?
-        Rgs = Rsoil + Rlow + 2000*0
+        
+        ! Calculating this is difficult!  Set to 100 for now, will be a
+        ! vegetation parameter at a later date.
+        Rgs = 100.0
     end subroutine Calc_Rgs
 
     !==========================================================================

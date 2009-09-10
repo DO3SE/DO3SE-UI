@@ -4,7 +4,6 @@ import os
 from FloatSpin import FloatSpin
 from app import logging, app
 import wxext
-import maps
 from dataset import Dataset, InsufficientTrimError, InvalidFieldCountError
 import panels
 import dose
@@ -29,7 +28,7 @@ class FileHistory(wx.FileHistory):
         Create the wxFileHistory in the way we want and load from the config.
         """
         wx.FileHistory.__init__(self, 9, wx.ID_FILE1)
-        for p in app.config['filehistory']: wx.FileHistory.AddFileToHistory(self, p)
+        for p in app.config['file_history']: wx.FileHistory.AddFileToHistory(self, p)
 
     def AddFileToHistory(self, path):
         """Add file to history
@@ -165,20 +164,20 @@ class MainWindow(wx.Frame):
         class RequiredFieldError:
             def __init__(self, fields):
                 if len(fields) == 1:
-                    wx.MessageBox("Required field missing: %s" % maps.inputs.map(fields)[0],
+                    wx.MessageBox("Required field missing: " + dose.input_field_map[fields[0]]['long'],
                             app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
 
                 else:
                     wx.MessageBox("At least one of the following fields are required:\n\n" + 
-                            "\n".join(maps.inputs.map(fields)), app.title, 
+                            "\n".join((dose.input_field_map[x]['long'] for x in fields)), app.title, 
                             wx.OK|wx.ICON_ERROR, app.toplevel)
 
         self.filehistory.AddFileToHistory(path)
 
         fields = self.Input.GetFields()
 
-        # Requiried fields
-        required = ['dd', 'hr', 'ts_c', 'vpd', 'uh_zr', 'precip', 'p', 'o3_ppb_zr']
+        # Handle inputs marked as required
+        required = (x['variable'] for x in dose.input_fields if x['required'])
         try:
             for f in required:
                 if not f in fields:
@@ -186,7 +185,7 @@ class MainWindow(wx.Frame):
         except RequiredFieldError:
             return
 
-        # PAR/Global radiation
+        # Handle more complicated situations: PAR/Global radiation
         try:
             if 'par' in fields and 'r' in fields:
                 def f(): pass

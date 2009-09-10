@@ -12,8 +12,8 @@ contains
     subroutine Calc_Penman_Monteith()
         use Constants, only: seaP, Ts_K
         use Inputs, only: VPD, Ts_C, P, Rn, dd
-        use Variables, only: Ei, AEt, PEt, Es, Rb, LAI, Rsto, Rsto_PEt, &
-                             dd_prev, WC, Rsur
+        use Variables, only: Ei, AEt, PEt, Es, Rb_H2O, LAI, Rsto, Rsto_PEt, &
+                             dd_prev, Sn, Rinc, Rgs
         use Params_Site, only: Fc_m
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
@@ -41,25 +41,25 @@ contains
         G = 0.1 * Rn
         
         Et_1 = (delta * (Rn - G)) / lambda
-        Et_2 = 3600 * Pair * Cair * VPD_Pa / (Rb * 0.61) / lambda
+        Et_2 = 3600 * Pair * Cair * VPD_Pa / Rb_H2O / lambda
 
         Ei_3 = delta + psychro
         Ei_hr = (Et_1 + Et_2) / Ei_3 / 1000
 
-        PEt_3 = delta + psychro * (1 + (Rsto_PEt * (0.61 / LAI)) / (Rb * 0.61))
+        PEt_3 = delta + psychro * (1 + (Rsto_PEt * (0.61 / LAI)) / Rb_H2O)
         PEt_hr = (Et_1 + Et_2) / PEt_3 / 1000
 
-        AEt_3 = delta * psychro * (1 + (Rsto * (0.61 / LAI)) / (Rb * 0.61))
+        AEt_3 = delta * psychro * (1 + (Rsto * (0.61 / LAI)) / Rb_H2O)
         AEt_hr = (Et_1 + Et_2) / AEt_3 / 1000
 
-        if (WC < Fc_m) then
+        if (Sn < Fc_m) then
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)
             Es_Rn = Rn * t
             Es_G = 0.1 * Es_Rn
             Es_1 = (delta * (Es_Rn - Es_G)) / lambda
-            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Rsur * 0.61) / lambda
+            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Rgs * Rinc * Rb_H2O) / lambda
             Es_3 = delta + psychro
             Es_hr = (Es_1 + Es_2) / Es_3 / 1000
         endif

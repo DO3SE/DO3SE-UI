@@ -69,12 +69,18 @@ class Dataset:
     def run(self):
         skippedrows = 0
 
+        # Copy parameters (to avoid breaking whatever else might be using them)
+        vegparams = self.vegparams.copy()
+        siteparams = self.siteparams.copy()
+        # Replace soil_tex (if it exists) with soil parameters
+        siteparams.update(dose.soil_class_map[siteparams.pop('soil_tex', dose.default_soil_class)]['data'])
+
         # Setup parameters
         
         # Do vegetation parameters first, as some site parameters depend on this
-        util.setattrs(dose.params_veg, self.vegparams)
+        util.setattrs(dose.params_veg, vegparams)
         dose.params_veg.derive_d_zo()
-        util.setattrs(dose.params_site, self.siteparams)
+        util.setattrs(dose.params_site, siteparams)
 
         # Initialise the module
         logging.info("Initialising DOSE Fortran model")
@@ -97,22 +103,7 @@ class Dataset:
             self.par_r()
             dose.inputs.derive_ustar_uh()
             dose.run.do_calcs(self.sai, self.ra, self.rn)
-            self.results.append(util.dictjoin(
-                util.getattrs_i(dose.inputs, ['yr', 'mm', 'mdd', 'dd', 'hr']),
-                util.getattrs_f(dose.inputs, ['ts_c', 'vpd', 'uh_zr', 'precip',
-                    'p', 'o3_ppb_zr', 'hd', 'r', 'par', 'ustar', 'uh']),
-                util.getattrs_f(dose.variables, ['ftemp', 'fvpd', 'pet', 'aet',
-                    'ei', 'flight', 'leaf_flight', 'rn', 'rn_w', 'lai', 'sai',
-                    'fphen', 'leaf_fphen', 'ra', 'rb', 'rsur', 'rinc', 'rsto',
-                    'rgs', 'ra_i', 'gsto', 'gsto_pet', 'pwp', 'asw', 'sn_star',
-                    'sn', 'per_vol', 'smd', 'swp', 'wc', 'rsto_pet',
-                    'fswp', 'o3_ppb', 'o3_nmol_m3', 'vd', 'ftot', 'fst',
-                    'afsty', 'ot40', 'aot40']),
-                # More variables, for testing
-                util.getattrs_f(dose.variables, ['flight', 'ftemp', 'fvpd',
-                    'fswp', 'sinb', 'ppardir', 'ppardif', 'fpardir', 'fpardif',
-                    'laisun', 'laishade', 'parsun', 'parshade', 'eact', 'go3']),
-            ))
+            self.results.append(dose.extract_outputs())
 
         logging.info("Got %d results" % len(self.results))
         return (len(self.results), skippedrows)
@@ -130,38 +121,3 @@ class Dataset:
         w.writerows(self.results)
         file.close()
         logging.info("Wrote %d records" % len(self.results))
-        
-
-if __name__ == '__main__':
-    d = Dataset(
-            'notes/sample_hourly_noLAI.csv',
-            ['mm', 'mdd', 'dd', 'hr', 'ts_c', 'vpd', 'uh_zr', 'precip', 'p',
-                'o3_ppb_zr', 'hd', 'r', 'par'],
-            2
-    )
-
-    d.run()
-
-    d.save('dataset-test.csv', [
-        #'rn',
-        'ra',
-        'rb',
-        'rsur',
-        'rinc',
-        'rsto',
-        #'gsto',
-        'rgs',
-        'vd',
-        #'o3_ppb',
-        #'o3_nmol_m3',
-        #'fst',
-        #'afsty',
-        #'ftot',
-        #'ot40',
-        #'aot40',
-        #'aet',
-        #'swp',
-        #'per_vol',
-        #'smd', 
-        ], headers=True)
-
