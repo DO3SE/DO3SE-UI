@@ -19,11 +19,11 @@ class VegParams(wx.Panel):
         self.SetSizer(sMain)
 
         self.presets = wxext.PresetChooser(self)
-        self.presets.SetPresets(app.config['preset.veg'])
+        self.presets.SetPresets(app.config['veg_params'])
         self.presets.getvalues = self.getvalues
         self.presets.setvalues = self.setvalues
         def f():
-            app.config['preset.veg'] = self.presets.GetPresets()
+            app.config['veg_params'] = self.presets.GetPresets()
             app.config.sync()
         self.presets.post_update = f
         sMain.Add(self.presets, 0, wx.ALL|wx.EXPAND, 6)

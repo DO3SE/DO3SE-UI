@@ -22,13 +22,13 @@ class SiteParams(wx.Panel):
         # Preset manager
         self.presets = wxext.PresetChooser(self)
         s.Add(self.presets, 0, wx.ALL|wx.EXPAND, 6)
-        self.presets.SetPresets(app.config['preset.site'])
+        self.presets.SetPresets(app.config['site_params'])
         # Get/set callbacks
         self.presets.getvalues = self.getvalues
         self.presets.setvalues = self.setvalues
         # Force a sync of the config on a preset change
         def f():
-            app.config['preset.site'] = self.presets.GetPresets()
+            app.config['site_params'] = self.presets.GetPresets()
             app.config.sync()
         self.presets.post_update = f
         

@@ -19,10 +19,10 @@ class Save(wx.Panel):
         # Preset manager
         self.presets = wxext.PresetChooser(self)
         s.Add(self.presets, 0, wx.EXPAND|wx.ALL, 6)
-        self.presets.SetPresets(app.config['preset.outputs'])
+        self.presets.SetPresets(app.config['output_format'])
         # Force a sync of the config on a preset change
         def f():
-            app.config['preset.outputs'] = self.presets.GetPresets()
+            app.config['output_format'] = self.presets.GetPresets()
             app.config.sync()
         self.presets.post_update = f
 

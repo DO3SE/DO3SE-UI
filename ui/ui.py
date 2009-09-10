@@ -28,7 +28,7 @@ class FileHistory(wx.FileHistory):
         Create the wxFileHistory in the way we want and load from the config.
         """
         wx.FileHistory.__init__(self, 9, wx.ID_FILE1)
-        for p in app.config['filehistory']: wx.FileHistory.AddFileToHistory(self, p)
+        for p in app.config['file_history']: wx.FileHistory.AddFileToHistory(self, p)
 
     def AddFileToHistory(self, path):
         """Add file to history
