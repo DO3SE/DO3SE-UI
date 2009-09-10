@@ -42,7 +42,7 @@ def sanitise_config(config):
     """
     # Remove references to non-existant input fields
     for key, preset in config['input_format'].iteritems():
-        config['input_format'][key] = [x for x in preset if x in input_field_map]
+        preset['fields'] = [x for x in preset['fields'] if x in dose.input_field_map]
     # Remove references to non-existant output fields
     for key, preset in config['output_format'].iteritems():
-        config['output_format'][key] = [x for x in preset if x in output_field_map]
+        preset['fields'] = [x for x in preset['fields'] if x in dose.output_field_map]
