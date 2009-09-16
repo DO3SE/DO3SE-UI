@@ -98,19 +98,20 @@ if __name__ == "__main__":
             version         = version,
             author          = 'Alan Briolat',
             author_email    = 'sei@alanbriolat.co.uk',
-            packages        = ['ui', 'ui.panels'],
+            packages        = ['ui', 'ui.panels', 'ui.wxext'],
             options         = {
                 'build': build_opts,
                 'py2exe': {
-		    'includes': [
-		        'dbhash',
-	            ],
-		    'packages': [
-		        'numpy',
-		    ],
-		    'bundle_files': 1,
-		    'optimize': 2,
-		},
+                    'includes': [
+                        'dbhash',
+                        'simplejson',
+                        ],
+                    'packages': [
+                        'numpy',
+                        ],
+                    'bundle_files': 1,
+                    'optimize': 2,
+                },
             },
             ext_package     = 'ui',
             ext_modules     = [
