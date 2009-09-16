@@ -156,7 +156,7 @@ contains
             Rnl = max(0.0, (SBC*(Ts_K**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35))
             Rns = (1 - albedo) * R_MJ
 
-            Rn = Rns - Rnl
+            Rn = max(0.0, Rns - Rnl)
         else
             Rn = 0
         end if
