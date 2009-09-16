@@ -18,6 +18,7 @@ contains
         use Variables, only: PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr, Es_hr
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
+        real        :: P_Pa         ! Pressure in Pa, not kPa
         real        :: esat, eact   ! esat and eact in Pa
         real        :: Tvir, delta, lambda, psychro, Pair, Cair, G
         
@@ -27,17 +28,18 @@ contains
         real, save  :: Ei_dd = 0, PEt_dd = 0, AEt_dd = 0, Es_dd = 0
 
         VPD_Pa = VPD * 1000
+        P_Pa = P * 1000
 
         esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
         esat = esat * 1000  ! Convert to Pa
         eact = esat - VPD_Pa
 
-        Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/(P*1000)))) ! Pressure converted to Pa
+        Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P_Pa)))
         delta= ((4098*esat)/((Ts_c+237.3)**2)) 
         lambda = (2501000-(2361*Ts_c))
-        psychro = 1628.6 * (P/lambda)
-        Pair = (0.003486*(P/Tvir))
-        Cair = (0.622*((lambda*psychro)/P))
+        psychro = 1628.6 * (P_Pa/lambda)
+        Pair = (0.003486*(P_Pa/Tvir))
+        Cair = (0.622*((lambda*psychro)/P_Pa))
 
         G = 0.1 * Rn
         
