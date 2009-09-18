@@ -49,6 +49,25 @@ contains
 
     !==========================================================================
     ! Calculate fphen, incorporating differing plant and leaf growth seasons
+    !
+    !      |          fphen_b                   fphen_d
+    !  1.0 |         _________                 _________
+    !      |        /         \               /         \
+    !      |       /           \             /           \
+    ! f    |      /             \  fphen_c  /             \
+    ! p    |     /               \_________/               \
+    ! h    |    / fphen_a                                   \
+    ! e    |   |                                             \ fphen_e
+    ! n    |   |                                              |
+    !      |   |                                              |
+    !  0.0 |___|            <1> = fphen1, etc.                |___________
+    !      |
+    !      +--------------------------------------------------------------
+    !      0   | <1> |       |<2>|         |<3>|       | <4>  |         365
+    !          |             |                 |              |
+    !         SGS       fphen_limA        fphen_limB         EGS
+    !
+    !                                Day of Year
     !==========================================================================
     subroutine Calc_fphen()
         use Functions, only: Polygon
