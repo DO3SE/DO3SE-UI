@@ -81,11 +81,15 @@ contains
     ! Calculate Rgs, non-vegetative surface resistance
     !==========================================================================
     subroutine Calc_Rgs()
+        use Params_Site, only: Rsoil
+        use Inputs, only: Ts_C
         use Variables, only: Rgs
-        
-        ! Calculating this is difficult!  Set to 100 for now, will be a
-        ! vegetation parameter at a later date.
-        Rgs = 100.0
+
+        real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
+ 
+        Rlow = (1000 * exp(-(Ts_c + 4)))
+        ! TODO: What is the point of 2000*0?
+        Rgs = Rsoil + Rlow + 2000*0
     end subroutine Calc_Rgs
 
     !==========================================================================
