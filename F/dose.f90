@@ -65,7 +65,7 @@ contains
     subroutine Calculate()
         use Run, only: Do_Calcs
         
-        use Phenology, only: Calc_SAI_Simple, Calc_SAI_Crops
+        use Phenology, only: Calc_SAI_Simple, Calc_SAI_Wheat
         use Irradiance, only: Calc_Rn, Copy_Rn
         use R, only: Calc_Ra_Simple, Calc_Ra_With_Heat_Flux
 

@@ -2,7 +2,7 @@ module Phenology
 
     public :: Calc_LAI
     public :: Calc_SAI_Simple
-    public :: Calc_SAI_Crops
+    public :: Calc_SAI_Wheat
     public :: Calc_fphen
 
 contains 
@@ -30,9 +30,9 @@ contains
     end subroutine Calc_SAI_Simple
 
     !==========================================================================
-    ! SAI calculation for crops taking growing season into account
+    ! SAI calculation for wheat taking growing season into account
     !==========================================================================
-    subroutine Calc_SAI_Crops()
+    subroutine Calc_SAI_Wheat()
         use Inputs, only: dd
         use Params_Veg, only: SGS, EGS, Ls
         use Functions, only: Polygon
@@ -45,7 +45,7 @@ contains
         else                ! implicitly >= SGS + Ls .and. <= EGS
             SAI = LAI + 1.5
         end if
-    end subroutine Calc_SAI_Crops
+    end subroutine Calc_SAI_Wheat
 
     !==========================================================================
     ! Calculate fphen, incorporating differing plant and leaf growth seasons
