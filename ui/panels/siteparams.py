@@ -44,7 +44,7 @@ class SiteParams(wx.Panel):
 
         sLocation.fgs.Add(wx.StaticText(self, label="Latitude"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['lat'] = FloatSpin(self, value=45.0, 
+        self.fields['lat'] = FloatSpin(self, value=50.0, 
                 min_val=-90.0, max_val=90.0, increment=0.1, digits=3)
         sLocation.fgs.Add(self.fields['lat'], 0)
         self.fieldgroup.add_field('lat', Field(

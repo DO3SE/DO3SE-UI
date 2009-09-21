@@ -35,7 +35,7 @@ module Params_Site
     real, public, save :: O3_zo         ! Canopy roughness length
 
     ! Geographical location
-    real, public, save :: lat = 45      ! Latitude (degrees)
+    real, public, save :: lat = 50      ! Latitude (degrees)
     real, public, save :: lon = 0       ! Longitude (degrees)
     real, public, save :: elev = 0      ! Elevation (m)
 
