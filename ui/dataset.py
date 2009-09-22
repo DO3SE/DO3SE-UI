@@ -75,6 +75,8 @@ class Dataset:
         siteparams = self.siteparams.copy()
         # Replace soil_tex (if it exists) with soil parameters
         siteparams.update(dose.soil_class_map[siteparams.pop('soil_tex', dose.default_soil_class)]['data'])
+        # Handle leaf_fphen
+        self.leaf_fphen = dose.leaf_fphen_calc_map[vegparams.pop('leaf_fphen', dose.default_leaf_fphen_calc)]['func']
 
         # Setup parameters
         
