@@ -56,7 +56,7 @@ contains
         PEt_3 = delta + psychro * (1 + (Rsto_PEt * (0.61 / LAI)) / Rb_H2O)
         PEt_hr = (Et_1 + Et_2) / PEt_3 / 1000
 
-        AEt_3 = delta * psychro * (1 + (Rsto * (0.61 / LAI)) / Rb_H2O)
+        AEt_3 = delta + psychro * (1 + (Rsto * (0.61 / LAI)) / Rb_H2O)
         AEt_hr = (Et_1 + Et_2) / AEt_3 / 1000
 
         if (Sn < Fc_m) then
