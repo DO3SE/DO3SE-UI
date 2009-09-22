@@ -56,34 +56,20 @@ contains
     ! Calculate the upper leaf stomatal ozone flux
     !==========================================================================
     subroutine Calc_Fst()
-        use Constants, only: k
-        use Params_Veg, only: gmax, Lm, fmin
+        use Params_Veg, only: Lm, Rext
         use Inputs, only: uh
-        use Variables, only: Fst, leaf_fphen, leaf_flight, ftemp, fVPD, &
-            fSWP, O3_nmol_m3, gO3
+        use Variables, only: Gsto_l, Rsto_l, O3_nmol_m3, Fst
 
-        real :: leaf_rb, leaf_gb, leaf_r
-        real :: leaf_gO3, leaf_rO3 ! leaf stomatal conductance/resistance
-        
-        gO3 = gmax * leaf_fphen * leaf_flight * max(fmin, ftemp * fVPD * fSWP)  ! in mmol O3 m^-2 s^-1
+        real :: leaf_rb, leaf_r
 
-        leaf_rb = 1.3 * 150 * sqrt(Lm/uh)   ! leaf boundary layer resistance in s/m
-        leaf_gb = 1 / leaf_rb               ! leaf boundary layer conductance in m/s
-        
-        if ( gO3 > 0 ) then
-            leaf_gO3 = gO3 / 41000  ! leaf stomatal conductance in m/s
-            leaf_rO3 = 1 / leaf_gO3 ! leaf stomatal resistance in s/m
 
-            leaf_r = 1.0 / (leaf_gO3 + (1.0/2500.0))  ! leaf resistance in s/m
-
-            if ( leaf_fphen > 0 ) then
-                Fst = O3_nmol_m3 * leaf_gO3 * (leaf_r/(leaf_rb + leaf_r))  ! Fst in nmol/m2/s
-            end if
-
-        else if ( gO3 == 0 ) then
+        if (Gsto_l > 0) then
+            leaf_rb = 1.3 * 150 * sqrt(Lm/uh)   ! leaf boundary layer resistance (s/m)
+            leaf_r = 1.0 / ((1.0/Rsto_l) + (1.0/Rext))  ! leaf resistance in s/m
+            Fst = O3_nmol_m3 * (1/Rsto_l) * (leaf_r / (leaf_rb + leaf_r))
+        else
             Fst = 0
         end if
-
     end subroutine Calc_Fst
 
     !==========================================================================

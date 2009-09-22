@@ -44,12 +44,19 @@ module Variables
     real, public, save  :: Rb_H2O   ! Boundary resistance to H2O
     real, public, save  :: Rsur
     real, public, save  :: Rinc
-    real, public, save  :: Rsto
     real, public, save  :: Rgs
     ! Intermediate R variables
     real, public, save  :: Ra_i
 
-    real, public, save  :: Gsto, Gsto_PEt
+    ! Stomatal conductance/resistance
+    real, public, save  :: Gsto     ! Mean O3 conductance
+    real, public, save  :: Rsto     ! Mean O3 resistance (s/m)
+    real, public, save  :: Gsto_l   ! Single leaf O3 conductance
+    real, public, save  :: Rsto_l   ! Single leaf O3 resistance (s/m)
+    real, public, save  :: Gsto_c   ! Canopy O3 conductance
+    real, public, save  :: Rsto_c   ! Canopy O3 resistance (s/m)
+    real, public, save  :: Gsto_PEt ! Potential canopy O3 conductance (for PEt)
+    real, public, save  :: Rsto_PEt ! Potential canopy O3 resistance (for PEt)
 
     ! Soil
     real, public, save :: SWP_min_vol ! SWP_min in m3/m3
@@ -60,13 +67,11 @@ module Variables
     real, public, save :: SMD        ! soil moisture deficit in m
     real, public, save :: SWP        ! Soil water potential in MPa
     real, public, save :: precip_acc ! Previous day's accumulated precipitation
-    real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
     real, public, save :: fSWP
     real, public, save :: Sn_diff
 
     ! O3
     real, public, save :: O3_ppb, O3_nmol_m3, Vd
-    real, public, save :: gO3       ! Leaf-level gsto
     real, public, save :: Ftot
     real, public, save :: Fst, AFstY, OT40, AOT40
 

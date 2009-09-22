@@ -12,7 +12,7 @@ contains
     subroutine Calc_Penman_Monteith()
         use Constants, only: seaP, Ts_K
         use Inputs, only: VPD, Ts_C, P, dd
-        use Variables, only: Ei, AEt, PEt, Es, Rb_H2O, LAI, Rsto, Rsto_PEt, &
+        use Variables, only: Ei, AEt, PEt, Es, Rb_H2O, LAI, Rsto_c, Rsto_PEt, &
                              dd_prev, Sn, Rinc, Rgs, Rn_MJ => Rn
         use Params_Site, only: Fc_m
         use Variables, only: PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr, Es_hr
@@ -53,10 +53,10 @@ contains
         Ei_3 = delta + psychro
         Ei_hr = (Et_1 + Et_2) / Ei_3 / 1000
 
-        PEt_3 = delta + psychro * (1 + (Rsto_PEt * (0.61 / LAI)) / Rb_H2O)
+        PEt_3 = delta + psychro * (1 + (Rsto_PEt * 0.61) / Rb_H2O)
         PEt_hr = (Et_1 + Et_2) / PEt_3 / 1000
 
-        AEt_3 = delta + psychro * (1 + (Rsto * (0.61 / LAI)) / Rb_H2O)
+        AEt_3 = delta + psychro * (1 + (Rsto_c * 0.61) / Rb_H2O)
         AEt_hr = (Et_1 + Et_2) / AEt_3 / 1000
 
         if (Sn < Fc_m) then

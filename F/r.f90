@@ -103,38 +103,46 @@ contains
     !==========================================================================
     subroutine Calc_Rsto()
         use Params_Veg, only: gmax, fmin
-        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, LAI
+        use Variables, only: fphen, flight, ftemp, fVPD, fSWP
+        use Variables, only: leaf_fphen, leaf_flight, LAI
+        use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
+                             Gsto_PEt, Rsto_PEt
 
-        real :: Gsto_sm
-
+        ! Leaf Gsto
+        Gsto_l = gmax * leaf_fphen * leaf_flight * max(fmin, ftemp * fVPD * fSWP)
+        ! Mean Gsto
         Gsto = gmax * fphen * flight * max(fmin, ftemp * fVPD * fSWP)
+        ! Estimate canopy Gsto from mean leaf Gsto
+        Gsto_c = Gsto * LAI
+        ! Potential canopy Gsto for PEt calculation (non-limiting SWP)
+        Gsto_PEt = gmax * fphen * flight * ftemp * fVPD * LAI
 
-        ! Gsto for PEt - assume non-limiting SWP
-        Gsto_PEt = gmax * fphen * flight * ftemp * fVPD
-
-        ! Rsto for PEt
-        if ( Gsto_PEt == 0 .or. LAI == 0 ) then
-            Rsto_PEt = 100000
+        ! Leaf Rsto
+        if (Gsto_l <= 0) then
+            Rsto_l = 100000
         else
-            Rsto_PEt = 1/((Gsto_PEt * LAI) / 41000)     ! potential bulk canopy 
-                                                        ! stomatal resistance to 
-                                                        ! O3 in s/m
+            Rsto_l = 41000 / Gsto_l
         end if
 
-        ! Rsto
-        Gsto_sm = Gsto / 41000
-        if ( Gsto_sm <= 0 ) then
+        ! Mean Rsto
+        if (Gsto <= 0) then
             Rsto = 100000
         else
-            Rsto = 1/(Gsto_sm)
+            Rsto = 41000 / Gsto  ! Gsto in s/m = Gsto * 41000, Rsto = 1 / Gsto
         end if
 
-        ! estimate whole canopy stomatal conductance from average leaf stomatal 
-        ! conductance
-        if ( LAI == 0 ) then
-            Gsto = 0
-        else if ( Gsto > 0 ) then
-            Gsto = Gsto * LAI
+        ! Canopy Rsto
+        if (Gsto_c <= 0) then
+            Rsto_c = 100000
+        else
+            Rsto_c = 41000 / Gsto_c
+        end if
+
+        ! Potential canopy Rsto for PEt calculation
+        if (Gsto_PEt <= 0) then
+            Rsto_PEt = 100000
+        else
+            Rsto_PEt = 41000 / Gsto_PEt
         end if
     end subroutine Calc_Rsto
 
