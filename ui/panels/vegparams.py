@@ -5,14 +5,13 @@ import wx
 from .. import wxext
 from ..FloatSpin import FloatSpin
 from ..app import logging, app
-from ..fieldgroup import Field, FieldGroup
+from ..fieldgroup import Field, FieldGroup, wxField, wxFloatField
 
 class VegParams(wx.Panel):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
-        self.fields = dict()
-        self.fieldgroup = FieldGroup()
+        self.fields = FieldGroup()
 
         # Outer sizer
         sMain = wx.BoxSizer(wx.VERTICAL)
@@ -57,146 +56,101 @@ class VegParams(wx.Panel):
         
         s.Add(wx.StaticText(p, label="Canopy height (m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['h'] = wx.SpinCtrl(p, min=1, max=100, initial=25)
-        s.Add(self.fields['h'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('h', Field(
-                lambda : float(self.fields['h'].GetValue()),
-                self.fields['h'].SetValue))
+        self.fields.add('h', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=25)))
+        s.Add(self.fields['h'].obj, 0, wx.ALIGN_RIGHT)
         
-        s.Add(wx.StaticText(p, label="Root depth (m)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['root'] = FloatSpin(p, value=1.2, min_val=0.01, 
-                increment=0.1, digits=1)
-        s.Add(self.fields['root'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('root', Field(
-                lambda : float(self.fields['root'].GetValue()),
-                self.fields['root'].SetValue))
+        s.Add(wx.StaticText(p, label="Root depth (m)"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('root', wxFloatField(FloatSpin(p,
+                value=1.2, min_val=0.01, increment=0.1, digits=1)))
+        s.Add(self.fields['root'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Min. Leaf Area Index (m^2/m^2)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['lai_min'] = FloatSpin(p, value=0.0, min_val=0,
-                increment=0.1, digits=1)
-        s.Add(self.fields['lai_min'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('lai_min', Field(
-                lambda : float(self.fields['lai_min'].GetValue()),
-                self.fields['lai_min'].SetValue))
+        self.fields.add('lai_min', wxFloatField(FloatSpin(p,
+                value=0.0, min_val=0, increment=0.1, digits=1)))
+        s.Add(self.fields['lai_min'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Max. Leaf Area Index (m^2/m^2)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['lai_max'] = FloatSpin(p, value=4.0, min_val=0,
-                increment=0.1, digits=1)
-        s.Add(self.fields['lai_max'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('lai_max', Field(
-                lambda : float(self.fields['lai_max'].GetValue()),
-                self.fields['lai_max'].SetValue))
+        self.fields.add('lai_max', wxFloatField(FloatSpin(p,
+                value=4.0, min_val=0, increment=0.1, digits=1)))
+        s.Add(self.fields['lai_max'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Leaf dimension (Lm, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['lm'] = FloatSpin(p, min_val=0.01, value=0.05, increment=0.01, digits=2)
-        s.Add(self.fields['lm'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('lm', Field(
-                lambda : float(self.fields['lm'].GetValue()),
-                self.fields['lm'].SetValue))
+        self.fields.add('lm', wxFloatField(FloatSpin(p,
+                min_val=0.01, value=0.05, increment=0.01, digits=2)))
+        s.Add(self.fields['lm'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Albedo"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['albedo'] = FloatSpin(p, min_val=0.01, value=0.12, max_val=0.99, 
-                increment=0.01, digits=2)
-        s.Add(self.fields['albedo'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('albedo', Field(
-                lambda : float(self.fields['albedo'].GetValue()),
-                self.fields['albedo'].SetValue))
+        self.fields.add('albedo', wxFloatField(FloatSpin(p,
+                min_val=0.01, value=0.12, max_val=0.99, increment=0.01, digits=2)))
+        s.Add(self.fields['albedo'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="External plant cuticle resistance (Rext, s/m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['rext'] = wx.SpinCtrl(p, min=0, max=20000, initial=2500)
-        s.Add(self.fields['rext'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('rext', Field(
-                lambda : float(self.fields['rext'].GetValue()),
-                self.fields['rext'].SetValue))
+        self.fields.add('rext', wxFloatField(wx.SpinCtrl(p,
+                min=0, max=20000, initial=2500)))
+        s.Add(self.fields['rext'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="light_a"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['f_lightfac'] = FloatSpin(p, min_val=0.001, value=0.006, max_val=0.999, 
-                increment=0.001, digits=3)
-        s.Add(self.fields['f_lightfac'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('f_lightfac', Field(
-                lambda : float(self.fields['f_lightfac'].GetValue()),
-                self.fields['f_lightfac'].SetValue))
+        self.fields.add('f_lightfac', wxFloatField(FloatSpin(p,
+                min_val=0.001, value=0.006, max_val=0.999, increment=0.001, digits=3)))
+        s.Add(self.fields['f_lightfac'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="gmax"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['gmax'] = wx.SpinCtrl(p, min=1, initial=148, max=10000)
-        s.Add(self.fields['gmax'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('gmax', Field(
-                lambda : float(self.fields['gmax'].GetValue()),
-                self.fields['gmax'].SetValue))
+        self.fields.add('gmax', wxFloatField(wx.SpinCtrl(p,
+                min=1, initial=148, max=10000)))
+        s.Add(self.fields['gmax'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="fmin"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['fmin'] = FloatSpin(p, min_val=0.01, value=0.13, max_val=0.99, 
-                increment=0.01, digits=2)
-        s.Add(self.fields['fmin'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('fmin', Field(
-                lambda : float(self.fields['fmin'].GetValue()),
-                self.fields['fmin'].SetValue))
+        self.fields.add('fmin', wxFloatField(FloatSpin(p,
+                min_val=0.01, value=0.13, max_val=0.99, increment=0.01, digits=2)))
+        s.Add(self.fields['fmin'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Threshold Y for AFstY (nmol/m^2/s)"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['y'] = FloatSpin(p, min_val=0.1, value=1.6, max_val=100.0,
-                increment=0.1, digits=1)
-        s.Add(self.fields['y'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('y', Field(
-                lambda : float(self.fields['y'].GetValue()),
-                self.fields['y'].SetValue))
+        self.fields.add('y', wxFloatField(FloatSpin(p,
+                min_val=0.1, value=1.6, max_val=100.0, increment=0.1, digits=1)))
+        s.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
 
         # Growing season
         p, s = makepage("Season")
 
         s.Add(wx.StaticText(p, label="Start (SGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['sgs'] = wx.SpinCtrl(p, min=1, max=365, initial=121)
-        s.Add(self.fields['sgs'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('sgs', Field(
-                lambda : float(self.fields['sgs'].GetValue()),
-                self.fields['sgs'].SetValue))
+        self.fields.add('sgs', wxFloatField(wx.SpinCtrl(p,
+                min=1, max=365, initial=121)))
+        s.Add(self.fields['sgs'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="End (EGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['egs'] = wx.SpinCtrl(p, min=1, max=365, initial=273)
-        s.Add(self.fields['egs'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('egs', Field(
-                lambda : float(self.fields['egs'].GetValue()),
-                self.fields['egs'].SetValue))
+        self.fields.add('egs', wxFloatField(wx.SpinCtrl(p,
+                min=1, max=365, initial=273)))
+        s.Add(self.fields['egs'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Upper leaf start (Astart, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['astart'] = wx.SpinCtrl(p, min=1, max=365, initial=121)
-        s.Add(self.fields['astart'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('astart', Field(
-                lambda : float(self.fields['astart'].GetValue()),
-                self.fields['astart'].SetValue))
+        self.fields.add('astart', wxFloatField(wx.SpinCtrl(p,
+                min=1, max=365, initial=121)))
+        s.Add(self.fields['astart'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Upper leaf end (Aend, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['aend'] = wx.SpinCtrl(p, min=1, max=365, initial=273)
-        s.Add(self.fields['aend'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('aend', Field(
-                lambda : float(self.fields['aend'].GetValue()),
-                self.fields['aend'].SetValue))
+        self.fields.add('aend', wxFloatField(wx.SpinCtrl(p,
+                min=1, max=365, initial=273)))
+        s.Add(self.fields['aend'].obj, 0, wx.ALIGN_RIGHT)
 
         # TODO: Limit these based on the growing season?
         s.Add(wx.StaticText(p, label="Period from min. LAI to max. LAI (days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['ls'] = wx.SpinCtrl(p, min=1, max=100, initial=30)
-        s.Add(self.fields['ls'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('ls', Field(
-                lambda : float(self.fields['ls'].GetValue()),
-                self.fields['ls'].SetValue))
+        self.fields.add('ls', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
+        s.Add(self.fields['ls'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Period from max. LAI to min. LAI (days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['le'] = wx.SpinCtrl(p, min=1, max=100, initial=30)
-        s.Add(self.fields['le'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('le', Field(
-                lambda : float(self.fields['le'].GetValue()),
-                self.fields['le'].SetValue))
+        self.fields.add('le', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
+        s.Add(self.fields['le'].obj, 0, wx.ALIGN_RIGHT)
 
         # Maintain integrity on growing season
         def f(evt):
@@ -222,61 +176,47 @@ class VegParams(wx.Panel):
         
         s.Add(wx.StaticText(p, label="Minimum temperature (Celcius)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['t_min'] = wx.SpinCtrl(p, min=-10, max=100, initial=0)
-        s.Add(self.fields['t_min'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('t_min', Field(
-                lambda : float(self.fields['t_min'].GetValue()),
-                self.fields['t_min'].SetValue))
+        self.fields.add('t_min', wxFloatField(wx.SpinCtrl(p,
+                min=-10, max=100, initial=0)))
+        s.Add(self.fields['t_min'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Optimum temperature (Celcius)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['t_opt'] = wx.SpinCtrl(p, min=-10, max=100, initial=21)
-        s.Add(self.fields['t_opt'])
-        self.fieldgroup.add_field('t_opt', Field(
-                lambda : float(self.fields['t_opt'].GetValue()),
-                self.fields['t_opt'].SetValue))
+        self.fields.add('t_opt', wxFloatField(wx.SpinCtrl(p,
+                min=-10, max=100, initial=21)))
+        s.Add(self.fields['t_opt'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Maximum temperature (Celcius)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['t_max'] = wx.SpinCtrl(p, min=-10, max=100, initial=35)
-        s.Add(self.fields['t_max'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('t_max', Field(
-                lambda : float(self.fields['t_max'].GetValue()),
-                self.fields['t_max'].SetValue))
+        self.fields.add('t_max', wxFloatField(wx.SpinCtrl(p,
+                min=-10, max=100, initial=35)))
+        s.Add(self.fields['t_max'].obj, 0, wx.ALIGN_RIGHT)
         
         # TODO: min/max values for VPD
         s.Add(wx.StaticText(p, label="VPD for minimum growth"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['vpd_min'] = FloatSpin(p, value=3.25, increment=0.01, digits=2)
-        s.Add(self.fields['vpd_min'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('vpd_min', Field(
-                lambda : float(self.fields['vpd_min'].GetValue()),
-                self.fields['vpd_min'].SetValue))
+        self.fields.add('vpd_min', wxFloatField(FloatSpin(p,
+                value=3.25, increment=0.01, digits=2)))
+        s.Add(self.fields['vpd_min'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="VPD for maximum growth"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['vpd_max'] = FloatSpin(p, value=1.0, increment=0.01, digits=2)
-        s.Add(self.fields['vpd_max'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('vpd_max', Field(
-                lambda : float(self.fields['vpd_max'].GetValue()),
-                self.fields['vpd_max'].SetValue))
+        self.fields.add('vpd_max', wxFloatField(FloatSpin(p,
+                value=1.0, increment=0.01, digits=2)))
+        s.Add(self.fields['vpd_max'].obj, 0, wx.ALIGN_RIGHT)
         
         # TODO: min/max for SWP
         s.Add(wx.StaticText(p, label="SWP for minimum growth"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['swp_min'] = FloatSpin(p, value=-1.25, increment=0.01, digits=2)
-        s.Add(self.fields['swp_min'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('swp_min', Field(
-                lambda : float(self.fields['swp_min'].GetValue()),
-                self.fields['swp_min'].SetValue))
+        self.fields.add('swp_min', wxFloatField(FloatSpin(p,
+                value=-1.25, increment=0.01, digits=2)))
+        s.Add(self.fields['swp_min'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="SWP for maximum growth"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['swp_max'] = FloatSpin(p, value=-0.05, increment=0.01, digits=2)
-        s.Add(self.fields['swp_max'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('swp_max', Field(
-                lambda : float(self.fields['swp_max'].GetValue()),
-                self.fields['swp_max'].SetValue))
+        self.fields.add('swp_max', wxFloatField(FloatSpin(p,
+                value=-0.05, increment=0.01, digits=2)))
+        s.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
 
         # Maintain integrity on environmental dependence
         def f(evt):
@@ -300,61 +240,43 @@ class VegParams(wx.Panel):
 
         s.Add(wx.StaticText(p, label="Fphen at SGS"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['fphen_a'] = FloatSpin(p, value=0.0, increment=0.1, 
-                min_val=0.0, max_val=1.0, digits=1)
-        s.Add(self.fields['fphen_a'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('fphen_a', Field(
-                lambda : float(self.fields['fphen_a'].GetValue()),
-                self.fields['fphen_a'].SetValue))
+        self.fields.add('fphen_a', wxFloatField(FloatSpin(p,
+                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s.Add(self.fields['fphen_a'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Fphen at Astart"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['fphen_b'] = FloatSpin(p, value=0.0, increment=0.1, 
-                min_val=0.0, max_val=1.0, digits=1)
-        s.Add(self.fields['fphen_b'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('fphen_b', Field(
-                lambda : float(self.fields['fphen_b'].GetValue()),
-                self.fields['fphen_b'].SetValue))
+        self.fields.add('fphen_b', wxFloatField(FloatSpin(p,
+                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s.Add(self.fields['fphen_b'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Fphen at middle of season"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['fphen_c'] = FloatSpin(p, value=1.0, increment=0.1, 
-                min_val=0.0, max_val=1.0, digits=1)
-        s.Add(self.fields['fphen_c'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('fphen_c', Field(
-                lambda : float(self.fields['fphen_c'].GetValue()),
-                self.fields['fphen_c'].SetValue))
+        self.fields.add('fphen_c', wxFloatField(FloatSpin(p,
+                value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s.Add(self.fields['fphen_c'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Fphen at Aend and EGS"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['fphen_d'] = FloatSpin(p, value=0.0, increment=0.1, 
-                min_val=0.0, max_val=1.0, digits=1)
-        s.Add(self.fields['fphen_d'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('fphen_d', Field(
-                lambda : float(self.fields['fphen_d'].GetValue()),
-                self.fields['fphen_d'].SetValue))
+        self.fields.add('fphen_d', wxFloatField(FloatSpin(p,
+                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s.Add(self.fields['fphen_d'].obj, 0, wx.ALIGN_RIGHT)
         
         # TODO: Put some constraints on these
         s.Add(wx.StaticText(p, label="Period from Astart to mid-season Fphen"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['fphens'] = wx.SpinCtrl(p, min=1, initial=15)
-        s.Add(self.fields['fphens'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('fphens', Field(
-                lambda : float(self.fields['fphens'].GetValue()),
-                self.fields['fphens'].SetValue))
+        self.fields.add('fphens', wxFloatField(wx.SpinCtrl(p, min=1, initial=15)))
+        s.Add(self.fields['fphens'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Period from mid-season to EGS Fphen"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['fphene'] = wx.SpinCtrl(p, min=1, initial=20)
-        s.Add(self.fields['fphene'], 0, wx.ALIGN_RIGHT)
-        self.fieldgroup.add_field('fphene', Field(
-                lambda : float(self.fields['fphene'].GetValue()),
-                self.fields['fphene'].SetValue))
+        self.fields.add('fphene', wxFloatField(wx.SpinCtrl(p, min=1, initial=20)))
+        s.Add(self.fields['fphene'].obj, 0, wx.ALIGN_RIGHT)
 
 
     def getvalues(self):
-        return self.fieldgroup.get_values()
+        return self.fields.get_values()
 
 
     def setvalues(self, v):
-        return self.fieldgroup.set_values(v)
+        return self.fields.set_values(v)

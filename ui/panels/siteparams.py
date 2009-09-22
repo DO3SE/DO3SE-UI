@@ -4,16 +4,33 @@ from .. import wxext
 from .. import dose
 from ..FloatSpin import FloatSpin
 from ..app import logging, app
-from ..fieldgroup import Field, FieldGroup
+from ..fieldgroup import Field, FieldGroup, wxField, wxFloatField
+
+class SoilTexField(Field):
+    """
+    Custom field for creating the Soil Texture selector and implementing the
+    getter/setter logic.
+    """
+    def __init__(self, parent):
+        obj = wx.Choice(parent)
+        for x in dose.soil_classes:
+            obj.Append(x['name'], x['id'])
+        Field.__init__(self, obj)
+
+    def get(self):
+        return self.obj.GetClientData(self.obj.GetSelection())
+
+    def set(self, value):
+        self.obj.SetStringSelection(dose.soil_class_map[value]['name'])
+
+
 
 class SiteParams(wx.Panel):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
         # Dict to contain the actual input controls
-        self.fields = dict()
-
-        self.fieldgroup = FieldGroup()
+        self.fields = FieldGroup()
 
         # Outer sizer
         s = wx.BoxSizer(wx.VERTICAL)
@@ -44,29 +61,21 @@ class SiteParams(wx.Panel):
 
         sLocation.fgs.Add(wx.StaticText(self, label="Latitude"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['lat'] = FloatSpin(self, value=50.0, 
-                min_val=-90.0, max_val=90.0, increment=0.1, digits=3)
-        sLocation.fgs.Add(self.fields['lat'], 0)
-        self.fieldgroup.add_field('lat', Field(
-                lambda : float(self.fields['lat'].GetValue()),
-                self.fields['lat'].SetValue))
+        self.fields.add('lat', wxFloatField(FloatSpin(self,
+            value=50.0, min_val=-90.0, max_val=90.0, increment=0.1, digits=3)))
+        sLocation.fgs.Add(self.fields['lat'].obj, 0)
 
         sLocation.fgs.Add(wx.StaticText(self, label="Longitude"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['lon'] = FloatSpin(self, value=0.0,
-                min_val=-180.0, max_val=180.0, increment=0.1, digits=3)
-        sLocation.fgs.Add(self.fields['lon'], 0)
-        self.fieldgroup.add_field('lon', Field(
-                lambda : float(self.fields['lon'].GetValue()),
-                self.fields['lon'].SetValue))
+        self.fields.add('lon', wxFloatField(FloatSpin(self,
+            value=0.0, min_val=-180.0, max_val=180.0, increment=0.1, digits=3)))
+        sLocation.fgs.Add(self.fields['lon'].obj, 0)
 
         sLocation.fgs.Add(wx.StaticText(self, label="Elevation"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['elev'] = wx.SpinCtrl(self, min=-100, max=5000, initial=0)
-        sLocation.fgs.Add(self.fields['elev'], 0)
-        self.fieldgroup.add_field('elev', Field(
-                lambda : float(self.fields['elev'].GetValue()),
-                self.fields['elev'].SetValue))
+        self.fields.add('elev', wxFloatField(wx.SpinCtrl(self,
+            min=-100, max=5000, initial=0)))
+        sLocation.fgs.Add(self.fields['elev'].obj, 0)
 
 
         # Measurement heights
@@ -75,27 +84,21 @@ class SiteParams(wx.Panel):
 
         sHeights.fgs.Add(wx.StaticText(self, label="Ozone data"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['o3zr'] = wx.SpinCtrl(self, min=1, max=200, initial=25)
-        sHeights.fgs.Add(self.fields['o3zr'], 0)
-        self.fieldgroup.add_field('o3zr', Field(
-                lambda : float(self.fields['o3zr'].GetValue()),
-                self.fields['o3zr'].SetValue))
+        self.fields.add('o3zr', wxFloatField(wx.SpinCtrl(self,
+            min=1, max=200, initial=25)))
+        sHeights.fgs.Add(self.fields['o3zr'].obj, 0)
 
         sHeights.fgs.Add(wx.StaticText(self, label="Meteorological data"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['uzr'] = wx.SpinCtrl(self, min=1, max=200, initial=25)
-        sHeights.fgs.Add(self.fields['uzr'], 0)
-        self.fieldgroup.add_field('uzr', Field(
-                lambda : float(self.fields['uzr'].GetValue()),
-                self.fields['uzr'].SetValue))
+        self.fields.add('uzr', wxFloatField(wx.SpinCtrl(self,
+            min=1, max=200, initial=25)))
+        sHeights.fgs.Add(self.fields['uzr'].obj, 0)
 
         sHeights.fgs.Add(wx.StaticText(self, label="Other data"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['xzr'] = wx.SpinCtrl(self, min=1, max=200, initial=25)
-        sHeights.fgs.Add(self.fields['xzr'], 0)
-        self.fieldgroup.add_field('xzr', Field(
-                lambda : float(self.fields['xzr'].GetValue()),
-                self.fields['xzr'].SetValue))
+        self.fields.add('xzr', wxFloatField(wx.SpinCtrl(self,
+            min=1, max=200, initial=25)))
+        sHeights.fgs.Add(self.fields['xzr'].obj, 0)
 
 
         # Soil properties
@@ -104,23 +107,15 @@ class SiteParams(wx.Panel):
 
         sSoil.fgs.Add(wx.StaticText(self, label="Texture"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['soil_tex'] = wx.Choice(self)
-        for x in dose.soil_classes:
-            self.fields['soil_tex'].Append(x['name'], x['id'])
-        self.fields['soil_tex'].SetStringSelection(
-                dose.soil_class_map[dose.default_soil_class]['name'])
-        sSoil.fgs.Add(self.fields['soil_tex'], 0)
-        self.fieldgroup.add_field('soil_tex', Field(
-                lambda : self.fields['soil_tex'].GetClientData(self.fields['soil_tex'].GetSelection()),
-                lambda x: self.fields['soil_tex'].SetStringSelection(dose.soil_class_map[x]['name'])))
+        self.fields.add('soil_tex', SoilTexField(self))
+        self.fields['soil_tex'].set(dose.default_soil_class)
+        sSoil.fgs.Add(self.fields['soil_tex'].obj, 0)
 
         sSoil.fgs.Add(wx.StaticText(self, label="Rsoil"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields['rsoil'] = wx.SpinCtrl(self, min=1, max=1000, initial=200)
-        sSoil.fgs.Add(self.fields['rsoil'], 0)
-        self.fieldgroup.add_field('rsoil', Field(
-                lambda : float(self.fields['rsoil'].GetValue()),
-                self.fields['rsoil'].SetValue))
+        self.fields.add('rsoil', wxFloatField(wx.SpinCtrl(self,
+            min=1, max=1000, initial=200)))
+        sSoil.fgs.Add(self.fields['rsoil'].obj, 0)
 
         # Canopy heights
         sCanopies = wxext.StaticBox2Col(self, "Canopy heights")
@@ -130,48 +125,43 @@ class SiteParams(wx.Panel):
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteO3Canopy = wx.BoxSizer(wx.HORIZONTAL)
         sCanopies.fgs.Add(sSiteO3Canopy, 0)
-        self.fields['o3_h'] = wx.SpinCtrl(self, min=1, max=200, initial=25)
-        sSiteO3Canopy.Add(self.fields['o3_h'], 0, wx.RIGHT, 6)
-        self.fieldgroup.add_field('o3_h', Field(
-                lambda : float(self.fields['o3_h'].GetValue()),
-                self.fields['o3_h'].SetValue))
-        self.fields['o3_h_copy'] = wx.CheckBox(self, label="Same as target canopy")
-        sSiteO3Canopy.Add(self.fields['o3_h_copy'], 0)
-        self.fields['o3_h_copy'].Bind(
-                wx.EVT_CHECKBOX,
-                lambda evt: self.fields['o3_h'].Enable(not self.fields['o3_h_copy'].IsChecked()),
-                self.fields['o3_h_copy'])
-        def f(x):
-             self.fields['o3_h_copy'].SetValue(x)
-             self.fields['o3_h'].Enable(not self.fields['o3_h_copy'].IsChecked())
-        self.fieldgroup.add_field('o3_h_copy', Field(
-                self.fields['o3_h_copy'].GetValue, f))
+        self.fields.add('o3_h', wxFloatField(wx.SpinCtrl(self,
+            min=1, max=200, initial=25)))
+        sSiteO3Canopy.Add(self.fields['o3_h'].obj, 0, wx.RIGHT, 6)
+        self.fields.add('o3_h_copy', wxField(wx.CheckBox(self,
+            label="Same as target canopy")))
+        sSiteO3Canopy.Add(self.fields['o3_h_copy'].obj, 0)
+        self.fields['o3_h_copy'].Bind(wx.EVT_CHECKBOX, self.On_o3_h_copy_EVT_CHECKBOX)
 
         sCanopies.fgs.Add(wx.StaticText(self, label="Meteorological data"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteMetCanopy = wx.BoxSizer(wx.HORIZONTAL)
         sCanopies.fgs.Add(sSiteMetCanopy, 0)
-        self.fields['u_h'] = wx.SpinCtrl(self, min=1, max=200, initial=25)
-        sSiteMetCanopy.Add(self.fields['u_h'], 0, wx.RIGHT, 6)
-        self.fieldgroup.add_field('u_h', Field(
-                lambda : float(self.fields['u_h'].GetValue()),
-                self.fields['u_h'].SetValue))
-        self.fields['u_h_copy'] = wx.CheckBox(self, label="Same as target canopy")
-        sSiteMetCanopy.Add(self.fields['u_h_copy'], 0)
-        self.fields['u_h_copy'].Bind(
-                wx.EVT_CHECKBOX,
-                lambda evt: self.fields['u_h'].Enable(not self.fields['u_h_copy'].IsChecked()),
-                self.fields['u_h_copy'])
-        def f(x):
-             self.fields['u_h_copy'].SetValue(x)
-             self.fields['u_h'].Enable(not self.fields['u_h_copy'].IsChecked())
-        self.fieldgroup.add_field('u_h_copy', Field(
-                self.fields['u_h_copy'].GetValue, f))
+        self.fields.add('u_h', wxFloatField(wx.SpinCtrl(self,
+            min=1, max=200, initial=25)))
+        sSiteMetCanopy.Add(self.fields['u_h'].obj, 0, wx.RIGHT, 6)
+        self.fields.add('u_h_copy', wxField(wx.CheckBox(self,
+            label="Same as target canopy")))
+        sSiteMetCanopy.Add(self.fields['u_h_copy'].obj, 0)
+        self.fields['u_h_copy'].Bind(wx.EVT_CHECKBOX, self.On_u_h_copy_EVT_CHECKBOX)
+
+
+    def On_o3_h_copy_EVT_CHECKBOX(self, evt):
+        self.fields['o3_h'].Enable(not self.fields['o3_h_copy'].IsChecked())
+
+
+    def On_u_h_copy_EVT_CHECKBOX(self, evt):
+        self.fields['u_h'].Enable(not self.fields['u_h_copy'].IsChecked())
 
 
     def getvalues(self):
-        return self.fieldgroup.get_values()
+        return self.fields.get_values()
 
 
     def setvalues(self, v):
-        return self.fieldgroup.set_values(v)
+        # Set the values
+        self.fields.set_values(v)
+
+        # Fire off related events to make the UI consistent
+        self.On_o3_h_copy_EVT_CHECKBOX(None)
+        self.On_u_h_copy_EVT_CHECKBOX(None)
