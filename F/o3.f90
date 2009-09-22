@@ -91,13 +91,9 @@ contains
         use Variables, only: OT40, AOT40, O3_ppb, fphen
         use Inputs, only: R
 
-        if ( O3_ppb > 40 ) then
+        if (fphen > 0 .and. R > 50.0 .and. O3_ppb > 40) then
             OT40 = (O3_ppb - 40) / 1000
         else
-            OT40 = 0
-        end if
-
-        if ( R == 0 .or. fphen == 0 ) then
             OT40 = 0
         end if
 
