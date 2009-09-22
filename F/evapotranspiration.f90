@@ -11,9 +11,9 @@ contains
     !
     subroutine Calc_Penman_Monteith()
         use Constants, only: seaP, Ts_K
-        use Inputs, only: VPD, Ts_C, P, Rn, dd
+        use Inputs, only: VPD, Ts_C, P, dd
         use Variables, only: Ei, AEt, PEt, Es, Rb_H2O, LAI, Rsto, Rsto_PEt, &
-                             dd_prev, Sn, Rinc, Rgs
+                             dd_prev, Sn, Rinc, Rgs, Rn_MJ => Rn
         use Params_Site, only: Fc_m
         use Variables, only: PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr, Es_hr
 
@@ -26,6 +26,10 @@ contains
         real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3 !, Es_hr
 
         real, save  :: Ei_dd = 0, PEt_dd = 0, AEt_dd = 0, Es_dd = 0
+
+        ! Convert Rn to J from MJ
+        real :: Rn
+        Rn = Rn_MJ * 1000000.0
 
         VPD_Pa = VPD * 1000
         P_Pa = P * 1000
