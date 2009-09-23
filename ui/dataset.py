@@ -120,7 +120,7 @@ class Dataset:
         w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
         if headers:
-            w.writerow(dict(zip(fields, fields)))
+            w.writerow(dict( (f, dose.output_field_map[f]['short']) for f in fields ))
         w.writerows(self.results)
         file.close()
         logging.info("Wrote %d records" % len(self.results))
