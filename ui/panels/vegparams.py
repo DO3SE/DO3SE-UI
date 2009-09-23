@@ -42,10 +42,6 @@ class VegParams(wx.Panel):
             app.config.sync()
         self.presets.post_update = f
         sMain.Add(self.presets, 0, wx.ALL|wx.EXPAND, 6)
-        sVegParams = wx.FlexGridSizer(cols=2, vgap=6, hgap=6)
-        sVegParams.AddGrowableCol(0)
-        sVegParams.AddGrowableCol(1)
-        sMain.Add(sVegParams, 0, wx.ALL|wx.EXPAND, 6)
 
  
         # Notebook containing parameter groups
