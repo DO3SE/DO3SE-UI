@@ -42,6 +42,7 @@ class Dataset:
 
         # Set up default procedures
         self.sai = dose.phenology.calc_sai_simple
+        self.leaf_fphen = dose.leaf_fphen_calc_map[dose.default_leaf_fphen_calc]['func']
         self.ra = dose.r.calc_ra_simple
         self.rn = dose.irradiance.calc_rn
         # Calculation between PAR and R
@@ -74,6 +75,8 @@ class Dataset:
         siteparams = self.siteparams.copy()
         # Replace soil_tex (if it exists) with soil parameters
         siteparams.update(dose.soil_class_map[siteparams.pop('soil_tex', dose.default_soil_class)]['data'])
+        # Handle leaf_fphen
+        self.leaf_fphen = dose.leaf_fphen_calc_map[vegparams.pop('leaf_fphen', dose.default_leaf_fphen_calc)]['func']
 
         # Setup parameters
         
@@ -102,7 +105,7 @@ class Dataset:
 
             self.par_r()
             dose.inputs.derive_ustar_uh()
-            dose.run.do_calcs(self.sai, self.ra, self.rn)
+            dose.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn)
             self.results.append(dose.extract_outputs())
 
         logging.info("Got %d results" % len(self.results))
@@ -117,7 +120,7 @@ class Dataset:
         w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
         if headers:
-            w.writerow(dict(zip(fields, fields)))
+            w.writerow(dict( (f, dose.output_field_map[f]['short']) for f in fields ))
         w.writerows(self.results)
         file.close()
         logging.info("Wrote %d records" % len(self.results))

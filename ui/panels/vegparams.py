@@ -1,11 +1,27 @@
 # TODO: Load defaults from the F model
 
 import wx
+from wx.lib import plot
 
 from .. import wxext
+from .. import dose
 from ..FloatSpin import FloatSpin
 from ..app import logging, app
 from ..fieldgroup import Field, FieldGroup, wxField, wxFloatField
+
+class LeafFphenField(Field):
+    def __init__(self, parent):
+        obj = wx.Choice(parent)
+        for x in dose.leaf_fphen_calcs:
+            obj.Append(x['name'], x['id'])
+        Field.__init__(self, obj)
+
+    def get(self):
+        return self.obj.GetClientData(self.obj.GetSelection())
+
+    def set(self, value):
+        self.obj.SetStringSelection(dose.leaf_fphen_calc_map[value]['name'])
+
 
 class VegParams(wx.Panel):
     def __init__(self, *args, **kwargs):
@@ -63,18 +79,6 @@ class VegParams(wx.Panel):
         self.fields.add('root', wxFloatField(FloatSpin(p,
                 value=1.2, min_val=0.01, increment=0.1, digits=1)))
         s.Add(self.fields['root'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Min. Leaf Area Index (m^2/m^2)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_min', wxFloatField(FloatSpin(p,
-                value=0.0, min_val=0, increment=0.1, digits=1)))
-        s.Add(self.fields['lai_min'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Max. Leaf Area Index (m^2/m^2)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_max', wxFloatField(FloatSpin(p,
-                value=4.0, min_val=0, increment=0.1, digits=1)))
-        s.Add(self.fields['lai_max'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Leaf dimension (Lm, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
@@ -114,61 +118,275 @@ class VegParams(wx.Panel):
                 min_val=0.1, value=1.6, max_val=100.0, increment=0.1, digits=1)))
         s.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
 
-        # Growing season
-        p, s = makepage("Season")
 
-        s.Add(wx.StaticText(p, label="Start (SGS, day of year)"),
+        # Phenology (fphen, LAI)
+        p = wx.ScrolledWindow(nb)
+        p.SetScrollRate(15, 15)
+        nb.AddPage(p, "Phenology")
+        _s = wx.BoxSizer(wx.HORIZONTAL)
+        p.SetSizer(_s)
+        s = wx.BoxSizer(wx.VERTICAL)
+        _s.Add(s, 1, wx.EXPAND|wx.ALL, 6)
+
+        # Growing season
+        bs = wx.StaticBoxSizer(wx.StaticBox(p, label="Growing season"), wx.VERTICAL)
+        s.Add(bs, 0, wx.EXPAND)
+        s1 = wx.BoxSizer(wx.HORIZONTAL)
+        bs.Add(s1, 1, wx.EXPAND|wx.ALL, 6)
+
+        s1.Add(wx.StaticText(p, label="Start (SGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
+        s1.AddSpacer(6)
         self.fields.add('sgs', wxFloatField(wx.SpinCtrl(p,
                 min=1, max=365, initial=121)))
-        s.Add(self.fields['sgs'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="End (EGS, day of year)"),
+        s1.Add(self.fields['sgs'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.AddSpacer(12)
+        s1.Add(wx.StaticText(p, label="End (EGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
+        s1.AddSpacer(6)
         self.fields.add('egs', wxFloatField(wx.SpinCtrl(p,
                 min=1, max=365, initial=273)))
-        s.Add(self.fields['egs'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Upper leaf start (Astart, day of year)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('astart', wxFloatField(wx.SpinCtrl(p,
-                min=1, max=365, initial=121)))
-        s.Add(self.fields['astart'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Upper leaf end (Aend, day of year)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('aend', wxFloatField(wx.SpinCtrl(p,
-                min=1, max=365, initial=273)))
-        s.Add(self.fields['aend'].obj, 0, wx.ALIGN_RIGHT)
-
-        # TODO: Limit these based on the growing season?
-        s.Add(wx.StaticText(p, label="Period from min. LAI to max. LAI (days)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('ls', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
-        s.Add(self.fields['ls'].obj, 0, wx.ALIGN_RIGHT)
-
-        s.Add(wx.StaticText(p, label="Period from max. LAI to min. LAI (days)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('le', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
-        s.Add(self.fields['le'].obj, 0, wx.ALIGN_RIGHT)
+        s1.Add(self.fields['egs'].obj, 0, wx.ALIGN_RIGHT)
 
         # Maintain integrity on growing season
         def f(evt):
             if self.fields['sgs'].GetValue() > self.fields['egs'].GetValue():
                 self.fields['sgs'].SetValue(self.fields['egs'].GetValue())
-        self.Bind(wx.EVT_SPINCTRL, f, self.fields['sgs'])
+            evt.Skip()
+        self.fields['sgs'].Bind(wx.EVT_SPINCTRL, f)
         def f(evt):
             if self.fields['egs'].GetValue() < self.fields['sgs'].GetValue():
                 self.fields['egs'].SetValue(self.fields['sgs'].GetValue())
-        self.Bind(wx.EVT_SPINCTRL, f, self.fields['egs'])
+            evt.Skip()
+        self.fields['egs'].Bind(wx.EVT_SPINCTRL, f)
+
+        s.AddSpacer(6)
+
+        # Leaf Area Index
+        bs = wx.StaticBoxSizer(wx.StaticBox(p, label="Leaf Area Index"), wx.HORIZONTAL)
+        s.Add(bs, 0, wx.EXPAND)
+        s1 = wx.FlexGridSizer(cols=2, vgap=6, hgap=6)
+        s2 = wx.BoxSizer(wx.VERTICAL)
+        bs.Add(s1, 0, wx.EXPAND|wx.ALL, 6)
+        bs.Add(s2, 1, wx.EXPAND|wx.ALL, 6)
+
+        s1.Add(wx.StaticText(p, label="LAI at SGS (LAI_a, m^2/m^2)"),
+                0, wx. ALIGN_CENTER_VERTICAL)
+        self.fields.add('lai_a', wxFloatField(FloatSpin(p,
+                value=0.0, min_val=0, increment=0.1, digits=1)))
+        s1.Add(self.fields['lai_a'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Second LAI point (LAI_b, m^2/m^2)"),
+                0, wx. ALIGN_CENTER_VERTICAL)
+        self.fields.add('lai_b', wxFloatField(FloatSpin(p,
+                value=4.0, min_val=0, increment=0.1, digits=1)))
+        s1.Add(self.fields['lai_b'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Third LAI point (LAI_c, m^2/m^2)"),
+                0, wx. ALIGN_CENTER_VERTICAL)
+        self.fields.add('lai_c', wxFloatField(FloatSpin(p,
+                value=4.0, min_val=0, increment=0.1, digits=1)))
+        s1.Add(self.fields['lai_c'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="LAI at EGS (LAI_d, m^2/m^2)"),
+                0, wx. ALIGN_CENTER_VERTICAL)
+        self.fields.add('lai_d', wxFloatField(FloatSpin(p,
+                value=0.0, min_val=0, increment=0.1, digits=1)))
+        s1.Add(self.fields['lai_d'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Period from LAI_a to LAI_b (LAI_1, days)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('lai_1', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
+        s1.Add(self.fields['lai_1'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Period from LAI_c to LAI_d (LAI_2, days)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('lai_2', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
+        s1.Add(self.fields['lai_2'].obj, 0, wx.ALIGN_RIGHT)
+
+        # LAI preview
+        self.LAI_preview = plot.PlotCanvas(p)
+        self.LAI_preview.SetEnableTitle(False)
+        self.LAI_preview.SetFontSizeLegend(10)
+        s2.Add(self.LAI_preview, 1, wx.EXPAND)
+        # Hook LAI curve changes to redraw
+        self.fields['sgs'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+        self.fields['egs'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+        self.fields['lai_a'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+        self.fields['lai_b'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+        self.fields['lai_c'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+        self.fields['lai_d'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+        self.fields['lai_1'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+        self.fields['lai_2'].Bind(wx.EVT_SPINCTRL, self.redraw_LAI_preview)
+
+        # Fphen and leaf fphen
+        s.AddSpacer(6)
+        bs = wx.StaticBoxSizer(wx.StaticBox(p, label="Fphen and leaf fphen"), wx.VERTICAL)
+        s.Add(bs, 0, wx.EXPAND)
+        _s = wx.BoxSizer(wx.HORIZONTAL)
+        bs.Add(_s, 0, wx.EXPAND)
+        s1 = wx.FlexGridSizer(cols=2, vgap=6, hgap=6)
+        s2 = wx.FlexGridSizer(cols=2, vgap=6, hgap=6)
+        s3 = wx.BoxSizer(wx.VERTICAL)
+        _s.Add(s1, 1, wx.EXPAND|wx.ALL, 6)
+        _s.Add(s3, 1, wx.EXPAND)
+        s3.Add(s2, 0, wx.EXPAND|wx.ALL, 6)
+
+        s1.Add(wx.StaticText(p, label="Fphen at SGS (fphen_a)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_a', wxFloatField(FloatSpin(p,
+                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s1.Add(self.fields['fphen_a'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="First mid-season Fphen (fphen_b)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_b', wxFloatField(FloatSpin(p,
+                value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s1.Add(self.fields['fphen_b'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Second mid-season Fphen (fphen_c)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_c', wxFloatField(FloatSpin(p,
+                value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s1.Add(self.fields['fphen_c'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Third mid-season Fphen (fphen_d)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_d', wxFloatField(FloatSpin(p,
+                value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s1.Add(self.fields['fphen_d'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Fphen at EGS (fphen_e)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_e', wxFloatField(FloatSpin(p,
+                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s1.Add(self.fields['fphen_e'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Period from fphen_a to fphen_b (fphen_1, days)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_1', wxFloatField(wx.SpinCtrl(p,
+                initial=15, min=1)))
+        s1.Add(self.fields['fphen_1'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Start of SWP limitation (fphen_limA, day of year)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_lima', wxFloatField(wx.SpinCtrl(p,
+                initial=180, min=1, max=365)))
+        s1.Add(self.fields['fphen_lima'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Period from fphen_b to fphen_c (fphen_2, days)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_2', wxFloatField(wx.SpinCtrl(p,
+                initial=1, min=1)))
+        s1.Add(self.fields['fphen_2'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Period from fphen_c to fphen_d (fphen_3, days)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_3', wxFloatField(wx.SpinCtrl(p,
+                initial=1, min=1)))
+        s1.Add(self.fields['fphen_3'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="End of SWP limitation (fphen_limB, day of year)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_limb', wxFloatField(wx.SpinCtrl(p,
+                initial=220, min=1, max=365)))
+        s1.Add(self.fields['fphen_limb'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="Period from fphen_d to fphen_e (fphen_4, days)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fphen_4', wxFloatField(wx.SpinCtrl(p,
+                initial=20, min=1)))
+        s1.Add(self.fields['fphen_4'].obj, 0, wx.ALIGN_RIGHT)
+
+        s2.Add(wx.StaticText(p, label="Leaf fphen calculation"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('leaf_fphen', LeafFphenField(p))
+        s2.Add(self.fields['leaf_fphen'].obj, 0, wx.ALIGN_RIGHT)
+        self.fields['leaf_fphen'].set(dose.default_leaf_fphen_calc)
+        self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.On_leaf_fphen_EVT_CHOICE)
+        self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.redraw_fphen_preview)
+
+        s2.Add(wx.StaticText(p, label="O3 accumulation start (Astart, day of year)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('astart', wxFloatField(wx.SpinCtrl(p,
+                min=1, max=365, initial=153)))
+        s2.Add(self.fields['astart'].obj, 0, wx.ALIGN_RIGHT)
+
+        s2.Add(wx.StaticText(p, label="O3 accumulation end (Aend, day of year)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('aend', wxFloatField(wx.SpinCtrl(p,
+                min=1, max=365, initial=208)))
+        s2.Add(self.fields['aend'].obj, 0, wx.ALIGN_RIGHT)
+
+        # Maintain Astart/Aend integrity
         def f(evt):
             if self.fields['astart'].GetValue() > self.fields['aend'].GetValue():
                 self.fields['astart'].SetValue(self.fields['aend'].GetValue())
-        self.Bind(wx.EVT_SPINCTRL, f, self.fields['astart'])
+            evt.Skip()
+        self.fields['astart'].Bind(wx.EVT_SPINCTRL, f)
         def f(evt):
             if self.fields['aend'].GetValue() < self.fields['astart'].GetValue():
                 self.fields['aend'].SetValue(self.fields['astart'].GetValue())
-        self.Bind(wx.EVT_SPINCTRL, f, self.fields['aend'])
+            evt.Skip()
+        self.fields['aend'].Bind(wx.EVT_SPINCTRL, f)
+
+        s2.Add(wx.StaticText(p, label="Leaf fphen at Astart (leaf_fphen_a)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('leaf_fphen_a', wxFloatField(FloatSpin(p,
+                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s2.Add(self.fields['leaf_fphen_a'].obj, 0, wx.ALIGN_RIGHT)
+
+        s2.Add(wx.StaticText(p, label="Leaf fphen mid-season (leaf_fphen_b)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('leaf_fphen_b', wxFloatField(FloatSpin(p,
+                value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s2.Add(self.fields['leaf_fphen_b'].obj, 0, wx.ALIGN_RIGHT)
+
+        s2.Add(wx.StaticText(p, label="Leaf fphen at Aend (leaf_fphen_c)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('leaf_fphen_c', wxFloatField(FloatSpin(p,
+                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
+        s2.Add(self.fields['leaf_fphen_c'].obj, 0, wx.ALIGN_RIGHT)
+
+        s2.Add(wx.StaticText(p, label="Period from leaf_fphen_a to leaf_fphen_b"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('leaf_fphen_1', wxFloatField(wx.SpinCtrl(p,
+                initial=15, min=1)))
+        s2.Add(self.fields['leaf_fphen_1'].obj, 0, wx.ALIGN_RIGHT)
+
+        s2.Add(wx.StaticText(p, label="Period from leaf_fphen_b to leaf_fphen_c"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('leaf_fphen_2', wxFloatField(wx.SpinCtrl(p,
+                initial=30, min=1)))
+        s2.Add(self.fields['leaf_fphen_2'].obj, 0, wx.ALIGN_RIGHT)
+
+        # fphen preview
+        self.fphen_preview = plot.PlotCanvas(p)
+        self.fphen_preview.SetEnableTitle(False)
+        self.fphen_preview.SetFontSizeLegend(10)
+        self.fphen_preview.SetEnableLegend(True)
+        self.fphen_preview.SetSizeHints(minW=-1, minH=150)
+        s3.Add(self.fphen_preview, 1, wx.EXPAND|wx.ALL, 6)
+        # Hook curve changes to redraw
+        self.fields['fphen_a'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_b'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_c'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_d'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_e'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_1'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_lima'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_2'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_3'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_limb'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['fphen_4'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['astart'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['aend'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['leaf_fphen_a'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['leaf_fphen_b'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['leaf_fphen_c'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['leaf_fphen_1'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['leaf_fphen_2'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
 
 
         # Environmental dependence
@@ -233,45 +451,71 @@ class VegParams(wx.Panel):
             if self.fields['t_max'].GetValue() < self.fields['t_opt'].GetValue():
                 self.fields['t_max'].SetValue(self.fields['t_opt'].GetValue())
         self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_max'])
-        
 
-        # Fphen parameters
-        p, s = makepage("Fphen")
 
-        s.Add(wx.StaticText(p, label="Fphen at SGS"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_a', wxFloatField(FloatSpin(p,
-                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
-        s.Add(self.fields['fphen_a'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Fphen at Astart"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_b', wxFloatField(FloatSpin(p,
-                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
-        s.Add(self.fields['fphen_b'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Fphen at middle of season"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_c', wxFloatField(FloatSpin(p,
-                value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
-        s.Add(self.fields['fphen_c'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Fphen at Aend and EGS"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_d', wxFloatField(FloatSpin(p,
-                value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
-        s.Add(self.fields['fphen_d'].obj, 0, wx.ALIGN_RIGHT)
-        
-        # TODO: Put some constraints on these
-        s.Add(wx.StaticText(p, label="Period from Astart to mid-season Fphen"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphens', wxFloatField(wx.SpinCtrl(p, min=1, initial=15)))
-        s.Add(self.fields['fphens'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Period from mid-season to EGS Fphen"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphene', wxFloatField(wx.SpinCtrl(p, min=1, initial=20)))
-        s.Add(self.fields['fphene'].obj, 0, wx.ALIGN_RIGHT)
+        # Fire events to make UI consistent
+        self.redraw_LAI_preview(None)
+        self.redraw_fphen_preview(None)
+        self.On_leaf_fphen_EVT_CHOICE(None)
+
+
+    def redraw_LAI_preview(self, evt):
+        lai = plot.PolyLine(points=(
+            (self.fields['sgs'].get(), self.fields['lai_a'].get()),
+            (self.fields['sgs'].get() + self.fields['lai_1'].get(), self.fields['lai_b'].get()),
+            (self.fields['egs'].get() - self.fields['lai_2'].get(), self.fields['lai_c'].get()),
+            (self.fields['egs'].get(), self.fields['lai_d'].get())),
+            colour='green',
+            legend='LAI')
+
+        gfx = plot.PlotGraphics((lai,), 'LAI function preview', 'Day of year (dd)', 'LAI')
+
+        self.LAI_preview.Draw(graphics=gfx)
+
+        if evt: evt.Skip()
+
+
+    def redraw_fphen_preview(self, evt):
+        v = self.fields.get_values()
+        lines = list()
+
+        fphen = plot.PolyLine(points=(
+            (v['sgs'], v['fphen_a']),
+            (v['sgs'] + v['fphen_1'], v['fphen_b']),
+            (v['fphen_lima'], v['fphen_b']),
+            (v['fphen_lima'] + v['fphen_2'], v['fphen_c']),
+            (v['fphen_limb'] - v['fphen_3'], v['fphen_c']),
+            (v['fphen_limb'], v['fphen_d']),
+            (v['egs'] - v['fphen_4'], v['fphen_d']),
+            (v['egs'], v['fphen_e'])),
+            colour='green',
+            legend='Fphen')
+
+        lines.append(fphen)
+
+        if v['leaf_fphen'] != 'copy':
+            leaf_fphen = plot.PolyLine(points=(
+                (v['astart'], v['leaf_fphen_a']),
+                (v['astart'] + v['leaf_fphen_1'], v['leaf_fphen_b']),
+                (v['aend'] - v['leaf_fphen_2'], v['leaf_fphen_b']),
+                (v['aend'], v['leaf_fphen_c'])),
+                colour='red',
+                legend='leaf_fphen')
+            lines.append(leaf_fphen)
+
+        gfx = plot.PlotGraphics(lines, 'Fphen function preview', 'Day of year (dd)', 'Fphen')
+        self.fphen_preview.Draw(graphics=gfx)
+
+        if evt: evt.Skip()
+
+
+    def On_leaf_fphen_EVT_CHOICE(self, evt):
+        calc = self.fields['leaf_fphen'].get()
+        for x in ('astart', 'aend', 'leaf_fphen_a', 'leaf_fphen_b', 
+                  'leaf_fphen_c', 'leaf_fphen_1', 'leaf_fphen_2'):
+            self.fields[x].Enable(calc != 'copy')
+
+        if evt: evt.Skip()
 
 
     def getvalues(self):
@@ -279,4 +523,9 @@ class VegParams(wx.Panel):
 
 
     def setvalues(self, v):
-        return self.fields.set_values(v)
+        self.fields.set_values(v)
+
+        # Fire events to make the UI consistent
+        self.redraw_LAI_preview(None)
+        self.redraw_fphen_preview(None)
+        self.On_leaf_fphen_EVT_CHOICE(None)

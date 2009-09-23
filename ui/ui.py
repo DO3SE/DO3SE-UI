@@ -74,7 +74,7 @@ class MainWindow(wx.Frame):
         """
 
         # Set window size and title
-        self.SetSize((600,600))
+        self.SetSize((900,600))
         self.SetTitle(app.title)
 
         ### Main panel ###
