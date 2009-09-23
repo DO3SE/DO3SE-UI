@@ -45,6 +45,9 @@ contains
     ! Calc_SAI
     !       Method for calculating SAI (simple or crops)
     !
+    ! Calc_leaf_fphen
+    !       Method for calculating leaf_fphen (copy fphen, or use special calc)
+    !
     ! Calc_Ra
     !       Method for calculating Ra (simple or including heat flux data)
     !
@@ -52,7 +55,7 @@ contains
     !       Method for calculating net radiation (copy or calculate)
     !
     !==========================================================================
-    subroutine Do_Calcs(Calc_SAI, Calc_Ra, Calc_Rn)
+    subroutine Do_Calcs(Calc_SAI, Calc_leaf_fphen, Calc_Ra, Calc_Rn)
         use Phenology, only: Calc_LAI, Calc_fphen
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
@@ -66,6 +69,8 @@ contains
         interface
             subroutine Calc_SAI()
             end subroutine Calc_SAI
+            subroutine Calc_leaf_fphen()
+            end subroutine Calc_leaf_fphen
             subroutine Calc_Ra()
             end subroutine Calc_Ra
             subroutine Calc_Rn()
@@ -75,6 +80,7 @@ contains
         call Calc_LAI()
         call Calc_SAI()         !***
         call Calc_fphen()
+        call Calc_leaf_fphen()
 
         call Calc_sinB()
         call Calc_Flight()

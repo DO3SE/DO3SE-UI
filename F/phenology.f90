@@ -4,6 +4,8 @@ module Phenology
     public :: Calc_SAI_Simple
     public :: Calc_SAI_Wheat
     public :: Calc_fphen
+    public :: Copy_leaf_fphen
+    public :: Calc_leaf_fphen_Wheat
 
 contains 
 
@@ -110,9 +112,35 @@ contains
         else if (dd <= EGS) then
             fphen = fphen_e + (fphen_d - fphen_e) * (EGS - dd) / fphen_4
         end if
-
-        ! TODO: Change this to calculate fphen for upper canopy leaf?
-        leaf_fphen = fphen
     end subroutine Calc_fphen
+
+    !==========================================================================
+    ! Copy canopy fphen as leaf fphen
+    !==========================================================================
+    subroutine Copy_leaf_fphen()
+        use Variables, only: fphen, leaf_fphen
+
+        leaf_fphen = fphen
+    end subroutine Copy_leaf_fphen
+
+    !==========================================================================
+    ! Calculate leaf_fphen for Wheat
+    !==========================================================================
+    subroutine Calc_leaf_fphen_Wheat()
+        use Params_Veg, only: leaf_fphen_a, leaf_fphen_b, leaf_fphen_c, &
+                              leaf_fphen_1, leaf_fphen_2, Astart, Aend
+        use Inputs,     only: dd
+        use Variables,  only: leaf_fphen
+
+        if (dd < Astart .or. dd > Aend) then
+            leaf_fphen = 0
+        else if (dd < (Astart + leaf_fphen_1)) then
+            leaf_fphen = leaf_fphen_a + (leaf_fphen_b - leaf_fphen_a) * (dd - Astart) / leaf_fphen_1
+        else if (dd < (Aend - leaf_fphen_2)) then
+            leaf_fphen = leaf_fphen_b
+        else if (dd <= Aend) then
+            leaf_fphen = leaf_fphen_c + (leaf_fphen_b - leaf_fphen_c) * (Aend - dd) / leaf_fphen_2
+        end if
+    end subroutine Calc_leaf_fphen_Wheat
 
 end module Phenology

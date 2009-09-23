@@ -162,6 +162,17 @@ soil_class_map = dict( (x['id'], x) for x in soil_classes )
 
 default_soil_class = 'loam'
 
+# Leaf fphen calculations
+leaf_fphen_calcs = (
+        {'id': 'copy',  'func': phenology.copy_leaf_fphen,      'name': 'Same as canopy Fphen'},
+        {'id': 'wheat', 'func': phenology.calc_leaf_fphen_wheat,'name': 'Wheat'},
+)
+
+# Mapping from calc id to info
+leaf_fphen_calc_map = dict( (x['id'], x) for x in leaf_fphen_calcs )
+
+default_leaf_fphen_calc = 'copy'
+
 
 def extract_outputs():
     """

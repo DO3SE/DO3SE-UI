@@ -42,6 +42,7 @@ class Dataset:
 
         # Set up default procedures
         self.sai = dose.phenology.calc_sai_simple
+        self.leaf_fphen = dose.leaf_fphen_calc_map[dose.default_leaf_fphen_calc]['func']
         self.ra = dose.r.calc_ra_simple
         self.rn = dose.irradiance.calc_rn
         # Calculation between PAR and R
@@ -102,7 +103,7 @@ class Dataset:
 
             self.par_r()
             dose.inputs.derive_ustar_uh()
-            dose.run.do_calcs(self.sai, self.ra, self.rn)
+            dose.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn)
             self.results.append(dose.extract_outputs())
 
         logging.info("Got %d results" % len(self.results))
