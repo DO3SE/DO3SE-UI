@@ -369,6 +369,8 @@ class VegParams(wx.Panel):
         self.fphen_preview.SetSizeHints(minW=-1, minH=150)
         s3.Add(self.fphen_preview, 1, wx.EXPAND|wx.ALL, 6)
         # Hook curve changes to redraw
+        self.fields['sgs'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+        self.fields['egs'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
         self.fields['fphen_a'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
         self.fields['fphen_b'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
         self.fields['fphen_c'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
