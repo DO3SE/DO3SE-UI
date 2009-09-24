@@ -2,6 +2,7 @@
 
 import wx
 from wx.lib import plot
+from wx.lib import scrolledpanel
 
 from .. import wxext
 from .. import dose
@@ -116,8 +117,7 @@ class VegParams(wx.Panel):
 
 
         # Phenology (fphen, LAI)
-        p = wx.ScrolledWindow(nb)
-        p.SetScrollRate(15, 15)
+        p = scrolledpanel.ScrolledPanel(nb)
         nb.AddPage(p, "Phenology")
         _s = wx.BoxSizer(wx.HORIZONTAL)
         p.SetSizer(_s)
@@ -385,6 +385,8 @@ class VegParams(wx.Panel):
         self.fields['leaf_fphen_c'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
         self.fields['leaf_fphen_1'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
         self.fields['leaf_fphen_2'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
+
+        p.SetupScrolling()
 
 
         # Environmental dependence
