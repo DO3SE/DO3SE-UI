@@ -4,6 +4,9 @@ module R
                 Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur, &
                 Calc_Ra_With_Heat_Flux
 
+    ! VPD sum for the day (kPa)
+    real, private, save :: VPD_dd = 0
+
 contains
 
     !==========================================================================
@@ -102,11 +105,27 @@ contains
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
     subroutine Calc_Rsto()
-        use Params_Veg, only: gmax, fmin
-        use Variables, only: fphen, flight, ftemp, fVPD, fSWP
+        use Params_Veg, only: gmax, fmin, VPD_crit
+        use Inputs, only: VPD, dd
+        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, dd_prev
         use Variables, only: leaf_fphen, leaf_flight, LAI
         use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
                              Gsto_PEt, Rsto_PEt
+
+        real :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev
+
+        ! Preparation for VPD_crit limiting
+        !   Copy old Gsto values
+        Gsto_l_prev = Gsto_l
+        Gsto_prev = Gsto
+        Gsto_c_prev = Gsto_c
+        Gsto_PEt_prev = Gsto_PEt
+        !   Accumulate VPD
+        if (dd == dd_prev) then
+            VPD_dd = VPD_dd + VPD
+        else
+            VPD_dd = VPD
+        end if
 
         ! Leaf Gsto
         Gsto_l = gmax * leaf_fphen * leaf_flight * max(fmin, ftemp * fVPD * fSWP)
@@ -116,6 +135,14 @@ contains
         Gsto_c = Gsto * LAI
         ! Potential canopy Gsto for PEt calculation (non-limiting SWP)
         Gsto_PEt = gmax * fphen * flight * ftemp * fVPD * LAI
+
+        ! Check the VPD_crit condition
+        if (VPD_dd >= VPD_crit) then
+            Gsto_l = min(Gsto_l, Gsto_l_prev)
+            Gsto = min(Gsto, Gsto_prev)
+            Gsto_c = min(Gsto_c, Gsto_c_prev)
+            Gsto_PEt = min(Gsto_PEt, Gsto_PEt_prev)
+        end if
 
         ! Leaf Rsto
         if (Gsto_l <= 0) then

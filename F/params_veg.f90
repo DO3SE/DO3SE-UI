@@ -6,6 +6,7 @@ module Params_Veg
 
     real, public, save :: VPD_min = 3.25    ! VPD for min g
     real, public, save :: VPD_max = 1.0     ! VPD for max g
+    real, public, save :: VPD_crit = 1000   ! Critical daily VPD sum (kPa)
     
     real, public, save :: SWP_min = -1.25   ! SWP for min g
     real, public, save :: SWP_max = -0.05   ! SWP for max g

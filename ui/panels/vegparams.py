@@ -411,17 +411,23 @@ class VegParams(wx.Panel):
         s.Add(self.fields['t_max'].obj, 0, wx.ALIGN_RIGHT)
         
         # TODO: min/max values for VPD
-        s.Add(wx.StaticText(p, label="VPD for minimum growth"),
+        s.Add(wx.StaticText(p, label="VPD for minimum growth (VPD_min, kPa)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('vpd_min', wxFloatField(FloatSpin(p,
                 value=3.25, increment=0.01, digits=2)))
         s.Add(self.fields['vpd_min'].obj, 0, wx.ALIGN_RIGHT)
         
-        s.Add(wx.StaticText(p, label="VPD for maximum growth"),
+        s.Add(wx.StaticText(p, label="VPD for maximum growth (VPD_max, kPa)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('vpd_max', wxFloatField(FloatSpin(p,
                 value=1.0, increment=0.01, digits=2)))
         s.Add(self.fields['vpd_max'].obj, 0, wx.ALIGN_RIGHT)
+
+        s.Add(wx.StaticText(p, label="Critical daily VPD sum (VPD_crit, kPa)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('vpd_crit', wxFloatField(FloatSpin(p,
+                value=1000.0, min_val=0.0, max_val=1000.0, increment=1.0, digits=1)))
+        s.Add(self.fields['vpd_crit'].obj, 0, wx.ALIGN_RIGHT)
         
         # TODO: min/max for SWP
         s.Add(wx.StaticText(p, label="SWP for minimum growth"),
