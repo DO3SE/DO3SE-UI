@@ -13,12 +13,15 @@ contains
     ! nmol/m^3
     !==========================================================================
     subroutine Calc_O3_Concentration()
-        use Constants, only: k, izR, v, DO3, Pr
-        use Inputs, only: O3_ppb_zR, uh_i
+        use Constants, only: k, izR, v, DO3, Pr, Ts_K
+        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P
         use Variables, only: O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Ra_i, Vd
         use Params_Site, only: O3zR, O3_d, O3_zo
 
-        real :: ustar_o, O3_i, Rb_i, Vd_i
+        real, parameter :: R = 8.314510     ! Universal gas constant (J/K/mol)
+        real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
+
+        real :: ustar_o, O3_i, Rb_i, Vd_i, Vn
 
         ! Deposition velocity over target veg
         ! (we assume that this is "close enough" for over the measurement veg.)
@@ -38,9 +41,10 @@ contains
 
         O3_ppb = O3_i * (1 - (Ra * Vd))
 
-        O3_nmol_m3 = O3_ppb * 41.67   ! Estimates ozone concentration at canopy height 
-                                      ! in nmol/m3; N.B> need to do proper conversion
-                                      ! to include changes in T and P but no P in flux tower data......
+        ! Specific molar volume of an ideal gas at current temp + pressure
+        Vn = R * ((Ts_C + Ts_K) / P)
+        ! Convert to nmol/m^3
+        O3_nmol_m3 = (1.0/Vn) * O3_ppb * M_O3 * 20.833  ! 1 microgram O3 = 20.833 nmol/m^3
     end subroutine Calc_O3_Concentration
 
     !==========================================================================
