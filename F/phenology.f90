@@ -42,12 +42,22 @@ contains
     end subroutine Calc_LAI
 
     !==========================================================================
-    ! 'Simple' SAI calculation - SAI = LAI + 1 for grasses and trees
+    ! Basic SAI calculation: SAI = LAI
     !==========================================================================
-    subroutine Calc_SAI_Simple()
+    subroutine Calc_SAI_copy_LAI()
         use Variables, only: LAI, SAI
+
+        SAI = LAI
+    end subroutine Calc_SAI_copy_LAI
+
+    !==========================================================================
+    ! 'Simple' SAI calculation - SAI = LAI + 1 for 
+    !==========================================================================
+    subroutine Calc_SAI_Forest()
+        use Variables, only: LAI, SAI
+
         SAI = LAI + 1
-    end subroutine Calc_SAI_Simple
+    end subroutine Calc_SAI_Forest
 
     !==========================================================================
     ! SAI calculation for wheat taking growing season into account

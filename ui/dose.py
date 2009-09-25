@@ -195,6 +195,18 @@ fO3_calc_map = dict( (x['id'], x) for x in fO3_calcs )
 
 default_fO3_calc = 'none'
 
+# SAI calculations
+SAI_calcs = (
+        {'id': 'copy',      'func': phenology.calc_sai_copy_lai,    'name': 'Same as LAI'},
+        {'id': 'forest',    'func': phenology.calc_sai_forest,      'name': 'Forest'},
+        {'id': 'wheat',     'func': phenology.calc_sai_wheat,       'name': 'Wheat'},
+)
+
+# Mapping from calc id to info
+SAI_calc_map = dict( (x['id'], x) for x in SAI_calcs )
+
+default_SAI_calc = 'copy'
+
 
 def extract_outputs():
     """

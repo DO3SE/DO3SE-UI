@@ -38,6 +38,20 @@ class fO3Field(Field):
         self.obj.SetStringSelection(dose.fO3_calc_map[value]['name'])
 
 
+class SAIField(Field):
+    def __init__(self, parent):
+        obj = wx.Choice(parent)
+        for x in dose.SAI_calcs:
+            obj.Append(x['name'], x['id'])
+        Field.__init__(self, obj)
+
+    def get(self):
+        return self.obj.GetClientData(self.obj.GetSelection())
+
+    def set(self, value):
+        self.obj.SetStringSelection(dose.SAI_calc_map[value]['name'])
+
+
 class VegParams(wx.Panel):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
@@ -219,6 +233,11 @@ class VegParams(wx.Panel):
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('lai_2', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
         s1.Add(self.fields['lai_2'].obj, 0, wx.ALIGN_RIGHT)
+
+        s1.Add(wx.StaticText(p, label="SAI calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('sai', SAIField(p))
+        self.fields['sai'].set(dose.default_SAI_calc)
+        s1.Add(self.fields['sai'].obj, 0, wx.ALIGN_RIGHT)
 
         # LAI preview
         self.LAI_preview = plot.PlotCanvas(p)

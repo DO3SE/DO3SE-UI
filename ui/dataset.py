@@ -41,7 +41,7 @@ class Dataset:
         self.vegparams = vegparams
 
         # Set up default procedures
-        self.sai = dose.phenology.calc_sai_simple
+        self.sai = dose.SAI_calc_map[dose.default_SAI_calc]['func']
         self.leaf_fphen = dose.leaf_fphen_calc_map[dose.default_leaf_fphen_calc]['func']
         self.ra = dose.r.calc_ra_simple
         self.rn = dose.irradiance.calc_rn
@@ -82,6 +82,10 @@ class Dataset:
         fO3 = dose.fO3_calc_map[vegparams.pop('fo3', dose.default_fO3_calc)]
         logging.debug('fO3 calculation: "%s" (%s)' % (fO3['name'], fO3['id']))
         self.fo3 = fO3['func']
+        # Handle SAI
+        SAI = dose.SAI_calc_map[vegparams.pop('sai', dose.default_SAI_calc)]
+        logging.debug('SAI calculation: "%s" (%s)' % (SAI['name'], SAI['id']))
+        self.sai = SAI['func']
 
         # Setup parameters
         

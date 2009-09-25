@@ -45,7 +45,7 @@ contains
     ! calculations that have interchangeable methods:
     !
     ! Calc_SAI
-    !       Method for calculating SAI (simple or crops)
+    !       Method for calculating SAI ("copy LAI", forest or wheat)
     !
     ! Calc_leaf_fphen
     !       Method for calculating leaf_fphen (copy fphen, or use special calc)
