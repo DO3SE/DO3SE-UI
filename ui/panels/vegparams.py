@@ -461,6 +461,12 @@ class VegParams(wx.Panel):
                 value=-0.05, increment=0.01, digits=2)))
         s.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
 
+        s.Add(wx.StaticText(p, label="Enable fSWP?"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('enable_fswp', wxField(wx.CheckBox(p,
+                label="", style=wx.ALIGN_RIGHT)))
+        self.fields['enable_fswp'].set(1)
+        s.Add(self.fields['enable_fswp'].obj, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+
         # Maintain integrity on environmental dependence
         def f(evt):
             if self.fields['t_opt'].GetValue() < self.fields['t_min'].GetValue():

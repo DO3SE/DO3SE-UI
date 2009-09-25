@@ -10,6 +10,7 @@ module Params_Veg
     
     real, public, save :: SWP_min = -1.25   ! SWP for min g
     real, public, save :: SWP_max = -0.05   ! SWP for max g
+    real, public, save :: enable_fSWP = 1   ! fSWP enabled?  0 = false, 1 = true
 
     ! Boundary gs values
     real, public, save :: gmax = 148        ! mmol O3 m^-2 PLA s^-1
