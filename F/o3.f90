@@ -2,6 +2,7 @@ module O3
 
     public :: Calc_O3_Concentration, Calc_Ftot
     public :: Calc_Fst, Calc_AFstY, Calc_AOT40
+    public :: Calc_fO3_Ignore, Calc_fO3_Wheat, Calc_fO3_Potato
 
 contains
 
@@ -116,5 +117,32 @@ contains
         AOT0 = AOT0 + OT0
         AOT40 = AOT40 + OT40
     end subroutine Calc_AOT40
+
+    !==========================================================================
+    ! Set fO3 to 1.0, so it is ignored by Gsto calculation
+    !==========================================================================
+    subroutine Calc_fO3_Ignore()
+        use Variables, only: fO3
+
+        fO3 = 1.0
+    end subroutine Calc_fO3_Ignore
+
+    !==========================================================================
+    ! Calculate fO3 for wheat
+    !==========================================================================
+    subroutine Calc_fO3_Wheat()
+        use Variables, only: AFst0, fO3
+
+        fO3 = ((1+(AFst0/11.5)**10)**(-1))
+    end subroutine Calc_fO3_Wheat
+
+    !==========================================================================
+    ! Calculate fO3 for potato
+    !==========================================================================
+    subroutine Calc_fO3_Potato()
+        use Variables, only: AOT0, fO3
+
+        fO3 = ((1+(AOT0/40)**5)**(-1))
+    end subroutine Calc_fO3_Potato
 
 end module O3

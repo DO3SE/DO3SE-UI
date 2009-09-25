@@ -56,8 +56,11 @@ contains
     ! Calc_Rn
     !       Method for calculating net radiation (copy or calculate)
     !
+    ! Calc_fO3
+    !       Method for calculating fO3 (ignore, wheat or potato)
+    !
     !==========================================================================
-    subroutine Do_Calcs(Calc_SAI, Calc_leaf_fphen, Calc_Ra, Calc_Rn)
+    subroutine Do_Calcs(Calc_SAI, Calc_leaf_fphen, Calc_Ra, Calc_Rn, Calc_fO3)
         use Phenology, only: Calc_LAI, Calc_fphen
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
@@ -77,6 +80,8 @@ contains
             end subroutine Calc_Ra
             subroutine Calc_Rn()
             end subroutine Calc_Rn
+            subroutine Calc_fO3()
+            end subroutine Calc_fO3
         end interface
 
         call Calc_LAI()
@@ -90,6 +95,8 @@ contains
 
         call Calc_ftemp()
         call Calc_fVPD()
+
+        call Calc_fO3()
     
         call Calc_Ra()          !***
         call Calc_Rb()

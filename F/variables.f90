@@ -82,6 +82,7 @@ module Variables
     real, public, save :: AOT40         ! Accumulated OT40 (canopy)
     real, public, save :: OT0           ! OT with no threshold (upper leaf)
     real, public, save :: AOT0          ! Accumulated OT0 (upper leaf)
+    real, public, save :: fO3
 
     ! More variables, for testing
     real, public, save :: sinB

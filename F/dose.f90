@@ -69,6 +69,7 @@ contains
                              Copy_leaf_fphen, Calc_leaf_fphen_Wheat
         use Irradiance, only: Calc_Rn, Copy_Rn
         use R, only: Calc_Ra_Simple, Calc_Ra_With_Heat_Flux
+        use O3, only: Calc_fO3_Ignore, Calc_fO3_Wheat, Calc_fO3_Potato
 
         ! Run the calculations, specifying which interchangeable calculations
         ! to use (for: SAI, Ra, PEt, AEt, Rn)
@@ -77,7 +78,8 @@ contains
                       !Calc_leaf_fphen_Wheat, &
                       Calc_Ra_Simple, &
                       !Calc_Ra_With_Heat_Flux, &
-                      Calc_Rn)
+                      Calc_Rn, &
+                      Calc_fO3_Ignore)
     end subroutine Calculate
 
     !==========================================================================

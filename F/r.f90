@@ -107,7 +107,7 @@ contains
     subroutine Calc_Rsto()
         use Params_Veg, only: gmax, fmin, VPD_crit
         use Inputs, only: VPD, dd
-        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, dd_prev
+        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, fO3, dd_prev
         use Variables, only: leaf_fphen, leaf_flight, LAI
         use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
                              Gsto_PEt, Rsto_PEt
@@ -128,7 +128,7 @@ contains
         end if
 
         ! Leaf Gsto
-        Gsto_l = gmax * leaf_fphen * leaf_flight * max(fmin, ftemp * fVPD * fSWP)
+        Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fSWP)
         ! Mean Gsto
         Gsto = gmax * fphen * flight * max(fmin, ftemp * fVPD * fSWP)
         ! Estimate canopy Gsto from mean leaf Gsto
