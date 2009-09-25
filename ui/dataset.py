@@ -45,6 +45,7 @@ class Dataset:
         self.leaf_fphen = dose.leaf_fphen_calc_map[dose.default_leaf_fphen_calc]['func']
         self.ra = dose.r.calc_ra_simple
         self.rn = dose.irradiance.calc_rn
+        self.fo3 = dose.fO3_calc_map[dose.default_fO3_calc]['func']
         # Calculation between PAR and R
         def f(): pass
         self.par_r = f
@@ -77,6 +78,10 @@ class Dataset:
         siteparams.update(dose.soil_class_map[siteparams.pop('soil_tex', dose.default_soil_class)]['data'])
         # Handle leaf_fphen
         self.leaf_fphen = dose.leaf_fphen_calc_map[vegparams.pop('leaf_fphen', dose.default_leaf_fphen_calc)]['func']
+        # Handle fO3
+        fO3 = dose.fO3_calc_map[vegparams.pop('fo3', dose.default_fO3_calc)]
+        logging.debug('fO3 calculation: "%s" (%s)' % (fO3['name'], fO3['id']))
+        self.fo3 = fO3['func']
 
         # Setup parameters
         
@@ -105,7 +110,7 @@ class Dataset:
 
             self.par_r()
             dose.inputs.derive_ustar_uh()
-            dose.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn)
+            dose.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn, self.fo3)
             self.results.append(dose.extract_outputs())
 
         logging.info("Got %d results" % len(self.results))

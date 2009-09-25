@@ -24,6 +24,20 @@ class LeafFphenField(Field):
         self.obj.SetStringSelection(dose.leaf_fphen_calc_map[value]['name'])
 
 
+class fO3Field(Field):
+    def __init__(self, parent):
+        obj = wx.Choice(parent)
+        for x in dose.fO3_calcs:
+            obj.Append(x['name'], x['id'])
+        Field.__init__(self, obj)
+
+    def get(self):
+        return self.obj.GetClientData(self.obj.GetSelection())
+
+    def set(self, value):
+        self.obj.SetStringSelection(dose.fO3_calc_map[value]['name'])
+
+
 class VegParams(wx.Panel):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
@@ -114,6 +128,11 @@ class VegParams(wx.Panel):
         self.fields.add('y', wxFloatField(FloatSpin(p,
                 min_val=0.1, value=1.6, max_val=100.0, increment=0.1, digits=1)))
         s.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
+
+        s.Add(wx.StaticText(p, label="fO3 calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fo3', fO3Field(p))
+        self.fields['fo3'].set(dose.default_fO3_calc)
+        s.Add(self.fields['fo3'].obj, 0, wx.ALIGN_RIGHT)
 
 
         # Phenology (fphen, LAI)

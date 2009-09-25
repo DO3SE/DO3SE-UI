@@ -121,6 +121,11 @@ _output_fields = (
         (variables,     'aet_hr',   float,  'AEt_hr',           '[DEBUG] AEt_hr'),
         (variables,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
         (variables,     'aet_3',    float,  'AEt_3',            '[DEBUG] AEt_3'),
+
+        (variables,     'ot0',      float,  'OT0',              '[DEBUG] OT0'),
+        (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
+        (variables,     'afst0',    float,  'AFst0',            '[DEBUG] Afst0'),
+        (variables,     'fo3',      float,  'fO3',              '[DEBUG] fO3'),
 )
 
 # Available output fields as a list of dicts
@@ -177,6 +182,18 @@ leaf_fphen_calcs = (
 leaf_fphen_calc_map = dict( (x['id'], x) for x in leaf_fphen_calcs )
 
 default_leaf_fphen_calc = 'copy'
+
+# fO3 calculations
+fO3_calcs = (
+        {'id': 'none',      'func': o3.calc_fo3_ignore,     'name': 'Not used (fO3 = 1)'},
+        {'id': 'wheat',     'func': o3.calc_fo3_wheat,      'name': 'Wheat'},
+        {'id': 'potato',    'func': o3.calc_fo3_potato,     'name': 'Potato'},
+)
+
+# Mapping from calc id to info
+fO3_calc_map = dict( (x['id'], x) for x in fO3_calcs )
+
+default_fO3_calc = 'none'
 
 
 def extract_outputs():
