@@ -80,28 +80,41 @@ contains
     ! Calculate the accumulated stomatal flux above threshold Y
     !==========================================================================
     subroutine Calc_AFstY()
-        use Variables, only: Fst, AFstY
+        use Variables, only: Fst, AFstY, AFst0
         use Params_Veg, only: Y
 
-        if ( Fst > Y ) then
-            AFstY = AFstY + (((Fst - Y)*60*60)/1000000) ! Cumulative Fst above Y in mmol/m2
-        end if
+        ! Fst == 0 if Gsto_l == 0 (and Gsto_l == 0 if leaf_fphen == 0), so no
+        ! need to check leaf_fphen
+        AFst0 = AFst0 + ((Fst*60*60)/1000000)
+        AFstY = AFstY + ((max(0.0, Fst - Y)*60*60)/1000000)
     end subroutine Calc_AFstY
 
     !==========================================================================
     ! Calculate the accumulated OT40
     !==========================================================================
     subroutine Calc_AOT40()
-        use Variables, only: OT40, AOT40, O3_ppb, fphen
         use Inputs, only: R
+        use Variables, only: OT0, OT40, AOT0, AOT40, O3_ppb, fphen, leaf_fphen
 
-        if (fphen > 0 .and. R > 50.0 .and. O3_ppb > 40) then
-            OT40 = (O3_ppb - 40) / 1000
-        else
-            OT40 = 0
+        ! Default OT0 and OT40 to 0
+        OT0 = 0
+        OT40 = 0
+
+        ! Only accumulate OT when global radiation > 50 W/m^2
+        if (R > 50.0) then
+            ! Only accumulate OT0 when leaf_fphen > 0
+            if (leaf_fphen > 0) then
+                OT0 = O3_ppb / 1000
+            end if
+            ! Only accumulate OT40 when fphen > 0
+            if (fphen > 0) then
+                OT40 = max(0.0, O3_ppb - 40) / 1000
+            end if
         end if
 
-        AOT40 = (AOT40 + OT40)
+        ! Accumulate
+        AOT0 = AOT0 + OT0
+        AOT40 = AOT40 + OT40
     end subroutine Calc_AOT40
 
 end module O3

@@ -71,9 +71,17 @@ module Variables
     real, public, save :: Sn_diff
 
     ! O3
-    real, public, save :: O3_ppb, O3_nmol_m3, Vd
-    real, public, save :: Ftot
-    real, public, save :: Fst, AFstY, OT40, AOT40
+    real, public, save :: O3_ppb        ! O3 concentration at canopy (ppb)
+    real, public, save :: O3_nmol_m3    ! O3 concentration at canopy (nmol/m^3)
+    real, public, save :: Vd            ! Deposition velocity (m/s)
+    real, public, save :: Ftot          ! Total O3 flux
+    real, public, save :: Fst           ! Upper leaf stomatal flux
+    real, public, save :: AFst0         ! Accumulated Fst
+    real, public, save :: AFstY         ! Accumulated Fst over threshold Y
+    real, public, save :: OT40          ! OT40 (canopy)
+    real, public, save :: AOT40         ! Accumulated OT40 (canopy)
+    real, public, save :: OT0           ! OT with no threshold (upper leaf)
+    real, public, save :: AOT0          ! Accumulated OT0 (upper leaf)
 
     ! More variables, for testing
     real, public, save :: sinB

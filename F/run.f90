@@ -18,7 +18,9 @@ contains
         AEt = 0
         PEt = 0
         Ei = 0
+        AFst0 = 0
         AFstY = 0
+        AOT0 = 0
         AOT40 = 0
         
         call Derive_d_zo()
