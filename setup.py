@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-application = "DO3SE"
-description = "Deposition of Ozone and Stomatal Exchange"
-version     = "0.9"
+import do3se.application
+
+application = do3se.application.app_name
+description = do3se.application.app_description
+version     = do3se.application.app_version
 
 from numpy.distutils.core import setup, Extension, Distribution
 import os
@@ -75,7 +77,7 @@ def buildpyf(filelist, target):
     f2py2e.callcrackfortran(filelist,
             {
                 'signsfile': target,
-                'module': 'dose_f',
+                'module': 'do3se_fortran',
                 'debug': False,
                 'verbose': False,
                 'include_paths': list(),
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     Distribution.console = []
     Distribution.isapi = []
     Distribution.windows = [{
-            'script': "dose-ui",
+            'script': "run-do3se.py",
             'other_resources': [(24, 1, manifest)],
     }]
 
@@ -104,8 +106,10 @@ if __name__ == "__main__":
             version         = version,
             author          = 'Alan Briolat',
             author_email    = 'sei@alanbriolat.co.uk',
-            packages        = ['ui', 'ui.panels', 'ui.wxext'],
-            data_files      = [('.', wxdlls)],
+            packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
+            data_files      = [
+                ('.', wxdlls),
+            ],
             options         = {
                 'build': build_opts,
                 'py2exe': {
@@ -120,8 +124,8 @@ if __name__ == "__main__":
                     'optimize': 2,
                 },
             },
-            ext_package     = 'ui',
+            ext_package     = 'do3se',
             ext_modules     = [
-                Extension('dose_f', buildpyf(files, 'dose_f.pyf'))
+                Extension('do3se_fortran', buildpyf(files, 'do3se_fortran.pyf'))
             ],
     )
