@@ -2,7 +2,7 @@
 
 application = "DO3SE"
 description = "Deposition of Ozone and Stomatal Exchange"
-version     = "0.2"
+version     = "0.9"
 
 from numpy.distutils.core import setup, Extension, Distribution
 import os
@@ -17,6 +17,12 @@ import numpy
 path = os.path.join(os.path.dirname(numpy.__file__),
                     'distutils', 'tests', '__init__.py')
 open(path, 'a').close()
+
+# Find the DLLs we need from wxPython (for Python 2.5, anyway...)
+import wx, glob
+wxpath = os.path.dirname(wx.__file__)
+wxdlls = glob.glob(os.path.join(wxpath, 'msvcp??.dll'))
+wxdlls.append(os.path.join(wxpath, 'gdiplus.dll'))
 
 manifest = '''
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -99,6 +105,7 @@ if __name__ == "__main__":
             author          = 'Alan Briolat',
             author_email    = 'sei@alanbriolat.co.uk',
             packages        = ['ui', 'ui.panels', 'ui.wxext'],
+            data_files      = [('.', wxdlls)],
             options         = {
                 'build': build_opts,
                 'py2exe': {
