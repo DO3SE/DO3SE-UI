@@ -1,43 +1,32 @@
 import logging
 
 from do3se.util.jsondict import JsonDict
+from do3se.util.csv2dict import csv2dict
 
 class Config(JsonDict):
     """
     Extend JsonDict to implement application specific configuration methods
     """
 
-    def __init__(self, filename):
-        defaults = {
+    def __init__(self, filename, veg_csv=None):
+        empty = {
             'file_history': list(),
             'input_format': dict(),
             'output_format': dict(),
             'site_params': dict(),
-            'veg_params': {
-                'Coniferous Forests (CF)': {
-                    'gmax': 160,
-                    'fmin': 0.1,
-                },
-                'Deciduous Forests (DF)': {
-                    'gmax': 134,
-                    'fmin': 0.13,
-                },
-                'Needleleaf Forests (NF)': {
-                    'gmax': 180,
-                    'fmin': 0.13,
-                },
-                'Broadleaf Forests (BF)': {
-                    'gmax': 200,
-                    'fmin': 0.03,
-                },
-            },
+            'veg_params': dict(),
         }
 
         logging.info("Loading configuration file: " + filename)
-        JsonDict.__init__(self, filename, defaults)
+        JsonDict.__init__(self, filename, empty)
 
-        # TODO: Make this merge sets of params rather than only having
-        #       defaults OR stored presets...
+        # Add supplied presets to stored presets
+        if veg_csv:
+            logging.debug('Loading extra presets: ' + veg_csv)
+            veg_presets = csv2dict(open(veg_csv, 'r'))
+            veg_presets.update(self['veg_params'])
+            self['veg_params'] = veg_presets
+
 
 
     def sync(self, *args, **kwargs):

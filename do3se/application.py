@@ -4,6 +4,7 @@ app_version = '0.9'
 
 import wx
 import os.path
+import logging
 
 from config import Config
 
@@ -39,7 +40,7 @@ class App(wx.App):
             logging.info("Created configuration directory: " + os.path.dirname(config_path))
 
         # Open configuration file
-        self.config = Config(config_path)
+        self.config = Config(config_path, 'resources/default_veg_presets.csv')
 
         return True
 
