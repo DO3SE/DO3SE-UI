@@ -1,13 +1,10 @@
 import wx
 
-from .. import wxext
-from .. import dose
-from ..FloatSpin import FloatSpin
-from ..app import logging, app
+import wxext
+import model
 
-
-class InputParams(wx.Panel):
-    def __init__(self, *args, **kwargs):
+class InputPanel(wx.Panel):
+    def __init__(self, app, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
         # Outer sizer
@@ -27,7 +24,7 @@ class InputParams(wx.Panel):
         # List selector
         self.lsInputs = wxext.ListSelectCtrl(self)
         s.Add(self.lsInputs, 1, wx.EXPAND|wx.ALL, 6)
-        self.lsInputs.SetAvailable([(x['long'], x['variable']) for x in dose.input_fields])
+        self.lsInputs.SetAvailable([(x['long'], x['variable']) for x in model.input_fields])
         
         # Header trim
         sTrim = wx.BoxSizer(wx.HORIZONTAL)
@@ -46,7 +43,7 @@ class InputParams(wx.Panel):
             }
         self.presets.getvalues = f
         def f(v):
-            self.lsInputs.SetSelection((dose.input_field_map[x]['long'] for x in v['fields']))
+            self.lsInputs.SetSelection((model.input_field_map[x]['long'] for x in v['fields']))
             self.spinInputTrim.SetValue(v['trim'])
         self.presets.setvalues = f
 

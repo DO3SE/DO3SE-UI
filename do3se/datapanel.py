@@ -1,11 +1,9 @@
 import wx
 import wx.grid as gridlib
 
-from .. import wxext
-from .. import dose
-from ..app import logging, app
+import model
 
-class Data(wx.Panel):
+class DataPanel(wx.Panel):
     def __init__(self, parent, dataset):
         wx.Panel.__init__(self, parent)
 
@@ -17,14 +15,14 @@ class Data(wx.Panel):
         grid = gridlib.Grid(self)
         s.Add(grid, 1, wx.EXPAND|wx.ALL, 6)
 
-        grid.CreateGrid(len(self.dataset.results), len(dose.output_fields))
+        grid.CreateGrid(len(self.dataset.results), len(model.output_fields))
         grid.SetColLabelAlignment(wx.ALIGN_LEFT, wx.ALIGN_BOTTOM)
         #grid.SetDefaultRenderer(gridlib.GridCellNumberRenderer())
         grid.EnableEditing(False)
 
         colmap = dict()
         i = 0
-        for x in dose.output_fields:
+        for x in model.output_fields:
             colmap[x['variable']] = i
             grid.SetColLabelValue(i, x['short'])
             i += 1

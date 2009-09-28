@@ -1,12 +1,10 @@
 import wx
 
-from .. import wxext
-from .. import dose
-from ..FloatSpin import FloatSpin
-from ..app import logging, app
+import wxext
+import model
 
-class Save(wx.Panel):
-    def __init__(self, parent, dataset, startdir):
+class SavePanel(wx.Panel):
+    def __init__(self, app, parent, dataset, startdir):
         wx.Panel.__init__(self, parent)
 
         self.dataset = dataset
@@ -29,7 +27,7 @@ class Save(wx.Panel):
         # List selector
         self.slOutputs = wxext.ListSelectCtrl(self)
         s.Add(self.slOutputs, 1, wx.EXPAND|wx.ALL, 6)
-        self.slOutputs.SetAvailable([(x['long'], x['variable']) for x in dose.output_fields])
+        self.slOutputs.SetAvailable([(x['long'], x['variable']) for x in model.output_fields])
         
         # "Include column headers?"
         sHeaders = wx.BoxSizer(wx.HORIZONTAL)
@@ -53,7 +51,7 @@ class Save(wx.Panel):
             }
         self.presets.getvalues = f
         def f(v):
-            self.slOutputs.SetSelection((dose.output_field_map[x]['long'] for x in v['fields']))
+            self.slOutputs.SetSelection((model.output_field_map[x]['long'] for x in v['fields']))
             self.chkOutputHeaders.SetValue(v['headers'])
         self.presets.setvalues = f
 

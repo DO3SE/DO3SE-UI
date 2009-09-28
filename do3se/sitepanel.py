@@ -1,10 +1,8 @@
 import wx
 
-from .. import wxext
-from .. import dose
-from ..FloatSpin import FloatSpin
-from ..app import logging, app
-from ..fieldgroup import Field, FieldGroup, wxField, wxFloatField
+import wxext
+import model
+from util.fieldgroup import Field, FieldGroup, wxField, wxFloatField
 
 class SoilTexField(Field):
     """
@@ -13,7 +11,7 @@ class SoilTexField(Field):
     """
     def __init__(self, parent):
         obj = wx.Choice(parent)
-        for x in dose.soil_classes:
+        for x in model.soil_classes:
             obj.Append(x['name'], x['id'])
         Field.__init__(self, obj)
 
@@ -21,12 +19,12 @@ class SoilTexField(Field):
         return self.obj.GetClientData(self.obj.GetSelection())
 
     def set(self, value):
-        self.obj.SetStringSelection(dose.soil_class_map[value]['name'])
+        self.obj.SetStringSelection(model.soil_class_map[value]['name'])
 
 
 
-class SiteParams(wx.Panel):
-    def __init__(self, *args, **kwargs):
+class SitePanel(wx.Panel):
+    def __init__(self, app, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
         # Dict to contain the actual input controls
@@ -61,13 +59,13 @@ class SiteParams(wx.Panel):
 
         sLocation.fgs.Add(wx.StaticText(self, label="Latitude"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lat', wxFloatField(FloatSpin(self,
+        self.fields.add('lat', wxFloatField(wxext.FloatSpin(self,
             value=50.0, min_val=-90.0, max_val=90.0, increment=0.1, digits=3)))
         sLocation.fgs.Add(self.fields['lat'].obj, 0)
 
         sLocation.fgs.Add(wx.StaticText(self, label="Longitude"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lon', wxFloatField(FloatSpin(self,
+        self.fields.add('lon', wxFloatField(wxext.FloatSpin(self,
             value=0.0, min_val=-180.0, max_val=180.0, increment=0.1, digits=3)))
         sLocation.fgs.Add(self.fields['lon'].obj, 0)
 
@@ -108,7 +106,7 @@ class SiteParams(wx.Panel):
         sSoil.fgs.Add(wx.StaticText(self, label="Texture"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('soil_tex', SoilTexField(self))
-        self.fields['soil_tex'].set(dose.default_soil_class)
+        self.fields['soil_tex'].set(model.default_soil_class)
         sSoil.fgs.Add(self.fields['soil_tex'].obj, 0)
 
         sSoil.fgs.Add(wx.StaticText(self, label="Rsoil"),

@@ -11,5 +11,5 @@ $(others): $(common)
 %.o %.mod: %.f90
 	$(F95) -c $<
 
-$(PYMOD): dose_f.pyf $(common) $(others)
-	python f2py.py -c --fcompiler=$(F2PY_FCOMPILER) --compiler=$(F2PY_COMPILER) dose_f.pyf $(common) $(others)
+$(PYMOD): do3se_fortran.pyf $(common) $(others)
+	python f2py.py -c --fcompiler=$(F2PY_FCOMPILER) --compiler=$(F2PY_COMPILER) do3se_fortran.pyf $(common) $(others)

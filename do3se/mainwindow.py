@@ -1,45 +1,14 @@
 import wx
+import logging
 import os
 
-from FloatSpin import FloatSpin
-from app import logging, app
-import wxext
+import model
+from filehistory import FileHistory
+from inputpanel import InputPanel
+from sitepanel import SitePanel
+from vegetationpanel import VegetationPanel
 from dataset import Dataset, InsufficientTrimError, InvalidFieldCountError
-import panels
-import dose
-
-
-# Keep track of all the results windows
-result_windows = list()
-result_windowcount = 0
-result_recent_dir = ''
-
-
-class FileHistory(wx.FileHistory):
-    """Recent file history
-
-    A wrapper around wxFileHistory which uses the application config to load the
-    initial set of recent files, and keeps the config up to date every time a 
-    recent file is added.
-    """
-    def __init__(self):
-        """Constructor
-
-        Create the wxFileHistory in the way we want and load from the config.
-        """
-        wx.FileHistory.__init__(self, 9, wx.ID_FILE1)
-        for p in app.config['file_history']: wx.FileHistory.AddFileToHistory(self, p)
-
-    def AddFileToHistory(self, path):
-        """Add file to history
-
-        Add a file to the recent files list in the normal way, but also add it 
-        to the config.
-        """
-        wx.FileHistory.AddFileToHistory(self, path)
-        app.AddFileToHistory(path)
-
-
+from resultswindow import ResultsWindow
 
 class MainWindow(wx.Frame):
     """Main application window
@@ -48,20 +17,23 @@ class MainWindow(wx.Frame):
     are defined, etc.
     """
 
-    def __init__(self):
+    def __init__(self, app):
         """Constructor
 
         Initialise the window.
         """
         wx.Frame.__init__(self, None)
 
+        # Application instance
+        self.app = app
+
         # File history
-        self.filehistory = FileHistory()
+        self.filehistory = FileHistory(self)
         # Recently opened directory
         self.recent_dir = ''
 
-        self.site = dict()
-        self.veg = dict()
+        # Results windows
+        self.results_windows = list()
 
         # Initialise
         self._init_frame()
@@ -75,7 +47,7 @@ class MainWindow(wx.Frame):
 
         # Set window size and title
         self.SetSize((900,600))
-        self.SetTitle(app.title)
+        self.SetTitle(self.app.title)
 
         ### Main panel ###
         s = wx.BoxSizer(wx.VERTICAL)
@@ -100,15 +72,15 @@ class MainWindow(wx.Frame):
 
 
         ### 'Input' tab ###
-        self.Input = panels.InputParams(nbMain)
+        self.Input = InputPanel(self.app, nbMain)
         nbMain.AddPage(self.Input, "Input format")
 
         ### 'Site parameters' tab ###
-        self.Site = panels.SiteParams(nbMain)
+        self.Site = SitePanel(self.app, nbMain)
         nbMain.AddPage(self.Site, "Site parameters")
 
         ### 'Vegetation parameters' tab ###
-        self.Veg = panels.VegParams(nbMain)
+        self.Veg = VegetationPanel(self.app, nbMain)
         nbMain.AddPage(self.Veg, "Vegetation parameters")
 
 
@@ -155,21 +127,24 @@ class MainWindow(wx.Frame):
 
 
     def _on_exit(self, evt):
-        global results_windows
-        for w in result_windows: w.Close()
+        for w in self.results_windows:
+            w.Close()
+        if len(self.results_windows):
+            logging.warning('Results windows still open: '
+                    + str(len(self.results_windows)))
         self.Close()
 
 
     def _run_file(self, path):
         class RequiredFieldError:
-            def __init__(self, fields):
+            def __init__(self, app, fields):
                 if len(fields) == 1:
-                    wx.MessageBox("Required field missing: " + dose.input_field_map[fields[0]]['long'],
+                    wx.MessageBox("Required field missing: " + model.input_field_map[fields[0]]['long'],
                             app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
 
                 else:
                     wx.MessageBox("At least one of the following fields are required:\n\n" + 
-                            "\n".join((dose.input_field_map[x]['long'] for x in fields)), app.title, 
+                            "\n".join((model.input_field_map[x]['long'] for x in fields)), app.title, 
                             wx.OK|wx.ICON_ERROR, app.toplevel)
 
         self.filehistory.AddFileToHistory(path)
@@ -177,11 +152,11 @@ class MainWindow(wx.Frame):
         fields = self.Input.GetFields()
 
         # Handle inputs marked as required
-        required = (x['variable'] for x in dose.input_fields if x['required'])
+        required = (x['variable'] for x in model.input_fields if x['required'])
         try:
             for f in required:
                 if not f in fields:
-                    raise RequiredFieldError([f])
+                    raise RequiredFieldError(self.app, [f])
         except RequiredFieldError:
             return
 
@@ -192,25 +167,25 @@ class MainWindow(wx.Frame):
                 par_r = f
                 logging.info("Both R and PAR present")
             elif 'par' in fields:
-                par_r = lambda : dose.inputs.derive_r()
+                par_r = lambda : model.inputs.derive_r()
                 logging.info("Deriving R from PAR")
             elif 'r' in fields:
-                par_r = lambda : dose.inputs.derive_par()
+                par_r = lambda : model.inputs.derive_par()
                 logging.info("Deriving PAR from R")
             else:
-                raise RequiredFieldError(['par', 'r'])
+                raise RequiredFieldError(self.app, ['par', 'r'])
         except RequiredFieldError:
             return
 
         # Calculate net radiation if not supplied
         if 'rn' in fields:
-            rn = dose.irradiance.copy_rn
+            rn = model.irradiance.copy_rn
         else:
-            rn = dose.irradiance.calc_rn
+            rn = model.irradiance.calc_rn
 
         if not os.access(path, os.R_OK):
             wx.MessageBox("Could not read the specified file", 
-                    app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
+                    self.app.title, wx.OK|wx.ICON_ERROR, self)
             return
 
         # Load the data, set the parameters
@@ -219,80 +194,29 @@ class MainWindow(wx.Frame):
                     self.Site.getvalues(), self.Veg.getvalues())
         # We already warn the user about these, so don't raise them - just fail
         # to run the dataset
-        except InsufficientTrimError: return
+        except InsufficientTrimError:
+            wx.MessageBox("Some of the data was the wrong type - is the number"
+                    + "of lines to trim from the input set correctly?",
+                    self.app.title,
+                    wx.OK|wx.ICON_ERROR,
+                    self)
+            return
         # Set up the calculation changes
         d.par_r = par_r
         d.rn = rn
 
         try:
-            r = ResultsWindow(d, self.recent_dir)
-        except InvalidFieldCountError: return
+            r = ResultsWindow(self, d, self.recent_dir, len(self.results_windows) + 1)
+            self.results_windows.append(r)
+            def f(evt):
+                self.results_windows.remove(r)
+                evt.Skip()
+            r.Bind(wx.EVT_CLOSE, f)
+        except InvalidFieldCountError:
+            wx.MessageBox("Number of fields in the input file does not match "
+                    + "the number of fields selected!",
+                    self.app.title,
+                    wx.OK|wx.ICON_ERROR,
+                    self)
+            return
         r.Show()
-
-
-class ResultsWindow(wx.Frame):
-    def __init__(self, dataset, startdir):
-        self.dataset = dataset
-        self.startdir = startdir
-
-        # Run the dataset before anything else - if there was an error, don't 
-        # bother creating the window at all (caught by the creator)
-        resultcount, skippedrows = self.dataset.run()
-
-        # Notify the user of any problems encountered while running the dataset
-        if skippedrows > 0:
-            wx.MessageBox(("%s incomplete data rows were skipped, but %s rows "+ \
-                    "were processed normally.  If this matches the number of "+ \
-                    "data rows in your file (not including headers) then "+ \
-                    "there is nothing to worry about, otherwise check your "+ \
-                    "data file for missing values.") % (skippedrows, resultcount), 
-                    app.title, wx.OK|wx.ICON_WARNING, app.toplevel)
-
-        wx.Frame.__init__(self, app.toplevel)
-        self._init_frame()
-
-        self.Bind(wx.EVT_CLOSE, self._on_close)
-
-    
-    def _init_frame(self):
-        # Give the window a number, and store a reference to it
-        global result_windows, result_windowcount
-        result_windows.append(self)
-        result_windowcount += 1
-
-        # Set size and title
-        self.SetSize((800, 600))
-        self.SetTitle("%s - Results (%d)" % (app.title, result_windowcount))
-
-        ### Main panel ###
-        s = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(s)
-        p = wx.Panel(self)
-        s.Add(p, 1, wx.EXPAND)
-        sMain = wx.BoxSizer(wx.VERTICAL)
-        p.SetSizer(sMain)
-        
-        # Create notebook
-        nbMain = wx.Notebook(p)
-        sMain.Add(nbMain, 1, wx.EXPAND|wx.ALL, 6)
-        # Create bottom buttons
-        sButtons = wx.BoxSizer(wx.HORIZONTAL)
-        sMain.Add(sButtons, 0, wx.ALL|wx.ALIGN_RIGHT, 6)
-        bClose = wx.Button(p, wx.ID_CLOSE)
-        sButtons.Add(bClose, 0, wx.EXPAND|wx.LEFT, 6)
-        self.Bind(wx.EVT_BUTTON, lambda evt: self.Close(), bClose)
-
-        ### Data panel ###
-        pData = panels.Data(nbMain, self.dataset)
-        nbMain.AddPage(pData, "Data")
-
-        ### Save to File panel ###
-        pSave = panels.Save(nbMain, self.dataset, self.startdir)
-        nbMain.AddPage(pSave, "Save to file")
-
-
-    def _on_close(self, evt):
-        global result_windows
-        logging.debug("Cleaning up results window")
-        result_windows.remove(self)
-        evt.Skip()

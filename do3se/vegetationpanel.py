@@ -4,16 +4,14 @@ import wx
 from wx.lib import plot
 from wx.lib import scrolledpanel
 
-from .. import wxext
-from .. import dose
-from ..FloatSpin import FloatSpin
-from ..app import logging, app
-from ..fieldgroup import Field, FieldGroup, wxField, wxFloatField
+import wxext
+import model
+from util.fieldgroup import Field, FieldGroup, wxField, wxFloatField
 
 class LeafFphenField(Field):
     def __init__(self, parent):
         obj = wx.Choice(parent)
-        for x in dose.leaf_fphen_calcs:
+        for x in model.leaf_fphen_calcs:
             obj.Append(x['name'], x['id'])
         Field.__init__(self, obj)
 
@@ -21,13 +19,13 @@ class LeafFphenField(Field):
         return self.obj.GetClientData(self.obj.GetSelection())
 
     def set(self, value):
-        self.obj.SetStringSelection(dose.leaf_fphen_calc_map[value]['name'])
+        self.obj.SetStringSelection(model.leaf_fphen_calc_map[value]['name'])
 
 
 class fO3Field(Field):
     def __init__(self, parent):
         obj = wx.Choice(parent)
-        for x in dose.fO3_calcs:
+        for x in model.fO3_calcs:
             obj.Append(x['name'], x['id'])
         Field.__init__(self, obj)
 
@@ -35,13 +33,13 @@ class fO3Field(Field):
         return self.obj.GetClientData(self.obj.GetSelection())
 
     def set(self, value):
-        self.obj.SetStringSelection(dose.fO3_calc_map[value]['name'])
+        self.obj.SetStringSelection(model.fO3_calc_map[value]['name'])
 
 
 class SAIField(Field):
     def __init__(self, parent):
         obj = wx.Choice(parent)
-        for x in dose.SAI_calcs:
+        for x in model.SAI_calcs:
             obj.Append(x['name'], x['id'])
         Field.__init__(self, obj)
 
@@ -49,11 +47,11 @@ class SAIField(Field):
         return self.obj.GetClientData(self.obj.GetSelection())
 
     def set(self, value):
-        self.obj.SetStringSelection(dose.SAI_calc_map[value]['name'])
+        self.obj.SetStringSelection(model.SAI_calc_map[value]['name'])
 
 
-class VegParams(wx.Panel):
-    def __init__(self, *args, **kwargs):
+class VegetationPanel(wx.Panel):
+    def __init__(self, app, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
 
         self.fields = FieldGroup()
@@ -101,18 +99,18 @@ class VegParams(wx.Panel):
         s.Add(self.fields['h'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="Root depth (m)"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('root', wxFloatField(FloatSpin(p,
+        self.fields.add('root', wxFloatField(wxext.FloatSpin(p,
                 value=1.2, min_val=0.01, increment=0.1, digits=1)))
         s.Add(self.fields['root'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Leaf dimension (Lm, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lm', wxFloatField(FloatSpin(p,
+        self.fields.add('lm', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.01, value=0.05, increment=0.01, digits=2)))
         s.Add(self.fields['lm'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Albedo"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('albedo', wxFloatField(FloatSpin(p,
+        self.fields.add('albedo', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.01, value=0.12, max_val=0.99, increment=0.01, digits=2)))
         s.Add(self.fields['albedo'].obj, 0, wx.ALIGN_RIGHT)
 
@@ -123,7 +121,7 @@ class VegParams(wx.Panel):
         s.Add(self.fields['rext'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="light_a"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('f_lightfac', wxFloatField(FloatSpin(p,
+        self.fields.add('f_lightfac', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.001, value=0.006, max_val=0.999, increment=0.001, digits=3)))
         s.Add(self.fields['f_lightfac'].obj, 0, wx.ALIGN_RIGHT)
 
@@ -133,19 +131,19 @@ class VegParams(wx.Panel):
         s.Add(self.fields['gmax'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="fmin"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fmin', wxFloatField(FloatSpin(p,
+        self.fields.add('fmin', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.01, value=0.13, max_val=0.99, increment=0.01, digits=2)))
         s.Add(self.fields['fmin'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Threshold Y for AFstY (nmol/m^2/s)"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('y', wxFloatField(FloatSpin(p,
+        self.fields.add('y', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.1, value=1.6, max_val=100.0, increment=0.1, digits=1)))
         s.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="fO3 calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fo3', fO3Field(p))
-        self.fields['fo3'].set(dose.default_fO3_calc)
+        self.fields['fo3'].set(model.default_fO3_calc)
         s.Add(self.fields['fo3'].obj, 0, wx.ALIGN_RIGHT)
 
 
@@ -202,25 +200,25 @@ class VegParams(wx.Panel):
 
         s1.Add(wx.StaticText(p, label="LAI at SGS (LAI_a, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_a', wxFloatField(FloatSpin(p,
+        self.fields.add('lai_a', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_a'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Second LAI point (LAI_b, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_b', wxFloatField(FloatSpin(p,
+        self.fields.add('lai_b', wxFloatField(wxext.FloatSpin(p,
                 value=4.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_b'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Third LAI point (LAI_c, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_c', wxFloatField(FloatSpin(p,
+        self.fields.add('lai_c', wxFloatField(wxext.FloatSpin(p,
                 value=4.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_c'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="LAI at EGS (LAI_d, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_d', wxFloatField(FloatSpin(p,
+        self.fields.add('lai_d', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_d'].obj, 0, wx.ALIGN_RIGHT)
 
@@ -236,7 +234,7 @@ class VegParams(wx.Panel):
 
         s1.Add(wx.StaticText(p, label="SAI calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('sai', SAIField(p))
-        self.fields['sai'].set(dose.default_SAI_calc)
+        self.fields['sai'].set(model.default_SAI_calc)
         s1.Add(self.fields['sai'].obj, 0, wx.ALIGN_RIGHT)
 
         # LAI preview
@@ -269,31 +267,31 @@ class VegParams(wx.Panel):
 
         s1.Add(wx.StaticText(p, label="Fphen at SGS (fphen_a)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_a', wxFloatField(FloatSpin(p,
+        self.fields.add('fphen_a', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_a'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="First mid-season Fphen (fphen_b)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_b', wxFloatField(FloatSpin(p,
+        self.fields.add('fphen_b', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_b'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Second mid-season Fphen (fphen_c)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_c', wxFloatField(FloatSpin(p,
+        self.fields.add('fphen_c', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_c'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Third mid-season Fphen (fphen_d)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_d', wxFloatField(FloatSpin(p,
+        self.fields.add('fphen_d', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_d'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Fphen at EGS (fphen_e)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fphen_e', wxFloatField(FloatSpin(p,
+        self.fields.add('fphen_e', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_e'].obj, 0, wx.ALIGN_RIGHT)
 
@@ -337,7 +335,7 @@ class VegParams(wx.Panel):
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen', LeafFphenField(p))
         s2.Add(self.fields['leaf_fphen'].obj, 0, wx.ALIGN_RIGHT)
-        self.fields['leaf_fphen'].set(dose.default_leaf_fphen_calc)
+        self.fields['leaf_fphen'].set(model.default_leaf_fphen_calc)
         self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.On_leaf_fphen_EVT_CHOICE)
         self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.redraw_fphen_preview)
 
@@ -367,19 +365,19 @@ class VegParams(wx.Panel):
 
         s2.Add(wx.StaticText(p, label="Leaf fphen at Astart (leaf_fphen_a)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('leaf_fphen_a', wxFloatField(FloatSpin(p,
+        self.fields.add('leaf_fphen_a', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s2.Add(self.fields['leaf_fphen_a'].obj, 0, wx.ALIGN_RIGHT)
 
         s2.Add(wx.StaticText(p, label="Leaf fphen mid-season (leaf_fphen_b)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('leaf_fphen_b', wxFloatField(FloatSpin(p,
+        self.fields.add('leaf_fphen_b', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s2.Add(self.fields['leaf_fphen_b'].obj, 0, wx.ALIGN_RIGHT)
 
         s2.Add(wx.StaticText(p, label="Leaf fphen at Aend (leaf_fphen_c)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('leaf_fphen_c', wxFloatField(FloatSpin(p,
+        self.fields.add('leaf_fphen_c', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s2.Add(self.fields['leaf_fphen_c'].obj, 0, wx.ALIGN_RIGHT)
 
@@ -451,32 +449,32 @@ class VegParams(wx.Panel):
         # TODO: min/max values for VPD
         s.Add(wx.StaticText(p, label="VPD for minimum growth (VPD_min, kPa)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('vpd_min', wxFloatField(FloatSpin(p,
+        self.fields.add('vpd_min', wxFloatField(wxext.FloatSpin(p,
                 value=3.25, increment=0.01, digits=2)))
         s.Add(self.fields['vpd_min'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="VPD for maximum growth (VPD_max, kPa)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('vpd_max', wxFloatField(FloatSpin(p,
+        self.fields.add('vpd_max', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.01, digits=2)))
         s.Add(self.fields['vpd_max'].obj, 0, wx.ALIGN_RIGHT)
 
         s.Add(wx.StaticText(p, label="Critical daily VPD sum (VPD_crit, kPa)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('vpd_crit', wxFloatField(FloatSpin(p,
+        self.fields.add('vpd_crit', wxFloatField(wxext.FloatSpin(p,
                 value=1000.0, min_val=0.0, max_val=1000.0, increment=1.0, digits=1)))
         s.Add(self.fields['vpd_crit'].obj, 0, wx.ALIGN_RIGHT)
         
         # TODO: min/max for SWP
         s.Add(wx.StaticText(p, label="SWP for minimum growth"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('swp_min', wxFloatField(FloatSpin(p,
+        self.fields.add('swp_min', wxFloatField(wxext.FloatSpin(p,
                 value=-1.25, increment=0.01, digits=2)))
         s.Add(self.fields['swp_min'].obj, 0, wx.ALIGN_RIGHT)
         
         s.Add(wx.StaticText(p, label="SWP for maximum growth"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('swp_max', wxFloatField(FloatSpin(p,
+        self.fields.add('swp_max', wxFloatField(wxext.FloatSpin(p,
                 value=-0.05, increment=0.01, digits=2)))
         s.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
 

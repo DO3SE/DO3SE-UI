@@ -10,19 +10,18 @@
 import csv
 import wx
 
-from app import logging, app
+import logging
+
 import util
-import dose
+import model
 
 class InvalidFieldCountError:
-    def __init__(self):
-        wx.MessageBox("Number of fields in the input file does not match the number of fields selected!", 
-                app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
+    pass
+
 
 class InsufficientTrimError:
-    def __init__(self):
-        wx.MessageBox("Some of the data was the wrong type - is the number of lines to trim from the input set correctly?",
-                app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
+    pass
+
 
 class Dataset:
     def __init__(self, filename, fields, trim, siteparams, vegparams):
@@ -41,11 +40,11 @@ class Dataset:
         self.vegparams = vegparams
 
         # Set up default procedures
-        self.sai = dose.SAI_calc_map[dose.default_SAI_calc]['func']
-        self.leaf_fphen = dose.leaf_fphen_calc_map[dose.default_leaf_fphen_calc]['func']
-        self.ra = dose.r.calc_ra_simple
-        self.rn = dose.irradiance.calc_rn
-        self.fo3 = dose.fO3_calc_map[dose.default_fO3_calc]['func']
+        self.sai = model.SAI_calc_map[model.default_SAI_calc]['func']
+        self.leaf_fphen = model.leaf_fphen_calc_map[model.default_leaf_fphen_calc]['func']
+        self.ra = model.r.calc_ra_simple
+        self.rn = model.irradiance.calc_rn
+        self.fo3 = model.fO3_calc_map[model.default_fO3_calc]['func']
         # Calculation between PAR and R
         def f(): pass
         self.par_r = f
@@ -75,28 +74,28 @@ class Dataset:
         vegparams = self.vegparams.copy()
         siteparams = self.siteparams.copy()
         # Replace soil_tex (if it exists) with soil parameters
-        siteparams.update(dose.soil_class_map[siteparams.pop('soil_tex', dose.default_soil_class)]['data'])
+        siteparams.update(model.soil_class_map[siteparams.pop('soil_tex', model.default_soil_class)]['data'])
         # Handle leaf_fphen
-        self.leaf_fphen = dose.leaf_fphen_calc_map[vegparams.pop('leaf_fphen', dose.default_leaf_fphen_calc)]['func']
+        self.leaf_fphen = model.leaf_fphen_calc_map[vegparams.pop('leaf_fphen', model.default_leaf_fphen_calc)]['func']
         # Handle fO3
-        fO3 = dose.fO3_calc_map[vegparams.pop('fo3', dose.default_fO3_calc)]
+        fO3 = model.fO3_calc_map[vegparams.pop('fo3', model.default_fO3_calc)]
         logging.debug('fO3 calculation: "%s" (%s)' % (fO3['name'], fO3['id']))
         self.fo3 = fO3['func']
         # Handle SAI
-        SAI = dose.SAI_calc_map[vegparams.pop('sai', dose.default_SAI_calc)]
+        SAI = model.SAI_calc_map[vegparams.pop('sai', model.default_SAI_calc)]
         logging.debug('SAI calculation: "%s" (%s)' % (SAI['name'], SAI['id']))
         self.sai = SAI['func']
 
         # Setup parameters
         
         # Do vegetation parameters first, as some site parameters depend on this
-        util.setattrs(dose.params_veg, vegparams)
-        dose.params_veg.derive_d_zo()
-        util.setattrs(dose.params_site, siteparams)
+        util.setattrs(model.params_veg, vegparams)
+        model.params_veg.derive_d_zo()
+        util.setattrs(model.params_site, siteparams)
 
         # Initialise the module
         logging.info("Initialising DOSE Fortran model")
-        dose.run.init(int(self.siteparams['u_h_copy']), int(self.siteparams['o3_h_copy']))
+        model.run.init(int(self.siteparams['u_h_copy']), int(self.siteparams['o3_h_copy']))
 
         self.results = []
         # Iterate through dataset
@@ -109,13 +108,13 @@ class Dataset:
             # Catch TypeError - usually caused by some attributes being None 
             # because there weren't enough fields in the input
             # TODO: Handle this differently?
-            try: util.setattrs(dose.inputs, row)
+            try: util.setattrs(model.inputs, row)
             except TypeError: raise InvalidFieldCountError()
 
             self.par_r()
-            dose.inputs.derive_ustar_uh()
-            dose.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn, self.fo3)
-            self.results.append(dose.extract_outputs())
+            model.inputs.derive_ustar_uh()
+            model.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn, self.fo3)
+            self.results.append(model.extract_outputs())
 
         logging.info("Got %d results" % len(self.results))
         return (len(self.results), skippedrows)
@@ -129,7 +128,7 @@ class Dataset:
         w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
         if headers:
-            w.writerow(dict( (f, dose.output_field_map[f]['short']) for f in fields ))
+            w.writerow(dict( (f, model.output_field_map[f]['short']) for f in fields ))
         w.writerows(self.results)
         file.close()
         logging.info("Wrote %d records" % len(self.results))

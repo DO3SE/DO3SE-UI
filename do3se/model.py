@@ -1,4 +1,4 @@
-from dose_f import *
+from do3se_fortran import *
 
 #
 # Define available fields
