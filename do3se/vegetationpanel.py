@@ -224,12 +224,12 @@ class VegetationPanel(wx.Panel):
 
         s1.Add(wx.StaticText(p, label="Period from LAI_a to LAI_b (LAI_1, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_1', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
+        self.fields.add('lai_1', wxFloatField(wx.SpinCtrl(p, min=0, max=100, initial=30)))
         s1.Add(self.fields['lai_1'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Period from LAI_c to LAI_d (LAI_2, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_2', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
+        self.fields.add('lai_2', wxFloatField(wx.SpinCtrl(p, min=0, max=100, initial=30)))
         s1.Add(self.fields['lai_2'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="SAI calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
@@ -298,37 +298,37 @@ class VegetationPanel(wx.Panel):
         s1.Add(wx.StaticText(p, label="Period from fphen_a to fphen_b (fphen_1, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_1', wxFloatField(wx.SpinCtrl(p,
-                initial=15, min=1)))
+                initial=15, min=0)))
         s1.Add(self.fields['fphen_1'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Start of SWP limitation (fphen_limA, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_lima', wxFloatField(wx.SpinCtrl(p,
-                initial=180, min=1, max=365)))
+                initial=180, min=0, max=365)))
         s1.Add(self.fields['fphen_lima'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Period from fphen_b to fphen_c (fphen_2, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_2', wxFloatField(wx.SpinCtrl(p,
-                initial=1, min=1)))
+                initial=1, min=0)))
         s1.Add(self.fields['fphen_2'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Period from fphen_c to fphen_d (fphen_3, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_3', wxFloatField(wx.SpinCtrl(p,
-                initial=1, min=1)))
+                initial=1, min=0)))
         s1.Add(self.fields['fphen_3'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="End of SWP limitation (fphen_limB, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_limb', wxFloatField(wx.SpinCtrl(p,
-                initial=220, min=1, max=365)))
+                initial=220, min=0, max=365)))
         s1.Add(self.fields['fphen_limb'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Period from fphen_d to fphen_e (fphen_4, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_4', wxFloatField(wx.SpinCtrl(p,
-                initial=20, min=1)))
+                initial=20, min=0)))
         s1.Add(self.fields['fphen_4'].obj, 0, wx.ALIGN_RIGHT)
 
         s2.Add(wx.StaticText(p, label="Leaf fphen calculation"),
@@ -384,13 +384,13 @@ class VegetationPanel(wx.Panel):
         s2.Add(wx.StaticText(p, label="Period from leaf_fphen_a to leaf_fphen_b"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen_1', wxFloatField(wx.SpinCtrl(p,
-                initial=15, min=1)))
+                initial=15, min=0)))
         s2.Add(self.fields['leaf_fphen_1'].obj, 0, wx.ALIGN_RIGHT)
 
         s2.Add(wx.StaticText(p, label="Period from leaf_fphen_b to leaf_fphen_c"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen_2', wxFloatField(wx.SpinCtrl(p,
-                initial=30, min=1)))
+                initial=30, min=0)))
         s2.Add(self.fields['leaf_fphen_2'].obj, 0, wx.ALIGN_RIGHT)
 
         # fphen preview
@@ -527,17 +527,19 @@ class VegetationPanel(wx.Panel):
         v = self.fields.get_values()
         lines = list()
 
-        fphen = plot.PolyLine(points=(
-            (v['sgs'], v['fphen_a']),
-            (v['sgs'] + v['fphen_1'], v['fphen_b']),
-            (v['fphen_lima'], v['fphen_b']),
-            (v['fphen_lima'] + v['fphen_2'], v['fphen_c']),
-            (v['fphen_limb'] - v['fphen_3'], v['fphen_c']),
-            (v['fphen_limb'], v['fphen_d']),
-            (v['egs'] - v['fphen_4'], v['fphen_d']),
-            (v['egs'], v['fphen_e'])),
-            colour='green',
-            legend='Fphen')
+        fphen_points = list()
+        fphen_points.append((v['sgs'], v['fphen_a']))
+        fphen_points.append((v['sgs'] + v['fphen_1'], v['fphen_b']))
+        if v['fphen_lima'] > 0.0:
+            fphen_points.append((v['fphen_lima'], v['fphen_b']))
+            fphen_points.append((v['fphen_lima'] + v['fphen_2'], v['fphen_c']))
+        if v['fphen_limb'] > 0.0:
+            fphen_points.append((v['fphen_limb'] - v['fphen_3'], v['fphen_c']))
+            fphen_points.append((v['fphen_limb'], v['fphen_d']))
+        fphen_points.append((v['egs'] - v['fphen_4'], v['fphen_d']))
+        fphen_points.append((v['egs'], v['fphen_e']))
+
+        fphen = plot.PolyLine(points=fphen_points, colour='green', legend='Fphen')
 
         lines.append(fphen)
 
