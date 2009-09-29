@@ -20,7 +20,7 @@ _input_fields = (
         (inputs,    'hd',       float,  False,  'Hd (Wh/m^2)',  'Sensible heat flux (Hd, Wh/m^2)'),
         (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (Wh/m^2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
-        (inputs,    'rn',       float,  False,  'Rn (Wh/m^2)',  'Net radiation (Rn, Wh/m^2)'),
+        (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
 )
 
 # Available input fields as a list of dicts
@@ -55,7 +55,7 @@ _output_fields = (
         # Calculated variables
         (inputs,        'ustar',    float,  'u* (m/s)',         'Friction velocity (u*, m/s)'),
         (inputs,        'uh',       float,  'uh (m/s)',         'Wind speed at target canopy (uh, m/s)'),
-        (variables,     'rn',       float,  'Rn (MJ/m^2/h)',    'Net radiation (Rn, MJ/m^2/h)'),
+        (variables,     'rn',       float,  'Rn (MJ/m^2)',      'Net radiation (Rn, MJ/m^2)'),
         (variables,     'rn_w',     float,  'Rn_W (Wh/m^2)',    'Net radiation (Rn, Wh/m^2)'),
         (variables,     'ra',       float,  'Ra (s/m)',         'Aerodynamic resistance (Ra, s/m)'),
         (variables,     'rb',       float,  'Rb (s/m)',         'Boundary layer resistance (Rinc, s/m)'),
