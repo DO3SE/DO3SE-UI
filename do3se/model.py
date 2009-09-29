@@ -176,6 +176,7 @@ default_soil_class = 'loam'
 leaf_fphen_calcs = (
         {'id': 'copy',  'func': phenology.copy_leaf_fphen,      'name': 'Same as canopy Fphen'},
         {'id': 'wheat', 'func': phenology.calc_leaf_fphen_wheat,'name': 'Wheat'},
+        {'id': 'potato','func': phenology.calc_leaf_fphen_wheat,'name': 'Potato'},
 )
 
 # Mapping from calc id to info
