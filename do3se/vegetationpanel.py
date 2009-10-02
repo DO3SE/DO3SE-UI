@@ -61,7 +61,7 @@ class VegetationPanel(wx.Panel):
         self.SetSizer(sMain)
 
         self.presets = wxext.PresetChooser(self)
-        self.presets.SetPresets(app.config['veg_params'])
+        self.presets.SetPresets(app.config['veg_params'], app.config.blacklist['veg_params'])
         self.presets.getvalues = self.getvalues
         self.presets.setvalues = self.setvalues
         def f():

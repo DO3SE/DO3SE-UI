@@ -46,8 +46,9 @@ class PresetChooser(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnDelete, self.button_delete)
 
 
-    def SetPresets(self, presets):
+    def SetPresets(self, presets, blacklist=[]):
         self.presets = presets.copy()
+        self.blacklist = blacklist
         self.choice.Clear()
         self.choice.SetItems(self.presets.keys())
 
@@ -73,14 +74,18 @@ class PresetChooser(wx.Panel):
         item = self.getvalues()
         key = wx.GetTextFromUser("Save preset as:", "DO3SE", self.choice.GetStringSelection(), self)
 
-        if key and (not key in self.presets or \
-                wx.MessageBox("Overwrite existing preset '%s'?" % (key), 'DO3SE', 
-                    wx.YES_NO | wx.ICON_QUESTION | wx.NO_DEFAULT, self) == wx.YES):
-            self.presets[key] = item
-            self.Refresh()
-            self.choice.SetStringSelection(key)
-            self.setvalues(self.presets[key])
-            self.post_update()
+        if key:
+            if key in self.blacklist:
+                wx.MessageBox("This preset name is reserved, please use another", 'DO3SE',
+                        wx.OK|wx.ICON_ERROR, self)
+            elif (not key in self.presets or \
+                    wx.MessageBox("Overwrite existing preset '%s'?" % (key), 'DO3SE',
+                        wx.YES_NO | wx.ICON_QUESTION | wx.NO_DEFAULT, self) == wx.YES):
+                self.presets[key] = item
+                self.Refresh()
+                self.choice.SetStringSelection(key)
+                self.setvalues(self.presets[key])
+                self.post_update()
 
     
     def OnDelete(self, evt):

@@ -17,6 +17,13 @@ class Config(JsonDict):
             'veg_params': dict(),
         }
 
+        self.blacklist = {
+                'input_format': list(),
+                'output_format': list(),
+                'site_params': list(),
+                'veg_params': list(),
+        }
+
         logging.info("Loading configuration file: " + filename)
         JsonDict.__init__(self, filename, empty)
 
@@ -24,8 +31,8 @@ class Config(JsonDict):
         if veg_csv:
             logging.debug('Loading extra presets: ' + veg_csv)
             veg_presets = csv2dict(open(veg_csv, 'r'))
-            veg_presets.update(self['veg_params'])
-            self['veg_params'] = veg_presets
+            self.blacklist['veg_params'].extend(veg_presets.keys())
+            self['veg_params'].update(veg_presets)
 
 
 
