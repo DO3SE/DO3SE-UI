@@ -55,7 +55,7 @@ contains
         use Constants, only: seaP
         use Params_Veg, only: f_lightfac, cosA
         use Inputs, only: P, PAR
-        use Variables, only: LAI, Flight, leaf_flight
+        use Variables, only: LAI, Flight, leaf_flight, Fphen
         use Variables, only: sinB
         use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade
@@ -63,7 +63,7 @@ contains
         real :: m, pPARtotal, ST, PARdir, PARdif, Flightsun, &
                 Flightshade
 
-        if (sinB > 0 .and. LAI > 0) then
+        if (sinB > 0 .and. Fphen > 0) then
             m = 1.0 / sinB
 
             ! Potential direct and diffuse PAR
