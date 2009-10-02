@@ -70,6 +70,7 @@ module Inputs
         ! Stop values from being 0
         ustar = max(0.0001, ustar)
         uh = max(0.0001, uh)
+        uh_i = max(0.0001, uh_i)
     end subroutine Derive_ustar_uh
 
     !==========================================================================
