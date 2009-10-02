@@ -168,7 +168,7 @@ class MainWindow(wx.Frame):
         fd = wx.FileDialog(self, message='Load settings',
                 defaultDir=self.recent_dir,
                 wildcard='JSON (*.json)|*.json|All files (*.*)|*',
-                style=wx.FD_SAVE|wx.FD_FILE_MUST_EXIST)
+                style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST)
         response = fd.ShowModal()
 
         if response == wx.ID_OK:
