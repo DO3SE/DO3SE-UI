@@ -1,7 +1,8 @@
 module Phenology
 
     public :: Calc_LAI
-    public :: Calc_SAI_Simple
+    public :: Calc_SAI_copy_LAI
+    public :: Calc_SAI_Forest
     public :: Calc_SAI_Wheat
     public :: Calc_fphen
     public :: Copy_leaf_fphen
