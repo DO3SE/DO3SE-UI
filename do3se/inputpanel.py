@@ -36,16 +36,18 @@ class InputPanel(wx.Panel):
         sTrim.Add(self.spinInputTrim, 0, wx.EXPAND)
         
         # Preset manager get-/setvalues callbacks
-        def f():
-            return {
-                    'fields': self.GetFields(),
-                    'trim': self.GetTrim(),
-            }
-        self.presets.getvalues = f
-        def f(v):
-            self.lsInputs.SetSelection((model.input_field_map[x]['long'] for x in v['fields']))
-            self.spinInputTrim.SetValue(v['trim'])
-        self.presets.setvalues = f
+        self.presets.getvalues = self.getvalues
+        self.presets.setvalues = self.setvalues
+
+    def getvalues(self):
+        return {
+                'fields': self.GetFields(),
+                'trim': self.GetTrim(),
+        }
+
+    def setvalues(self, v):
+        self.lsInputs.SetSelection((model.input_field_map[x]['long'] for x in v['fields']))
+        self.spinInputTrim.SetValue(v['trim'])
 
     def GetFields(self):
         return [b for a,b in self.lsInputs.GetSelectionWithData()]

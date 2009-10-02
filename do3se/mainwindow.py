@@ -108,6 +108,16 @@ class MainWindow(wx.Frame):
         mb.Append(mFile, '&File')
         self.Bind(wx.EVT_MENU, self._on_exit, id = wx.ID_EXIT)
 
+        # 'Tools' menu
+        mTools = wx.Menu()
+        id = wx.NewId()
+        mTools.Append(id, 'Dump settings')
+        self.Bind(wx.EVT_MENU, self._on_dump_settings, id = id)
+        id = wx.NewId()
+        mTools.Append(id, 'Load settings')
+        self.Bind(wx.EVT_MENU, self._on_load_settings, id = id)
+        mb.Append(mTools, '&Tools')
+
 
     def _on_run(self, evt):
         fd = wx.FileDialog(self, message = 'Open data file',
@@ -133,6 +143,40 @@ class MainWindow(wx.Frame):
             logging.warning('Results windows still open: '
                     + str(len(self.results_windows)))
         self.Close()
+
+
+    def _on_dump_settings(self, evt):
+        from do3se.util.jsondict import JsonDict
+
+        fd = wx.FileDialog(self, message = 'Dump settings',
+                defaultDir=self.recent_dir,
+                wildcard='JSON (*.json)|*.json|All files (*.*)|*',
+                style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
+        response = fd.ShowModal()
+
+        if response == wx.ID_OK:
+            path = fd.GetPath()
+            if not path.split('.')[-1].lower() == 'json': path = path + '.json'
+            jd = JsonDict(path)
+            jd['input_format'] = self.Input.getvalues()
+            jd['site_params'] = self.Site.getvalues()
+            jd['veg_params'] = self.Veg.getvalues()
+            jd.close()
+
+
+    def _on_load_settings(self, evt):
+        fd = wx.FileDialog(self, message='Load settings',
+                defaultDir=self.recent_dir,
+                wildcard='JSON (*.json)|*.json|All files (*.*)|*',
+                style=wx.FD_SAVE|wx.FD_FILE_MUST_EXIST)
+        response = fd.ShowModal()
+
+        if response == wx.ID_OK:
+            from do3se.util.jsondict import JsonDict
+            jd = JsonDict(fd.GetPath())
+            self.Input.setvalues(jd['input_format'])
+            self.Site.setvalues(jd['site_params'])
+            self.Veg.setvalues(jd['veg_params'])
 
 
     def _run_file(self, path):
