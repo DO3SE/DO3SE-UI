@@ -71,6 +71,7 @@ module Variables
     real, public, save :: Sn_diff
 
     ! O3
+    real, public, save :: O3_ppb_i      ! O3 concentration at izR (ppb)
     real, public, save :: O3_ppb        ! O3 concentration at canopy (ppb)
     real, public, save :: O3_nmol_m3    ! O3 concentration at canopy (nmol/m^3)
     real, public, save :: Vd            ! Deposition velocity (m/s)

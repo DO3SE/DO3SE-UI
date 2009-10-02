@@ -54,6 +54,7 @@ _output_fields = (
 
         # Calculated variables
         (inputs,        'ustar',    float,  'u* (m/s)',         'Friction velocity (u*, m/s)'),
+        (inputs,        'uh_i',     float,  'uh50 (m/s)',       'Wind speed at 50m (uh50, m/s)'),
         (inputs,        'uh',       float,  'uh (m/s)',         'Wind speed at target canopy (uh, m/s)'),
         (variables,     'rn',       float,  'Rn (MJ/m^2)',      'Net radiation (Rn, MJ/m^2)'),
         (variables,     'rn_w',     float,  'Rn_W (Wh/m^2)',    'Net radiation (Rn, Wh/m^2)'),
@@ -65,6 +66,7 @@ _output_fields = (
         (variables,     'gsto',     float,  'Gsto (mmol/m^2/s)','Mean stomatal conductance (Gsto, mmol/m^2/s)'),
         (variables,     'rgs',      float,  'Rgs (s/m)',        'Ground surface resistance (Rgs, s/m)'),
         (variables,     'vd',       float,  'Vd (m/s)',         'Deposition velocity (Vd, m/s)'),
+        (variables,     'o3_ppb_i', float,  'O350 (ppb)',       'Ozone concentration at 50m (O350, ppb)'),
         (variables,     'o3_ppb',   float,  'O3 (ppb)',         'Ozone concentration at canopy (O3, ppb)'),
         (variables,     'o3_nmol_m3',float, 'O3 (nmol/m^3)',    'Ozone concentration at canopy (O3, nmol/m^3)'),
         (variables,     'fst',      float,  'Fst (nmol/m^2/s)', 'Upper leaf stomatal O3 flux (Fst, nmol/m^2/s)'),

@@ -16,13 +16,13 @@ contains
     subroutine Calc_O3_Concentration()
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
         use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P
-        use Variables, only: O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Ra_i, Vd
+        use Variables, only: O3_ppb_i, O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Ra_i, Vd
         use Params_Site, only: O3zR, O3_d, O3_zo
 
         real, parameter :: R = 8.314510     ! Universal gas constant (J/K/mol)
         real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
 
-        real :: ustar_o, O3_i, Rb_i, Vd_i, Vn
+        real :: ustar_o, Rb_i, Vd_i, Vn
 
         ! Deposition velocity over target veg
         ! (we assume that this is "close enough" for over the measurement veg.)
@@ -38,9 +38,9 @@ contains
         Vd_i = 1 / (Ra_i + Rb_i + Rsur)
 
         ! O3 concentration at intermediate height
-        O3_i = O3_ppb_zR / (1 - (Ra_i * Vd_i))
+        O3_ppb_i = O3_ppb_zR / (1 - (Ra_i * Vd_i))
 
-        O3_ppb = O3_i * (1 - (Ra * Vd))
+        O3_ppb = O3_ppb_i * (1 - (Ra * Vd))
 
         ! Specific molar volume of an ideal gas at current temp + pressure
         Vn = R * ((Ts_C + Ts_K) / P)
