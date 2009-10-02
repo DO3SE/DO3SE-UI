@@ -120,11 +120,13 @@ contains
         Gsto_prev = Gsto
         Gsto_c_prev = Gsto_c
         Gsto_PEt_prev = Gsto_PEt
-        !   Accumulate VPD
-        if (dd == dd_prev) then
+        !   Reset accumulated VPD?
+        if (dd /= dd_prev) then
+            VPD_dd = 0
+        end if
+        !   Accumulate VPD during daylight hours
+        if (Flight > 0) then
             VPD_dd = VPD_dd + VPD
-        else
-            VPD_dd = VPD
         end if
 
         ! Leaf Gsto
