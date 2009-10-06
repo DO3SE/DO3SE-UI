@@ -120,15 +120,26 @@ class Dataset:
         return (len(self.results), skippedrows)
 
 
-    def save(self, filename, fields, headers=False):
+    def save(self, filename, fields, headers=False, period=None):
         logging.info("Writing data to '%s' ..." % filename)
         logging.debug("Output data format: %s" % (",".join(fields)))
 
         file = open(filename, "wb")
         w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
+
         if headers:
             w.writerow(dict( (f, model.output_field_map[f]['short']) for f in fields ))
-        w.writerows(self.results)
+        
+        count = 0
+        if period:
+            for r in self.results:
+                if r['dd'] >= period[0] and r['dd'] <= period[1]:
+                    w.writerow(r)
+                    count += 1
+        else:
+            w.writerows(self.results)
+            count = len(self.results)
+        
         file.close()
-        logging.info("Wrote %d records" % len(self.results))
+        logging.info("Wrote %d records" % (count,))

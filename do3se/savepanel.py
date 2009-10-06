@@ -2,6 +2,7 @@ import wx
 
 import wxext
 import model
+from util.fieldgroup import FieldGroup, Field, wxField
 
 class SavePanel(wx.Panel):
     def __init__(self, app, parent, dataset, startdir):
@@ -9,6 +10,8 @@ class SavePanel(wx.Panel):
 
         self.dataset = dataset
         self.prevdir = startdir
+
+        self.fields = FieldGroup()
 
         # Outer sizer
         s = wx.BoxSizer(wx.VERTICAL)
@@ -36,24 +39,25 @@ class SavePanel(wx.Panel):
         sHeaders.Add(self.chkOutputHeaders, 0, wx.EXPAND)
         self.chkOutputHeaders.SetValue(True)
 
+        self.chkReduceOutput = wx.CheckBox(self, label="Only data from during growing season")
+        sHeaders.Add(self.chkReduceOutput, 0, wx.EXPAND|wx.LEFT, 12)
+
         # "Save" button
         sButtons = wx.BoxSizer(wx.HORIZONTAL)
         s.Add(sButtons, 0, wx.ALL|wx.ALIGN_RIGHT, 6)
         bSave = wx.Button(self, wx.ID_SAVEAS)
         sButtons.Add(bSave, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, self._on_save, bSave)
-        
-        # Preset manager get-/setvalues callbacks
-        def f():
-            return {
-                'fields': self.GetFields(),
-                'headers': self.GetAddHeaders()
-            }
-        self.presets.getvalues = f
-        def f(v):
-            self.slOutputs.SetSelection((model.output_field_map[x]['long'] for x in v['fields']))
-            self.chkOutputHeaders.SetValue(v['headers'])
-        self.presets.setvalues = f
+
+        # Setup FieldGroup
+        self.fields.add('fields', Field(self.slOutputs,
+            lambda : [b for a,b in self.slOutputs.GetSelectionWithData()],
+            lambda fields: self.slOutputs.SetSelection((model.output_field_map[f]['long'] for f in fields))))
+        self.fields.add('headers', wxField(self.chkOutputHeaders))
+        self.fields.add('reduce', wxField(self.chkReduceOutput))
+
+        self.presets.getvalues = self.fields.get_values
+        self.presets.setvalues = self.fields.set_values
 
     
     def GetFields(self):
@@ -62,6 +66,13 @@ class SavePanel(wx.Panel):
     
     def GetAddHeaders(self):
         return self.chkOutputHeaders.GetValue()
+
+
+    def GetDateRange(self):
+        if self.chkReduceOutput.GetValue():
+            return (self.dataset.vegparams['sgs'], self.dataset.vegparams['egs'])
+        else:
+            return None
 
 
     def _on_save(self, evt):
@@ -75,6 +86,8 @@ class SavePanel(wx.Panel):
             self.prevdir = fd.GetDirectory()
             path = fd.GetPath()
             if not path.split('.')[-1] == 'csv': path = path + '.csv'
-            self.dataset.save(path, self.GetFields(), headers=self.GetAddHeaders())
+            self.dataset.save(path, self.GetFields(), 
+                    headers=self.GetAddHeaders(),
+                    period=self.GetDateRange())
             wx.MessageDialog(self, message = 'Results saved!',
                     style = wx.OK|wx.ICON_INFORMATION)
