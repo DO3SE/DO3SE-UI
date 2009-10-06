@@ -66,7 +66,7 @@ contains
             Es_Rn = Rn * t
             Es_G = 0.1 * Es_Rn
             Es_1 = (delta * (Es_Rn - Es_G)) / lambda
-            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Rgs * Rinc * Rb_H2O) / lambda
+            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Rgs + Rinc + Rb_H2O) / lambda
             Es_3 = delta + psychro
             Es_hr = (Es_1 + Es_2) / Es_3 / 1000
         endif
