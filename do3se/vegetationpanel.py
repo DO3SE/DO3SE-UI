@@ -305,7 +305,7 @@ class VegetationPanel(wx.Panel):
         s1.Add(wx.StaticText(p, label="Start of SWP limitation (fphen_limA, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_lima', wxFloatField(wx.SpinCtrl(p,
-                initial=180, min=0, max=365)))
+                initial=0, min=0, max=365)))
         s1.Add(self.fields['fphen_lima'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Period from fphen_b to fphen_c (fphen_2, days)"),
@@ -323,7 +323,7 @@ class VegetationPanel(wx.Panel):
         s1.Add(wx.StaticText(p, label="End of SWP limitation (fphen_limB, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_limb', wxFloatField(wx.SpinCtrl(p,
-                initial=220, min=0, max=365)))
+                initial=0, min=0, max=365)))
         s1.Add(self.fields['fphen_limb'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Period from fphen_d to fphen_e (fphen_4, days)"),
