@@ -112,6 +112,7 @@ if __name__ == "__main__":
                 ('resources', [
                     'resources/default_veg_presets.csv',
                     'resources/resistance.png',
+                    'resources/transfer.png',
                     ]
                 ),
             ],

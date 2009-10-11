@@ -138,6 +138,9 @@ class SitePanel(wx.Panel):
         sSiteMetCanopy.Add(self.fields['u_h_copy'].obj, 0)
         self.fields['u_h_copy'].Bind(wx.EVT_CHECKBOX, self.On_u_h_copy_EVT_CHECKBOX)
 
+        tfpng = wxext.PNGPanel(self, 'resources/transfer.png')
+        s.Add(tfpng, 0, wx.ALL, 6)
+
 
     def On_o3_h_copy_EVT_CHECKBOX(self, evt):
         self.fields['o3_h'].Enable(not self.fields['o3_h_copy'].IsChecked())
