@@ -1,4 +1,5 @@
 import wx
+from wx.lib.fancytext import StaticFancyText
 
 import wxext
 import model
@@ -54,7 +55,7 @@ class SitePanel(wx.Panel):
         s.Add(sSiteParams, 0, wx.ALL|wx.EXPAND, 6)
         
         # Location parameters
-        sLocation = wxext.StaticBox2Col(self, "Location")
+        sLocation = wxext.StaticBox2Col(self, "Site location")
         sSiteParams.Add(sLocation, 0, wx.EXPAND)
 
         sLocation.fgs.Add(wx.StaticText(self, label="Latitude"),
@@ -69,7 +70,7 @@ class SitePanel(wx.Panel):
             value=0.0, min_val=-180.0, max_val=180.0, increment=0.1, digits=3)))
         sLocation.fgs.Add(self.fields['lon'].obj, 0)
 
-        sLocation.fgs.Add(wx.StaticText(self, label="Elevation"),
+        sLocation.fgs.Add(wx.StaticText(self, label="Elevation (metres above sea level)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('elev', wxFloatField(wx.SpinCtrl(self,
             min=-100, max=5000, initial=0)))
@@ -80,23 +81,17 @@ class SitePanel(wx.Panel):
         sHeights = wxext.StaticBox2Col(self, "Measurement heights")
         sSiteParams.Add(sHeights, 0, wx.EXPAND)
 
-        sHeights.fgs.Add(wx.StaticText(self, label="Ozone data"),
+        sHeights.fgs.Add(StaticFancyText(self, -1, "Ozone concentration data (h<sub>O</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('o3zr', wxFloatField(wx.SpinCtrl(self,
             min=1, max=200, initial=25)))
         sHeights.fgs.Add(self.fields['o3zr'].obj, 0)
 
-        sHeights.fgs.Add(wx.StaticText(self, label="Meteorological data"),
+        sHeights.fgs.Add(StaticFancyText(self, -1, "Wind speed data (h<sub>w</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('uzr', wxFloatField(wx.SpinCtrl(self,
             min=1, max=200, initial=25)))
         sHeights.fgs.Add(self.fields['uzr'].obj, 0)
-
-        sHeights.fgs.Add(wx.StaticText(self, label="Other data"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('xzr', wxFloatField(wx.SpinCtrl(self,
-            min=1, max=200, initial=25)))
-        sHeights.fgs.Add(self.fields['xzr'].obj, 0)
 
 
         # Soil properties
@@ -116,10 +111,10 @@ class SitePanel(wx.Panel):
         sSoil.fgs.Add(self.fields['rsoil'].obj, 0)
 
         # Canopy heights
-        sCanopies = wxext.StaticBox2Col(self, "Canopy heights")
+        sCanopies = wxext.StaticBox2Col(self, "Reference canopy heights")
         sSiteParams.Add(sCanopies, 0, wx.EXPAND)
 
-        sCanopies.fgs.Add(wx.StaticText(self, label="Ozone data"),
+        sCanopies.fgs.Add(StaticFancyText(self, -1, "Ozone concentration data (h<sub>ref,O</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteO3Canopy = wx.BoxSizer(wx.HORIZONTAL)
         sCanopies.fgs.Add(sSiteO3Canopy, 0)
@@ -131,7 +126,7 @@ class SitePanel(wx.Panel):
         sSiteO3Canopy.Add(self.fields['o3_h_copy'].obj, 0)
         self.fields['o3_h_copy'].Bind(wx.EVT_CHECKBOX, self.On_o3_h_copy_EVT_CHECKBOX)
 
-        sCanopies.fgs.Add(wx.StaticText(self, label="Meteorological data"),
+        sCanopies.fgs.Add(StaticFancyText(self, -1, "Wind speed data (h<sub>ref,w</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteMetCanopy = wx.BoxSizer(wx.HORIZONTAL)
         sCanopies.fgs.Add(sSiteMetCanopy, 0)
