@@ -113,6 +113,7 @@ if __name__ == "__main__":
                     'resources/default_veg_presets.csv',
                     'resources/resistance.png',
                     'resources/transfer.png',
+                    'resources/functions2.png',
                     ]
                 ),
             ],

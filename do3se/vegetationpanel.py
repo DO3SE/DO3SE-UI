@@ -502,6 +502,8 @@ class VegetationPanel(wx.Panel):
                 self.fields['t_max'].SetValue(self.fields['t_opt'].GetValue())
         self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_max'])
 
+        fpng = wxext.PNGPanel(p, 'resources/functions2.png')
+        s.Add(fpng, 0, wx.ALL, 6)
 
         # Fire events to make UI consistent
         self.redraw_LAI_preview(None)
