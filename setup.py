@@ -109,7 +109,11 @@ if __name__ == "__main__":
             packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
             data_files      = [
                 ('.', wxdlls),
-                ('resources', ['resources/default_veg_presets.csv']),
+                ('resources', [
+                    'resources/default_veg_presets.csv',
+                    'resources/resistance.png',
+                    ]
+                ),
             ],
             options         = {
                 'build': build_opts,

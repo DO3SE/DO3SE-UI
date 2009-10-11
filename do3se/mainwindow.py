@@ -4,6 +4,7 @@ import os
 
 import model
 from filehistory import FileHistory
+from intropanel import IntroPanel
 from inputpanel import InputPanel
 from sitepanel import SitePanel
 from vegetationpanel import VegetationPanel
@@ -70,6 +71,9 @@ class MainWindow(wx.Frame):
         sButtons.Add(bRun, 0, wx.EXPAND|wx.LEFT, 6)
         self.Bind(wx.EVT_BUTTON, self._on_run, bRun)
 
+        ### 'Introduction' tab ###
+        self.Intro = IntroPanel(self.app, nbMain)
+        nbMain.AddPage(self.Intro, "DO3SE model")
 
         ### 'Input' tab ###
         self.Input = InputPanel(self.app, nbMain)
