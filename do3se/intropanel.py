@@ -3,7 +3,7 @@
 import wx
 from wx.html import HtmlWindow
 
-_intro_text = """
+_intro_text = u"""
 <p>
 DO<sub>3</sub>SE (Deposition of Ozone for Stomatal Exchange) is a dry deposition
 model designed to estimate the total and stomatal deposition (or flux) of ozone
