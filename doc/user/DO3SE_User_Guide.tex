@@ -15,6 +15,9 @@ framerule=0pt}
 
 \usepackage[pdftex]{graphicx}
 
+\usepackage{float}
+\restylefloat{figure}
+
 %\setcounter{secnumdepth}{3}
 
 % Hyperlinks suitable for both HTML and PDF
@@ -46,7 +49,7 @@ Contact: & Lisa Emberson (\href{mailto:l.emberson@york.ac.uk}{l.emberson@york.ac
 \newpage
 
 
-\section{Interface Overview}
+\section{Main window overview}
 \label{sec:overview}
 
 The main window of the \DOSE{} user interface consists of several tabs.  The first of these is a 
@@ -54,7 +57,7 @@ short introduction to the \DOSE{} model and the interface; reading this introduc
 the model is recommended.  The other tabs allow you to configure various aspects of how the model 
 will be run.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/ss/intro-panel}
 \end{figure}
@@ -67,10 +70,9 @@ The ``Input format'' tab allows you to specify the format the input data file is
 ordering), and the number of rows to ignore from the beginning of the file.  This last parameter 
 allows headers to be present in the data while not affecting the operation of the model.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.48\textwidth]{images/ss/input-format-panel}
-\includegraphics[width=0.48\textwidth]{images/ss/input-format-panel-filled}
+\includegraphics[width=0.5\textwidth]{images/ss/input-format-panel}
 \end{figure}
 
 
@@ -80,7 +82,7 @@ The ``Site parameters'' tab allows you to specify values for parameters which ar
 location rather than of the vegetation itself such as elevation and heights at which measurements 
 are taken.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/ss/site-params-panel}
 \end{figure}
@@ -96,7 +98,7 @@ Since these make up the majority of the parameters, they are further grouped int
 The ``Characteristics'' tab contains constant properties of the vegetation such as albedo and root 
 depth.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/ss/veg-characteristics-panel}
 \end{figure}
@@ -106,7 +108,7 @@ depth.
 The ``Phenology'' tab defines the functions for Leaf Area Index (LAI), $F_{phen}$ and leaf 
 $f_{phen}$.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/ss/veg-phenology-panel}
 \end{figure}
@@ -116,10 +118,46 @@ $f_{phen}$.
 The ``Environment'' tab contains parameters which define the vegetation's response to particular 
 environmental conditions, such as Vapour Pressure Deficit (VPD) and temperature.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/ss/veg-environment-panel}
 \end{figure}
+
+
+\subsection{The ``File'' menu}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{images/ss/file-menu-cropped}
+\end{figure}
+
+
+\subsection{The ``Tools'' menu}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{images/ss/tools-menu-cropped}
+\end{figure}
+
+
+
+\section{Results window overview}
+
+\subsection{The ``Data'' tab}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/ss/results-grid}
+\end{figure}
+
+
+\subsection{The ``Save to file'' tab}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/ss/results-save}
+\end{figure}
+
 
 
 \section{Input and Output Formats}
