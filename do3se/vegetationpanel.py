@@ -91,46 +91,154 @@ class VegetationPanel(wx.Panel):
 
         
         # Characteristics
-        p, s = makepage("Characteristics")
+        p = scrolledpanel.ScrolledPanel(nb)
+        nb.AddPage(p, "Characteristics and Environment")
+        _s = wx.BoxSizer(wx.VERTICAL)
+        p.SetSizer(_s)
+        s = wx.BoxSizer(wx.HORIZONTAL)
+        _s.Add(s, 0, wx.EXPAND|wx.ALL, 6)
+
+        sbox = wxext.StaticBox2Col(p, "Characteristics")
+        s.Add(sbox, 1, wx.EXPAND)
         
-        s.Add(wx.StaticText(p, label="Canopy height (m)"),
+        sbox.fgs.Add(wx.StaticText(p, label="Canopy height (m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('h', wxFloatField(wxext.FloatSpin(p,
                 min_val=1.0, max_val=100.0, value=25.0, increment=1.0, digits=1)))
-        s.Add(self.fields['h'].obj, 0, wx.ALIGN_RIGHT)
+        sbox.fgs.Add(self.fields['h'].obj, 0, wx.ALIGN_RIGHT)
         
-        s.Add(wx.StaticText(p, label="Root depth (m)"), 0, wx.ALIGN_CENTER_VERTICAL)
+        sbox.fgs.Add(wx.StaticText(p, label="Root depth (m)"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('root', wxFloatField(wxext.FloatSpin(p,
                 value=1.2, min_val=0.01, increment=0.1, digits=1)))
-        s.Add(self.fields['root'].obj, 0, wx.ALIGN_RIGHT)
+        sbox.fgs.Add(self.fields['root'].obj, 0, wx.ALIGN_RIGHT)
 
-        s.Add(wx.StaticText(p, label="Leaf dimension (Lm, m)"),
+        sbox.fgs.Add(wx.StaticText(p, label="Leaf dimension (Lm, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('lm', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.01, value=0.05, increment=0.01, digits=2)))
-        s.Add(self.fields['lm'].obj, 0, wx.ALIGN_RIGHT)
+        sbox.fgs.Add(self.fields['lm'].obj, 0, wx.ALIGN_RIGHT)
 
-        s.Add(wx.StaticText(p, label="Albedo"), 0, wx.ALIGN_CENTER_VERTICAL)
+        sbox.fgs.Add(wx.StaticText(p, label="Albedo"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('albedo', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.01, value=0.12, max_val=0.99, increment=0.01, digits=2)))
-        s.Add(self.fields['albedo'].obj, 0, wx.ALIGN_RIGHT)
+        sbox.fgs.Add(self.fields['albedo'].obj, 0, wx.ALIGN_RIGHT)
 
-        s.Add(wx.StaticText(p, label="External plant cuticle resistance (Rext, s/m)"),
+        sbox.fgs.Add(wx.StaticText(p, label="External plant cuticle resistance (Rext, s/m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('rext', wxFloatField(wx.SpinCtrl(p,
                 min=0, max=20000, initial=2500)))
-        s.Add(self.fields['rext'].obj, 0, wx.ALIGN_RIGHT)
+        sbox.fgs.Add(self.fields['rext'].obj, 0, wx.ALIGN_RIGHT)
 
-        s.Add(wx.StaticText(p, label="Threshold Y for AFstY (nmol/m^2/s)"), 
+        sbox.fgs.Add(wx.StaticText(p, label="Threshold Y for AFstY (nmol/m^2/s)"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('y', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.1, value=1.6, max_val=100.0, increment=0.1, digits=1)))
-        s.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
+        sbox.fgs.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
 
-        s.Add(wx.StaticText(p, label="fO3 calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
+        sbox.fgs.Add(wx.StaticText(p, label="fO3 calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fo3', fO3Field(p))
         self.fields['fo3'].set(model.default_fO3_calc)
-        s.Add(self.fields['fo3'].obj, 0, wx.ALIGN_RIGHT)
+        sbox.fgs.Add(self.fields['fo3'].obj, 0, wx.ALIGN_RIGHT)
+
+
+        sbox = wxext.StaticBox2Col(p, "Environment")
+        s.AddSpacer(6)
+        s.Add(sbox, 1, wx.EXPAND)
+
+        sbox.fgs.Add(wx.StaticText(p, label="light_a"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('f_lightfac', wxFloatField(wxext.FloatSpin(p,
+                min_val=0.001, value=0.006, max_val=0.999, increment=0.001, digits=3)))
+        sbox.fgs.Add(self.fields['f_lightfac'].obj, 0, wx.ALIGN_RIGHT)
+
+        sbox.fgs.Add(wx.StaticText(p, label="gmax"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('gmax', wxFloatField(wx.SpinCtrl(p,
+                min=1, initial=148, max=10000)))
+        sbox.fgs.Add(self.fields['gmax'].obj, 0, wx.ALIGN_RIGHT)
+
+        sbox.fgs.Add(wx.StaticText(p, label="fmin"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fmin', wxFloatField(wxext.FloatSpin(p,
+                min_val=0.01, value=0.13, max_val=0.99, increment=0.01, digits=2)))
+        sbox.fgs.Add(self.fields['fmin'].obj, 0, wx.ALIGN_RIGHT)
+        
+        sbox.fgs.Add(wx.StaticText(p, label="Minimum temperature (Celcius)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('t_min', wxFloatField(wx.SpinCtrl(p,
+                min=-10, max=100, initial=0)))
+        sbox.fgs.Add(self.fields['t_min'].obj, 0, wx.ALIGN_RIGHT)
+        
+        sbox.fgs.Add(wx.StaticText(p, label="Optimum temperature (Celcius)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('t_opt', wxFloatField(wx.SpinCtrl(p,
+                min=-10, max=100, initial=21)))
+        sbox.fgs.Add(self.fields['t_opt'].obj, 0, wx.ALIGN_RIGHT)
+        
+        sbox.fgs.Add(wx.StaticText(p, label="Maximum temperature (Celcius)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('t_max', wxFloatField(wx.SpinCtrl(p,
+                min=-10, max=100, initial=35)))
+        sbox.fgs.Add(self.fields['t_max'].obj, 0, wx.ALIGN_RIGHT)
+        
+        # TODO: min/max values for VPD
+        sbox.fgs.Add(wx.StaticText(p, label="VPD for maximum growth (VPD_max, kPa)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('vpd_max', wxFloatField(wxext.FloatSpin(p,
+                value=1.0, increment=0.01, digits=2)))
+        sbox.fgs.Add(self.fields['vpd_max'].obj, 0, wx.ALIGN_RIGHT)
+
+        sbox.fgs.Add(wx.StaticText(p, label="VPD for minimum growth (VPD_min, kPa)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('vpd_min', wxFloatField(wxext.FloatSpin(p,
+                value=3.25, increment=0.01, digits=2)))
+        sbox.fgs.Add(self.fields['vpd_min'].obj, 0, wx.ALIGN_RIGHT)
+        
+        sbox.fgs.Add(wx.StaticText(p, label="Critical daily VPD sum (VPD_crit, kPa)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('vpd_crit', wxFloatField(wxext.FloatSpin(p,
+                value=1000.0, min_val=0.0, max_val=1000.0, increment=1.0, digits=1)))
+        sbox.fgs.Add(self.fields['vpd_crit'].obj, 0, wx.ALIGN_RIGHT)
+        
+        # TODO: min/max for SWP
+        sbox.fgs.Add(wx.StaticText(p, label="SWP for minimum growth (SWP_min)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('swp_min', wxFloatField(wxext.FloatSpin(p,
+                value=-1.25, increment=0.01, digits=2)))
+        sbox.fgs.Add(self.fields['swp_min'].obj, 0, wx.ALIGN_RIGHT)
+        
+        sbox.fgs.Add(wx.StaticText(p, label="SWP for maximum growth (SWP_max)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('swp_max', wxFloatField(wxext.FloatSpin(p,
+                value=-0.05, increment=0.01, digits=2)))
+        sbox.fgs.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
+
+        sbox.fgs.Add(wx.StaticText(p, label="Enable DO3SE model estimate of soil water"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('enable_fswp', wxField(wx.CheckBox(p,
+                label="", style=wx.ALIGN_RIGHT)))
+        self.fields['enable_fswp'].set(1)
+        sbox.fgs.Add(self.fields['enable_fswp'].obj, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+
+        # Maintain integrity on environmental dependence
+        def f(evt):
+            if self.fields['t_opt'].GetValue() < self.fields['t_min'].GetValue():
+                self.fields['t_opt'].SetValue(self.fields['t_min'].GetValue())
+            elif self.fields['t_opt'].GetValue() > self.fields['t_max'].GetValue():
+                self.fields['t_opt'].SetValue(self.fields['t_max'].GetValue())
+        self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_opt'])
+        def f(evt):
+            if self.fields['t_min'].GetValue() > self.fields['t_opt'].GetValue():
+                self.fields['t_min'].SetValue(self.fields['t_opt'].GetValue())
+        self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_min'])
+        def f(evt):
+            if self.fields['t_max'].GetValue() < self.fields['t_opt'].GetValue():
+                self.fields['t_max'].SetValue(self.fields['t_opt'].GetValue())
+        self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_max'])
+
+        fpng = wxext.PNGPanel(p, 'resources/functions.png')
+        _s.Add(fpng, 0, wx.ALL, 6)
+
+        p.SetupScrolling()
+
+
 
 
         # Phenology (fphen, LAI)
@@ -409,101 +517,6 @@ class VegetationPanel(wx.Panel):
         self.fields['leaf_fphen_2'].Bind(wx.EVT_SPINCTRL, self.redraw_fphen_preview)
 
         p.SetupScrolling()
-
-
-        # Environmental dependence
-        p, s = makepage("Environment")
-
-        s.Add(wx.StaticText(p, label="light_a"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('f_lightfac', wxFloatField(wxext.FloatSpin(p,
-                min_val=0.001, value=0.006, max_val=0.999, increment=0.001, digits=3)))
-        s.Add(self.fields['f_lightfac'].obj, 0, wx.ALIGN_RIGHT)
-
-        s.Add(wx.StaticText(p, label="gmax"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('gmax', wxFloatField(wx.SpinCtrl(p,
-                min=1, initial=148, max=10000)))
-        s.Add(self.fields['gmax'].obj, 0, wx.ALIGN_RIGHT)
-
-        s.Add(wx.StaticText(p, label="fmin"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fmin', wxFloatField(wxext.FloatSpin(p,
-                min_val=0.01, value=0.13, max_val=0.99, increment=0.01, digits=2)))
-        s.Add(self.fields['fmin'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Minimum temperature (Celcius)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('t_min', wxFloatField(wx.SpinCtrl(p,
-                min=-10, max=100, initial=0)))
-        s.Add(self.fields['t_min'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Optimum temperature (Celcius)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('t_opt', wxFloatField(wx.SpinCtrl(p,
-                min=-10, max=100, initial=21)))
-        s.Add(self.fields['t_opt'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Maximum temperature (Celcius)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('t_max', wxFloatField(wx.SpinCtrl(p,
-                min=-10, max=100, initial=35)))
-        s.Add(self.fields['t_max'].obj, 0, wx.ALIGN_RIGHT)
-        
-        # TODO: min/max values for VPD
-        s.Add(wx.StaticText(p, label="VPD for maximum growth (VPD_max, kPa)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('vpd_max', wxFloatField(wxext.FloatSpin(p,
-                value=1.0, increment=0.01, digits=2)))
-        s.Add(self.fields['vpd_max'].obj, 0, wx.ALIGN_RIGHT)
-
-        s.Add(wx.StaticText(p, label="VPD for minimum growth (VPD_min, kPa)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('vpd_min', wxFloatField(wxext.FloatSpin(p,
-                value=3.25, increment=0.01, digits=2)))
-        s.Add(self.fields['vpd_min'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="Critical daily VPD sum (VPD_crit, kPa)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('vpd_crit', wxFloatField(wxext.FloatSpin(p,
-                value=1000.0, min_val=0.0, max_val=1000.0, increment=1.0, digits=1)))
-        s.Add(self.fields['vpd_crit'].obj, 0, wx.ALIGN_RIGHT)
-        
-        # TODO: min/max for SWP
-        s.Add(wx.StaticText(p, label="SWP for minimum growth (SWP_min)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('swp_min', wxFloatField(wxext.FloatSpin(p,
-                value=-1.25, increment=0.01, digits=2)))
-        s.Add(self.fields['swp_min'].obj, 0, wx.ALIGN_RIGHT)
-        
-        s.Add(wx.StaticText(p, label="SWP for maximum growth (SWP_max)"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('swp_max', wxFloatField(wxext.FloatSpin(p,
-                value=-0.05, increment=0.01, digits=2)))
-        s.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
-
-        s.Add(wx.StaticText(p, label="Enable DO3SE model estimate of soil water"),
-                0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('enable_fswp', wxField(wx.CheckBox(p,
-                label="", style=wx.ALIGN_RIGHT)))
-        self.fields['enable_fswp'].set(1)
-        s.Add(self.fields['enable_fswp'].obj, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
-
-        # Maintain integrity on environmental dependence
-        def f(evt):
-            if self.fields['t_opt'].GetValue() < self.fields['t_min'].GetValue():
-                self.fields['t_opt'].SetValue(self.fields['t_min'].GetValue())
-            elif self.fields['t_opt'].GetValue() > self.fields['t_max'].GetValue():
-                self.fields['t_opt'].SetValue(self.fields['t_max'].GetValue())
-        self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_opt'])
-        def f(evt):
-            if self.fields['t_min'].GetValue() > self.fields['t_opt'].GetValue():
-                self.fields['t_min'].SetValue(self.fields['t_opt'].GetValue())
-        self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_min'])
-        def f(evt):
-            if self.fields['t_max'].GetValue() < self.fields['t_opt'].GetValue():
-                self.fields['t_max'].SetValue(self.fields['t_opt'].GetValue())
-        self.Bind(wx.EVT_SPINCTRL, f, self.fields['t_max'])
-
-        fpng = wxext.PNGPanel(p, 'resources/functions2.png')
-        s.Add(fpng, 0, wx.ALL, 6)
 
         # Fire events to make UI consistent
         self.redraw_LAI_preview(None)
