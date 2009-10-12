@@ -1,4 +1,5 @@
 import wx
+from wx.lib import scrolledpanel
 from wx.lib.fancytext import StaticFancyText
 
 import wxext
@@ -47,6 +48,12 @@ class SitePanel(wx.Panel):
             app.config['site_params'] = self.presets.GetPresets()
             app.config.sync()
         self.presets.post_update = f
+
+        p = scrolledpanel.ScrolledPanel(self)
+        s.Add(p, 1, wx.EXPAND)
+        s = wx.BoxSizer(wx.VERTICAL)
+        p.SetSizer(s)
+
         
         # FlexGridSizer for the sections
         sSiteParams = wx.FlexGridSizer(cols=2, vgap=6, hgap=6)
@@ -55,91 +62,94 @@ class SitePanel(wx.Panel):
         s.Add(sSiteParams, 0, wx.ALL|wx.EXPAND, 6)
         
         # Location parameters
-        sLocation = wxext.StaticBox2Col(self, "Site location")
+        sLocation = wxext.StaticBox2Col(p, "Site location")
         sSiteParams.Add(sLocation, 0, wx.EXPAND)
 
-        sLocation.fgs.Add(wx.StaticText(self, label="Latitude"),
+        sLocation.fgs.Add(wx.StaticText(p, label="Latitude"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lat', wxFloatField(wxext.FloatSpin(self,
+        self.fields.add('lat', wxFloatField(wxext.FloatSpin(p,
             value=50.0, min_val=-90.0, max_val=90.0, increment=0.1, digits=3)))
         sLocation.fgs.Add(self.fields['lat'].obj, 0)
 
-        sLocation.fgs.Add(wx.StaticText(self, label="Longitude"), 
+        sLocation.fgs.Add(wx.StaticText(p, label="Longitude"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lon', wxFloatField(wxext.FloatSpin(self,
+        self.fields.add('lon', wxFloatField(wxext.FloatSpin(p,
             value=0.0, min_val=-180.0, max_val=180.0, increment=0.1, digits=3)))
         sLocation.fgs.Add(self.fields['lon'].obj, 0)
 
-        sLocation.fgs.Add(wx.StaticText(self, label="Elevation (metres above sea level)"),
+        sLocation.fgs.Add(wx.StaticText(p, label="Elevation (metres above sea level)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('elev', wxFloatField(wx.SpinCtrl(self,
+        self.fields.add('elev', wxFloatField(wx.SpinCtrl(p,
             min=-100, max=5000, initial=0)))
         sLocation.fgs.Add(self.fields['elev'].obj, 0)
 
 
         # Measurement heights
-        sHeights = wxext.StaticBox2Col(self, "Measurement heights")
+        sHeights = wxext.StaticBox2Col(p, "Measurement heights")
         sSiteParams.Add(sHeights, 0, wx.EXPAND)
 
-        sHeights.fgs.Add(StaticFancyText(self, -1, "Ozone concentration data (h<sub>O</sub>, m)"),
+        sHeights.fgs.Add(StaticFancyText(p, -1, "Ozone concentration data (h<sub>O</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('o3zr', wxFloatField(wx.SpinCtrl(self,
+        self.fields.add('o3zr', wxFloatField(wx.SpinCtrl(p,
             min=1, max=200, initial=25)))
         sHeights.fgs.Add(self.fields['o3zr'].obj, 0)
 
-        sHeights.fgs.Add(StaticFancyText(self, -1, "Wind speed data (h<sub>w</sub>, m)"),
+        sHeights.fgs.Add(StaticFancyText(p, -1, "Wind speed data (h<sub>w</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('uzr', wxFloatField(wx.SpinCtrl(self,
+        self.fields.add('uzr', wxFloatField(wx.SpinCtrl(p,
             min=1, max=200, initial=25)))
         sHeights.fgs.Add(self.fields['uzr'].obj, 0)
 
 
         # Soil properties
-        sSoil = wxext.StaticBox2Col(self, "Soil")
+        sSoil = wxext.StaticBox2Col(p, "Soil")
         sSiteParams.Add(sSoil, 0, wx.EXPAND)
 
-        sSoil.fgs.Add(wx.StaticText(self, label="Texture"), 
+        sSoil.fgs.Add(wx.StaticText(p, label="Texture"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('soil_tex', SoilTexField(self))
+        self.fields.add('soil_tex', SoilTexField(p))
         self.fields['soil_tex'].set(model.default_soil_class)
         sSoil.fgs.Add(self.fields['soil_tex'].obj, 0)
 
-        sSoil.fgs.Add(wx.StaticText(self, label="Rsoil"),
+        sSoil.fgs.Add(wx.StaticText(p, label="Rsoil"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('rsoil', wxFloatField(wx.SpinCtrl(self,
+        self.fields.add('rsoil', wxFloatField(wx.SpinCtrl(p,
             min=1, max=1000, initial=200)))
         sSoil.fgs.Add(self.fields['rsoil'].obj, 0)
 
         # Canopy heights
-        sCanopies = wxext.StaticBox2Col(self, "Reference canopy heights")
+        sCanopies = wxext.StaticBox2Col(p, "Reference canopy heights")
         sSiteParams.Add(sCanopies, 0, wx.EXPAND)
 
-        sCanopies.fgs.Add(StaticFancyText(self, -1, "Ozone concentration data (h<sub>ref,O</sub>, m)"),
+        sCanopies.fgs.Add(StaticFancyText(p, -1, "Ozone concentration data (h<sub>ref,O</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteO3Canopy = wx.BoxSizer(wx.HORIZONTAL)
         sCanopies.fgs.Add(sSiteO3Canopy, 0)
-        self.fields.add('o3_h', wxFloatField(wx.SpinCtrl(self,
+        self.fields.add('o3_h', wxFloatField(wx.SpinCtrl(p,
             min=1, max=200, initial=25)))
         sSiteO3Canopy.Add(self.fields['o3_h'].obj, 0, wx.RIGHT, 6)
-        self.fields.add('o3_h_copy', wxField(wx.CheckBox(self,
+        self.fields.add('o3_h_copy', wxField(wx.CheckBox(p,
             label="Same as target canopy")))
         sSiteO3Canopy.Add(self.fields['o3_h_copy'].obj, 0)
         self.fields['o3_h_copy'].Bind(wx.EVT_CHECKBOX, self.On_o3_h_copy_EVT_CHECKBOX)
 
-        sCanopies.fgs.Add(StaticFancyText(self, -1, "Wind speed data (h<sub>ref,w</sub>, m)"),
+        sCanopies.fgs.Add(StaticFancyText(p, -1, "Wind speed data (h<sub>ref,w</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteMetCanopy = wx.BoxSizer(wx.HORIZONTAL)
         sCanopies.fgs.Add(sSiteMetCanopy, 0)
-        self.fields.add('u_h', wxFloatField(wx.SpinCtrl(self,
+        self.fields.add('u_h', wxFloatField(wx.SpinCtrl(p,
             min=1, max=200, initial=25)))
         sSiteMetCanopy.Add(self.fields['u_h'].obj, 0, wx.RIGHT, 6)
-        self.fields.add('u_h_copy', wxField(wx.CheckBox(self,
+        self.fields.add('u_h_copy', wxField(wx.CheckBox(p,
             label="Same as target canopy")))
         sSiteMetCanopy.Add(self.fields['u_h_copy'].obj, 0)
         self.fields['u_h_copy'].Bind(wx.EVT_CHECKBOX, self.On_u_h_copy_EVT_CHECKBOX)
 
-        tfpng = wxext.PNGPanel(self, 'resources/transfer.png')
+        tfpng = wxext.PNGPanel(p, 'resources/transfer.png')
         s.Add(tfpng, 0, wx.ALL, 6)
+
+
+        p.SetupScrolling()
 
 
     def On_o3_h_copy_EVT_CHECKBOX(self, evt):
