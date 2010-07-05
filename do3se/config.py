@@ -1,7 +1,7 @@
 import logging
 
 from do3se.util.jsondict import JsonDict
-from do3se.util.csv2dict import csv2dict
+from do3se.util import csv2dict
 
 class Config(JsonDict):
     """

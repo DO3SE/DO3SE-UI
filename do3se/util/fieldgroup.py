@@ -1,24 +1,28 @@
 class Field:
     """
-    Create a field from an arbitrary object
+    Create a field from an arbitrary object.
 
     The Field class contains an arbitrary object along with a getter and setter.
     The getter and setter should be set either by supplying them as arguments to
-    the constructor, or by overriding the methods directly:
+    the constructor or by overriding the methods directly:
 
-        f = Field(foo)
-        f.get = lambda: foo.GetValue()
-        f.set = lambda value: foo.SetValue(value)
+    >>> f = Field(foo)
+    >>> f.get = lambda: foo.GetValue()
+    >>> f.set = lambda value: foo.SetValue(value)
 
     Overriding them in subclasses for specific types of fields is also possible.
-    The 'obj' property points to the wrapped object, in case the original object
-    is needed.
+    :attr:`obj` is a reference to the wrapped object, for situations where the
+    original object is needed.
 
     This class implements the "class decorator" pattern, so in most cases all
-    attribute access (excluding obj/get/set) will pass through to the contained
-    object.  (Note: wxPython will agressively check for things to be a wx.Widget
-    instance, and therefore it is necessary to pass field.obj to wxPython
-    functions.)
+    attribute access (excluding :attr:`obj`, :meth:`get` and :meth:`set`) will
+    pass through to the contained object.
+    
+    .. note::
+        
+        wxPython will agressively check that an object is a ``wx.Widget``
+        instance, and therefore it is necessary to pass :attr:`obj` to wxPython
+        functions.
     """
 
     def __init__(self, obj, getter=None, setter=None):
@@ -31,8 +35,8 @@ class Field:
 
     def __getattr__(self, name):
         """
-        Pass all attribute access (other than obj/get/set) through to the
-        contained object.
+        Pass all attribute access (other than :attr:`obj`/:meth:`get`/:meth:`set`)
+        through to the contained object.
         """
         return getattr(self.obj, name)
 
@@ -45,13 +49,17 @@ class Field:
 
     def get(self):
         """
-        Getter - this should be replaced.
+        Get the field value.
+
+        This should be replaced either in a subclass or by assigning it to some function.
         """
         raise NotImplementedError
 
     def set(self, value):
         """
-        Setter - this should be replaced.
+        Set the field value.
+
+        This should be replaced either in a subclass or by assigning it to some function.
         """
         raise NotImplementedError
 
@@ -59,8 +67,9 @@ class Field:
 
 class FieldGroup:
     """
-    A group of named Field objects
+    A group of named :class:`Field` objects.
     """
+
     def __init__(self):
         """
         Constructor
@@ -109,7 +118,9 @@ class FieldGroup:
 
 class wxField(Field):
     """
-    Generic wxPython field, using GetValue and SetValue
+    Generic wxPython field.
+    
+    Getter and setter use ``obj.GetValue`` and ``obj.SetValue`` respectively.
     """
     def get(self):
         return self.obj.GetValue()
@@ -120,7 +131,7 @@ class wxField(Field):
 
 class wxFloatField(wxField):
     """
-    Floating point wxPython field - cast to float on get().
+    Same as :class:`wxField`, but with an explicit cast to float on :meth:`get`.
     """
     def get(self):
         return float(self.obj.GetValue())

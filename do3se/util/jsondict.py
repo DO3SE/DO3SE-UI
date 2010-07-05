@@ -7,11 +7,11 @@ import os, shutil
 
 class JsonDict(dict):
     """
-    Dictionary backed by a JSON file
+    Dictionary backed by a JSON file.
 
     A dictionary class using a JSON file as storage, but without automatic
     syncronisation.  Writes are atomic, and the implementation borrows very
-    heavily from: http://code.activestate.com/recipes/576642/
+    heavily from `this recipe <http://code.activestate.com/recipes/576642/>`_.
 
     If the file doesn't already exist, it will be created.
     """
