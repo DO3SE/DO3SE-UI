@@ -115,10 +115,10 @@ class MainWindow(wx.Frame):
         # 'Tools' menu
         mTools = wx.Menu()
         id = wx.NewId()
-        mTools.Append(id, 'Dump settings')
+        mTools.Append(id, 'Save current settings to file')
         self.Bind(wx.EVT_MENU, self._on_dump_settings, id = id)
         id = wx.NewId()
-        mTools.Append(id, 'Load settings')
+        mTools.Append(id, 'Load settings from file')
         self.Bind(wx.EVT_MENU, self._on_load_settings, id = id)
         mb.Append(mTools, '&Tools')
 
@@ -152,7 +152,7 @@ class MainWindow(wx.Frame):
     def _on_dump_settings(self, evt):
         from do3se.util.jsondict import JsonDict
 
-        fd = wx.FileDialog(self, message = 'Dump settings',
+        fd = wx.FileDialog(self, message = 'Save settings',
                 defaultDir=self.recent_dir,
                 wildcard='JSON (*.json)|*.json|All files (*.*)|*',
                 style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
