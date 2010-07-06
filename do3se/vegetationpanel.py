@@ -104,7 +104,7 @@ class VegetationPanel(wx.Panel):
         sbox.fgs.Add(wx.StaticText(p, label="Canopy height (m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('h', wxFloatField(wxext.FloatSpin(p,
-                min_val=1.0, max_val=100.0, value=25.0, increment=1.0, digits=1)))
+                min_val=0.1, max_val=100.0, value=25.0, increment=0.1, digits=1)))
         sbox.fgs.Add(self.fields['h'].obj, 0, wx.ALIGN_RIGHT)
         
         sbox.fgs.Add(wx.StaticText(p, label="Root depth (m)"), 0, wx.ALIGN_CENTER_VERTICAL)
