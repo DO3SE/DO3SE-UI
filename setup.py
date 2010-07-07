@@ -131,19 +131,39 @@ if __name__ == "__main__":
                     'resources/functions.png',
                     ]
                 ),
-		('Microsoft.VC90.CRT',
-		    glob('resources/Microsoft.VC90.CRT/*')),
-            ],
+                ('Microsoft.VC90.CRT',
+                    glob('resources/Microsoft.VC90.CRT/*')),
+                ],
             options         = {
                 'build': build_opts,
                 'py2exe': {
                     'includes': [
                         'dbhash',
                         ],
+                    'excludes': [
+                        # Ignore unused standard library packages to reduce size
+                        '_ssl',
+                        'doctest',
+                        'pdb',
+                        'difflib',
+                        'inspect',
+                        'tcl',
+                        'Tkinter',
+                        'bsddb',
+                        'pydoc',
+                        'compiler',
+                        'distutils',
+                        'email',
+                        # Packages that definitely cannot be removed
+                        #'wx',
+                        #'numpy',
+                        #'unittest',
+                        #'pyexpat',
+                        ],
                     'packages': [
                         'numpy',
                         ],
-		    'dll_excludes': ['MSVCP90.dll'],
+                    'dll_excludes': ['MSVCP90.dll'],
                     'bundle_files': 1,
                     'optimize': 2,
                 },
