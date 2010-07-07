@@ -5,10 +5,10 @@
 
 set basepath=%~dp0
 set PATH=%basepath%;%PATH%
-set PATH=%basepath%MinGW\bin;%PATH%
+set PATH=%basepath%g95\bin;%PATH%
 set PATH=%basepath%msys\1.0\bin;%PATH%
 
-set LIBRARY_PATH=%basepath%MinGW\lib;%LIBRARY_PATH%
+set LIBRARY_PATH=%basepath%g95\lib;%LIBRARY_PATH%
 
 :: Drop to a normal shell in the normal location
 cd %USERPROFILE%

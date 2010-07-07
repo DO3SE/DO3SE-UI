@@ -21,10 +21,8 @@ variables.
 How to make an Ftools bundle
 ----------------------------
 
-1.  Download the MinGW_ automated installer and run it.  Do a minimal install to 
-    :file:`C:\\Ftools\\MinGW`.
 2.  Download the G95_ "Self-extracting Windows x86" installer and run it.  Install to 
-    :file:`C:\\Ftools\\MinGW`.  Do not allow it to set environment variables.
+    :file:`C:\\Ftools\\g95`.  Do not allow it to set environment variables.
 3.  Download the MSYS_ base system installer and run it (version 1.0.11, later versions do not have 
     an installer as of writing).  Install to :file:`C:\\Ftools\\msys\\1.0`.
 4.  Copy :file:`F.bat` and :file:`Ftools.bat` (from the :file:`Ftools` directory in the DO3SE source 
@@ -32,6 +30,5 @@ How to make an Ftools bundle
 5.  ZIP the :file:`C:\\Ftools` directory and distribute it.
 
 
-.. _MinGW: http://sourceforge.net/downloads/mingw/Automated%20MinGW%20Installer/
 .. _G95: http://www.g95.org/downloads.shtml
 .. _MSYS: http://sourceforge.net/downloads/mingw/MSYS/BaseSystem/
