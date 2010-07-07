@@ -1,6 +1,10 @@
 import wx
 
 class ListSelectCtrl(wx.Panel):
+    """
+    Given a list of items, provides a userinterface for selecting a subset of
+    them in any order.
+    """
     
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)

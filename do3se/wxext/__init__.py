@@ -1,6 +1,6 @@
-# 
-# Custom wxPython widgets
-#
+""" 
+Custom wxPython widgets
+"""
 
 from floatctrl import FloatCtrl
 from listselectctrl import ListSelectCtrl
