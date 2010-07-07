@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from glob import glob
 import do3se.application
 
 application = do3se.application.app_name
@@ -19,12 +20,6 @@ import numpy
 path = os.path.join(os.path.dirname(numpy.__file__),
                     'distutils', 'tests', '__init__.py')
 open(path, 'a').close()
-
-# Find the DLLs we need from wxPython (for Python 2.5, anyway...)
-import wx, glob
-wxpath = os.path.dirname(wx.__file__)
-wxdlls = glob.glob(os.path.join(wxpath, 'msvcp??.dll'))
-wxdlls.append(os.path.join(wxpath, 'gdiplus.dll'))
 
 manifest = '''
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1"
@@ -129,7 +124,6 @@ if __name__ == "__main__":
             author_email    = 'sei@alanbriolat.co.uk',
             packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
             data_files      = [
-                ('.', wxdlls),
                 ('resources', [
                     'resources/default_veg_presets.csv',
                     'resources/resistance.png',
@@ -137,17 +131,19 @@ if __name__ == "__main__":
                     'resources/functions.png',
                     ]
                 ),
+		('Microsoft.VC90.CRT',
+		    glob('resources/Microsoft.VC90.CRT/*')),
             ],
             options         = {
                 'build': build_opts,
                 'py2exe': {
                     'includes': [
                         'dbhash',
-                        'simplejson',
                         ],
                     'packages': [
                         'numpy',
                         ],
+		    'dll_excludes': ['MSVCP90.dll'],
                     'bundle_files': 1,
                     'optimize': 2,
                 },
