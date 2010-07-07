@@ -1,0 +1,221 @@
+from do3se_fortran import *
+
+#
+# Define available fields
+#
+
+# Available input fields in (module, variable, type, required, shortname, longname) format
+_input_fields = (
+        (inputs,    'yr',       int,    False,  'Year',         'Year'),
+        (inputs,    'mm',       int,    False,  'Month',        'Month'),
+        (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
+        (inputs,    'dd',       int,    True,   'Day',          'Day of year'),
+        (inputs,    'hr',       int,    True,   'Hour',         'Hour of day (0 to 23)'),
+        (inputs,    'ts_c',     float,  True,   'Ts_C (C)',     'Temperature (Ts_C, Celcius)'),
+        (inputs,    'vpd',      float,  True,   'VPD (kPa)',    'Vapour Pressure Deficit (VPD, kPa)'),
+        (inputs,    'uh_zr',    float,  True,   'uh_zR (m/s)',  'Measured wind speed (uh_zR, m/s)'),
+        (inputs,    'precip',   float,  True,   'precip (mm)',  'Precipitation (precip, mm)'),
+        (inputs,    'p',        float,  True,   'P (kPa)',      'Pressure (P, kPa)'),
+        (inputs,    'o3_ppb_zr',float,  True,   'O3_zR (ppb)',  'Measured O3 density (O3_zR, ppb)'),
+        (inputs,    'hd',       float,  False,  'Hd (Wh/m^2)',  'Sensible heat flux (Hd, Wh/m^2)'),
+        (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (Wh/m^2)'),
+        (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
+        (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
+)
+
+# Available input fields as a list of dicts
+input_fields = [{'module':      x[0],
+                 'variable':    x[1],
+                 'type':        x[2],
+                 'required':    x[3],
+                 'short':       x[4],
+                 'long':        x[5]} for x in _input_fields]
+
+# Mapping from input field variable name to full field info
+input_field_map = dict( (x['variable'], x) for x in input_fields )
+
+# Available output fields in (module, variable, type, shortname, longname) format
+_output_fields = (
+        # Inputs
+        (inputs,        'yr',       int,    'Year',             'Year'),
+        (inputs,        'mm',       int,    'Month',            'Month'),
+        (inputs,        'mdd',      int,    'Month day',        'Day of month'),
+        (inputs,        'dd',       int,    'Day',              'Day of year'),
+        (inputs,        'hr',       int,    'Hour',             'Hour of day (0 to 23)'),
+        (inputs,        'ts_c',     float,  'Ts_C (C)',         'Temperature (Ts_C, Celcius)'),
+        (inputs,        'vpd',      float,  'VPD (kPa)',        'Vapour Pressure Deficit (VPD, kPa)'),
+        (inputs,        'uh_zr',    float,  'uh_zR (m/s)',      'Measured wind speed (uh_zR, m/s)'),
+        (inputs,        'precip',   float,  'precip (mm)',      'Precipitation (precip, mm)'),
+        (inputs,        'p',        float,  'P (kPa)',          'Pressure (P, kPa)'),
+        (inputs,        'o3_ppb_zr',float,  'O3_zR (ppb)',      'Measured O3 density (O3_zR, ppb)'),
+        (inputs,        'hd',       float,  'Hd (Wh/m^2)',      'Sensible heat flux (Hd, Wh/m^2)'),
+        (inputs,        'r',        float,  'R (Wh/m^2)',       'Global radiation (Wh/m^2)'),
+        (inputs,        'par',      float,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
+
+        # Calculated variables
+        (inputs,        'ustar',    float,  'u* (m/s)',         'Friction velocity (u*, m/s)'),
+        (inputs,        'uh_i',     float,  'uh50 (m/s)',       'Wind speed at 50m (uh50, m/s)'),
+        (inputs,        'uh',       float,  'uh (m/s)',         'Wind speed at target canopy (uh, m/s)'),
+        (variables,     'rn',       float,  'Rn (MJ/m^2)',      'Net radiation (Rn, MJ/m^2)'),
+        (variables,     'rn_w',     float,  'Rn_W (Wh/m^2)',    'Net radiation (Rn, Wh/m^2)'),
+        (variables,     'ra',       float,  'Ra (s/m)',         'Aerodynamic resistance (Ra, s/m)'),
+        (variables,     'rb',       float,  'Rb (s/m)',         'Boundary layer resistance (Rinc, s/m)'),
+        (variables,     'rsur',     float,  'Rsur (s/m)',       'Surface resistance (Rsur, s/m)'),
+        (variables,     'rinc',     float,  'Rinc (s/m)',       'In-canopy resistance (Rinc, s/m)'),
+        (variables,     'rsto',     float,  'Rsto (s/m)',       'Mean stomatal resistance (Rsto, s/m)'),
+        (variables,     'gsto',     float,  'Gsto (mmol/m^2/s)','Mean stomatal conductance (Gsto, mmol/m^2/s)'),
+        (variables,     'rgs',      float,  'Rgs (s/m)',        'Ground surface resistance (Rgs, s/m)'),
+        (variables,     'vd',       float,  'Vd (m/s)',         'Deposition velocity (Vd, m/s)'),
+        (variables,     'o3_ppb_i', float,  'O350 (ppb)',       'Ozone concentration at 50m (O350, ppb)'),
+        (variables,     'o3_ppb',   float,  'O3 (ppb)',         'Ozone concentration at canopy (O3, ppb)'),
+        (variables,     'o3_nmol_m3',float, 'O3 (nmol/m^3)',    'Ozone concentration at canopy (O3, nmol/m^3)'),
+        (variables,     'fst',      float,  'Fst (nmol/m^2/s)', 'Upper leaf stomatal O3 flux (Fst, nmol/m^2/s)'),
+        (variables,     'afsty',    float,  'AFstY (nmol/m^2/s)','Accumulated Fst over threshold (AFstY, nmol/m^2/s)'),
+        (variables,     'ftot',     float,  'Ftot (nmol/m^2/s)','Total ozone flux (Ftot, nmol/m^2/s)'),
+        (variables,     'ot40',     float,  'OT40 (ppb)',       'Ozone over 40 ppb (OT40, ppb)'),
+        (variables,     'aot40',    float,  'AOT40 (ppb)',      'Accumulated OT40 over growth period (AOT40, ppb)'),
+        (variables,     'aet',      float,  'AEt (???)',        'Actual evapotranspiration (AEt, ???)'),
+        (variables,     'swp',      float,  'SWP (MPa)',        'Soil water potential (SWP, MPa)'),
+        (variables,     'per_vol',  float,  'per_vol (%)',      'Volumetric water content (per_vol, %)'),
+        (variables,     'smd',      float,  'SMD (m)',          'Soil moisture deficit (SMD, m)'),
+
+        # Debug variables
+        (variables,     'ra_i',     float,  'Ra_i (s/m)',       '[DEBUG] Ra at O3 measurement'),
+        (variables,     'eact',     float,  'eact',             '[DEBUG] eact'),
+        (variables,     'lai',      float,  'LAI',              '[DEBUG] LAI'),
+        (variables,     'sai',      float,  'SAI',              '[DEBUG] SAI'),
+        (variables,     'flight',   float,  'flight',           '[DEBUG] flight'),
+        (variables,     'ftemp',    float,  'ftemp',            '[DEBUG] ftemp'),
+        (variables,     'fvpd',     float,  'fVPD',             '[DEBUG] fVPD'),
+        (variables,     'fswp',     float,  'fSWP',             '[DEBUG] fSWP'),
+        (variables,     'sinb',     float,  'sinB',             '[DEBUG] sinB'),
+        (variables,     'ppardir',  float,  'pPARdir',          '[DEBUG] pPARdir'),
+        (variables,     'ppardif',  float,  'pPARdiff',         '[DEBUG] pPARdiff'),
+        (variables,     'fpardir',  float,  'fPARdir',          '[DEBUG] fPARdir'),
+        (variables,     'fpardif',  float,  'fPARdiff',         '[DEBUG] fPARdiff'),
+        (variables,     'laisun',   float,  'LAIsun',           '[DEBUG] LAIsun'),
+        (variables,     'laishade', float,  'LAIshade',         '[DEBUG] LAIshade'),
+        (variables,     'parsun',   float,  'PARsun',           '[DEBUG] PARsun'),
+        (variables,     'parshade', float,  'PARshade',         '[DEBUG] PARshade'),
+
+        (variables,     'leaf_flight',float,'leaf_flight',      '[DEBUG] leaf_flight'),
+        (variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
+        (variables,     'leaf_fphen',float, 'leaf_fphen',       '[DEBUG] leaf_fphen'),
+
+        (variables,     'rsto_l',   float,  'Rsto_l (s/m)',       '[DEBUG] Leaf stomatal resistance (Rsto_l, s/m)'),
+        (variables,     'gsto_l',   float,  'Gsto_l (mmol/m^2/s)','[DEBUG] Leaf stomatal conductance (Gsto_l, mmol/m^2/s)'),
+        (variables,     'rsto_c',   float,  'Rsto_c (s/m)',       '[DEBUG] Canopy stomatal resistance (Rsto_c, s/m)'),
+        (variables,     'gsto_c',   float,  'Gsto_c (mmol/m^2/s)','[DEBUG] Canopy stomatal conductance (Gsto_c, mmol/m^2/s)'),
+        (variables,     'rsto_pet', float,  'Rsto_PEt (s/m)',       '[DEBUG] Rsto_PEt (Rsto_PEt, s/m)'),
+        (variables,     'gsto_pet', float,  'Gsto_PEt (mmol/m^2/s)','[DEBUG] Gsto_PEt (Gsto_PEt, mmol/m^2/s)'),
+
+        (variables,     'rb_h2o',   float,  'Rb_H2O (s/m)',     '[DEBUG] Rb_H2O (boundary resistance to water)'),
+        (variables,     'asw',      float,  'ASW',              '[DEBUG] ASW'),
+        (variables,     'sn',       float,  'Sn',               '[DEBUG] Sn'),
+        (variables,     'sn_diff',  float,  'Sn_diff',          '[DEBUG] Sn_diff'),
+        (variables,     'ei',       float,  'Ei',               '[DEBUG] Ei'),
+        (variables,     'es',       float,  'Es',               '[DEBUG] Es'),
+        (variables,     'pet',      float,  'PEt',              '[DEBUG] PEt'),
+        (variables,     'precip_acc',float, 'precip_acc',       '[DEBUG] Accumulated precipitation (precip_acc, m)'),
+        (variables,     'ei_hr',    float,  'Ei_hr',            '[DEBUG] Ei_hr'),
+        (variables,     'es_hr',    float,  'Es_hr',            '[DEBUG] Es_hr'),
+        (variables,     'pet_hr',   float,  'PEt_hr',           '[DEBUG] PEt_hr'),
+        (variables,     'aet_hr',   float,  'AEt_hr',           '[DEBUG] AEt_hr'),
+        (variables,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
+        (variables,     'aet_3',    float,  'AEt_3',            '[DEBUG] AEt_3'),
+
+        (variables,     'ot0',      float,  'OT0',              '[DEBUG] OT0'),
+        (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
+        (variables,     'afst0',    float,  'AFst0',            '[DEBUG] Afst0'),
+        (variables,     'fo3',      float,  'fO3',              '[DEBUG] fO3'),
+)
+
+# Available output fields as a list of dicts
+output_fields = [{'module':      x[0],
+                  'variable':    x[1],
+                  'type':        x[2],
+                  'short':       x[3],
+                  'long':        x[4]} for x in _output_fields]
+
+# Mapping from output field variable name to full field info
+output_field_map = dict( (x['variable'], x) for x in output_fields )
+
+# Soil class data in (id, name, data) format
+_soil_classes = (
+        ('sand_loam',   'Sandy Loam (coarse)', {
+            'soil_b':   3.31,
+            'fc_m':     0.16,
+            'swp_ae':   -0.00091,
+        }),
+        ('silt_loam',   'Silt loam (medium coarse)', {
+            'soil_b':   4.38,
+            'fc_m':     0.26,
+            'swp_ae':   -0.00158,
+        }),
+        ('loam',        'Loam (medium)', {
+            'soil_b':   6.58,
+            'fc_m':     0.29,
+            'swp_ae':   -0.00188,
+        }),
+        ('clay_loam',   'Clay loam (fine)', {
+            'soil_b':   7.00,
+            'fc_m':     0.37,
+            'swp_ae':   -0.00588,
+        }),
+)
+
+# Soil classes as a list of dicts
+soil_classes = [{'id':      x[0],
+                 'name':    x[1],
+                 'data':    x[2]} for x in _soil_classes]
+
+# Mapping from soil class id to full info
+soil_class_map = dict( (x['id'], x) for x in soil_classes )
+
+default_soil_class = 'loam'
+
+# Leaf fphen calculations
+leaf_fphen_calcs = (
+        {'id': 'copy',  'func': phenology.copy_leaf_fphen,      'name': 'Same as Fphen'},
+        {'id': 'wheat', 'func': phenology.calc_leaf_fphen_wheat,'name': 'Wheat'},
+        {'id': 'potato','func': phenology.calc_leaf_fphen_wheat,'name': 'Potato'},
+)
+
+# Mapping from calc id to info
+leaf_fphen_calc_map = dict( (x['id'], x) for x in leaf_fphen_calcs )
+
+default_leaf_fphen_calc = 'copy'
+
+# fO3 calculations
+fO3_calcs = (
+        {'id': 'none',      'func': o3.calc_fo3_ignore,     'name': 'Not used (fO3 = 1)'},
+        {'id': 'wheat',     'func': o3.calc_fo3_wheat,      'name': 'Wheat'},
+        {'id': 'potato',    'func': o3.calc_fo3_potato,     'name': 'Potato'},
+)
+
+# Mapping from calc id to info
+fO3_calc_map = dict( (x['id'], x) for x in fO3_calcs )
+
+default_fO3_calc = 'none'
+
+# SAI calculations
+SAI_calcs = (
+        {'id': 'copy',      'func': phenology.calc_sai_copy_lai,    'name': 'Same as LAI'},
+        {'id': 'forest',    'func': phenology.calc_sai_forest,      'name': 'Forest'},
+        {'id': 'wheat',     'func': phenology.calc_sai_wheat,       'name': 'Wheat'},
+)
+
+# Mapping from calc id to info
+SAI_calc_map = dict( (x['id'], x) for x in SAI_calcs )
+
+default_SAI_calc = 'copy'
+
+
+def extract_outputs():
+    """
+    Extract all output variables
+
+    Extract a dict containing the values of all of the variables defined in
+    output_fields.
+    """
+    return dict( (x['variable'], x['type'](getattr(x['module'], x['variable']))) for x in output_fields )

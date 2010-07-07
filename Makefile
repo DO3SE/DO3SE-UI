@@ -48,7 +48,7 @@ ifeq ($(PLATFORM),win32)
 	export F2PY_FCOMPILER=$(WIN32_F2PY_FCOMPILER)
 	# Set paths to compiled objects
 	export DO3SE_BIN=dose.exe
-	export PYMOD=ui/dose_f.pyd
+	export PYMOD=do3se/do3se_fortran.pyd
 else
 	# Set the compilers
 	export F=$(LINUX_F)
@@ -57,7 +57,7 @@ else
 	export F2PY_FCOMPILER=$(LINUX_F2PY_FCOMPILER)
 	# Set paths to compiled objects
 	export DO3SE_BIN=dose
-	export PYMOD=ui/dose_f.so
+	export PYMOD=do3se/do3se_fortran.so
 endif
     
 
@@ -84,20 +84,20 @@ all: $(DO3SE_BIN)
 py: $(PYMOD)
 
 
-dose_f.pyf:
-	python f2py.py -h $@ -m dose_f $(common:%.o=F/%.f90) $(others:%.o=F/%.f90)
+do3se_fortran.pyf:
+	python f2py.py -h $@ -m do3se_fortran $(common:%.o=F/%.f90) $(others:%.o=F/%.f90)
 
-f2py-build: dose_f.pyf
+f2py-build: do3se_fortran.pyf
 	mkdir -p $@
-	cp f2py.py dose_f.pyf $@/
+	cp f2py.py do3se_fortran.pyf $@/
 	cp f2py.Makefile $@/Makefile
 	$(MAKE) -C $@
 
 $(PYMOD): f2py-build
 	cp f2py-build/`basename $@` $@
 
-clean_dose_f:
-	rm -rf f2py-build dose_f.pyf
+clean_do3se_fortran:
+	rm -rf f2py-build do3se_fortran.pyf
 
 F:
 	$(MAKE) -C $@
@@ -109,7 +109,7 @@ $(DO3SE_BIN): F
 clean_dose:
 	$(MAKE) -C F clean
 
-clean: clean_dose_f clean_dose
+clean: clean_do3se_fortran clean_dose
 
 
 clean_all: clean
@@ -123,7 +123,7 @@ clean_all: clean
 dist-src-win: clean_all
 	rm -rf $(DIST_SRC_DIR) $(DIST_SRC_FILE)
 	mkdir -p $(DIST_SRC_DIR)
-	cp -a F/ ui/ dose-ui f2py.Makefile f2py.py fix-dlls.py Makefile setup.py $(DIST_SRC_DIR)
+	cp -a F/ do3se/ run-do3se.py f2py.Makefile f2py.py Makefile setup.py $(DIST_SRC_DIR)
 	todos $(DIST_SRC_DIR)/F/*.f90
 	zip -r $(DIST_SRC_FILE) $(DIST_SRC_DIR)
 	rm -rf $(DIST_SRC_DIR)
@@ -139,6 +139,5 @@ dist-f-src-win: clean_all
 dist-ui-win:
 	rm -rf $(DIST_UI_DIR) $(DIST_UI_FILE)
 	python setup.py py2exe -d $(DIST_UI_DIR)
-	python fix-dlls.py $(DIST_UI_DIR)
 	zip -r $(DIST_UI_FILE) $(DIST_UI_DIR)
 	rm -rf $(DIST_UI_DIR)

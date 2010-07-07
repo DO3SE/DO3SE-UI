@@ -16,7 +16,15 @@ module Variables
     ! Evapotranspiration
     real, public, save  :: PEt  ! Potential evapotranspiration
     real, public, save  :: AEt  ! Actual evapotranspiration
-    real, public, save  :: Ei   ! Evaporation of intercepted precip
+    real, public, save  :: Ei   ! Evaporation of intercepted precipitation
+    real, public, save  :: Es   ! Evaporation of soil water
+    ! Intermediate evapotranspiration variables (TODO: remove these)
+    real, public, save  :: Ei_hr
+    real, public, save  :: Es_hr
+    real, public, save  :: PEt_hr
+    real, public, save  :: AEt_hr
+    real, public, save  :: PEt_3
+    real, public, save  :: AEt_3
 
     ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
@@ -32,33 +40,62 @@ module Variables
 
     ! R
     real, public, save  :: Ra
-    real, public, save  :: Rb
+    real, public, save  :: Rb       ! Boundary resistance to O3
+    real, public, save  :: Rb_H2O   ! Boundary resistance to H2O
     real, public, save  :: Rsur
     real, public, save  :: Rinc
-    real, public, save  :: Rsto
     real, public, save  :: Rgs
     ! Intermediate R variables
     real, public, save  :: Ra_i
 
-    real, public, save  :: Gsto, Gsto_PEt
+    ! Stomatal conductance/resistance
+    real, public, save  :: Gsto     ! Mean O3 conductance
+    real, public, save  :: Rsto     ! Mean O3 resistance (s/m)
+    real, public, save  :: Gsto_l   ! Single leaf O3 conductance
+    real, public, save  :: Rsto_l   ! Single leaf O3 resistance (s/m)
+    real, public, save  :: Gsto_c   ! Canopy O3 conductance
+    real, public, save  :: Rsto_c   ! Canopy O3 resistance (s/m)
+    real, public, save  :: Gsto_PEt ! Potential canopy O3 conductance (for PEt)
+    real, public, save  :: Rsto_PEt ! Potential canopy O3 resistance (for PEt)
 
     ! Soil
-    real, public, save :: PWP        ! Calculated PWP in m3/3
-    real, public, save :: ASW        ! Calculated ASW in m3/m3
+    real, public, save :: SWP_min_vol ! SWP_min in m3/m3
     real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
-    real, public, save :: Sn         ! soil Water storage capacity
+    real, public, save :: ASW        ! Calculated ASW in m
+    real, public, save :: Sn         ! Soil water in m3/m3
     real, public, save :: per_vol    ! % volumetric water content
-    real, public, save :: SMD        ! soil moisture deficit in mm
+    real, public, save :: SMD        ! soil moisture deficit in m
     real, public, save :: SWP        ! Soil water potential in MPa
-    real, public, save :: WC         ! water content
-    real, public, save :: precip     ! Previous day's total precipitation
-    real, public, save :: Rsto_PEt   ! Rsto for H2O for use in SMD calculations
+    real, public, save :: precip_acc ! Previous day's accumulated precipitation
     real, public, save :: fSWP
+    real, public, save :: Sn_diff
 
     ! O3
-    real, public, save :: O3_ppb, O3_nmol_m3, Vd
-    real, public, save :: Ftot
-    real, public, save :: Fst, AFstY, OT40, AOT40
+    real, public, save :: O3_ppb_i      ! O3 concentration at izR (ppb)
+    real, public, save :: O3_ppb        ! O3 concentration at canopy (ppb)
+    real, public, save :: O3_nmol_m3    ! O3 concentration at canopy (nmol/m^3)
+    real, public, save :: Vd            ! Deposition velocity (m/s)
+    real, public, save :: Ftot          ! Total O3 flux
+    real, public, save :: Fst           ! Upper leaf stomatal flux
+    real, public, save :: AFst0         ! Accumulated Fst
+    real, public, save :: AFstY         ! Accumulated Fst over threshold Y
+    real, public, save :: OT40          ! OT40 (canopy)
+    real, public, save :: AOT40         ! Accumulated OT40 (canopy)
+    real, public, save :: OT0           ! OT with no threshold (upper leaf)
+    real, public, save :: AOT0          ! Accumulated OT0 (upper leaf)
+    real, public, save :: fO3
+
+    ! More variables, for testing
+    real, public, save :: sinB
+    real, public, save :: pPARdir
+    real, public, save :: pPARdif
+    real, public, save :: fPARdir
+    real, public, save :: fPARdif
+    real, public, save :: LAIsun
+    real, public, save :: LAIshade
+    real, public, save :: PARsun
+    real, public, save :: PARshade
+    real, public, save :: eact
 
 end module Variables
 

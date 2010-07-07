@@ -6,9 +6,11 @@ module Params_Veg
 
     real, public, save :: VPD_min = 3.25    ! VPD for min g
     real, public, save :: VPD_max = 1.0     ! VPD for max g
+    real, public, save :: VPD_crit = 1000   ! Critical daily VPD sum (kPa)
     
     real, public, save :: SWP_min = -1.25   ! SWP for min g
     real, public, save :: SWP_max = -0.05   ! SWP for max g
+    real, public, save :: enable_fSWP = 1   ! fSWP enabled?  0 = false, 1 = true
 
     ! Boundary gs values
     real, public, save :: gmax = 148        ! mmol O3 m^-2 PLA s^-1
@@ -24,26 +26,44 @@ module Params_Veg
     real, public, save :: zo                ! Roughness length (m)
     real, public, save :: d                 ! Displacement height (m)
 
+    ! Growing season
     real, public, save :: SGS = 121         ! Start of bulk canopy growth period
     real, public, save :: EGS = 273         ! End of bulk canopy growth period
+
+    ! Leaf area index
+    real, public, save :: LAI_a = 0.0       ! First LAI point (at SGS)
+    real, public, save :: LAI_b = 4.0       ! Second LAI point
+    real, public, save :: LAI_c = 4.0       ! Third LAI point
+    real, public, save :: LAI_d = 0.0       ! Last LAI point (at EGS)
+    real, public, save :: LAI_1 = 30        ! Period from LAI_a to LAI_b
+    real, public, save :: LAI_2 = 30        ! Period from LAI_c to LAI_d
+
+    ! fphen polygon (see Calc_fphen in phenology.f90)
+    real, public, save :: fphen_limA = 0    ! Start of soil water limitation
+    real, public, save :: fphen_limB = 0    ! End of soil water limitation
+    real, public, save :: fphen_a = 0.0     ! First fphen point (at SGS)
+    real, public, save :: fphen_b = 1.0
+    real, public, save :: fphen_c = 1.0     ! fphen during soil water limitation
+    real, public, save :: fphen_d = 1.0
+    real, public, save :: fphen_e = 0.0     ! Last fphen point (at EGS)
+    real, public, save :: fphen_1 = 15      ! Period from fphen_a to fphen_b
+    real, public, save :: fphen_2 = 0       ! Period from fphen_b to fphen_c
+    real, public, save :: fphen_3 = 0       ! Period from fphen_c to fphen_d
+    real, public, save :: fphen_4 = 20      ! Period from fphen_d to fphen_e
+
+
+    ! leaf fphen polygon
     real, public, save :: Astart = 121      ! Start of upper leaf growth period
     real, public, save :: Aend = 273        ! End of upper leaf growth period
-    real, public, save :: LAI_min = 0       ! Min LAI in m^2/m^2
-    real, public, save :: LAI_max = 4.0     ! Max LAI in m^2/m^2
-    real, public, save :: Ls = 30           ! time from LAI_min to LAI_max
-    real, public, save :: Le = 30           ! time from LAI_max to LAI_min
+    real, public, save :: leaf_fphen_a = 0.0 ! First fphen point (at Astart)
+    real, public, save :: leaf_fphen_b = 1.0 ! Second fphen point (plateau)
+    real, public, save :: leaf_fphen_c = 0.0 ! Last fphen point (at Aend)
+    real, public, save :: leaf_fphen_1 = 15 ! Time from leaf_fphen_a to leaf_fphen_b
+    real, public, save :: leaf_fphen_2 = 30 ! Time from leaf_fphen_b to leaf_fphen_c
 
     real, public, save :: cosA = 0.5        ! A = mean leaf inclination (60 degs)
     real, public, save :: f_lightfac = 0.006 ! single leaf flight coefficient
                                             
-    ! fphen polygon parameters
-    real, public, save :: fphen_a = 0       ! fphen at SGS
-    real, public, save :: fphen_b = 0       ! fphen at Astart
-    real, public, save :: fphen_c = 1.0     ! fphen midway during season
-    real, public, save :: fphen_d = 0       ! fphen at Aend and EGS
-    real, public, save :: fphenS = 15       ! period to fphen_c
-    real, public, save :: fphenE = 20       ! period to fphen_d
-
     real, public, save :: Rext = 2500       ! external plant cuticle resistance in s/m
     real, public, save :: Rinc_b = 14       ! Rinc co-efficient
 

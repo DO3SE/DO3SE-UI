@@ -65,19 +65,21 @@ contains
     subroutine Calculate()
         use Run, only: Do_Calcs
         
-        use Phenology, only: Calc_SAI_Simple, Calc_SAI_Crops
-        use Evapotranspiration, only: Calc_PEt, Calc_PEt_PM, Calc_AEt, Calc_AEt_PM
+        use Phenology, only: Calc_SAI_copy_LAI, Calc_SAI_Forest, Calc_SAI_Wheat, &
+                             Copy_leaf_fphen, Calc_leaf_fphen_Wheat
         use Irradiance, only: Calc_Rn, Copy_Rn
         use R, only: Calc_Ra_Simple, Calc_Ra_With_Heat_Flux
+        use O3, only: Calc_fO3_Ignore, Calc_fO3_Wheat, Calc_fO3_Potato
 
         ! Run the calculations, specifying which interchangeable calculations
         ! to use (for: SAI, Ra, PEt, AEt, Rn)
-        call Do_Calcs(Calc_SAI_Simple, &
+        call Do_Calcs(Calc_SAI_copy_LAI, &
+                      Copy_leaf_fphen, &
+                      !Calc_leaf_fphen_Wheat, &
                       Calc_Ra_Simple, &
                       !Calc_Ra_With_Heat_Flux, &
-                      Calc_PEt, &
-                      Calc_AEt, &
-                      Calc_Rn)
+                      Calc_Rn, &
+                      Calc_fO3_Ignore)
     end subroutine Calculate
 
     !==========================================================================

@@ -2,7 +2,6 @@
 *.pyf
 f2py-build
 tags
-dose.cfg
 *.aux
 *.html
 *.pdf
@@ -11,3 +10,5 @@ dose.cfg
 *.out
 *.toc
 dose
+*.pyc
+.*.sw[aop]

@@ -18,7 +18,9 @@ contains
         AEt = 0
         PEt = 0
         Ei = 0
+        AFst0 = 0
         AFstY = 0
+        AOT0 = 0
         AOT40 = 0
         
         call Derive_d_zo()
@@ -43,26 +45,28 @@ contains
     ! calculations that have interchangeable methods:
     !
     ! Calc_SAI
-    !       Method for calculating SAI (simple or crops)
+    !       Method for calculating SAI ("copy LAI", forest or wheat)
+    !
+    ! Calc_leaf_fphen
+    !       Method for calculating leaf_fphen (copy fphen, or use special calc)
     !
     ! Calc_Ra
     !       Method for calculating Ra (simple or including heat flux data)
     !
-    ! Calc_PEt
-    ! Calc_AEt
-    !       Methods for calculating potential and actual evapotranspiration
-    !
     ! Calc_Rn
     !       Method for calculating net radiation (copy or calculate)
     !
+    ! Calc_fO3
+    !       Method for calculating fO3 (ignore, wheat or potato)
+    !
     !==========================================================================
-    subroutine Do_Calcs(Calc_SAI, Calc_Ra, Calc_PEt, Calc_AEt, Calc_Rn)
+    subroutine Do_Calcs(Calc_SAI, Calc_leaf_fphen, Calc_Ra, Calc_Rn, Calc_fO3)
         use Phenology, only: Calc_LAI, Calc_fphen
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
-        use Soil, only: Calc_precip, Calc_SWP, Calc_fSWP
-        use Evapotranspiration, only: Calc_Ei
+        use Soil, only: Calc_precip, Calc_SWP
+        use Evapotranspiration, only: Calc_Penman_Monteith
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
         use Inputs, only: dd
         use Variables, only: dd_prev
@@ -70,19 +74,20 @@ contains
         interface
             subroutine Calc_SAI()
             end subroutine Calc_SAI
+            subroutine Calc_leaf_fphen()
+            end subroutine Calc_leaf_fphen
             subroutine Calc_Ra()
             end subroutine Calc_Ra
-            subroutine Calc_PEt()
-            end subroutine Calc_PEt
-            subroutine Calc_AEt()
-            end subroutine Calc_AEt
             subroutine Calc_Rn()
             end subroutine Calc_Rn
+            subroutine Calc_fO3()
+            end subroutine Calc_fO3
         end interface
 
         call Calc_LAI()
         call Calc_SAI()         !***
         call Calc_fphen()
+        call Calc_leaf_fphen()
 
         call Calc_sinB()
         call Calc_Flight()
@@ -90,6 +95,8 @@ contains
 
         call Calc_ftemp()
         call Calc_fVPD()
+
+        call Calc_fO3()
     
         call Calc_Ra()          !***
         call Calc_Rb()
@@ -100,12 +107,9 @@ contains
 
         call Calc_precip()
 
-        call Calc_PEt()         !***
-        call Calc_AEt()         !***
-        call Calc_Ei()
+        call Calc_Penman_Monteith()
 
         call Calc_SWP()
-        call Calc_fSWP()
 
         call Calc_O3_Concentration()
         call Calc_Ftot()

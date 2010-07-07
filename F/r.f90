@@ -4,6 +4,9 @@ module R
                 Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur, &
                 Calc_Ra_With_Heat_Flux
 
+    ! VPD sum for the day (kPa)
+    real, private, save :: VPD_dd = 0
+
 contains
 
     !==========================================================================
@@ -12,10 +15,10 @@ contains
     subroutine Calc_Ra_Simple()
         use Constants, only: k, izR
         use Inputs, only: ustar
-        use Params_Veg, only: h, d, zo
+        use Params_Veg, only: h, d
         use Variables, only: Ra
 
-        Ra = (1 / (ustar * k)) * log((izR - d) / zo)
+        Ra = (1 / (ustar * k)) * log((izR - d) / (h - d))
     end subroutine Calc_Ra_Simple
 
     !==========================================================================
@@ -48,7 +51,7 @@ contains
             Psi_h_zd = -5 * Ezd
             Psi_m_zd = -5 * Ezd
         else
-            Xzd = (1 - 15*Ezd)**(1/4)
+            Xzd = (1 - 15*Ezd)**(1.0/4.0)
             Psi_m_zd = log(((1+Xzd**2)/2)*((1+Xzd)/2)**2)-2*ATAN(Xzd)+(PI/2)
             Psi_h_zd = 2*log((1+Xzd**2)/2)
         end if
@@ -69,11 +72,12 @@ contains
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
     !==========================================================================
     subroutine Calc_Rb()
-        use Constants, only: k, v, DO3, Pr
+        use Constants, only: k, v, DO3, DH2O, Pr
         use Inputs, only: ustar
-        use Variables, only: Rb
+        use Variables, only: Rb, Rb_H2O
 
         Rb = (2.0/(k*ustar)) * (((v/DO3)/Pr)**(2.0/3.0))
+        Rb_H2O = (2.0/(k*ustar)) * (((v/DH2O)/Pr)**(2.0/3.0))
     end subroutine Calc_Rb
 
     !==========================================================================
@@ -81,64 +85,93 @@ contains
     !==========================================================================
     subroutine Calc_Rgs()
         use Params_Site, only: Rsoil
-        use Inputs, only: Ts_C
         use Variables, only: Rgs
 
-        real :: Rlow    ! Low temperature resistance(af.Wesely, 1989)
- 
-        Rlow = (1000 * exp(-(Ts_c + 4)))
-        ! TODO: What is the point of 2000*0?
-        Rgs = Rsoil + Rlow + 2000*0
+        Rgs = Rsoil
     end subroutine Calc_Rgs
 
     !==========================================================================
     ! Calculate Rinc, in-canopy aerodynamic resistance
     !==========================================================================
     subroutine Calc_Rinc()
-        use Params_Veg, only: Rinc_b
+        use Params_Veg, only: Rinc_b, h
         use Inputs, only: ustar
         use Variables, only: SAI, Rinc
 
-        Rinc = Rinc_b * SAI * Rinc_b/ustar
+        Rinc = Rinc_b * SAI * h/ustar
     end subroutine Calc_Rinc
 
     !==========================================================================
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
     subroutine Calc_Rsto()
-        use Params_Veg, only: gmax
-        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, Gsto, Gsto_PEt, Rsto, Rsto_PEt, LAI
+        use Params_Veg, only: gmax, fmin, VPD_crit
+        use Inputs, only: VPD, dd
+        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, fO3, dd_prev
+        use Variables, only: leaf_fphen, leaf_flight, LAI
+        use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
+                             Gsto_PEt, Rsto_PEt
 
-        real :: Gsto_sm
+        real :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev
 
-        Gsto = gmax * fphen * flight * ftemp * fVPD * fSWP
-
-        ! Gsto for PEt - assume non-limiting SWP
-        Gsto_PEt = gmax * fphen * flight * ftemp * fVPD
-
-        ! Rsto for PEt
-        if ( Gsto_PEt == 0 .or. LAI == 0 ) then
-            Rsto_PEt = 100000
-        else
-            Rsto_PEt = 1/((Gsto_PEt * LAI) / 41000)     ! potential bulk canopy 
-                                                        ! stomatal resistance to 
-                                                        ! O3 in s/m
+        ! Preparation for VPD_crit limiting
+        !   Copy old Gsto values
+        Gsto_l_prev = Gsto_l
+        Gsto_prev = Gsto
+        Gsto_c_prev = Gsto_c
+        Gsto_PEt_prev = Gsto_PEt
+        !   Reset accumulated VPD?
+        if (dd /= dd_prev) then
+            VPD_dd = 0
+        end if
+        !   Accumulate VPD during daylight hours
+        if (Flight > 0) then
+            VPD_dd = VPD_dd + VPD
         end if
 
-        ! Rsto
-        Gsto_sm = Gsto / 41000
-        if ( Gsto_sm <= 0 ) then
+        ! Leaf Gsto
+        Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fSWP)
+        ! Mean Gsto
+        Gsto = gmax * fphen * flight * max(fmin, ftemp * fVPD * fSWP)
+        ! Estimate canopy Gsto from mean leaf Gsto
+        Gsto_c = Gsto * LAI
+        ! Potential canopy Gsto for PEt calculation (non-limiting SWP)
+        Gsto_PEt = gmax * fphen * flight * ftemp * fVPD * LAI
+
+        ! Check the VPD_crit condition
+        if (VPD_dd >= VPD_crit) then
+            Gsto_l = min(Gsto_l, Gsto_l_prev)
+            Gsto = min(Gsto, Gsto_prev)
+            Gsto_c = min(Gsto_c, Gsto_c_prev)
+            Gsto_PEt = min(Gsto_PEt, Gsto_PEt_prev)
+        end if
+
+        ! Leaf Rsto
+        if (Gsto_l <= 0) then
+            Rsto_l = 100000
+        else
+            Rsto_l = 41000 / Gsto_l
+        end if
+
+        ! Mean Rsto
+        if (Gsto <= 0) then
             Rsto = 100000
         else
-            Rsto = 1/(Gsto_sm)
+            Rsto = 41000 / Gsto  ! Gsto in s/m = Gsto * 41000, Rsto = 1 / Gsto
         end if
 
-        ! estimate whole canopy stomatal conductance from average leaf stomatal 
-        ! conductance
-        if ( LAI == 0 ) then
-            Gsto = 0
-        else if ( Gsto > 0 ) then
-            Gsto = Gsto * LAI
+        ! Canopy Rsto
+        if (Gsto_c <= 0) then
+            Rsto_c = 100000
+        else
+            Rsto_c = 41000 / Gsto_c
+        end if
+
+        ! Potential canopy Rsto for PEt calculation
+        if (Gsto_PEt <= 0) then
+            Rsto_PEt = 100000
+        else
+            Rsto_PEt = 41000 / Gsto_PEt
         end if
     end subroutine Calc_Rsto
 
