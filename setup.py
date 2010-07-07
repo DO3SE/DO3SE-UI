@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from glob import glob
 import do3se.application
 
 application = do3se.application.app_name
@@ -20,34 +21,49 @@ path = os.path.join(os.path.dirname(numpy.__file__),
                     'distutils', 'tests', '__init__.py')
 open(path, 'a').close()
 
-# Find the DLLs we need from wxPython (for Python 2.5, anyway...)
-import wx, glob
-wxpath = os.path.dirname(wx.__file__)
-wxdlls = glob.glob(os.path.join(wxpath, 'msvcp??.dll'))
-wxdlls.append(os.path.join(wxpath, 'gdiplus.dll'))
-
 manifest = '''
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-<assemblyIdentity
-    version="5.0.0.0"
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1"
+manifestVersion="1.0">
+  <assemblyIdentity
+    version="0.6.8.0"
     processorArchitecture="x86"
     name="%(app)s"
     type="win32"
-/>
-<description>%(description)s</description>
-<dependency>
-    <dependentAssembly>
-        <assemblyIdentity
-            type="win32"
-            name="Microsoft.Windows.Common-Controls"
-            version="6.0.0.0"
-            processorArchitecture="X86"
-            publicKeyToken="6595b64144ccf1df"
-            language="*"
+  />
+  <description>%(description)s</description>
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel
+          level="asInvoker"
+          uiAccess="false"
         />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+        type="win32"
+        name="Microsoft.VC90.CRT"
+        version="9.0.21022.8"
+        processorArchitecture="x86"
+        publicKeyToken="1fc8b3b9a1e18e3b"
+      />
     </dependentAssembly>
-</dependency>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+        type="win32"
+        name="Microsoft.Windows.Common-Controls"
+        version="6.0.0.0"
+        processorArchitecture="x86"
+        publicKeyToken="6595b64144ccf1df"
+        language="*"
+      />
+    </dependentAssembly>
+  </dependency>
 </assembly>
 ''' % dict(app=application, description=description)
 
@@ -108,7 +124,6 @@ if __name__ == "__main__":
             author_email    = 'sei@alanbriolat.co.uk',
             packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
             data_files      = [
-                ('.', wxdlls),
                 ('resources', [
                     'resources/default_veg_presets.csv',
                     'resources/resistance.png',
@@ -116,17 +131,39 @@ if __name__ == "__main__":
                     'resources/functions.png',
                     ]
                 ),
-            ],
+                ('Microsoft.VC90.CRT',
+                    glob('resources/Microsoft.VC90.CRT/*')),
+                ],
             options         = {
                 'build': build_opts,
                 'py2exe': {
                     'includes': [
                         'dbhash',
-                        'simplejson',
+                        ],
+                    'excludes': [
+                        # Ignore unused standard library packages to reduce size
+                        '_ssl',
+                        'doctest',
+                        'pdb',
+                        'difflib',
+                        'inspect',
+                        'tcl',
+                        'Tkinter',
+                        'bsddb',
+                        'pydoc',
+                        'compiler',
+                        'distutils',
+                        'email',
+                        # Packages that definitely cannot be removed
+                        #'wx',
+                        #'numpy',
+                        #'unittest',
+                        #'pyexpat',
                         ],
                     'packages': [
                         'numpy',
                         ],
+                    'dll_excludes': ['MSVCP90.dll'],
                     'bundle_files': 1,
                     'optimize': 2,
                 },
