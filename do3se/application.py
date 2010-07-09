@@ -1,6 +1,6 @@
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '0.9'
+app_version = '2.0-alpha'
 
 import wx
 import os.path
