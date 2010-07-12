@@ -1,4 +1,5 @@
 *.so
+*.pyd
 *.pyf
 f2py-build
 tags
