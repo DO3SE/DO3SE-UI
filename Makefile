@@ -3,13 +3,8 @@
 #####################################################################
 
 #####################################################################
-# Set paths and compilers
+# Compilers for different platforms
 #####################################################################
-
-# Build system paths for Windows
-WIN32_LIB_MINGW = /c/mingw/lib
-WIN32_BIN_MINGW = /c/mingw/bin
-WIN32_BIN_MSYS  = /c/msys/1.0/bin
 
 # Compiler commands for Windows
 WIN32_F                 = g95 -std=F
@@ -25,22 +20,14 @@ LINUX_F2PY_FCOMPILER    = gnu95
 
 #####################################################################
 # Set build system variables depending on the platform.
-# 
-# Currently supported platforms are "linux" and "win32", with the
-# default being "linux".  Run "make PLATFORM=win32" to build for
-# Windows.
+#
+# Platform is autodetected based on the output of the 'uname'
+# command.  (Right now it is "Windows" or "something else".)
 #####################################################################
 
-# Default to "linux" if no platform is set
-ifndef PLATFORM
-	PLATFORM=linux
-endif
-export PLATFORM
-
-ifeq ($(PLATFORM),win32)
-	# Modify environment variables so the user doesn't need to
-	export LIBRARY_PATH := $(WIN32_LIB_MINGW):$(LIBRARY_PATH)
-	export PATH := $(WIN32_BIN_MINGW):$(WIN32_BIN_MSYS):$(PATH)
+# On Windows, the 'uname' command will give MINGW32_NT-x.x (because
+# the only available uname is that from MinGW)
+ifeq ($(shell sh -c 'uname -s | cut -c 1-7'),MINGW32)
 	# Set the compilers
 	export F=$(WIN32_F)
 	export F95=$(WIN32_F95)
