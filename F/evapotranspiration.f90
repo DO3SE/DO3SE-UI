@@ -5,27 +5,28 @@ module Evapotranspiration
 contains
 
     !
-    ! Calculate the evaporation of intercepted precipitation (Ei), potential and
-    ! actual evapotranspiration (PEt and AEt) and soil evaporation (Es) using 
-    ! the Penman-Monteith method.
+    ! Calculate the evaporation of intercepted precipitation (Ei), potential
+    ! plant transpiration (PEt), actual plant transpiration (Et), actual
+    ! evapotranspiration (AEt) and soil evaporation (Es) using the
+    ! Penman-Monteith method.
     !
     subroutine Calc_Penman_Monteith()
         use Constants, only: seaP, Ts_K
         use Inputs, only: VPD, Ts_C, P, dd
-        use Variables, only: Ei, AEt, PEt, Es, Rb_H2O, LAI, Rsto_c, Rsto_PEt, &
-                             dd_prev, Sn, Rinc, Rgs, Rn_MJ => Rn
+        use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
+                             Rsto_PEt, dd_prev, Sn, Rinc, Rgs, Rn_MJ => Rn
         use Params_Site, only: Fc_m
-        use Variables, only: PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr, Es_hr
+        use Variables, only: PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr, Et_hr_prev, Es_hr
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
         real        :: P_Pa         ! Pressure in Pa, not kPa
         real        :: esat, eact   ! esat and eact in Pa
         real        :: Tvir, delta, lambda, psychro, Pair, Cair, G
         
-        real        :: Et_1, Et_2, Ei_3 !, PEt_3, AEt_3, Ei_hr, PEt_hr, AEt_hr
+        real        :: Et_1, Et_2, Ei_3 !, PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr
         real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3 !, Es_hr
 
-        real, save  :: Ei_dd = 0, PEt_dd = 0, AEt_dd = 0, Es_dd = 0
+        real, save  :: Ei_dd = 0, PEt_dd = 0, Et_dd = 0, Es_dd = 0
 
         ! Convert Rn to J from MJ
         real :: Rn
@@ -56,8 +57,9 @@ contains
         PEt_3 = delta + psychro * (1 + (Rsto_PEt * 0.61) / Rb_H2O)
         PEt_hr = (Et_1 + Et_2) / PEt_3 / 1000
 
-        AEt_3 = delta + psychro * (1 + (Rsto_c * 0.61) / Rb_H2O)
-        AEt_hr = (Et_1 + Et_2) / AEt_3 / 1000
+        Et_3 = delta + psychro * (1 + (Rsto_c * 0.61) / Rb_H2O)
+        Et_hr_prev = Et_hr
+        Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 
         if (Sn < Fc_m) then
             Es_hr = 0
@@ -75,7 +77,7 @@ contains
             ! Same day, accumulate
             Ei_dd = Ei_dd + Ei_hr
             PEt_dd = PEt_dd + PEt_hr
-            AEt_dd = AEt_dd + AEt_hr
+            Et_dd = Et_dd + Et_hr
             Es_dd = Es_dd + Es_hr
         else
             ! Next day, store + reset
@@ -83,11 +85,14 @@ contains
             Ei_dd = Ei_hr
             PEt = PEt_dd
             PEt_dd = PEt_hr
-            AEt = AEt_dd
-            AEt_dd = AEt_hr
+            Et = Et_dd
+            Et_dd = Et_hr
             Es = Es_dd
             Es_dd = Es_hr
         endif
+
+        ! TODO: Calculate AEt correctly
+        AEt = Et
     end subroutine Calc_Penman_Monteith
 
 end module Evapotranspiration

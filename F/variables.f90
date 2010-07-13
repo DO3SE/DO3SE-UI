@@ -14,17 +14,20 @@ module Variables
     real, public, save  :: fVPD
 
     ! Evapotranspiration
-    real, public, save  :: PEt  ! Potential evapotranspiration
-    real, public, save  :: AEt  ! Actual evapotranspiration
+    real, public, save  :: PEt  ! Potential plant transpiration
+    real, public, save  :: Et   ! Actual plant transpiration
+    real, public, save  :: AEt  ! Actual evapotranspiration (combining plant
+                                ! transpiration and soil evaporation)
     real, public, save  :: Ei   ! Evaporation of intercepted precipitation
     real, public, save  :: Es   ! Evaporation of soil water
-    ! Intermediate evapotranspiration variables (TODO: remove these)
+    ! Intermediate evapotranspiration variables
     real, public, save  :: Ei_hr
     real, public, save  :: Es_hr
     real, public, save  :: PEt_hr
-    real, public, save  :: AEt_hr
+    real, public, save  :: Et_hr
+    real, public, save  :: Et_hr_prev
     real, public, save  :: PEt_3
-    real, public, save  :: AEt_3
+    real, public, save  :: Et_3
 
     ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
