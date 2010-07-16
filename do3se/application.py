@@ -32,6 +32,7 @@ class App(wx.App):
         self.sichecker = wx.SingleInstanceChecker(si_filename, wx.StandardPaths_Get().GetTempDir())
         if self.sichecker.IsAnotherRunning():
             logging.error("Another instance is already running - exiting!")
+            wx.MessageDialog(None, "DO3SE is already running", style=wx.OK|wx.ICON_ERROR).ShowModal()
             return False
 
         # Make sure configuration directory exists

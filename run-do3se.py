@@ -14,7 +14,7 @@ try:
 except AttributeError:
     pass
 # Initialise logger
-logging.basicConfig(level=level, format='%(levelname)-8s %(message)s')
+logging.basicConfig(level=level, format='[%(levelname)-8s] %(message)s')
 
 
 #

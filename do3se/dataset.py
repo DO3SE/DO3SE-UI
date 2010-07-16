@@ -1,40 +1,39 @@
-################################################################################
-# Data set handler
-#
-# This is the class responsible for loading input data, running the model, and 
-# saving the results.
-#
-# TODO: Add parameters to the run() method
-################################################################################
-
 import csv
-import wx
-
 import logging
 
 import util
 import model
 
-class InvalidFieldCountError:
+class InvalidFieldCountError(Exception):
+    """Mismatch between specified field count and data column count."""
     pass
 
 
-class InsufficientTrimError:
+class InsufficientTrimError(Exception):
+    """Not enough lines trimmed from beginning of data.
+
+    This exception occurs when invalid data was found when attempting to read
+    from a CSV file.  This is usually due to headers being present because not
+    enough lines were trimmed from the beginning.
+    """
     pass
 
 
 class Dataset:
-    def __init__(self, filename, fields, trim, siteparams, vegparams):
-        """Constructor
+    """Load and process dataset.
 
-        Initialise the Dataset object and load the data from the file.
-        
-        filename:   The path to the file to load
-        fields:     Fields contained in the file, to be used as dict keys
-        trim:       The number of lines to trim from the beginning of the file
-        siteparams: Site parameters
-        vegparams:  Vegetation parameters
-        """
+    This class is responsible for loading input data, running the model over
+    it, storing the results, and saving them to a file.
+
+    :param filename:    The path to the file to load
+    :param fields:      Names of the fields/columns in the input file
+    :param trim:        Number of lines to trim from beginning of file, to
+                        skip the existing column headers
+    :param siteparams:  Site parameters
+    :param vegparams:   Vegetation parameters
+    """
+    def __init__(self, filename, fields, trim, siteparams, vegparams):
+        """Initialise the Dataset object and load the data from the file."""
         self.filename = filename
         self.siteparams = siteparams
         self.vegparams = vegparams
@@ -68,6 +67,10 @@ class Dataset:
         logging.info("Loaded %d lines from '%s'" % (len(self.input), self.filename))
 
     def run(self):
+        """Run the DO3SE model with this dataset.
+
+        :returns:   2-tuple of ``(result_count, skipped_row_count)``
+        """
         skippedrows = 0
 
         # Copy parameters (to avoid breaking whatever else might be using them)
@@ -108,8 +111,10 @@ class Dataset:
             # Catch TypeError - usually caused by some attributes being None 
             # because there weren't enough fields in the input
             # TODO: Handle this differently?
-            try: util.setattrs(model.inputs, row)
-            except TypeError: raise InvalidFieldCountError()
+            try:
+                util.setattrs(model.inputs, row)
+            except TypeError:
+                raise InvalidFieldCountError()
 
             self.par_r()
             model.inputs.derive_ustar_uh()
@@ -121,6 +126,13 @@ class Dataset:
 
 
     def save(self, filename, fields, headers=False, period=None):
+        """Save the results to a CSV file according to the output format.
+
+        :param filename:    The path to the file to save to
+        :param fields:      Identifiers of fields to include in output, in order
+        :param headers:     Include field headers in output?
+        :param period:      Day range, inclusive, to include rows for: ``(start, end)``
+        """
         logging.info("Writing data to '%s' ..." % filename)
         logging.debug("Output data format: %s" % (",".join(fields)))
 

@@ -120,9 +120,9 @@ _output_fields = (
         (variables,     'ei_hr',    float,  'Ei_hr',            '[DEBUG] Ei_hr'),
         (variables,     'es_hr',    float,  'Es_hr',            '[DEBUG] Es_hr'),
         (variables,     'pet_hr',   float,  'PEt_hr',           '[DEBUG] PEt_hr'),
-        (variables,     'et_hr',   float,  'Et_hr',            '[DEBUG] Et_hr'),
+        (variables,     'et_hr',    float,  'Et_hr',            '[DEBUG] Et_hr'),
         (variables,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
-        (variables,     'et_3',    float,  'Et_3',             '[DEBUG] Et_3'),
+        (variables,     'et_3',     float,  'Et_3',             '[DEBUG] Et_3'),
 
         (variables,     'ot0',      float,  'OT0',              '[DEBUG] OT0'),
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),

@@ -2,8 +2,7 @@ import json
 import os, shutil
 
 class JsonDict(dict):
-    """
-    Dictionary backed by a JSON file.
+    """Dictionary backed by a JSON file.
 
     A dictionary class using a JSON file as storage, but without automatic
     syncronisation.  Writes are atomic, and the implementation borrows very

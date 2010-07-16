@@ -7,7 +7,7 @@ Contents:
     :maxdepth: 2
 
     buildenv
-    util
+    do3se
 
 Indices and tables
 ==================
