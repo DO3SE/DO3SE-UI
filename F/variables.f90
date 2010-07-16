@@ -39,6 +39,9 @@ module Variables
     real, public, save :: P_input
     real, public, save :: Sn_diff
     real, public, save :: fXWP
+    real, public, save :: LWP           ! Leaf water potential (MPa)
+    real, public, save :: delta_LWP     ! Change in LWP between hours
+    real, public, save :: fLWP
 
     ! R
     real, public, save  :: Ra

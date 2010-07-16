@@ -78,6 +78,7 @@ _output_fields = (
         (variables,     'swp',      float,  'SWP (MPa)',        'Soil water potential (SWP, MPa)'),
         (variables,     'per_vol',  float,  'per_vol (%)',      'Volumetric water content (per_vol, %)'),
         (variables,     'smd',      float,  'SMD (m)',          'Soil moisture deficit (SMD, m)'),
+        (variables,     'lwp',      float,  'LWP (???)',        'Leaf water potential (LWP, ???)'),
 
         # Debug variables
         (variables,     'ra_i',     float,  'Ra_i (s/m)',       '[DEBUG] Ra at O3 measurement'),
@@ -123,6 +124,8 @@ _output_fields = (
         (soilwater,     'et_hr',    float,  'Et_hr',            '[DEBUG] Et_hr'),
         (soilwater,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
         (soilwater,     'et_3',     float,  'Et_3',             '[DEBUG] Et_3'),
+        (variables,     'delta_lwp',float,  'delta_LWP',        '[DEBUG] delta_LWP'),
+        (variables,     'flwp',     float,  'fLWP',             '[DEBUG] fLWP'),
 
         (variables,     'ot0',      float,  'OT0',              '[DEBUG] OT0'),
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
