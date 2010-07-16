@@ -42,7 +42,7 @@ contains
         SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
 
         ! Calculate fSWP and SMD for initial water content
-        fSWP = max(fmin, ((1 - fmin) / (SWP_min - SWP_max) * (SWP_min - SWP) + fmin))
+        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
         SMD = (Fc_m - Sn) * root
     end subroutine Soil_initialize
 
@@ -77,7 +77,7 @@ contains
 
             ! fSWP enabled?
             if (enable_fSWP > 0) then
-                fSWP = min(1.0, max(fmin, ((1-fmin) * ((SWP_min - SWP)/(SWP_min - SWP_max))) + fmin))
+                fSWP = (((-1) * SWP)** (-0.706)) * 0.355
             else
                 ! Model is multiplicative, so fSWP = 1.0 removes its significance
                 fSWP = 1.0
