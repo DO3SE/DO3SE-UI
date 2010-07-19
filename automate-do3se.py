@@ -65,9 +65,9 @@ if __name__ == '__main__':
     parser.add_option('--list-outputs', action="callback", callback=list_outputs,
                       help="List all available output fields")
     parser.add_option('-i', '--infile', dest="infile", metavar="FILE",
-                      help="Input file")
+                      help="Input file (defaults to stdin)")
     parser.add_option('-o', '--outfile', dest="outfile", metavar="FILE",
-                      help="Output file")
+                      help="Output file (defaults to stdout)")
     (options, args) = parser.parse_args()
 
     if len(args) < 4:
@@ -75,11 +75,21 @@ if __name__ == '__main__':
     if len(args) > 4:
         parser.error("too many arguments")
 
-    # TODO: these won't be needed once stdin/stdout is supported
-    if options.infile == None or not os.path.exists(options.infile):
-        parser.error("input file required")
+    if options.infile == None:
+        infile = sys.stdin
+    else:
+        try:
+            infile = open(options.infile)
+        except IOError:
+            parser.error("could not open input file: " + options.infile)
+
     if options.outfile == None:
-        parser.error("output file required")
+        outfile = sys.stdout
+    else:
+        try:
+            outfile = open(options.outfile, 'wb')
+        except IOError:
+            parser.error("could not open output file: " + options.outfile)
 
     (informat_preset, site_preset, veg_preset, outformat_preset) = args
 
@@ -107,9 +117,9 @@ if __name__ == '__main__':
         if not f in model.output_field_map:
             parser.error('invalid field name: %s (see --list-outputs)' % f)
 
-    d = Dataset(options.infile, informat['fields'], informat['trim'],
+    d = Dataset(infile, informat['fields'], informat['trim'],
                 siteparams, vegparams)
 
     d.run()
 
-    d.save(options.outfile, outformat['fields'], outformat['headers'])
+    d.save(outfile, outformat['fields'], outformat['headers'])

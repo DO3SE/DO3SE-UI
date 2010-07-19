@@ -184,12 +184,19 @@ class MainWindow(wx.Frame):
 
 
     def _run_file(self, path):
+        try:
+            infile = open(path)
+        except IOError:
+            wx.MessageBox("Could not open file: " + path,
+                          self.app.title, wx.OK|wx.ICON_ERROR, self)
+            return
+
         self.filehistory.AddFileToHistory(path)
 
         fields = self.Input.GetFields()
 
         try:
-            d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
+            d = Dataset(infile, self.Input.GetFields(), self.Input.GetTrim(), 
                         self.Site.getvalues(), self.Veg.getvalues())
         except RequiredFieldError, e:
             if len(e.fields) == 1:
@@ -206,6 +213,8 @@ class MainWindow(wx.Frame):
                           "of lines to trim from the input set correctly?",
                           self.app.title, wx.OK|wx.ICON_ERROR, self)
             return
+        finally:
+            infile.close()
 
 
         try:

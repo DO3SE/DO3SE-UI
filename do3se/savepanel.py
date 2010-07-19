@@ -8,6 +8,8 @@ class SavePanel(wx.Panel):
     def __init__(self, app, parent, dataset, startdir):
         wx.Panel.__init__(self, parent)
 
+        self.app = app
+
         self.dataset = dataset
         self.prevdir = startdir
 
@@ -85,9 +87,19 @@ class SavePanel(wx.Panel):
         if response == wx.ID_OK:
             self.prevdir = fd.GetDirectory()
             path = fd.GetPath()
-            if not path.split('.')[-1] == 'csv': path = path + '.csv'
-            self.dataset.save(path, self.GetFields(), 
-                    headers=self.GetAddHeaders(),
-                    period=self.GetDateRange())
+            if not path.split('.')[-1] == 'csv':
+                path = path + '.csv'
+
+            try:
+                outfile = open(path, 'wb')
+            except IOError:
+                wx.MessageBox('Failed to write results to file "' + path + '"',
+                              self.app.title, wx.OK|wx.ICON_ERROR, self)
+                return
+
+            self.dataset.save(outfile, self.GetFields(), 
+                              headers=self.GetAddHeaders(),
+                              period=self.GetDateRange())
+            outfile.close()
             wx.MessageDialog(self, message = 'Results saved!',
                     style = wx.OK|wx.ICON_INFORMATION)

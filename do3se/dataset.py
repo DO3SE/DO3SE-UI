@@ -31,16 +31,15 @@ class Dataset:
     This class is responsible for loading input data, running the model over
     it, storing the results, and saving them to a file.
 
-    :param filename:    The path to the file to load
+    :param infile:      A file-like object to read from
     :param fields:      Names of the fields/columns in the input file
     :param trim:        Number of lines to trim from beginning of file, to
                         skip the existing column headers
     :param siteparams:  Site parameters
     :param vegparams:   Vegetation parameters
     """
-    def __init__(self, filename, fields, trim, siteparams, vegparams):
+    def __init__(self, infile, fields, trim, siteparams, vegparams):
         """Initialise the Dataset object and load the data from the file."""
-        self.filename = filename
         self.siteparams = siteparams.copy()
         self.vegparams = vegparams.copy()
         
@@ -90,23 +89,18 @@ class Dataset:
                                                         model.default_soil_class)]
         self.siteparams.update(soil['data'])
 
-        # Open the file
-        file = open(self.filename)
         # Skip the trimmed lines
-        for n in xrange(0,trim): file.next()
+        for n in xrange(0,trim): infile.next()
         # Load all of the data
         logging.debug("Input data format: %s" % (",".join(fields)))
         try:
-            self.input = list(csv.DictReader(file, fieldnames = fields, 
+            self.input = list(csv.DictReader(infile, fieldnames = fields, 
                 quoting=csv.QUOTE_NONNUMERIC))
         except ValueError:
             # ValueError here usually means the headers didn't get trimmed
             raise InsufficientTrimError()
 
-        # Close the file
-        file.close()
-
-        logging.info("Loaded %d lines from '%s'" % (len(self.input), self.filename))
+        logging.info("Loaded %d data rows" % len(self.input))
 
     def run(self):
         """Run the DO3SE model with this dataset.
@@ -154,19 +148,17 @@ class Dataset:
         return (len(self.results), skippedrows)
 
 
-    def save(self, filename, fields, headers=False, period=None):
+    def save(self, outfile, fields, headers=False, period=None):
         """Save the results to a CSV file according to the output format.
 
-        :param filename:    The path to the file to save to
+        :param outfile:     The file to save results to
         :param fields:      Identifiers of fields to include in output, in order
         :param headers:     Include field headers in output?
         :param period:      Day range, inclusive, to include rows for: ``(start, end)``
         """
-        logging.info("Writing data to '%s' ..." % filename)
         logging.debug("Output data format: %s" % (",".join(fields)))
 
-        file = open(filename, "wb")
-        w = csv.DictWriter(file, fieldnames=fields, extrasaction='ignore',
+        w = csv.DictWriter(outfile, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
 
         if headers:
@@ -182,5 +174,4 @@ class Dataset:
             w.writerows(self.results)
             count = len(self.results)
         
-        file.close()
         logging.info("Wrote %d records" % (count,))
