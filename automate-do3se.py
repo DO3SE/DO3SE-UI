@@ -12,6 +12,8 @@ from do3se.application import app_name
 from do3se.dataset import Dataset
 from do3se import model
 
+config = None
+
 class FakeApp(wx.App):
     """Fake application to trick wxPython into letting us use StandardPaths."""
     def OnInit(self):
@@ -22,14 +24,6 @@ def load_config():
     app = FakeApp()
     conf_path = os.path.join(wx.StandardPaths_Get().GetUserDataDir(), 'config.json')
     return Config(conf_path, 'resources/default_veg_presets.csv')
-
-
-# Setup logging
-level = logging.DEBUG
-logging.basicConfig(level=level, format='[%(levelname)-8s] %(message)s')
-
-# Load config
-config = load_config()
 
 def list_presets(option, opt, value, parser):
     print "Input format presets:"
@@ -53,59 +47,69 @@ def list_outputs(option, opt, value, parsers):
         print "\t[%(variable)-11s] %(long)s" % f
     exit(0)
 
-# Arguments
-parser = OptionParser(usage="usage: %prog [options] INPUT_FORMAT SITE_PARAMS"
-                            " VEG_PARAMS OUTPUT_FORMAT")
-parser.add_option('-l', '--list-presets', action="callback", callback=list_presets,
-                  help="List the names of available presets")
-parser.add_option('--list-outputs', action="callback", callback=list_outputs,
-                  help="List all available output fields")
-parser.add_option('-i', '--infile', dest="infile", metavar="FILE",
-                  help="Input file")
-parser.add_option('-o', '--outfile', dest="outfile", metavar="FILE",
-                  help="Output file")
-(options, args) = parser.parse_args()
 
-if len(args) < 4:
-    parser.error("not enough arguments")
-if len(args) > 4:
-    parser.error("too many arguments")
+if __name__ == '__main__':
+    # Setup logging
+    level = logging.DEBUG
+    logging.basicConfig(level=level, format='[%(levelname)-8s] %(message)s')
 
-# TODO: these won't be needed once stdin/stdout is supported
-if options.infile == None or not os.path.exists(options.infile):
-    parser.error("input file required")
-if options.outfile == None:
-    parser.error("output file required")
+    # Load config
+    global config
+    config = load_config()
 
-(informat_preset, site_preset, veg_preset, outformat_preset) = args
+    # Arguments
+    parser = OptionParser(usage="usage: %prog [options] INPUT_FORMAT SITE_PARAMS"
+                                " VEG_PARAMS OUTPUT_FORMAT")
+    parser.add_option('-l', '--list-presets', action="callback", callback=list_presets,
+                      help="List the names of available presets")
+    parser.add_option('--list-outputs', action="callback", callback=list_outputs,
+                      help="List all available output fields")
+    parser.add_option('-i', '--infile', dest="infile", metavar="FILE",
+                      help="Input file")
+    parser.add_option('-o', '--outfile', dest="outfile", metavar="FILE",
+                      help="Output file")
+    (options, args) = parser.parse_args()
 
-try:
-    informat = config['input_format'][informat_preset]
-except KeyError:
-    parser.error('invalid input format preset: %s (see --list-presets)' % informat_preset)
+    if len(args) < 4:
+        parser.error("not enough arguments")
+    if len(args) > 4:
+        parser.error("too many arguments")
 
-try:
-    siteparams = config['site_params'][site_preset]
-except KeyError:
-    parser.error('invalid site parameter preset: %s (see --list-presets)' % site_preset)
+    # TODO: these won't be needed once stdin/stdout is supported
+    if options.infile == None or not os.path.exists(options.infile):
+        parser.error("input file required")
+    if options.outfile == None:
+        parser.error("output file required")
 
-try:
-    vegparams = config['veg_params'][veg_preset]
-except KeyError:
-    parser.error('invalid vegetation parameter preset: %s (see --list-presets)' % veg_preset)
+    (informat_preset, site_preset, veg_preset, outformat_preset) = args
 
-try:
-    outformat = config['output_format'][outformat_preset]
-except KeyError:
-    outformat = {'fields': outformat_preset.split(','),
-                 'reduce': False, 'headers': True}
-for f in outformat['fields']:
-    if not f in model.output_field_map:
-        parser.error('invalid field name: %s (see --list-outputs)' % f)
+    try:
+        informat = config['input_format'][informat_preset]
+    except KeyError:
+        parser.error('invalid input format preset: %s (see --list-presets)' % informat_preset)
 
-d = Dataset(options.infile, informat['fields'], informat['trim'],
-            siteparams, vegparams)
+    try:
+        siteparams = config['site_params'][site_preset]
+    except KeyError:
+        parser.error('invalid site parameter preset: %s (see --list-presets)' % site_preset)
 
-d.run()
+    try:
+        vegparams = config['veg_params'][veg_preset]
+    except KeyError:
+        parser.error('invalid vegetation parameter preset: %s (see --list-presets)' % veg_preset)
 
-d.save(options.outfile, outformat['fields'], outformat['headers'])
+    try:
+        outformat = config['output_format'][outformat_preset]
+    except KeyError:
+        outformat = {'fields': outformat_preset.split(','),
+                     'reduce': False, 'headers': True}
+    for f in outformat['fields']:
+        if not f in model.output_field_map:
+            parser.error('invalid field name: %s (see --list-outputs)' % f)
+
+    d = Dataset(options.infile, informat['fields'], informat['trim'],
+                siteparams, vegparams)
+
+    d.run()
+
+    d.save(options.outfile, outformat['fields'], outformat['headers'])

@@ -1,25 +1,19 @@
 #!/usr/bin/python
 
-#
-# Setup logging
-#
-import sys, logging
-# Default log level
-level = logging.DEBUG
-# See if we're running "frozen" - if so, don't annoy the user with pointless
-# debug messages
-try:
-    if sys.frozen:
-        level = logging.CRITICAL
-except AttributeError:
-    pass
-# Initialise logger
-logging.basicConfig(level=level, format='[%(levelname)-8s] %(message)s')
+import sys
+import logging
 
-
-#
-# Run the application
-#
 from do3se.application import App
-app = App()
-app.Run()
+
+if __name__ == '__main__':
+    # If the app is frozen (i.e. made into an executable), don't annoy the user
+    # with log messages they don't care about.
+    if hasattr(sys, 'frozen') and sys.frozen:
+        level = logging.CRITICAL
+    else:
+        level = logging.DEBUG
+    logging.basicConfig(level=level, format='[%(levelname)-8s] %(message)s')
+
+    # Run the application
+    app = App()
+    app.Run()
