@@ -184,74 +184,29 @@ class MainWindow(wx.Frame):
 
 
     def _run_file(self, path):
-        class RequiredFieldError:
-            def __init__(self, app, fields):
-                if len(fields) == 1:
-                    wx.MessageBox("Required field missing: " + model.input_field_map[fields[0]]['long'],
-                            app.title, wx.OK|wx.ICON_ERROR, app.toplevel)
-
-                else:
-                    wx.MessageBox("At least one of the following fields are required:\n\n" + 
-                            "\n".join((model.input_field_map[x]['long'] for x in fields)), app.title, 
-                            wx.OK|wx.ICON_ERROR, app.toplevel)
-
         self.filehistory.AddFileToHistory(path)
 
         fields = self.Input.GetFields()
 
-        # Handle inputs marked as required
-        required = (x['variable'] for x in model.input_fields if x['required'])
-        try:
-            for f in required:
-                if not f in fields:
-                    raise RequiredFieldError(self.app, [f])
-        except RequiredFieldError:
-            return
-
-        # Handle more complicated situations: PAR/Global radiation
-        try:
-            if 'par' in fields and 'r' in fields:
-                def f(): pass
-                par_r = f
-                logging.info("Both R and PAR present")
-            elif 'par' in fields:
-                par_r = lambda : model.inputs.derive_r()
-                logging.info("Deriving R from PAR")
-            elif 'r' in fields:
-                par_r = lambda : model.inputs.derive_par()
-                logging.info("Deriving PAR from R")
-            else:
-                raise RequiredFieldError(self.app, ['par', 'r'])
-        except RequiredFieldError:
-            return
-
-        # Calculate net radiation if not supplied
-        if 'rn' in fields:
-            rn = model.irradiance.copy_rn
-        else:
-            rn = model.irradiance.calc_rn
-
-        if not os.access(path, os.R_OK):
-            wx.MessageBox("Could not read the specified file", 
-                    self.app.title, wx.OK|wx.ICON_ERROR, self)
-            return
-
-        # Load the data, set the parameters
         try:
             d = Dataset(path, self.Input.GetFields(), self.Input.GetTrim(), 
-                    self.Site.getvalues(), self.Veg.getvalues())
-        # We already warn the user about these, so don't raise them - just fail
-        # to run the dataset
-        except InsufficientTrimError:
-            wx.MessageBox("Some of the data was the wrong type - is the number"
-                    + "of lines to trim from the input set correctly?",
-                    self.app.title,
-                    wx.OK|wx.ICON_ERROR,
-                    self)
+                        self.Site.getvalues(), self.Veg.getvalues())
+        except RequiredFieldError, e:
+            if len(e.fields) == 1:
+                wx.MessageBox("Required field missing: " +
+                              model.input_field_map[fields[0]]['long'],
+                              self.app.title, wx.OK|wx.ICON_ERROR, self)
+            else:
+                wx.MessageBox("At least one of the following fields are required:\n\n" + 
+                              "\n".join((model.input_field_map[x]['long'] for x in fields)),
+                              self.app.title, wx.OK|wx.ICON_ERROR, self)
             return
-        # Set up the calculation changes
-        d.par_r = par_r
-        d.rn = rn
+        except InsufficientTrimError:
+            wx.MessageBox("Some of the data was the wrong type - is the number" +
+                          "of lines to trim from the input set correctly?",
+                          self.app.title, wx.OK|wx.ICON_ERROR, self)
+            return
+
 
         try:
             r = ResultsWindow(self, d, self.recent_dir, len(self.results_windows) + 1)

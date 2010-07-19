@@ -19,6 +19,12 @@ class InsufficientTrimError(Exception):
     pass
 
 
+class RequiredFieldError(Exception):
+    """One or more required fields missing from input format."""
+    def __init__(self, fields):
+        self.fields = fields
+
+
 class Dataset:
     """Load and process dataset.
 
@@ -35,18 +41,54 @@ class Dataset:
     def __init__(self, filename, fields, trim, siteparams, vegparams):
         """Initialise the Dataset object and load the data from the file."""
         self.filename = filename
-        self.siteparams = siteparams
-        self.vegparams = vegparams
+        self.siteparams = siteparams.copy()
+        self.vegparams = vegparams.copy()
+        
+        # List of functions to run at beginning of dataset
+        self.preprocess = [model.params_veg.derive_d_zo]
+        # List of functions to run at the beginning of each row
+        self.row_preprocess = [model.inputs.derive_ustar_uh]
 
-        # Set up default procedures
-        self.sai = model.SAI_calc_map[model.default_SAI_calc]['func']
-        self.leaf_fphen = model.leaf_fphen_calc_map[model.default_leaf_fphen_calc]['func']
+        # Check required fields are present
+        required = (x['variable'] for x in model.input_fields if x['required'])
+        for f in required:
+            if not f in fields:
+                raise RequiredFieldError([f])
+        
+        # Handle PAR/Global radiation input/derivation
+        if 'par' in fields and 'r' in fields:
+            pass
+        elif 'par' in fields:
+            self.row_preprocess.append(model.inputs.derive_r)
+        elif 'r' in fields:
+            self.row_preprocess.append(model.inputs.derive_par)
+        else:
+            raise RequiredFieldError(['par', 'r'])
+
+        # Calculate net radiation if not supplied
+        if 'rn' in fields:
+            self.rn = model.irradiance.copy_rn
+        else:
+            self.rn = model.irradiance.calc_rn
+
+        # Other switchable procedures
+        fO3 = model.fO3_calc_map[self.vegparams.pop('fo3', model.default_fO3_calc)]
+        logging.debug('fO3 calculation: "%(name)s" (%(id)s)' % fO3)
+        self.fo3 = fO3['func']
+        SAI = model.SAI_calc_map[self.vegparams.pop('sai', model.default_SAI_calc)]
+        logging.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
+        self.sai = SAI['func']
+        leaf_fphen = model.leaf_fphen_calc_map[
+                self.vegparams.pop('leaf_fphen', model.default_leaf_fphen_calc)]
+        logging.debug('leaf_fphen calculation: "%(name)s" (%(id)s)' % leaf_fphen)
+        self.leaf_fphen = leaf_fphen['func']
+        # TODO: switchable with heat flux calculation?
         self.ra = model.r.calc_ra_simple
-        self.rn = model.irradiance.calc_rn
-        self.fo3 = model.fO3_calc_map[model.default_fO3_calc]['func']
-        # Calculation between PAR and R
-        def f(): pass
-        self.par_r = f
+
+        # Soil parameters from soil type
+        soil = model.soil_class_map[self.siteparams.pop('soil_tex',
+                                                        model.default_soil_class)]
+        self.siteparams.update(soil['data'])
 
         # Open the file
         file = open(self.filename)
@@ -73,32 +115,17 @@ class Dataset:
         """
         skippedrows = 0
 
-        # Copy parameters (to avoid breaking whatever else might be using them)
-        vegparams = self.vegparams.copy()
-        siteparams = self.siteparams.copy()
-        # Replace soil_tex (if it exists) with soil parameters
-        siteparams.update(model.soil_class_map[siteparams.pop('soil_tex', model.default_soil_class)]['data'])
-        # Handle leaf_fphen
-        self.leaf_fphen = model.leaf_fphen_calc_map[vegparams.pop('leaf_fphen', model.default_leaf_fphen_calc)]['func']
-        # Handle fO3
-        fO3 = model.fO3_calc_map[vegparams.pop('fo3', model.default_fO3_calc)]
-        logging.debug('fO3 calculation: "%s" (%s)' % (fO3['name'], fO3['id']))
-        self.fo3 = fO3['func']
-        # Handle SAI
-        SAI = model.SAI_calc_map[vegparams.pop('sai', model.default_SAI_calc)]
-        logging.debug('SAI calculation: "%s" (%s)' % (SAI['name'], SAI['id']))
-        self.sai = SAI['func']
+        # Load parameters into F model
+        util.setattrs(model.params_veg, self.vegparams)
+        util.setattrs(model.params_site, self.siteparams)
 
-        # Setup parameters
-        
-        # Do vegetation parameters first, as some site parameters depend on this
-        util.setattrs(model.params_veg, vegparams)
-        model.params_veg.derive_d_zo()
-        util.setattrs(model.params_site, siteparams)
-
-        # Initialise the module
+        # Initialise the model
         logging.info("Initialising DOSE Fortran model")
         model.run.init(int(self.siteparams['u_h_copy']), int(self.siteparams['o3_h_copy']))
+
+        # Run preprocess functions
+        for f in self.preprocess:
+            f()
 
         self.results = []
         # Iterate through dataset
@@ -116,8 +143,10 @@ class Dataset:
             except TypeError:
                 raise InvalidFieldCountError()
 
-            self.par_r()
-            model.inputs.derive_ustar_uh()
+            # Run row preprocess functions
+            for f in self.row_preprocess:
+                f()
+
             model.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn, self.fo3)
             self.results.append(model.extract_outputs())
 
