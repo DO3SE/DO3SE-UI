@@ -19,7 +19,7 @@ contains
     !  A  |        /                                \
     !  I  |       /                                  \
     !     |      /                                    \
-    !     |     /            <1> = LAI_1               \
+    !     |_____/            <1> = LAI_1               \_____
     !     |  LAI_a                                   LAI_d
     !     +--------------------------------------------------
     !          |<1> |                              | <2>|
@@ -31,14 +31,16 @@ contains
         use Inputs, only: dd
         use Variables, only: LAI
 
-        if (dd < SGS .or. dd > EGS) then
-            LAI = 0
+        if (dd < SGS) then
+            LAI = LAI_a - (LAI_a - LAI_d) * (SGS - dd) / (365 - EGS + SGS)
         else if (dd < (SGS + LAI_1)) then
             LAI = LAI_a + (LAI_b - LAI_a) * (dd - SGS) / LAI_1
         else if (dd < (EGS - LAI_2)) then
             LAI = LAI_b + (LAI_c - LAI_b) * (dd - (SGS + LAI_1)) / (EGS - SGS - LAI_1 - LAI_2)
         else if (dd <= EGS) then
             LAI = LAI_d + (LAI_c - LAI_d) * (EGS - dd) / LAI_2
+        else if (dd > EGS) then
+            LAI = LAI_d + (LAI_a - LAI_d) * (dd - EGS) / (365 - EGS + SGS)
         end if
     end subroutine Calc_LAI
 

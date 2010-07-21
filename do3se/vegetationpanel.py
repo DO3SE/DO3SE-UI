@@ -525,11 +525,20 @@ class VegetationPanel(wx.Panel):
 
 
     def redraw_LAI_preview(self, evt):
+        lai_a = self.fields['lai_a'].get()
+        lai_d = self.fields['lai_d'].get()
+        sgs = self.fields['sgs'].get()
+        egs = self.fields['egs'].get()
+
+        wrap_point = lai_a - (lai_a - lai_d) * sgs / (sgs + 365 - egs)
+        
         lai = plot.PolyLine(points=(
+            (1, wrap_point),
             (self.fields['sgs'].get(), self.fields['lai_a'].get()),
             (self.fields['sgs'].get() + self.fields['lai_1'].get(), self.fields['lai_b'].get()),
             (self.fields['egs'].get() - self.fields['lai_2'].get(), self.fields['lai_c'].get()),
-            (self.fields['egs'].get(), self.fields['lai_d'].get())),
+            (self.fields['egs'].get(), self.fields['lai_d'].get()),
+            (365, wrap_point)),
             colour='green',
             legend='LAI')
 
