@@ -1432,8 +1432,8 @@ Ei_hr = ((Ei_1 + Ei_2) / Ei_3) / 1000           ! Penman Monteith in mm/day so d
      if (hour_count_2 < 25) then
 
       AEt_dd  = AEt_dd + AEt_hr
-      PET_dd = PEt_dd + PEt_hr
-      AET_dd = AEt_dd + AEt_hr
+      !PET_dd = PEt_dd + PEt_hr
+      !AET_dd = AEt_dd + AEt_hr
       Es_dd = Es_dd + Es_hr
 
       else if (hour_count_2 == 25) then
