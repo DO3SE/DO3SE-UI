@@ -71,6 +71,7 @@ module Variables
     real, public, save :: SWP        ! Soil water potential in MPa
     real, public, save :: precip_acc ! Previous day's accumulated precipitation
     real, public, save :: fSWP
+    real, public, save :: P_input
     real, public, save :: Sn_diff
 
     ! O3

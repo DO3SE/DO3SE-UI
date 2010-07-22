@@ -53,16 +53,18 @@ contains
         use Inputs, only: dd
         use Variables, only: dd_prev, precip_acc, AEt, Es, Ei, LAI, SWP_min_vol
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
-        use Variables, only: Sn_diff
+        use Variables, only: Sn_diff, P_input
 
         ! Only once per day
         if (dd /= dd_prev) then
-            if (precip_acc == 0) then
-                Sn_diff = (-AEt - Es) / root
+            if (precip_acc > 0) then
+                P_input = (precip_acc - (0.0001*LAI)) + ((0.0001*LAI) - min(Ei, 0.0001*LAI))
             else
-                Sn_diff = (precip_acc - (0.0001*LAI)) &
-                        + ((0.0001*LAI) - min(Ei, 0.0001*LAI)) / root
-            endif
+                P_input = 0
+            end if
+            ! Can't lose water through Ei
+            P_input = max(0.0, P_input)
+            Sn_diff = (P_input - AEt - Es) / root
 
             ! Calculate new Sn, with field capacity as a maximum
             Sn = min(Fc_m, Sn + Sn_diff)

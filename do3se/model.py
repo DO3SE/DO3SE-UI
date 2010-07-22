@@ -112,6 +112,7 @@ _output_fields = (
         (variables,     'rb_h2o',   float,  'Rb_H2O (s/m)',     '[DEBUG] Rb_H2O (boundary resistance to water)'),
         (variables,     'asw',      float,  'ASW',              '[DEBUG] ASW'),
         (variables,     'sn',       float,  'Sn',               '[DEBUG] Sn'),
+        (variables,     'p_input',  float,  'P_input',          '[DEBUG] P_input'),
         (variables,     'sn_diff',  float,  'Sn_diff',          '[DEBUG] Sn_diff'),
         (variables,     'ei',       float,  'Ei',               '[DEBUG] Ei'),
         (variables,     'es',       float,  'Es',               '[DEBUG] Es'),
