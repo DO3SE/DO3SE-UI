@@ -318,8 +318,8 @@ integer :: hour_count, hour_count_1, hour_count_2, hour_count_3, &
 ! Rsur & go3 parameters
 ! =====================
 
-real, parameter :: SGS = ((lat-50)*1.5)+105              ! start of bulk canopy growth period
-real, parameter :: EGS = 297-((lat-50)*2)            ! end of bulk canopy growth period
+real, parameter :: SGS = nint(((lat-50)*1.5)+105)  ! start of bulk canopy growth period
+real, parameter :: EGS = nint(297-((lat-50)*2))    ! end of bulk canopy growth period
 
 real, parameter :: Astart = SGS         ! start of upper leaf growth period
 real, parameter :: Aend = EGS           ! end of upper leaf growth period
@@ -1979,7 +1979,9 @@ write (unit=8, fmt=*) mm, mdd, dd, hr, Ra_O3, Rb, Rsto, Uzh, LAI, SAI, Fphen, &
                       Et_D1, Et_D2, Et_D3, Et_D4, &
                       P_input, P_input_D1, P_input_D2, P_input_D3, P_input_D4, swp_effec, &
                       SMD_D1, SMD_D2, SMD_D3, SMD_D4, L1, L2, L3, L4, AEt_hr, Es_hr, &
-                      Et_D1_o, Et_D2_o, Et_D3_o, Et_D4_o, Rsr_D1, Rsr_D2, Rsr_D3, Rsr_D4, Gsto, Sn_meas, SWP_meas, RbH2O, Rn_J
+                      Et_D1_o, Et_D2_o, Et_D3_o, Et_D4_o, Rsr_D1, Rsr_D2, &
+                      Rsr_D3, Rsr_D4, Gsto, Sn_meas, SWP_meas, RbH2O, Rn_J, &
+                      fphen, leaf_fphen, ftemp, fVPD, flight, leaf_flight
 
 
 end do
