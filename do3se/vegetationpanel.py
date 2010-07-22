@@ -318,12 +318,12 @@ class VegetationPanel(wx.Panel):
 
         s1.Add(wx.StaticText(p, label="Period from LAI_a to LAI_b (LAI_1, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_1', wxFloatField(wx.SpinCtrl(p, min=0, max=100, initial=30)))
+        self.fields.add('lai_1', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
         s1.Add(self.fields['lai_1'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="Period from LAI_c to LAI_d (LAI_2, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('lai_2', wxFloatField(wx.SpinCtrl(p, min=0, max=100, initial=30)))
+        self.fields.add('lai_2', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
         s1.Add(self.fields['lai_2'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="SAI calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
