@@ -78,6 +78,7 @@ contains
             ! fSWP enabled?
             if (enable_fSWP > 0) then
                 fSWP = (((-1) * SWP)** (-0.706)) * 0.355
+                fSWP = min(max(fSWP, fmin), 1.0)
             else
                 ! Model is multiplicative, so fSWP = 1.0 removes its significance
                 fSWP = 1.0
