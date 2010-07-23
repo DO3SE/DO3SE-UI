@@ -1071,7 +1071,7 @@ DeltaLWP = 0
 
 else
 
-DeltaLWP = ((((SWP-LWP_1-(Rsr+Rp)*(Et_hr*1000))/(C*(Rsr+Rp+Rc)))*Delta_t)-(((Rsr+Rp)*Rc)/(Rsr+Rp+Rc))*(delta_Et*1000))
+DeltaLWP = ((((SWP-LWP_1-(Rsr+Rp)*(Et_hr_1*1000))/(C*(Rsr+Rp+Rc)))*Delta_t)-(((Rsr+Rp)*Rc)/(Rsr+Rp+Rc))*(delta_Et*1000))
 
 end if
 
