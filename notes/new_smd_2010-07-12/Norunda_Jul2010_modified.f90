@@ -1048,54 +1048,6 @@ Rsr = K1 / (Root * Ks)
 
 
 
-  !Initialise LWP
-
-
-delta_t = 1
-
-
-
-If (hr < 3) then
-
-LWP_1 = SWP
-
-else
-
-LWP_1 = LWP
-
-end if
-
-if (hr < 3) then
-
-DeltaLWP = 0
-
-else
-
-DeltaLWP = ((((SWP-LWP_1-(Rsr+Rp)*(Et_hr_1*1000))/(C*(Rsr+Rp+Rc)))*Delta_t)-(((Rsr+Rp)*Rc)/(Rsr+Rp+Rc))*(delta_Et*1000))
-
-end if
-
-
-
-if (hr < 3) then
-
-LWP = SWP
-
-else
-
-LWP = LWP_1 + DeltaLWP
-
-end if
-
-
-
-flwp = (((-1) * LWP)** (-0.706)) * 0.355
-flwp = max (flwp, fmin)
-
-
-if (flwp > 1) then
-flwp = 1
-end if
 
 
 
@@ -1809,6 +1761,57 @@ fswp_effec = (fswp_D1 + fswp_D2 + fswp_D3 + fswp_D4) / 4
 if (fswp_effec > 1) then
 fswp_effec = 1
 end if
+
+
+  !Initialise LWP
+
+
+delta_t = 1
+
+
+
+If (hr < 3) then
+
+LWP_1 = SWP
+
+else
+
+LWP_1 = LWP
+
+end if
+
+if (hr < 3) then
+
+DeltaLWP = 0
+
+else
+
+DeltaLWP = ((((SWP-LWP_1-(Rsr+Rp)*(Et_hr_1*1000))/(C*(Rsr+Rp+Rc)))*Delta_t)-(((Rsr+Rp)*Rc)/(Rsr+Rp+Rc))*(delta_Et*1000))
+
+end if
+
+
+
+if (hr < 3) then
+
+LWP = SWP
+
+else
+
+LWP = LWP_1 + DeltaLWP
+
+end if
+
+
+
+flwp = (((-1) * LWP)** (-0.706)) * 0.355
+flwp = max (flwp, fmin)
+
+
+if (flwp > 1) then
+flwp = 1
+end if
+
 
 ! set fSWP to 1 for generic Med evergreen 
 
