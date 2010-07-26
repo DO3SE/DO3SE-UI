@@ -20,6 +20,13 @@ Development Build Environment
     recommend either making a ZIP file, or using 7-zip_ to create a self-extracting (SFX) 7z archive 
     (which creates a much smaller file).
 
+.. note::
+
+    :file:`buildenv.bat` has a version-specific path hard-coded (``...\4.0.4\...``); this will need 
+    to be changed if G95 starts using a different version of GCC.  When attempting to compile an F 
+    file with ``F somefile.f90``, the error :guilabel:`g95: installation problem, cannot exec 
+    'f951': No such file or directory` will indicate that this has become a problem.
+
 
 :file:`DO3SE_buildenv_GUI` -- Full GUI build environment
 --------------------------------------------------------
