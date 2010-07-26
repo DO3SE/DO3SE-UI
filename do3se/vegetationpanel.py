@@ -155,6 +155,11 @@ class VegetationPanel(wx.Panel):
                 min=1, initial=148, max=10000)))
         sbox.fgs.Add(self.fields['gmax'].obj, 0, wx.ALIGN_RIGHT)
 
+        sbox.fgs.Add(wx.StaticText(p, label="gmorph"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('gmorph', wxFloatField(wxext.FloatSpin(p,
+                min_val=0.01, value=1.00, max_val=1.00, increment=0.01, digits=2)))
+        sbox.fgs.Add(self.fields['gmorph'].obj, 0, wx.ALIGN_RIGHT)
+
         sbox.fgs.Add(wx.StaticText(p, label="fmin"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fmin', wxFloatField(wxext.FloatSpin(p,
                 min_val=0.01, value=0.13, max_val=0.99, increment=0.01, digits=2)))

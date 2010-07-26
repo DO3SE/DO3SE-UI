@@ -14,6 +14,7 @@ module Params_Veg
 
     ! Boundary gs values
     real, public, save :: gmax = 148        ! mmol O3 m^-2 PLA s^-1
+    real, public, save :: gmorph = 1.0      ! sun/shade leaf morphology modifier
     real, public, save :: fmin = 0.13       ! minimum gs
 
     real, public, save :: albedo = 0.12     ! 0.2 for crops
