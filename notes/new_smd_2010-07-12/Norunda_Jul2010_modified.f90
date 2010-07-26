@@ -629,6 +629,7 @@ Sn_star = Fc_m
 !   WC          = Fc_m - SWP_min_vol
    Per_vol     = Fc_m * 100 
    fSWP        = 1
+   fLWP        = 1
 
 
 ! Initialise variables for SWP - Layers
