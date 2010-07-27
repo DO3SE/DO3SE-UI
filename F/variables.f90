@@ -73,6 +73,7 @@ module Variables
     real, public, save :: fSWP
     real, public, save :: P_input
     real, public, save :: Sn_diff
+    real, public, save :: fXWP
 
     ! O3
     real, public, save :: O3_ppb_i      ! O3 concentration at izR (ppb)

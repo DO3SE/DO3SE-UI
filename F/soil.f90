@@ -14,11 +14,11 @@
 !
 module Soil
 
-    public :: Soil_initialize, Calc_precip, Calc_SWP
+    public :: Soil_initialise, Calc_precip, Calc_SWP
 
 contains
 
-    subroutine Soil_initialize()
+    subroutine Soil_initialise()
         use Constants, only: SWC_sat
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
@@ -44,7 +44,7 @@ contains
         ! Calculate fSWP and SMD for initial water content
         fSWP = (((-1) * SWP)** (-0.706)) * 0.355
         SMD = (Fc_m - Sn) * root
-    end subroutine Soil_initialize
+    end subroutine Soil_initialise
 
     subroutine Calc_SWP()
         use Constants, only: SWC_sat

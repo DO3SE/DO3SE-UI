@@ -1,19 +1,40 @@
 module Run
 
-    public :: Init, Do_Calcs_Python, Do_Calcs
+    public :: Run_With_Callbacks
+    public :: Run_With_Files
+
+    public :: Initialise
+    public :: Hourly
+    public :: Daily
+    public :: Calculate_Row
+    public :: Open_Files
+    public :: Close_Files
+    public :: Read_Row_From_File
+    public :: Write_Row_To_File
+
+    !integer, private :: dd_prev
+    integer, private :: inunit = 8
+    integer, private :: outunit = 9
 
 contains
 
-    subroutine Init(copy_u, copy_o3)
-        use Soil
+    subroutine Initialise()
+        use Switchboard
         use Variables
-        use Params_Site, only: Derive_Windspeed_d_zo, Copy_Windspeed_h_d_zo, &
-                Derive_O3_d_zo, Copy_O3_h_d_zo
-        use Params_Veg, only: Derive_d_zo
+        use Soil, only: Soil_initialise
+        use params_veg, only: Derive_d_zo
+        use params_site, only: Derive_Windspeed_d_zo, Derive_O3_d_zo
 
-        integer,intent(in) :: copy_u, copy_o3
+        sai_method = sai_equals_lai
+        !rn_method = rn_use_input
+        rn_method = rn_calculate
+        leaf_fphen_method = leaf_fphen_equals_fphen
+        ra_method = ra_simple
+        fo3_method = fo3_disabled
+        fxwp_method = fxwp_disabled
+        r_par_method = r_par_use_inputs
 
-        call Soil_initialize()
+        dd_prev = -1
         
         AEt = 0
         PEt = 0
@@ -22,45 +43,15 @@ contains
         AFstY = 0
         AOT0 = 0
         AOT40 = 0
-        
+
+        ! Put calls to initialisation functions here
         call Derive_d_zo()
+        call Derive_Windspeed_d_zo()
+        call Derive_O3_d_zo()
+        call Soil_initialise()
+    end subroutine Initialise
 
-        if (copy_u == 1) then
-            call Copy_Windspeed_h_d_zo()
-        else
-            call Derive_Windspeed_d_zo()
-        endif
-
-        if (copy_o3 == 1) then
-            call Copy_O3_h_d_zo()
-        else
-            call Derive_O3_d_zo()
-        endif
-    end subroutine Init
-    
-    !==========================================================================
-    ! Run the full set of calculations
-    !
-    ! This subroutine's arguments are subroutines for the following 
-    ! calculations that have interchangeable methods:
-    !
-    ! Calc_SAI
-    !       Method for calculating SAI ("copy LAI", forest or wheat)
-    !
-    ! Calc_leaf_fphen
-    !       Method for calculating leaf_fphen (copy fphen, or use special calc)
-    !
-    ! Calc_Ra
-    !       Method for calculating Ra (simple or including heat flux data)
-    !
-    ! Calc_Rn
-    !       Method for calculating net radiation (copy or calculate)
-    !
-    ! Calc_fO3
-    !       Method for calculating fO3 (ignore, wheat or potato)
-    !
-    !==========================================================================
-    subroutine Do_Calcs(Calc_SAI, Calc_leaf_fphen, Calc_Ra, Calc_Rn, Calc_fO3)
+    subroutine Hourly()
         use Phenology, only: Calc_LAI, Calc_fphen
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
@@ -68,37 +59,31 @@ contains
         use Soil, only: Calc_precip, Calc_SWP
         use Evapotranspiration, only: Calc_Penman_Monteith
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
-        use Inputs, only: dd
+        use Inputs, only: dd, Derive_ustar_uh
         use Variables, only: dd_prev
 
-        interface
-            subroutine Calc_SAI()
-            end subroutine Calc_SAI
-            subroutine Calc_leaf_fphen()
-            end subroutine Calc_leaf_fphen
-            subroutine Calc_Ra()
-            end subroutine Calc_Ra
-            subroutine Calc_Rn()
-            end subroutine Calc_Rn
-            subroutine Calc_fO3()
-            end subroutine Calc_fO3
-        end interface
+        use Switchboard
+
+
+        ! Derivation of missing/not-supplied inputs
+        call Derive_ustar_uh()
+        call SB_Calc_R_PAR()
 
         call Calc_LAI()
-        call Calc_SAI()         !***
+        call SB_Calc_SAI()
         call Calc_fphen()
-        call Calc_leaf_fphen()
+        call SB_Calc_leaf_fphen()
 
         call Calc_sinB()
         call Calc_Flight()
-        call Calc_Rn()          !***
+        call SB_Calc_Rn()
 
         call Calc_ftemp()
         call Calc_fVPD()
 
-        call Calc_fO3()
+        call SB_Calc_fO3()
     
-        call Calc_Ra()          !***
+        call SB_Calc_Ra()
         call Calc_Rb()
         call Calc_Rgs()
         call Calc_Rinc()
@@ -116,8 +101,117 @@ contains
         call Calc_Fst()
         call Calc_AFstY()
         call Calc_AOT40()
+    end subroutine Hourly
+
+    subroutine Daily()
+    end subroutine Daily
+
+    subroutine Calculate_Row()
+        use Inputs, only: dd
+        use Variables, only: dd_prev
+
+        ! At the start of a new day, do daily actions on previous day's data
+        if (dd_prev /= dd) then
+            call Daily()
+        end if
+
+        ! Run hourly calculations
+        call Hourly()
 
         dd_prev = dd
-    end subroutine Do_Calcs
+    end subroutine Calculate_Row
+
+    subroutine Open_Files(infile, outfile)
+        character(len=*), intent(in) :: infile, outfile
+
+        open(unit=inunit, file=infile, status="old", &
+             action="read", position="rewind")
+        open(unit=outunit, file=outfile, status="replace", &
+             action="write", position="rewind")
+
+        call Initialise()
+    end subroutine Open_Files
+
+    subroutine Close_Files()
+        close(unit=inunit)
+        close(unit=outunit)
+    end subroutine Close_Files
+
+    subroutine Read_Row_From_File(done)
+        use Inputs
+
+        logical, intent(out) :: done
+        integer :: ios
+
+        read(unit=inunit, fmt=*, iostat=ios) &
+            mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, Hd, R, PAR
+
+        if (ios /= 0) then
+            done = .TRUE.
+        else
+            done = .FALSE.
+        end if
+    end subroutine Read_Row_From_File
+
+    subroutine Write_Row_To_File()
+        use Inputs, Rn_input => Rn
+        use Variables
+
+        write(unit=outunit, fmt=*) &
+        !rn, &
+        !ra, &
+        !rb, &
+        !rsur, &
+        !rinc, &
+        !rsto, &
+        !gsto, &
+        !rgs, &
+        !vd, & 
+        !o3_ppb, &
+        !o3_nmol_m3, &
+        !fst, &
+        !afsty, &
+        !ftot, &
+        !ot40, &
+        !aot40, &
+        !aet, &
+        !swp, &
+        !per_vol, &
+        !smd, &
+        " "
+    end subroutine Write_Row_To_File
+
+    subroutine Run_With_Callbacks(Read_Row, Write_Row)
+        logical :: done = .FALSE.
+
+        interface
+            subroutine Read_Row(done)
+                logical, intent(out) :: done
+            end subroutine Read_Row
+            subroutine Write_Row()
+            end subroutine Write_Row
+        end interface
+
+        call Initialise()
+
+        do
+            call Read_Row(done)
+            if (done) then
+                exit
+            end if
+
+            call Calculate_Row()
+
+            call Write_Row()
+        end do
+    end subroutine Run_With_Callbacks
+
+    subroutine Run_With_Files(infile, outfile)
+        character(len=*), intent(in) :: infile, outfile
+
+        call Open_Files(infile, outfile)
+        call Run_With_Callbacks(Read_Row_From_File, Write_Row_To_File)
+        call Close_Files()
+    end subroutine Run_With_Files
 
 end module Run

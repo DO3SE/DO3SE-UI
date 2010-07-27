@@ -54,7 +54,7 @@ subdirs = F f2py-build
 .PHONY: $(subdirs)
 
 export common = constants.o params_veg.o params_site.o inputs.o variables.o functions.o
-export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o run.o
+export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o switchboard.o run.o
 
 
 export DIST_SRC_DIR = DO3SE-src-$(shell date +"%Y%m%d")
