@@ -24,6 +24,7 @@ contains
         use Soil, only: Soil_initialise
         use params_veg, only: Derive_d_zo
         use params_site, only: Derive_Windspeed_d_zo, Derive_O3_d_zo
+        use Inputs, only: Init_Inputs
 
         sai_method = sai_equals_lai
         !rn_method = rn_use_input
@@ -50,29 +51,30 @@ contains
         call Derive_d_zo()
         call Derive_Windspeed_d_zo()
         call Derive_O3_d_zo()
+        call Init_Inputs()
         call Soil_initialise()
     end subroutine Initialise
 
     subroutine Hourly()
-        use Irradiance, only: Calc_sinB, Calc_Flight
+        use Irradiance, only: Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
-        use Soil, only: Calc_precip, Calc_SWP
         use Evapotranspiration, only: Calc_Penman_Monteith
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
-        use Inputs, only: dd, Calc_ustar_uh
+        use Inputs, only: dd, Calc_ustar_uh, Accumulate_precip, Calc_sinB
         use Variables, only: dd_prev
 
         use Switchboard
 
 
-        ! Derivation of missing/not-supplied inputs
+        ! Derivation of inputs not supplied
+        call Accumulate_precip()
         call Calc_ustar_uh()
         call SB_Calc_R_PAR()
-
         call Calc_sinB()
-        call Calc_Flight()
         call SB_Calc_Rn()
+
+        call Calc_Flight()
 
         call Calc_ftemp()
         call Calc_fVPD()
@@ -86,8 +88,6 @@ contains
         call Calc_Rsto()
         call Calc_Rsur()
 
-        call Calc_precip()
-
         call Calc_Penman_Monteith()
 
         call Calc_O3_Concentration()
@@ -98,10 +98,11 @@ contains
     end subroutine Hourly
 
     subroutine Daily()
-        use Soil, only: Calc_SWP, Calc_precip_acc
+        use Soil, only: Calc_SWP
         use Evapotranspiration, only: Calc_Penman_Monteith_daily
         use Switchboard
         use Phenology, only: Calc_LAI, Calc_fphen
+        use Inputs, only: Calc_precip_acc
 
         call Calc_LAI()
         call SB_Calc_SAI()
@@ -161,7 +162,7 @@ contains
     end subroutine Read_Row_From_File
 
     subroutine Write_Row_To_File()
-        use Inputs, Rn_input => Rn
+        use Inputs
         use Variables
 
         write(unit=outunit, fmt=*) &

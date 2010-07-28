@@ -64,18 +64,15 @@ contains
     end subroutine SB_Calc_SAI
 
     subroutine SB_Calc_Rn()
-        use Inputs, only: Rn_input => Rn
-        use Variables, only: Rn, Rn_W
-        use Irradiance, only: Calc_Rn
+        use Inputs, only: Rn, Rn_W, Calc_Rn
 
         select case (rn_method)
         
         case (rn_use_input)
-            Rn = Rn_input
             Rn_W = Rn * 277.8
         
         case (rn_calculate)
-            call Calc_Rn()
+            call Calc_Rn()  ! Also calculates Rn_W
         
         end select
     end subroutine SB_Calc_Rn

@@ -32,8 +32,6 @@ module Variables
     ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
     real, public, save  :: leaf_flight  ! light related g
-    real, public, save  :: Rn       ! Net radiation (MJ/m2/h)
-    real, public, save  :: Rn_W     ! Net radiation (W/m2)
 
     ! Phenology
     real, public, save  :: LAI
@@ -69,7 +67,6 @@ module Variables
     real, public, save :: per_vol    ! % volumetric water content
     real, public, save :: SMD        ! soil moisture deficit in m
     real, public, save :: SWP        ! Soil water potential in MPa
-    real, public, save :: precip_acc ! Previous day's accumulated precipitation
     real, public, save :: fSWP
     real, public, save :: P_input
     real, public, save :: Sn_diff
@@ -91,7 +88,6 @@ module Variables
     real, public, save :: fO3
 
     ! More variables, for testing
-    real, public, save :: sinB
     real, public, save :: pPARdir
     real, public, save :: pPARdif
     real, public, save :: fPARdir
@@ -100,7 +96,6 @@ module Variables
     real, public, save :: LAIshade
     real, public, save :: PARsun
     real, public, save :: PARshade
-    real, public, save :: eact
 
 end module Variables
 

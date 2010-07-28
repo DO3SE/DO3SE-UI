@@ -14,7 +14,7 @@
 !
 module Soil
 
-    public :: Soil_initialise, Calc_precip, Calc_SWP, Calc_precip_acc
+    public :: Soil_initialise, Calc_precip, Calc_SWP
 
     real, private :: precip_dd
 
@@ -24,11 +24,7 @@ contains
         use Constants, only: SWC_sat
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
-        use Variables, only: precip_acc, SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, fSWP, SMD
-
-        ! Initialise accumulated precipitation
-        precip_dd = 0
-        precip_acc = 0
+        use Variables, only: SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, fSWP, SMD
 
         ! Convert SWP_min to volumetric (MPa -> m^3/m^3)
         SWP_min_vol = 1.0 / (((SWP_min/SWP_AE)**(1.0/soil_b)) / SWC_sat)
@@ -53,8 +49,8 @@ contains
         use Constants, only: SWC_sat
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, enable_fSWP, fmin, root
-        use Inputs, only: dd
-        use Variables, only: dd_prev, precip_acc, AEt, Es, Ei, LAI, SWP_min_vol
+        use Inputs, only: dd, precip_acc
+        use Variables, only: AEt, Es, Ei, LAI, SWP_min_vol
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
         use Variables, only: Sn_diff, P_input
 
@@ -87,18 +83,5 @@ contains
             fSWP = 1.0
         end if
     end subroutine Calc_SWP
-
-    subroutine Calc_precip()
-        use Inputs, only: precip
-
-        precip_dd = precip_dd + (precip / 1000)
-    end subroutine Calc_precip
-
-    subroutine Calc_precip_acc()
-        use Variables, only: precip_acc
-
-        precip_acc = precip_dd
-        precip_dd = 0
-    end subroutine Calc_precip_acc
 
 end module Soil

@@ -14,9 +14,9 @@ contains
     !
     subroutine Calc_Penman_Monteith()
         use Constants, only: seaP, Ts_K
-        use Inputs, only: VPD, Ts_C, P, dd
+        use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
-                             Rsto_PEt, dd_prev, Sn, Rinc, Rgs, Rn_MJ => Rn
+                             Rsto_PEt, dd_prev, Sn, Rinc, Rgs
         use Params_Site, only: Fc_m
         use Variables, only: PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr, Et_hr_prev, Es_hr
 
