@@ -56,18 +56,6 @@ contains
     end subroutine Derive_Windspeed_d_zo
 
     !==========================================================================
-    ! Copy height, displacement height and roughness length from the 
-    ! vegetation parameters.  Use this if the wind speed measurements are over
-    ! the same vegetation as the flux model is for.
-    !==========================================================================
-    subroutine Copy_Windspeed_h_d_zo()
-        use Params_Veg, only: h, d, zo
-        u_h = h
-        u_d = d
-        u_zo = zo
-    end subroutine Copy_Windspeed_h_d_zo
-
-    !==========================================================================
     ! Derive the displacement height (d) and roughness length (zo) of the 
     ! vegetation under the O3 measurement based on its height
     !==========================================================================
@@ -75,17 +63,5 @@ contains
         O3_d = O3_h * 0.7
         O3_zo = O3_h * 0.1
     end subroutine Derive_O3_d_zo
-
-    !==========================================================================
-    ! Copy height, displacement height and roughness length from the 
-    ! vegetation parameters.  Use this if the O3 measurements are over the same 
-    ! vegetation as the flux model is for.
-    !==========================================================================
-    subroutine Copy_O3_h_d_zo()
-        use Params_Veg, only: h, d, zo
-        O3_h = h
-        O3_d = d
-        O3_zo = zo
-    end subroutine Copy_O3_h_d_zo
 
 end module Params_Site

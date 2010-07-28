@@ -34,8 +34,11 @@ module Switchboard
     integer, public, save :: fxwp_method = fxwp_disabled
     public :: SB_Calc_fXWP
 
+    ! Both R and PAR are inputs, do nothing
     integer, public, parameter :: r_par_use_inputs = 1
+    ! Derived R from PAR
     integer, public, parameter :: r_par_derive_r   = 2
+    ! Derive PAR from R
     integer, public, parameter :: r_par_derive_par = 3
     integer, public, save :: r_par_method = r_par_use_inputs
     public :: SB_Calc_R_PAR
@@ -43,7 +46,7 @@ module Switchboard
 contains
 
     subroutine SB_Calc_SAI()
-        use Phenology, only: Calc_SAI_copy_LAI, Calc_SAI_Forest, Calc_SAI_Wheat
+        use Phenology, only: Calc_SAI_Wheat
         use Variables, only: SAI, LAI
 
         select case (sai_method)

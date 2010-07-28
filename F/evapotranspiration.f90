@@ -1,6 +1,8 @@
 module Evapotranspiration
 
-    public :: Calc_Penman_Monteith
+    public :: Calc_Penman_Monteith, Calc_Penman_Monteith_daily
+
+    real, private :: Ei_dd = 0, PEt_dd = 0, Et_dd = 0, Es_dd = 0
 
 contains
 
@@ -25,8 +27,6 @@ contains
         
         real        :: Et_1, Et_2, Ei_3 !, PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr
         real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3 !, Es_hr
-
-        real, save  :: Ei_dd = 0, PEt_dd = 0, Et_dd = 0, Es_dd = 0
 
         ! Convert Rn to J from MJ
         real :: Rn
@@ -73,26 +73,26 @@ contains
             Es_hr = (Es_1 + Es_2) / Es_3 / 1000
         endif
 
-        if (dd == dd_prev) then
-            ! Same day, accumulate
-            Ei_dd = Ei_dd + Ei_hr
-            PEt_dd = PEt_dd + PEt_hr
-            Et_dd = Et_dd + Et_hr
-            Es_dd = Es_dd + Es_hr
-        else
-            ! Next day, store + reset
-            Ei = Ei_dd
-            Ei_dd = Ei_hr
-            PEt = PEt_dd
-            PEt_dd = PEt_hr
-            Et = Et_dd
-            Et_dd = Et_hr
-            Es = Es_dd
-            Es_dd = Es_hr
-        endif
+        Ei_dd = Ei_dd + Ei_hr
+        PEt_dd = PEt_dd + PEt_hr
+        Et_dd = Et_dd + Et_hr
+        Es_dd = Es_dd + Es_hr
+    end subroutine Calc_Penman_Monteith
+
+    subroutine Calc_Penman_Monteith_daily()
+        use Variables, only: Ei, PEt, Et, Es, AEt
+
+        Ei = Ei_dd
+        Ei_dd = 0
+        PEt = PEt_dd
+        PEt_dd = 0
+        Et = Et_dd
+        Et_dd = 0
+        Es = Es_dd
+        Es_dd = 0
 
         ! TODO: Calculate AEt correctly
         AEt = Et
-    end subroutine Calc_Penman_Monteith
+    end subroutine Calc_Penman_Monteith_daily
 
 end module Evapotranspiration

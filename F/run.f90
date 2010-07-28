@@ -37,6 +37,8 @@ contains
         dd_prev = -1
         
         AEt = 0
+        Et = 0
+        Es = 0
         PEt = 0
         Ei = 0
         AFst0 = 0
@@ -52,27 +54,21 @@ contains
     end subroutine Initialise
 
     subroutine Hourly()
-        use Phenology, only: Calc_LAI, Calc_fphen
         use Irradiance, only: Calc_sinB, Calc_Flight
         use Environmental, only: Calc_ftemp, Calc_fVPD
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
         use Soil, only: Calc_precip, Calc_SWP
         use Evapotranspiration, only: Calc_Penman_Monteith
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
-        use Inputs, only: dd, Derive_ustar_uh
+        use Inputs, only: dd, Calc_ustar_uh
         use Variables, only: dd_prev
 
         use Switchboard
 
 
         ! Derivation of missing/not-supplied inputs
-        call Derive_ustar_uh()
+        call Calc_ustar_uh()
         call SB_Calc_R_PAR()
-
-        call Calc_LAI()
-        call SB_Calc_SAI()
-        call Calc_fphen()
-        call SB_Calc_leaf_fphen()
 
         call Calc_sinB()
         call Calc_Flight()
@@ -94,8 +90,6 @@ contains
 
         call Calc_Penman_Monteith()
 
-        call Calc_SWP()
-
         call Calc_O3_Concentration()
         call Calc_Ftot()
         call Calc_Fst()
@@ -104,6 +98,19 @@ contains
     end subroutine Hourly
 
     subroutine Daily()
+        use Soil, only: Calc_SWP, Calc_precip_acc
+        use Evapotranspiration, only: Calc_Penman_Monteith_daily
+        use Switchboard
+        use Phenology, only: Calc_LAI, Calc_fphen
+
+        call Calc_LAI()
+        call SB_Calc_SAI()
+        call Calc_fphen()
+        call SB_Calc_leaf_fphen()
+
+        call Calc_precip_acc()
+        call Calc_Penman_Monteith_daily()
+        call Calc_SWP()
     end subroutine Daily
 
     subroutine Calculate_Row()

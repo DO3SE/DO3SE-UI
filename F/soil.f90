@@ -14,7 +14,9 @@
 !
 module Soil
 
-    public :: Soil_initialise, Calc_precip, Calc_SWP
+    public :: Soil_initialise, Calc_precip, Calc_SWP, Calc_precip_acc
+
+    real, private :: precip_dd
 
 contains
 
@@ -25,6 +27,7 @@ contains
         use Variables, only: precip_acc, SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, fSWP, SMD
 
         ! Initialise accumulated precipitation
+        precip_dd = 0
         precip_acc = 0
 
         ! Convert SWP_min to volumetric (MPa -> m^3/m^3)
@@ -55,53 +58,47 @@ contains
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
         use Variables, only: Sn_diff, P_input
 
-        ! Only once per day
-        if (dd /= dd_prev) then
-            if (precip_acc > 0) then
-                P_input = (precip_acc - (0.0001*LAI)) + ((0.0001*LAI) - min(Ei, 0.0001*LAI))
-            else
-                P_input = 0
-            end if
-            ! Can't lose water through Ei
-            P_input = max(0.0, P_input)
-            Sn_diff = (P_input - AEt - Es) / root
+        if (precip_acc > 0) then
+            P_input = (precip_acc - (0.0001*LAI)) + ((0.0001*LAI) - min(Ei, 0.0001*LAI))
+        else
+            P_input = 0
+        end if
+        ! Can't lose water through Ei
+        P_input = max(0.0, P_input)
+        Sn_diff = (P_input - AEt - Es) / root
 
-            ! Calculate new Sn, with field capacity as a maximum
-            Sn = min(Fc_m, Sn + Sn_diff)
-            per_vol = Sn * 100
+        ! Calculate new Sn, with field capacity as a maximum
+        Sn = min(Fc_m, Sn + Sn_diff)
+        per_vol = Sn * 100
 
-            ! Calculate ASW and SWP for new water content
-            ASW = (Sn - SWP_min_vol) * root
-            SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
+        ! Calculate ASW and SWP for new water content
+        ASW = (Sn - SWP_min_vol) * root
+        SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
 
-            ! Calculate SMD for new water content
-            SMD = (Fc_m - Sn) * root
+        ! Calculate SMD for new water content
+        SMD = (Fc_m - Sn) * root
 
-            ! fSWP enabled?
-            if (enable_fSWP > 0) then
-                fSWP = (((-1) * SWP)** (-0.706)) * 0.355
-                fSWP = min(max(fSWP, fmin), 1.0)
-            else
-                ! Model is multiplicative, so fSWP = 1.0 removes its significance
-                fSWP = 1.0
-            end if
-        endif
+        ! fSWP enabled?
+        if (enable_fSWP > 0) then
+            fSWP = (((-1) * SWP)** (-0.706)) * 0.355
+            fSWP = min(max(fSWP, fmin), 1.0)
+        else
+            ! Model is multiplicative, so fSWP = 1.0 removes its significance
+            fSWP = 1.0
+        end if
     end subroutine Calc_SWP
 
     subroutine Calc_precip()
-        use Inputs, only: dd, precip
-        use Variables, only: dd_prev, precip_acc
+        use Inputs, only: precip
 
-        real, save :: precip_dd = 0
-
-        if ( dd == dd_prev ) then
-            ! Same day, accumulate (converts mm to m)
-            precip_dd = precip_dd + (precip/1000)
-        else
-            ! Next day, store and reset
-            precip_acc = precip_dd
-            precip_dd = precip/1000
-        endif
+        precip_dd = precip_dd + (precip / 1000)
     end subroutine Calc_precip
+
+    subroutine Calc_precip_acc()
+        use Variables, only: precip_acc
+
+        precip_acc = precip_dd
+        precip_dd = 0
+    end subroutine Calc_precip_acc
 
 end module Soil

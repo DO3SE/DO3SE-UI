@@ -1,11 +1,8 @@
 module Phenology
 
     public :: Calc_LAI
-    public :: Calc_SAI_copy_LAI
-    public :: Calc_SAI_Forest
     public :: Calc_SAI_Wheat
     public :: Calc_fphen
-    public :: Copy_leaf_fphen
     public :: Calc_leaf_fphen_Wheat
 
 contains 
@@ -43,24 +40,6 @@ contains
             LAI = LAI_d + (LAI_a - LAI_d) * (dd - EGS) / (365 - EGS + SGS)
         end if
     end subroutine Calc_LAI
-
-    !==========================================================================
-    ! Basic SAI calculation: SAI = LAI
-    !==========================================================================
-    subroutine Calc_SAI_copy_LAI()
-        use Variables, only: LAI, SAI
-
-        SAI = LAI
-    end subroutine Calc_SAI_copy_LAI
-
-    !==========================================================================
-    ! 'Simple' SAI calculation - SAI = LAI + 1 for 
-    !==========================================================================
-    subroutine Calc_SAI_Forest()
-        use Variables, only: LAI, SAI
-
-        SAI = LAI + 1
-    end subroutine Calc_SAI_Forest
 
     !==========================================================================
     ! SAI calculation for wheat taking growing season into account
@@ -126,15 +105,6 @@ contains
             fphen = fphen_e + (fphen_d - fphen_e) * (EGS - dd) / fphen_4
         end if
     end subroutine Calc_fphen
-
-    !==========================================================================
-    ! Copy canopy fphen as leaf fphen
-    !==========================================================================
-    subroutine Copy_leaf_fphen()
-        use Variables, only: fphen, leaf_fphen
-
-        leaf_fphen = fphen
-    end subroutine Copy_leaf_fphen
 
     !==========================================================================
     ! Calculate leaf_fphen for Wheat
