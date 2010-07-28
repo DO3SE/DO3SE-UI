@@ -6,30 +6,12 @@
 
 module Variables
     
-    ! Day of year for previous dataset
+    ! Day of year for previous row
     real, public, save :: dd_prev = -1
 
     ! Environmental
     real, public, save  :: ftemp
     real, public, save  :: fVPD
-
-    ! Evapotranspiration
-    real, public, save  :: PEt  ! Potential plant transpiration
-    real, public, save  :: Et   ! Actual plant transpiration
-    real, public, save  :: AEt  ! Actual evapotranspiration (combining plant
-                                ! transpiration and soil evaporation)
-    real, public, save  :: Ei   ! Evaporation of intercepted precipitation
-    real, public, save  :: Es   ! Evaporation of soil water
-    ! Intermediate evapotranspiration variables
-    real, public, save  :: Ei_hr
-    real, public, save  :: Es_hr
-    real, public, save  :: PEt_hr
-    real, public, save  :: Et_hr
-    real, public, save  :: Et_hr_prev
-    real, public, save  :: PEt_3
-    real, public, save  :: Et_3
-
-    ! Irradiance
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
     real, public, save  :: leaf_flight  ! light related g
 
@@ -38,6 +20,25 @@ module Variables
     real, public, save  :: SAI
     real, public, save  :: fphen
     real, public, save  :: leaf_fphen
+
+    ! Soil water / evapotranspiration
+    real, public, save  :: Ei   ! Evaporation of intercepted precipitation
+    real, public, save  :: PEt  ! Potential plant transpiration
+    real, public, save  :: Et   ! Actual plant transpiration
+    real, public, save  :: Es   ! Evaporation of soil water
+    real, public, save  :: AEt  ! Actual evapotranspiration (combining plant
+                                ! transpiration and soil evaporation)
+    real, public, save :: SWP_min_vol ! SWP_min in m3/m3
+    real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
+    real, public, save :: ASW        ! Calculated ASW in m
+    real, public, save :: Sn         ! Soil water in m3/m3
+    real, public, save :: per_vol    ! % volumetric water content
+    real, public, save :: SMD        ! soil moisture deficit in m
+    real, public, save :: SWP        ! Soil water potential in MPa
+    real, public, save :: fSWP
+    real, public, save :: P_input
+    real, public, save :: Sn_diff
+    real, public, save :: fXWP
 
     ! R
     real, public, save  :: Ra
@@ -58,19 +59,6 @@ module Variables
     real, public, save  :: Rsto_c   ! Canopy O3 resistance (s/m)
     real, public, save  :: Gsto_PEt ! Potential canopy O3 conductance (for PEt)
     real, public, save  :: Rsto_PEt ! Potential canopy O3 resistance (for PEt)
-
-    ! Soil
-    real, public, save :: SWP_min_vol ! SWP_min in m3/m3
-    real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
-    real, public, save :: ASW        ! Calculated ASW in m
-    real, public, save :: Sn         ! Soil water in m3/m3
-    real, public, save :: per_vol    ! % volumetric water content
-    real, public, save :: SMD        ! soil moisture deficit in m
-    real, public, save :: SWP        ! Soil water potential in MPa
-    real, public, save :: fSWP
-    real, public, save :: P_input
-    real, public, save :: Sn_diff
-    real, public, save :: fXWP
 
     ! O3
     real, public, save :: O3_ppb_i      ! O3 concentration at izR (ppb)

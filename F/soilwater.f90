@@ -20,6 +20,15 @@ module SoilWater
     public :: Calc_Penman_Monteith_daily
     public :: Calc_SWP
 
+    ! Hourly intermediate
+    real, public :: Ei_hr
+    real, public :: Es_hr
+    real, public :: PEt_hr
+    real, public :: Et_hr
+    real, public :: Et_hr_prev
+    real, public :: PEt_3
+    real, public :: Et_3
+
     ! Daily accumulation variables
     real, private :: Ei_dd, PEt_dd, Et_dd, Es_dd
 
@@ -71,9 +80,8 @@ contains
         use Constants, only: seaP, Ts_K
         use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
-                             Rsto_PEt, dd_prev, Sn, Rinc, Rgs
+                             Rsto_PEt, Sn, Rinc, Rgs
         use Params_Site, only: Fc_m
-        use Variables, only: PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr, Et_hr_prev, Es_hr
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
         real        :: P_Pa         ! Pressure in Pa, not kPa
