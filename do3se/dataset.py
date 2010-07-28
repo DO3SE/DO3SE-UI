@@ -42,11 +42,6 @@ class Dataset:
         """Initialise the Dataset object and load the data from the file."""
         self.siteparams = siteparams.copy()
         self.vegparams = vegparams.copy()
-        
-        # List of functions to run at beginning of dataset
-        self.preprocess = [model.params_veg.derive_d_zo]
-        # List of functions to run at the beginning of each row
-        self.row_preprocess = [model.inputs.derive_ustar_uh]
 
         # Check required fields are present
         required = (x['variable'] for x in model.input_fields if x['required'])
@@ -56,33 +51,33 @@ class Dataset:
         
         # Handle PAR/Global radiation input/derivation
         if 'par' in fields and 'r' in fields:
-            pass
+            self.r_par_method = model.switchboard.r_par_use_inputs
         elif 'par' in fields:
-            self.row_preprocess.append(model.inputs.derive_r)
+            self.r_par_method = model.switchboard.r_par_derive_r
         elif 'r' in fields:
-            self.row_preprocess.append(model.inputs.derive_par)
+            self.r_par_method = model.switchboard.r_par_derive_par
         else:
             raise RequiredFieldError(['par', 'r'])
 
         # Calculate net radiation if not supplied
         if 'rn' in fields:
-            self.rn = model.irradiance.copy_rn
+            self.rn_method = model.switchboard.rn_use_input
         else:
-            self.rn = model.irradiance.calc_rn
+            self.rn_method = model.switchboard.rn_calculate
 
         # Other switchable procedures
         fO3 = model.fO3_calc_map[self.vegparams.pop('fo3', model.default_fO3_calc)]
         logging.debug('fO3 calculation: "%(name)s" (%(id)s)' % fO3)
-        self.fo3 = fO3['func']
+        self.fo3_method = fO3['func']
         SAI = model.SAI_calc_map[self.vegparams.pop('sai', model.default_SAI_calc)]
         logging.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
-        self.sai = SAI['func']
+        self.sai_method = SAI['func']
         leaf_fphen = model.leaf_fphen_calc_map[
                 self.vegparams.pop('leaf_fphen', model.default_leaf_fphen_calc)]
         logging.debug('leaf_fphen calculation: "%(name)s" (%(id)s)' % leaf_fphen)
-        self.leaf_fphen = leaf_fphen['func']
+        self.leaf_fphen_method = leaf_fphen['func']
         # TODO: switchable with heat flux calculation?
-        self.ra = model.r.calc_ra_simple
+        self.ra_method = model.switchboard.ra_simple
 
         # Soil parameters from soil type
         soil = model.soil_class_map[self.siteparams.pop('soil_tex',
@@ -115,11 +110,15 @@ class Dataset:
 
         # Initialise the model
         logging.info("Initialising DOSE Fortran model")
-        model.run.init(int(self.siteparams['u_h_copy']), int(self.siteparams['o3_h_copy']))
+        model.run.initialise()
 
-        # Run preprocess functions
-        for f in self.preprocess:
-            f()
+        # Setup function switchboard
+        model.switchboard.sai_method = self.sai_method
+        model.switchboard.rn_method = self.rn_method
+        model.switchboard.leaf_fphen_method = self.leaf_fphen_method
+        model.switchboard.ra_method = self.ra_method
+        model.switchboard.fo3_method = self.fo3_method
+        model.switchboard.r_par_method = self.r_par_method
 
         self.results = []
         # Iterate through dataset
@@ -137,11 +136,7 @@ class Dataset:
             except TypeError:
                 raise InvalidFieldCountError()
 
-            # Run row preprocess functions
-            for f in self.row_preprocess:
-                f()
-
-            model.run.do_calcs(self.sai, self.leaf_fphen, self.ra, self.rn, self.fo3)
+            model.run.calculate_row()
             self.results.append(model.extract_outputs())
 
         logging.info("Got %d results" % len(self.results))

@@ -56,8 +56,8 @@ _output_fields = (
         (inputs,        'ustar',    float,  'u* (m/s)',         'Friction velocity (u*, m/s)'),
         (inputs,        'uh_i',     float,  'uh50 (m/s)',       'Wind speed at 50m (uh50, m/s)'),
         (inputs,        'uh',       float,  'uh (m/s)',         'Wind speed at target canopy (uh, m/s)'),
-        (variables,     'rn',       float,  'Rn (MJ/m^2)',      'Net radiation (Rn, MJ/m^2)'),
-        (variables,     'rn_w',     float,  'Rn_W (Wh/m^2)',    'Net radiation (Rn, Wh/m^2)'),
+        (inputs,        'rn',       float,  'Rn (MJ/m^2)',      'Net radiation (Rn, MJ/m^2)'),
+        (inputs,        'rn_w',     float,  'Rn_W (Wh/m^2)',    'Net radiation (Rn, Wh/m^2)'),
         (variables,     'ra',       float,  'Ra (s/m)',         'Aerodynamic resistance (Ra, s/m)'),
         (variables,     'rb',       float,  'Rb (s/m)',         'Boundary layer resistance (Rinc, s/m)'),
         (variables,     'rsur',     float,  'Rsur (s/m)',       'Surface resistance (Rsur, s/m)'),
@@ -81,14 +81,13 @@ _output_fields = (
 
         # Debug variables
         (variables,     'ra_i',     float,  'Ra_i (s/m)',       '[DEBUG] Ra at O3 measurement'),
-        (variables,     'eact',     float,  'eact',             '[DEBUG] eact'),
         (variables,     'lai',      float,  'LAI',              '[DEBUG] LAI'),
         (variables,     'sai',      float,  'SAI',              '[DEBUG] SAI'),
         (variables,     'flight',   float,  'flight',           '[DEBUG] flight'),
         (variables,     'ftemp',    float,  'ftemp',            '[DEBUG] ftemp'),
         (variables,     'fvpd',     float,  'fVPD',             '[DEBUG] fVPD'),
         (variables,     'fswp',     float,  'fSWP',             '[DEBUG] fSWP'),
-        (variables,     'sinb',     float,  'sinB',             '[DEBUG] sinB'),
+        (inputs,        'sinb',     float,  'sinB',             '[DEBUG] sinB'),
         (variables,     'ppardir',  float,  'pPARdir',          '[DEBUG] pPARdir'),
         (variables,     'ppardif',  float,  'pPARdiff',         '[DEBUG] pPARdiff'),
         (variables,     'fpardir',  float,  'fPARdir',          '[DEBUG] fPARdir'),
@@ -117,13 +116,13 @@ _output_fields = (
         (variables,     'ei',       float,  'Ei',               '[DEBUG] Ei'),
         (variables,     'es',       float,  'Es',               '[DEBUG] Es'),
         (variables,     'pet',      float,  'PEt',              '[DEBUG] Potential plant transpiration (PEt)'),
-        (variables,     'precip_acc',float, 'precip_acc',       '[DEBUG] Accumulated precipitation (precip_acc, m)'),
-        (variables,     'ei_hr',    float,  'Ei_hr',            '[DEBUG] Ei_hr'),
-        (variables,     'es_hr',    float,  'Es_hr',            '[DEBUG] Es_hr'),
-        (variables,     'pet_hr',   float,  'PEt_hr',           '[DEBUG] PEt_hr'),
-        (variables,     'et_hr',    float,  'Et_hr',            '[DEBUG] Et_hr'),
-        (variables,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
-        (variables,     'et_3',     float,  'Et_3',             '[DEBUG] Et_3'),
+        (inputs,        'precip_acc',float, 'precip_acc',       '[DEBUG] Accumulated precipitation (precip_acc, m)'),
+        (soilwater,     'ei_hr',    float,  'Ei_hr',            '[DEBUG] Ei_hr'),
+        (soilwater,     'es_hr',    float,  'Es_hr',            '[DEBUG] Es_hr'),
+        (soilwater,     'pet_hr',   float,  'PEt_hr',           '[DEBUG] PEt_hr'),
+        (soilwater,     'et_hr',    float,  'Et_hr',            '[DEBUG] Et_hr'),
+        (soilwater,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
+        (soilwater,     'et_3',     float,  'Et_3',             '[DEBUG] Et_3'),
 
         (variables,     'ot0',      float,  'OT0',              '[DEBUG] OT0'),
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
@@ -177,9 +176,9 @@ default_soil_class = 'loam'
 
 # Leaf fphen calculations
 leaf_fphen_calcs = (
-        {'id': 'copy',  'func': phenology.copy_leaf_fphen,      'name': 'Same as Fphen'},
-        {'id': 'wheat', 'func': phenology.calc_leaf_fphen_wheat,'name': 'Wheat'},
-        {'id': 'potato','func': phenology.calc_leaf_fphen_wheat,'name': 'Potato'},
+        {'id': 'copy',  'func': switchboard.leaf_fphen_equals_fphen, 'name': 'Same as Fphen'},
+        {'id': 'wheat', 'func': switchboard.leaf_fphen_wheat,       'name': 'Wheat'},
+        {'id': 'potato','func': switchboard.leaf_fphen_potato,      'name': 'Potato'},
 )
 
 # Mapping from calc id to info
@@ -189,9 +188,9 @@ default_leaf_fphen_calc = 'copy'
 
 # fO3 calculations
 fO3_calcs = (
-        {'id': 'none',      'func': o3.calc_fo3_ignore,     'name': 'Not used (fO3 = 1)'},
-        {'id': 'wheat',     'func': o3.calc_fo3_wheat,      'name': 'Wheat'},
-        {'id': 'potato',    'func': o3.calc_fo3_potato,     'name': 'Potato'},
+        {'id': 'none',      'func': switchboard.fo3_disabled,   'name': 'Not used (fO3 = 1)'},
+        {'id': 'wheat',     'func': switchboard.fo3_wheat,      'name': 'Wheat'},
+        {'id': 'potato',    'func': switchboard.fo3_potato,     'name': 'Potato'},
 )
 
 # Mapping from calc id to info
@@ -201,9 +200,9 @@ default_fO3_calc = 'none'
 
 # SAI calculations
 SAI_calcs = (
-        {'id': 'copy',      'func': phenology.calc_sai_copy_lai,    'name': 'Same as LAI'},
-        {'id': 'forest',    'func': phenology.calc_sai_forest,      'name': 'Forest'},
-        {'id': 'wheat',     'func': phenology.calc_sai_wheat,       'name': 'Wheat'},
+        {'id': 'copy',      'func': switchboard.sai_equals_lai, 'name': 'Same as LAI'},
+        {'id': 'forest',    'func': switchboard.sai_forest,     'name': 'Forest'},
+        {'id': 'wheat',     'func': switchboard.sai_wheat,      'name': 'Wheat'},
 )
 
 # Mapping from calc id to info
