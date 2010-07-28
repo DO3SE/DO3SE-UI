@@ -21,7 +21,7 @@ contains
     subroutine Initialise()
         use Switchboard
         use Variables
-        use Soil, only: Soil_initialise
+        use SoilWater
         use params_veg, only: Derive_d_zo
         use params_site, only: Derive_Windspeed_d_zo, Derive_O3_d_zo
         use Inputs, only: Init_Inputs
@@ -37,11 +37,6 @@ contains
 
         dd_prev = -1
         
-        AEt = 0
-        Et = 0
-        Es = 0
-        PEt = 0
-        Ei = 0
         AFst0 = 0
         AFstY = 0
         AOT0 = 0
@@ -52,13 +47,13 @@ contains
         call Derive_Windspeed_d_zo()
         call Derive_O3_d_zo()
         call Init_Inputs()
-        call Soil_initialise()
+        call Init_SoilWater()
     end subroutine Initialise
 
     subroutine Hourly()
         use Environmental, only: Calc_ftemp, Calc_fVPD, Calc_Flight
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
-        use Evapotranspiration, only: Calc_Penman_Monteith
+        use SoilWater
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
         use Inputs, only: dd, Calc_ustar_uh, Accumulate_precip, Calc_sinB
         use Variables, only: dd_prev
@@ -97,8 +92,7 @@ contains
     end subroutine Hourly
 
     subroutine Daily()
-        use Soil, only: Calc_SWP
-        use Evapotranspiration, only: Calc_Penman_Monteith_daily
+        use SoilWater
         use Switchboard
         use Phenology, only: Calc_LAI, Calc_fphen
         use Inputs, only: Calc_precip_acc

@@ -5,10 +5,9 @@ objects = constants.o \
 		  inputs.o \
 		  variables.o \
 		  environmental.o \
-		  evapotranspiration.o \
 		  phenology.o \
+		  soilwater.o \
 		  r.o \
-		  soil.o \
 		  o3.o \
 		  switchboard.o \
 		  run.o
