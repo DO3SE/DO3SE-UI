@@ -53,9 +53,8 @@ endif
 subdirs = F f2py-build
 .PHONY: $(subdirs)
 
-export common = constants.o params_veg.o params_site.o inputs.o variables.o functions.o
-export others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o switchboard.o run.o
-
+include F/objects.mk
+export objects
 
 export DIST_SRC_DIR = DO3SE-src-$(shell date +"%Y%m%d")
 export DIST_SRC_FILE = $(DIST_SRC_DIR).zip
@@ -72,7 +71,7 @@ py: $(PYMOD)
 
 
 do3se_fortran.pyf:
-	python f2py.py -h $@ -m do3se_fortran $(common:%.o=F/%.f90) $(others:%.o=F/%.f90)
+	python f2py.py -h $@ -m do3se_fortran $(objects:%.o=F/%.f90)
 
 f2py-build: do3se_fortran.pyf
 	mkdir -p $@

@@ -56,8 +56,7 @@ contains
     end subroutine Initialise
 
     subroutine Hourly()
-        use Irradiance, only: Calc_Flight
-        use Environmental, only: Calc_ftemp, Calc_fVPD
+        use Environmental, only: Calc_ftemp, Calc_fVPD, Calc_Flight
         use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
         use Evapotranspiration, only: Calc_Penman_Monteith
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40

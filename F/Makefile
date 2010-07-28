@@ -2,18 +2,14 @@
 all: $(DO3SE_BIN)
 
 # Objects
-common = constants.o functions.o params_veg.o params_site.o inputs.o variables.o
-others = environmental.o evapotranspiration.o irradiance.o phenology.o r.o soil.o o3.o switchboard.o run.o
-
-# Dependancy heirarchy
-$(others): $(common)
+include objects.mk
 
 # Rule for building .o and .mod files
 %.o %.mod: %.f90
 	$(F) -c $<
 
-$(DO3SE_BIN): $(others) dose.o
-	$(F) -o $@ $(common) $(others) dose.o
+$(DO3SE_BIN): $(objects) dose.o
+	$(F) -o $@ $^
 
 clean:
 	rm -f *.o *.mod $(DO3SE_BIN)
