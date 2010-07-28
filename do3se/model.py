@@ -213,6 +213,17 @@ SAI_calc_map = dict( (x['id'], x) for x in SAI_calcs )
 
 default_SAI_calc = 'copy'
 
+# fXWP calculations (switching between fSWP, fLWP and neither)
+fXWP_calcs = (
+        {'id': 'disabled',  'func': switchboard.fxwp_disabled,  'name': 'Disabled'},
+        {'id': 'fswp',      'func': switchboard.fxwp_use_fswp,  'name': 'Use fSWP'},
+        {'id': 'flwp',      'func': switchboard.fxwp_use_flwp,  'name': 'Use fLWP'},
+)
+
+fXWP_calc_map = dict( (x['id'], x) for x in fXWP_calcs )
+
+default_fXWP_calc = 'disabled'
+
 
 def extract_outputs():
     """

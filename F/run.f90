@@ -74,6 +74,7 @@ contains
         call Calc_fVPD()
 
         call SB_Calc_fO3()
+        call SB_Calc_fXWP()
     
         call SB_Calc_Ra()
         call Calc_Rb()

@@ -30,7 +30,7 @@ module Switchboard
 
     integer, public, parameter :: fxwp_disabled = 1
     integer, public, parameter :: fxwp_use_fswp = 2
-    !integer, public, parameter :: fxwp_use_flwp = 3
+    integer, public, parameter :: fxwp_use_flwp = 3
     integer, public, save :: fxwp_method = fxwp_disabled
     public :: SB_Calc_fXWP
 
@@ -129,7 +129,7 @@ contains
     end subroutine SB_Calc_fO3
 
     subroutine SB_Calc_fXWP()
-        use Variables, only: fXWP, fSWP
+        use Variables, only: fXWP, fSWP, fLWP
 
         select case (fxwp_method)
 
@@ -139,8 +139,8 @@ contains
         case (fxwp_use_fswp)
             fXWP = fSWP
 
-        !case (fxwp_use_flwp)
-        !    fXWP = fLWP
+        case (fxwp_use_flwp)
+            fXWP = fLWP
 
         end select
     end subroutine SB_Calc_fXWP

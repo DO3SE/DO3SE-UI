@@ -78,6 +78,8 @@ class Dataset:
         self.leaf_fphen_method = leaf_fphen['func']
         # TODO: switchable with heat flux calculation?
         self.ra_method = model.switchboard.ra_simple
+        fXWP = model.fXWP_calc_map[self.vegparams.pop('fxwp', model.default_fXWP_calc)]
+        self.fxwp_method = fXWP['func']
 
         # Soil parameters from soil type
         soil = model.soil_class_map[self.siteparams.pop('soil_tex',
@@ -123,6 +125,7 @@ class Dataset:
         model.switchboard.leaf_fphen_method = self.leaf_fphen_method
         model.switchboard.ra_method = self.ra_method
         model.switchboard.fo3_method = self.fo3_method
+        model.switchboard.fxwp_method = self.fxwp_method
         model.switchboard.r_par_method = self.r_par_method
 
         self.results = []

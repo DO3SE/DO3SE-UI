@@ -50,6 +50,20 @@ class SAIField(Field):
         self.obj.SetStringSelection(model.SAI_calc_map[value]['name'])
 
 
+class fXWPField(Field):
+    def __init__(self, parent):
+        obj = wx.Choice(parent)
+        for x in model.fXWP_calcs:
+            obj.Append(x['name'], x['id'])
+        Field.__init__(self, obj)
+
+    def get(self):
+        return self.obj.GetClientData(self.obj.GetSelection())
+
+    def set(self, value):
+        self.obj.SetStringSelection(model.fXWP_calc_map[value]['name'])
+
+
 class VegetationPanel(wx.Panel):
     def __init__(self, app, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
@@ -215,12 +229,11 @@ class VegetationPanel(wx.Panel):
                 value=-0.05, increment=0.01, digits=2)))
         sbox.fgs.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
 
-        sbox.fgs.Add(wx.StaticText(p, label="Enable DO3SE model estimate of soil water"),
+        sbox.fgs.Add(wx.StaticText(p, label="Soil water influence on Gsto"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('enable_fswp', wxField(wx.CheckBox(p,
-                label="", style=wx.ALIGN_RIGHT)))
-        self.fields['enable_fswp'].set(1)
-        sbox.fgs.Add(self.fields['enable_fswp'].obj, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fxwp', fXWPField(p))
+        self.fields['fxwp'].set(model.default_fXWP_calc)
+        sbox.fgs.Add(self.fields['fxwp'].obj, 0, wx.ALIGN_RIGHT)
 
         # Maintain integrity on environmental dependence
         def f(evt):

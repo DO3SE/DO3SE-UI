@@ -172,7 +172,7 @@ contains
     subroutine Calc_SWP()
         use Constants, only: SWC_sat
         use Params_Site, only: Fc_m, soil_b, SWP_AE
-        use Params_Veg, only: SWP_min, SWP_max, enable_fSWP, fmin, root
+        use Params_Veg, only: SWP_min, SWP_max, fmin, root
         use Inputs, only: dd, precip_acc
         use Variables, only: AEt, Es, Ei, LAI, SWP_min_vol
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
@@ -198,14 +198,8 @@ contains
         ! Calculate SMD for new water content
         SMD = (Fc_m - Sn) * root
 
-        ! fSWP enabled?
-        if (enable_fSWP > 0) then
-            fSWP = (((-1) * SWP)** (-0.706)) * 0.355
-            fSWP = min(max(fSWP, fmin), 1.0)
-        else
-            ! Model is multiplicative, so fSWP = 1.0 removes its significance
-            fSWP = 1.0
-        end if
+        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
+        fSWP = min(max(fSWP, fmin), 1.0)
     end subroutine Calc_SWP
 
     subroutine Calc_LWP()
