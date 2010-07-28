@@ -19,6 +19,7 @@ module SoilWater
     public :: Calc_Penman_Monteith
     public :: Calc_Penman_Monteith_daily
     public :: Calc_SWP
+    public :: Calc_LWP
 
     ! Hourly intermediate
     real, public :: Ei_hr
@@ -39,7 +40,7 @@ contains
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
         use Variables, only: SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, &
-                             fSWP, SMD, AEt, Et, Es, PEt, Ei
+                             fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP
 
         Ei_dd = 0
         PEt_dd = 0
@@ -68,6 +69,9 @@ contains
         ! Calculate fSWP and SMD for initial water content
         fSWP = (((-1) * SWP)** (-0.706)) * 0.355
         SMD = (Fc_m - Sn) * root
+
+        ! Initial fLWP = 1
+        fLWP = 1
     end subroutine Init_SoilWater
 
     !
@@ -203,6 +207,53 @@ contains
             fSWP = 1.0
         end if
     end subroutine Calc_SWP
+
+    subroutine Calc_LWP()
+        use Params_Veg, only: root, fmin
+        use Params_Site, only: SWP_AE, soil_b
+        use Variables, only: SWP, delta_LWP, LWP, fLWP
+        use Inputs, only: hr
+
+        ! Variables related to plant physiology
+        ! TODO: These should probably be vegetation parameters
+        real :: K1 = 0.0000000000035    ! constant related to root density
+        real :: C = 1                   ! plant capacitance (MPa mm-1)
+        real :: Rc = 1.6                ! storage/destorage hydraulic resistance
+                                        ! (MPa h mm-1)
+        real :: Rp = 23                 ! plant hydraulic resistance (MPa h mm-1)
+        ! Variables related to the soil
+        ! TODO: These should probably be site parameters
+        real :: Ksat = 0.0002178    ! Saturated soil conductance (s-2 MPa-1 mm-1)
+                                    !  - sandy loam = 0.0009576
+                                    !  - silt loam  = 0.0002178
+                                    !  - loam       = 0.0002286
+                                    !  - clay loam  = 0.00016 (estimated)
+
+        ! Calculated LWP parameters
+        real :: Rsr         ! Soil-rot resistance
+        real :: Ks          ! Bulk soil hydraulic conductivity
+        real :: delta_t     ! Time between readings - TODO: handle when readings 
+                            ! are NOT hourly?
+        real :: delta_Et    ! Difference in hourly Et from last hour
+
+        Ks = Ksat * ((SWP_AE/SWP)**((3/soil_b)+2))
+        Rsr = K1 / (root * Ks)
+
+        delta_t = 1
+        delta_Et = Et_hr_prev - Et_hr
+
+        if (hr < 3) then
+            delta_LWP = 0
+            LWP = SWP
+        else
+            delta_LWP = ((((SWP-LWP-(Rsr+Rp)*(Et_hr_prev*1000))/(C*(Rsr+Rp+Rc)))*Delta_t) &
+                         -(((Rsr+Rp)*Rc)/(Rsr+Rp+Rc))*(delta_Et*1000))
+            LWP = LWP + delta_LWP
+        end if
+
+        fLWP = (((-1) * LWP)**(-0.706)) * 0.355
+        fLWP = min(1.0, max(fLWP, fmin))
+    end subroutine Calc_LWP
     
 
 end module SoilWater
