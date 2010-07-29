@@ -7,11 +7,12 @@
 !   Sn      = Current volumetric water content, <= Fc_m
 !   P_input = Preciptation input (after evaporation of intercepted)
 !   Sn_diff = Today's volumetric water content change (+ve = gain)
-!   SWP_min_vol = Minimum SWP for vegetation as volumetric content
-!   ASW     = Available soil water (m), = Sn - SWP_min_vol
+!   ASW     = Available soil water (m), = Sn - PWP_vol
 !   SWP     = Soil water potential (MPa)
 !   per_vol = Volumetric water content as a percentage
 !   SMD     = Soil moisture deficit (m), relative to field capacity
+!   PWP     = Minimum SWP (MPa)
+!   PWP_vol = Minimum SWP as volumetric content (m3/m3)
 !
 module SoilWater
 
@@ -33,13 +34,15 @@ module SoilWater
     ! Daily accumulation variables
     real, private :: Ei_dd, PEt_dd, Et_dd, Es_dd
 
+    real, private :: PWP, PWP_vol
+
 contains
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
-        use Variables, only: SWP_min_vol, Sn_star, Sn, per_vol, ASW, SWP, &
+        use Variables, only: Sn_star, Sn, per_vol, ASW, SWP, &
                              fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP
 
         Ei_dd = 0
@@ -52,8 +55,10 @@ contains
         Es = 0
         AEt = 0
 
-        ! Convert SWP_min to volumetric (MPa -> m^3/m^3)
-        SWP_min_vol = 1.0 / (((SWP_min/SWP_AE)**(1.0/soil_b)) / SWC_sat)
+        ! PWP can't be any higher than SWP_min
+        PWP = min(-4.0, SWP_min)
+        ! Convert PWP to volumetric (MPa -> m^3/m^3)
+        PWP_vol = 1.0 / (((PWP/SWP_AE)**(1.0/soil_b)) / SWC_sat)
 
         ! Volumetric water content, initially at field capacity
         Sn_star = Fc_m
@@ -63,7 +68,7 @@ contains
         per_vol = Sn * 100
 
         ! ASW and SWP for initial volumetric water content
-        ASW = (Sn - SWP_min_vol) * root
+        ASW = (Sn - PWP_vol) * root
         SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
 
         ! Calculate fSWP and SMD for initial water content
@@ -174,7 +179,7 @@ contains
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
         use Inputs, only: dd, precip_acc
-        use Variables, only: AEt, Es, Ei, LAI, SWP_min_vol
+        use Variables, only: AEt, Es, Ei, LAI
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
         use Variables, only: Sn_diff, P_input
 
@@ -189,10 +194,11 @@ contains
 
         ! Calculate new Sn, with field capacity as a maximum
         Sn = min(Fc_m, Sn + Sn_diff)
+        Sn = max(PWP_vol, Sn)
         per_vol = Sn * 100
 
         ! Calculate ASW and SWP for new water content
-        ASW = (Sn - SWP_min_vol) * root
+        ASW = (Sn - PWP_vol) * root
         SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
 
         ! Calculate SMD for new water content
