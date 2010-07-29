@@ -39,14 +39,11 @@ module SoilWater
 
     real, private :: r_meas
 
-    ! TODO: Make these parameters in the UI
-    real, public, parameter :: D_meas = 0.5 ! Soil water data measurement depth
-
 contains
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
-        use Params_Site, only: Fc_m, soil_b, SWP_AE
+        use Params_Site, only: Fc_m, soil_b, SWP_AE, D_meas
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
         use Variables, only: Sn_star, Sn, per_vol, ASW, SWP, &
                              fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP, &
@@ -271,7 +268,7 @@ contains
         use Constants, only: SWC_sat
         use Variables, only: AEt, P_input, Sn_meas, Sn_diff_meas, SWP_meas, &
                              SMD_meas
-        use Params_Site, only: Fc_m, soil_b, SWP_AE
+        use Params_Site, only: Fc_m, soil_b, SWP_AE, D_meas
 
         real :: P_input_meas, Et_meas, trans_diff_meas
 

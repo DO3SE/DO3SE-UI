@@ -99,6 +99,11 @@ class SitePanel(wx.Panel):
         self.fields.add('uzr', wxFloatField(wx.SpinCtrl(p,
             min=1, max=200, initial=25)))
         sHeights.fgs.Add(self.fields['uzr'].obj, 0)
+        sHeights.fgs.Add(StaticFancyText(p, -1, "Soil water measurement depth (D<sub>meas</sub>, m)"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('d_meas', wxFloatField(wxext.FloatSpin(p,
+            value=0.5, min_val=0.1, max_val=2.0, increment=0.1, digits=1)))
+        sHeights.fgs.Add(self.fields['d_meas'].obj, 0)
 
 
         # Soil properties
