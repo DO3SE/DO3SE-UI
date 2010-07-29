@@ -21,6 +21,7 @@ module SoilWater
     public :: Calc_Penman_Monteith_daily
     public :: Calc_SWP
     public :: Calc_LWP
+    public :: Calc_SWP_meas
 
     ! Hourly intermediate
     real, public :: Ei_hr
@@ -36,6 +37,11 @@ module SoilWater
 
     real, private :: PWP, PWP_vol
 
+    real, private :: r_meas
+
+    ! TODO: Make these parameters in the UI
+    real, public, parameter :: D_meas = 0.5 ! Soil water data measurement depth
+
 contains
     
     subroutine Init_SoilWater()
@@ -43,7 +49,8 @@ contains
         use Params_Site, only: Fc_m, soil_b, SWP_AE
         use Params_Veg, only: SWP_min, SWP_max, fmin, root
         use Variables, only: Sn_star, Sn, per_vol, ASW, SWP, &
-                             fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP
+                             fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP, &
+                             Sn_meas, SWP_meas, SMD_meas
 
         Ei_dd = 0
         PEt_dd = 0
@@ -77,6 +84,11 @@ contains
 
         ! Initial fLWP = 1
         fLWP = 1
+
+        ! Initialised SWP_meas
+        r_meas = (1-(0.97**(D_meas*100)))
+        Sn_meas = Sn_star
+        SWP_meas = SWP_AE*((SWC_sat/Sn_meas)**soil_b)
     end subroutine Init_SoilWater
 
     !
@@ -254,6 +266,33 @@ contains
         fLWP = (((-1) * LWP)**(-0.706)) * 0.355
         fLWP = min(1.0, max(fLWP, fmin))
     end subroutine Calc_LWP
+
+    subroutine Calc_SWP_meas()
+        use Constants, only: SWC_sat
+        use Variables, only: AEt, P_input, Sn_meas, Sn_diff_meas, SWP_meas, &
+                             SMD_meas
+        use Params_Site, only: Fc_m, soil_b, SWP_AE
+
+        real :: P_input_meas, Et_meas, trans_diff_meas
+
+        P_input_meas = P_input
+
+        Et_meas = AEt * r_meas
+        if (Et_meas > ((Sn_meas-PWP_vol) * D_meas)) then
+            Et_meas = (Sn_meas-PWP_vol) * D_meas
+        end if
+        
+        trans_diff_meas = P_input_meas - Et_meas
+        
+        Sn_diff_meas = trans_diff_meas / D_meas
+        
+        Sn_meas = min(Fc_m, Sn_meas + Sn_diff_meas)
+        Sn_meas = max(PWP_vol, Sn_meas)
+        
+        SWP_meas = SWP_AE * ((SWC_sat / Sn_meas)**soil_b)
+
+        SMD_meas = (Fc_m - Sn_meas) * D_meas
+    end subroutine Calc_SWP_meas
     
 
 end module SoilWater

@@ -79,6 +79,10 @@ _output_fields = (
         (variables,     'per_vol',  float,  'per_vol (%)',      'Volumetric water content (per_vol, %)'),
         (variables,     'smd',      float,  'SMD (m)',          'Soil moisture deficit (SMD, m)'),
         (variables,     'lwp',      float,  'LWP (???)',        'Leaf water potential (LWP, ???)'),
+        (variables,     'sn_meas',  float,  'Sn_meas',          'Sn_meas'),
+        (variables,     'sn_diff_meas', float, 'Sn_diff_meas',  'Sn_diff_meas'),
+        (variables,     'swp_meas', float,  'SWP_meas',         'SWP_meas'),
+        (variables,     'smd_meas', float,  'SMD_meas',         'SMD_meas'),
 
         # Debug variables
         (variables,     'ra_i',     float,  'Ra_i (s/m)',       '[DEBUG] Ra at O3 measurement'),

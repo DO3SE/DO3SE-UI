@@ -110,6 +110,7 @@ contains
         call Calc_precip_acc()
         call Calc_Penman_Monteith_daily()
         call Calc_SWP()
+        call Calc_SWP_meas()
     end subroutine Daily
 
     subroutine Calculate_Row()

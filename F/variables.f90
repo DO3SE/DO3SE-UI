@@ -41,6 +41,10 @@ module Variables
     real, public, save :: LWP           ! Leaf water potential (MPa)
     real, public, save :: delta_LWP     ! Change in LWP between hours
     real, public, save :: fLWP
+    real, public, save :: Sn_meas       ! Soil water above measurement depth
+    real, public, save :: Sn_diff_meas  ! Change in Sn_meas
+    real, public, save :: SWP_meas      ! SWP for soil above measurement depth
+    real, public, save :: SMD_meas      ! SMD for soil above measurement depth
 
     ! R
     real, public, save  :: Ra
