@@ -109,14 +109,6 @@ class Dataset:
         """
         skippedrows = 0
 
-        # Load parameters into F model
-        util.setattrs(model.params_veg, self.vegparams)
-        util.setattrs(model.params_site, self.siteparams)
-
-        # Initialise the model
-        logging.info("Initialising DOSE Fortran model")
-        model.run.initialise()
-
         # Setup function switchboard
         model.switchboard.sai_method = self.sai_method
         model.switchboard.rn_method = self.rn_method
@@ -124,6 +116,14 @@ class Dataset:
         model.switchboard.ra_method = self.ra_method
         model.switchboard.fo3_method = self.fo3_method
         model.switchboard.r_par_method = self.r_par_method
+
+        # Load parameters into F model
+        util.setattrs(model.params_veg, self.vegparams)
+        util.setattrs(model.params_site, self.siteparams)
+
+        # Initialise the model
+        logging.info("Initialising DOSE Fortran model")
+        model.run.initialise()
 
         self.results = []
         # Iterate through dataset
