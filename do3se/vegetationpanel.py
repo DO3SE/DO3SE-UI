@@ -275,6 +275,39 @@ class VegetationPanel(wx.Panel):
                 min=1, max=365, initial=273)))
         s1.Add(self.fields['egs'].obj, 0, wx.ALIGN_RIGHT)
 
+        s1.AddSpacer(12)
+        self.fields.add('sgs_egs_lat', wxField(wx.CheckBox(p,
+            label="Use latitude function")))
+        s1.Add(self.fields['sgs_egs_lat'].obj, 0, wx.ALIGN_RIGHT)
+
+        # Disable SGS/EGS when using latitude function
+        def f(evt):
+            enabled = not self.fields['sgs_egs_lat'].IsChecked()
+            self.fields['sgs'].Enable(enabled)
+            self.fields['egs'].Enable(enabled)
+            if not enabled:
+                # Ugly ugly ugly hack, this will break if the UI is ever redesigned
+                lat = self.GetGrandParent().GetParent().Site.fields['lat'].get()
+                sgs, egs = model.phenology.latitude_sgs_egs(lat)
+                self.fields['sgs'].set(sgs)
+                self.fields['egs'].set(egs)
+                self.redraw_LAI_preview(None)
+                self.redraw_fphen_preview(None)
+            evt.Skip()
+        self.fields['sgs_egs_lat'].Bind(wx.EVT_CHECKBOX, f)
+
+        def f(evt):
+            if self.fields['sgs_egs_lat'].get():
+                lat = self.GetGrandParent().GetParent().Site.fields['lat'].get()
+                sgs, egs = model.phenology.latitude_sgs_egs(lat)
+                self.fields['sgs'].set(sgs)
+                self.fields['egs'].set(egs)
+                self.redraw_LAI_preview(None)
+                self.redraw_fphen_preview(None)
+            evt.Skip()
+        # Ugly ugly ugly hack, this will break if the UI is ever redesigned
+        self.GetParent().GetGrandParent().Site.fields['lat'].Bind(wx.EVT_SPINCTRL, f)
+
         # Maintain integrity on growing season
         def f(evt):
             if self.fields['sgs'].GetValue() > self.fields['egs'].GetValue():

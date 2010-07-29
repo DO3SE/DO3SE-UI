@@ -34,6 +34,7 @@ contains
         AOT40 = 0
 
         ! Put calls to initialisation functions here
+        call SB_Calc_SGS_EGS()
         call Derive_d_zo()
         call Derive_Windspeed_d_zo()
         call Derive_O3_d_zo()

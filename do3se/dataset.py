@@ -79,6 +79,13 @@ class Dataset:
         # TODO: switchable with heat flux calculation?
         self.ra_method = model.switchboard.ra_simple
 
+        if self.vegparams.pop('sgs_egs_lat', False):
+            self.sgs_egs_method = model.switchboard.sgs_egs_latitude
+            logging.debug('Using SGS/EGS latitude function')
+        else:
+            self.sgs_egs_method = model.switchboard.sgs_egs_use_inputs
+            logging.debug('Using SGS/EGS inputs')
+
         # Soil parameters from soil type
         soil = model.soil_class_map[self.siteparams.pop('soil_tex',
                                                         model.default_soil_class)]
@@ -116,6 +123,7 @@ class Dataset:
         model.switchboard.ra_method = self.ra_method
         model.switchboard.fo3_method = self.fo3_method
         model.switchboard.r_par_method = self.r_par_method
+        model.switchboard.sgs_egs_method = self.sgs_egs_method
 
         # Load parameters into F model
         util.setattrs(model.params_veg, self.vegparams)
