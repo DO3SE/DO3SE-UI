@@ -84,6 +84,11 @@ class Dataset:
                                                         model.default_soil_class)]
         self.siteparams.update(soil['data'])
 
+        if self.siteparams['u_h_copy']:
+            self.siteparams['u_h'] = self.vegparams['h']
+        if self.siteparams['o3_h_copy']:
+            self.siteparams['o3_h'] = self.vegparams['h']
+
         # Skip the trimmed lines
         for n in xrange(0,trim): infile.next()
         # Load all of the data
