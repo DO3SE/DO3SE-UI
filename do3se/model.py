@@ -214,6 +214,26 @@ fXWP_calc_map = _to_id_map(fXWP_calcs)
 
 default_fXWP_calc = 'disabled'
 
+# fSWP calculations (switching between exponential and linear relationship
+fSWP_calcs = _to_dicts(('id', 'func', 'name'), (
+        ('exp',     switchboard.fswp_exponential,   'Exponential'),
+        ('linear',  switchboard.fswp_linear,        'Linear (using SWP_min and SWP_max)'),
+))
+
+fSWP_calc_map = _to_id_map(fSWP_calcs)
+
+default_fSWP_calc = 'exp'
+
+# LWP calculations (steady-state and non-steady-state)
+LWP_calcs = _to_dicts(('id', 'func', 'name'), (
+        ('nss',     switchboard.lwp_steady_state,   'Non steady-state'),
+        ('ss',      switchboard.lwp_steady_state,   'Steady-state'),
+))
+
+LWP_calc_map = _to_id_map(LWP_calcs)
+
+default_LWP_calc = 'nss'
+
 
 def extract_outputs():
     """
