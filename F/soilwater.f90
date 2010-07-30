@@ -29,9 +29,10 @@ module SoilWater
     real, public :: Et_hr_prev
     real, public :: PEt_3
     real, public :: Et_3
+    real, public :: AEt_hr
 
     ! Daily accumulation variables
-    real, private :: Ei_dd, PEt_dd, Et_dd, Es_dd
+    real, private :: Ei_dd, PEt_dd, Et_dd, Es_dd, AEt_dd
 
     real, private :: PWP, PWP_vol
 
@@ -48,6 +49,7 @@ contains
         PEt_dd = 0
         Et_dd = 0
         Es_dd = 0
+        AEt_dd = 0
         Ei = 0
         PEt = 0
         Et = 0
@@ -85,7 +87,7 @@ contains
         use Constants, only: seaP, Ts_K, Dratio
         use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
-                             Rsto_PEt, Sn, Rinc, Rgs
+                             Rsto_PEt, Sn, Ra, Rinc
         use Params_Site, only: Fc_m
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
@@ -95,6 +97,7 @@ contains
         
         real        :: Et_1, Et_2, Ei_3 !, PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr
         real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3 !, Es_hr
+        real :: SW_a, SW_s, SW_c, C_canopy, C_soil
 
         ! Convert Rn to J from MJ
         real :: Rn
@@ -129,22 +132,37 @@ contains
         Et_hr_prev = Et_hr
         Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 
-        if (Sn < Fc_m) then
+        if (Sn < Fc_m .or. LAI >= 1.0) then
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)
             Es_Rn = Rn * t
             Es_G = 0.1 * Es_Rn
             Es_1 = (delta * (Es_Rn - Es_G)) / lambda
-            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Rgs + Rinc + Rb_H2O) / lambda
+            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Ra + Rb_H2O) / lambda
             Es_3 = delta + psychro
             Es_hr = (Es_1 + Es_2) / Es_3 / 1000
         endif
+
+        ! Calculate AEt from Et and Es (after Shuttleworth and Wallace, 1985)
+        SW_a = (delta + psychro) * (Ra + Rb_H2O)
+        SW_s = (delta + psychro) * Rinc + (psychro * 0)  ! Rsoil assumed to be 0 
+                                                         ! at soil surface
+        SW_c = (delta + psychro) * 0 + (psychro + Rsto_c) ! Boundary layer 
+                                                          ! resistance = 0
+        C_canopy = 1 / (1 + ((SW_c * SW_a) / (SW_s * (SW_c + SW_a))))
+        C_soil = 1 / (1 + ((SW_s * SW_a) / (SW_c * (SW_s + SW_a))))
+        if (Es_hr <= 0) then
+            AEt_hr = Et_hr
+        else
+            AEt_hr = (C_canopy * Et_hr) + (C_soil * Es_hr)
+        end if
 
         Ei_dd = Ei_dd + Ei_hr
         PEt_dd = PEt_dd + PEt_hr
         Et_dd = Et_dd + Et_hr
         Es_dd = Es_dd + Es_hr
+        AEt_dd = AEt_dd + AEt_hr
     end subroutine Calc_Penman_Monteith
 
     !
@@ -161,9 +179,8 @@ contains
         Et_dd = 0
         Es = Es_dd
         Es_dd = 0
-
-        ! TODO: Calculate AEt correctly
-        AEt = Et
+        AEt = AEt_dd
+        AEt_dd = 0
     end subroutine Calc_Penman_Monteith_daily
 
     !
@@ -186,7 +203,7 @@ contains
         end if
         ! Can't lose water through Ei
         P_input = max(0.0, P_input)
-        Sn_diff = (P_input - AEt - Es) / root
+        Sn_diff = (P_input - AEt) / root
 
         ! Calculate new Sn, with field capacity as a maximum
         Sn = min(Fc_m, Sn + Sn_diff)
