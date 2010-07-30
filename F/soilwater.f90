@@ -82,7 +82,7 @@ contains
     ! Penman-Monteith method.
     !
     subroutine Calc_Penman_Monteith()
-        use Constants, only: seaP, Ts_K
+        use Constants, only: seaP, Ts_K, Dratio
         use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
                              Rsto_PEt, Sn, Rinc, Rgs
@@ -122,10 +122,10 @@ contains
         Ei_3 = delta + psychro
         Ei_hr = (Et_1 + Et_2) / Ei_3 / 1000
 
-        PEt_3 = delta + psychro * (1 + (Rsto_PEt * 0.61) / Rb_H2O)
+        PEt_3 = delta + psychro * (1 + (Rsto_PEt * Dratio) / Rb_H2O)
         PEt_hr = (Et_1 + Et_2) / PEt_3 / 1000
 
-        Et_3 = delta + psychro * (1 + (Rsto_c * 0.61) / Rb_H2O)
+        Et_3 = delta + psychro * (1 + (Rsto_c * Dratio) / Rb_H2O)
         Et_hr_prev = Et_hr
         Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 

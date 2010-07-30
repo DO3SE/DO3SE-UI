@@ -10,6 +10,7 @@ module Constants
     real, public, parameter :: v = 0.000015     ! kinematic viscosity of air (m^2/s at 20oC)
     real, public, parameter :: DO3 = 0.000015   ! molecular diffusivity of O3 in air (m^2/s)
     real, public, parameter :: DH2O = 0.000025  ! molecular diffusivity of H2O (m^2/s)
+    real, public, parameter :: Dratio = 0.662   ! molecular diffusivity ratio (DO3/DH2O)
     real, public, parameter :: Pr = 0.72        ! Prandtl Number (Pr, -)
 
     real, public, parameter :: seaP = 101.325   ! Sea level air pressure in kPa
