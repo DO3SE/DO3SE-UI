@@ -1,11 +1,17 @@
 from do3se_fortran import *
 
+def _to_dicts(fields, tuples):
+    return [dict(zip(fields, x)) for x in tuples]
+
+def _to_id_map(dicts, field='id'):
+    return dict((x[field], x) for x in dicts)
+
 #
 # Define available fields
 #
 
-# Available input fields in (module, variable, type, required, shortname, longname) format
-_input_fields = (
+# Available input fields
+input_fields = _to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
         (inputs,    'yr',       int,    False,  'Year',         'Year'),
         (inputs,    'mm',       int,    False,  'Month',        'Month'),
         (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
@@ -21,21 +27,13 @@ _input_fields = (
         (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (Wh/m^2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
-)
-
-# Available input fields as a list of dicts
-input_fields = [{'module':      x[0],
-                 'variable':    x[1],
-                 'type':        x[2],
-                 'required':    x[3],
-                 'short':       x[4],
-                 'long':        x[5]} for x in _input_fields]
+))
 
 # Mapping from input field variable name to full field info
-input_field_map = dict( (x['variable'], x) for x in input_fields )
+input_field_map = _to_id_map(input_fields, 'variable')
 
-# Available output fields in (module, variable, type, shortname, longname) format
-_output_fields = (
+# Available output fields
+output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         # Inputs
         (inputs,        'yr',       int,    'Year',             'Year'),
         (inputs,        'mm',       int,    'Month',            'Month'),
@@ -135,20 +133,13 @@ _output_fields = (
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
         (variables,     'afst0',    float,  'AFst0',            '[DEBUG] Afst0'),
         (variables,     'fo3',      float,  'fO3',              '[DEBUG] fO3'),
-)
-
-# Available output fields as a list of dicts
-output_fields = [{'module':      x[0],
-                  'variable':    x[1],
-                  'type':        x[2],
-                  'short':       x[3],
-                  'long':        x[4]} for x in _output_fields]
+))
 
 # Mapping from output field variable name to full field info
-output_field_map = dict( (x['variable'], x) for x in output_fields )
+output_field_map = _to_id_map(output_fields, 'variable')
 
-# Soil class data in (id, name, data) format
-_soil_classes = (
+# Soil class data
+soil_classes = _to_dicts(('id', 'name', 'data'), (
         ('sand_loam',   'Sandy Loam (coarse)', {
             'soil_b':   3.31,
             'fc_m':     0.16,
@@ -169,15 +160,10 @@ _soil_classes = (
             'fc_m':     0.37,
             'swp_ae':   -0.00588,
         }),
-)
-
-# Soil classes as a list of dicts
-soil_classes = [{'id':      x[0],
-                 'name':    x[1],
-                 'data':    x[2]} for x in _soil_classes]
+))
 
 # Mapping from soil class id to full info
-soil_class_map = dict( (x['id'], x) for x in soil_classes )
+soil_class_map = _to_id_map(soil_classes)
 
 default_soil_class = 'loam'
 
@@ -189,7 +175,7 @@ leaf_fphen_calcs = (
 )
 
 # Mapping from calc id to info
-leaf_fphen_calc_map = dict( (x['id'], x) for x in leaf_fphen_calcs )
+leaf_fphen_calc_map = _to_id_map(leaf_fphen_calcs)
 
 default_leaf_fphen_calc = 'copy'
 
@@ -201,7 +187,7 @@ fO3_calcs = (
 )
 
 # Mapping from calc id to info
-fO3_calc_map = dict( (x['id'], x) for x in fO3_calcs )
+fO3_calc_map = _to_id_map(fO3_calcs)
 
 default_fO3_calc = 'none'
 
@@ -213,7 +199,7 @@ SAI_calcs = (
 )
 
 # Mapping from calc id to info
-SAI_calc_map = dict( (x['id'], x) for x in SAI_calcs )
+SAI_calc_map = _to_id_map(SAI_calcs)
 
 default_SAI_calc = 'copy'
 
@@ -224,7 +210,7 @@ fXWP_calcs = (
         {'id': 'flwp',      'func': switchboard.fxwp_use_flwp,  'name': 'Use fLWP'},
 )
 
-fXWP_calc_map = dict( (x['id'], x) for x in fXWP_calcs )
+fXWP_calc_map = _to_id_map(fXWP_calcs)
 
 default_fXWP_calc = 'disabled'
 
