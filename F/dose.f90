@@ -8,6 +8,7 @@ program Run_DOSE
     ra_method = ra_simple
     fo3_method = fo3_disabled
     fswp_method = fswp_exponential
+    lwp_method = lwp_non_steady_state
     fxwp_method = fxwp_disabled
     r_par_method = r_par_use_inputs
 

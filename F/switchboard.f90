@@ -33,6 +33,11 @@ module Switchboard
     integer, public, save :: fswp_method = fswp_exponential
     public :: SB_Calc_fSWP
 
+    integer, public, parameter :: lwp_non_steady_state = 1
+    integer, public, parameter :: lwp_steady_state     = 2
+    integer, public, save :: lwp_method = lwp_non_steady_state
+    public :: SB_Calc_LWP
+
     integer, public, parameter :: fxwp_disabled = 1
     integer, public, parameter :: fxwp_use_fswp = 2
     integer, public, parameter :: fxwp_use_flwp = 3
@@ -143,6 +148,17 @@ contains
             call Calc_fSWP_linear()
         end select
     end subroutine SB_Calc_fSWP
+
+    subroutine SB_Calc_LWP()
+        use SoilWater
+
+        select case (lwp_method)
+        case (lwp_non_steady_state)
+            call Calc_LWP()
+        case (lwp_steady_state)
+            call Calc_LWP_steady_state()
+        end select
+    end subroutine SB_Calc_LWP
 
     subroutine SB_Calc_fXWP()
         use Variables, only: fXWP, fSWP, fLWP

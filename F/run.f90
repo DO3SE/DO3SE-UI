@@ -76,9 +76,10 @@ contains
 
         call Calc_Penman_Monteith()
 
-        call Calc_LWP()     ! This *must* happen after calculating SWP - SWP is 
+        call SB_Calc_LWP()  ! This *must* happen after calculating SWP - SWP is 
                             ! calculated as the day rolls over, and LWP should 
                             ! use the previous day's SWP
+        call Calc_fLWP()
 
         call Calc_O3_Concentration()
         call Calc_Ftot()

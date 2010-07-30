@@ -23,6 +23,8 @@ module SoilWater
     public :: Calc_fSWP_exponential
     public :: Calc_fSWP_linear
     public :: Calc_LWP
+    public :: Calc_LWP_steady_state
+    public :: Calc_fLWP
     public :: Calc_SWP_meas
 
     ! Hourly intermediate
@@ -290,10 +292,45 @@ contains
                          -(((Rsr+Rp)*Rc)/(Rsr+Rp+Rc))*(delta_Et*1000))
             LWP = LWP + delta_LWP
         end if
+    end subroutine Calc_LWP
+
+    subroutine Calc_LWP_steady_state()
+        use Params_Site, only: SWP_AE, soil_b
+        use Params_Veg, only: root
+        use Variables, only: LWP, SWP
+
+        ! Variables related to plant physiology
+        ! TODO: These should probably be vegetation parameters
+        real :: K1 = 0.0000000000035    ! constant related to root density
+        real :: C = 1                   ! plant capacitance (MPa mm-1)
+        real :: Rc = 1.6                ! storage/destorage hydraulic resistance
+                                        ! (MPa h mm-1)
+        real :: Rp = 23                 ! plant hydraulic resistance (MPa h mm-1)
+        ! Variables related to the soil
+        ! TODO: These should probably be site parameters
+        real :: Ksat = 0.0002178    ! Saturated soil conductance (s-2 MPa-1 mm-1)
+                                    !  - sandy loam = 0.0009576
+                                    !  - silt loam  = 0.0002178
+                                    !  - loam       = 0.0002286
+                                    !  - clay loam  = 0.00016 (estimated)
+
+        ! Calculated LWP parameters
+        real :: Rsr         ! Soil-rot resistance
+        real :: Ks          ! Bulk soil hydraulic conductivity
+
+        Ks = Ksat * ((SWP_AE/SWP)**((3/soil_b)+2))
+        Rsr = K1 / (root * Ks)
+
+        LWP = SWP + (Et_hr * (Rsr + Rp))
+    end subroutine Calc_LWP_steady_state
+
+    subroutine Calc_fLWP()
+        use Params_Veg, only: fmin
+        use Variables, only: LWP, fLWP
 
         fLWP = (((-1) * LWP)**(-0.706)) * 0.355
         fLWP = min(1.0, max(fLWP, fmin))
-    end subroutine Calc_LWP
+    end subroutine Calc_fLWP
 
     subroutine Calc_SWP_meas()
         use Constants, only: SWC_sat
