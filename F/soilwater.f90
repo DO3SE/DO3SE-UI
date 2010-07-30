@@ -20,6 +20,8 @@ module SoilWater
     public :: Calc_Penman_Monteith
     public :: Calc_Penman_Monteith_daily
     public :: Calc_SWP
+    public :: Calc_fSWP_exponential
+    public :: Calc_fSWP_linear
     public :: Calc_LWP
     public :: Calc_SWP_meas
 
@@ -229,10 +231,22 @@ contains
 
         ! Calculate SMD for new water content
         SMD = (Fc_m - Sn) * root
+    end subroutine Calc_SWP
+
+    subroutine Calc_fSWP_exponential()
+        use Params_Veg, only: fmin
+        use Variables, only: SWP, fSWP
 
         fSWP = (((-1) * SWP)** (-0.706)) * 0.355
         fSWP = min(max(fSWP, fmin), 1.0)
-    end subroutine Calc_SWP
+    end subroutine Calc_fSWP_exponential
+
+    subroutine Calc_fSWP_linear()
+        use Params_Veg, only: fmin, SWP_min, SWP_max
+        use Variables, only: fSWP, SWP
+
+        fSWP = min(1.0, max(fmin, ((1-fmin) * ((SWP_min - SWP)/(SWP_min - SWP_max))) + fmin))
+    end subroutine Calc_fSWP_linear
 
     subroutine Calc_LWP()
         use Params_Veg, only: root, fmin

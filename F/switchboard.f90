@@ -28,6 +28,11 @@ module Switchboard
     integer, public, save :: fo3_method = fo3_disabled
     public :: SB_Calc_fO3
 
+    integer, public, parameter :: fswp_exponential = 1
+    integer, public, parameter :: fswp_linear      = 2
+    integer, public, save :: fswp_method = fswp_exponential
+    public :: SB_Calc_fSWP
+
     integer, public, parameter :: fxwp_disabled = 1
     integer, public, parameter :: fxwp_use_fswp = 2
     integer, public, parameter :: fxwp_use_flwp = 3
@@ -127,6 +132,17 @@ contains
 
         end select
     end subroutine SB_Calc_fO3
+
+    subroutine SB_Calc_fSWP()
+        use SoilWater
+
+        select case (fswp_method)
+        case (fswp_exponential)
+            call Calc_fSWP_exponential()
+        case (fswp_linear)
+            call Calc_fSWP_linear()
+        end select
+    end subroutine SB_Calc_fSWP
 
     subroutine SB_Calc_fXWP()
         use Variables, only: fXWP, fSWP, fLWP

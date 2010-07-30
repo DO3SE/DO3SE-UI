@@ -101,6 +101,7 @@ contains
         call Calc_precip_acc()
         call Calc_Penman_Monteith_daily()
         call Calc_SWP()
+        call SB_Calc_fSWP()
         call Calc_SWP_meas()
     end subroutine Daily
 
