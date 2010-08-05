@@ -128,6 +128,7 @@ output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         (soilwater,     'et_3',     float,  'Et_3',             '[DEBUG] Et_3'),
         (variables,     'delta_lwp',float,  'delta_LWP',        '[DEBUG] delta_LWP'),
         (variables,     'flwp',     float,  'fLWP',             '[DEBUG] fLWP'),
+        (variables,     'fxwp',     float,  'fXWP',             '[DEBUG] fXWP'),
 
         (variables,     'ot0',      float,  'OT0',              '[DEBUG] OT0'),
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
@@ -226,8 +227,8 @@ default_fSWP_calc = 'exp'
 
 # LWP calculations (steady-state and non-steady-state)
 LWP_calcs = _to_dicts(('id', 'func', 'name'), (
-        ('nss',     switchboard.lwp_steady_state,   'Non steady-state'),
-        ('ss',      switchboard.lwp_steady_state,   'Steady-state'),
+        ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
+        ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
 ))
 
 LWP_calc_map = _to_id_map(LWP_calcs)

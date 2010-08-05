@@ -260,9 +260,9 @@ contains
         ! TODO: These should probably be vegetation parameters
         real :: K1 = 0.0000000000035    ! constant related to root density
         real :: C = 1                   ! plant capacitance (MPa mm-1)
-        real :: Rc = 1.6                ! storage/destorage hydraulic resistance
+        real :: Rc = 0.42               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
-        real :: Rp = 23                 ! plant hydraulic resistance (MPa h mm-1)
+        real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
         ! Variables related to the soil
         ! TODO: These should probably be site parameters
         real :: Ksat = 0.0002178    ! Saturated soil conductance (s-2 MPa-1 mm-1)
@@ -303,9 +303,9 @@ contains
         ! TODO: These should probably be vegetation parameters
         real :: K1 = 0.0000000000035    ! constant related to root density
         real :: C = 1                   ! plant capacitance (MPa mm-1)
-        real :: Rc = 1.6                ! storage/destorage hydraulic resistance
+        real :: Rc = 0.42               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
-        real :: Rp = 23                 ! plant hydraulic resistance (MPa h mm-1)
+        real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
         ! Variables related to the soil
         ! TODO: These should probably be site parameters
         real :: Ksat = 0.0002178    ! Saturated soil conductance (s-2 MPa-1 mm-1)
@@ -321,7 +321,7 @@ contains
         Ks = Ksat * ((SWP_AE/SWP)**((3/soil_b)+2))
         Rsr = K1 / (root * Ks)
 
-        LWP = SWP + (Et_hr * (Rsr + Rp))
+        LWP = SWP - (Et_hr*1000 * (Rsr + Rp))
     end subroutine Calc_LWP_steady_state
 
     subroutine Calc_fLWP()
