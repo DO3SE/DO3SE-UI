@@ -112,6 +112,7 @@ output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         (variables,     'gsto_pet', float,  'Gsto_PEt (mmol/m^2/s)','[DEBUG] Gsto_PEt (Gsto_PEt, mmol/m^2/s)'),
 
         (variables,     'rb_h2o',   float,  'Rb_H2O (s/m)',     '[DEBUG] Rb_H2O (boundary resistance to water)'),
+        (variables,     'fpaw',     float,  'fPAW',             '[DEBUG] fPAW'),
         (variables,     'asw',      float,  'ASW',              '[DEBUG] ASW'),
         (variables,     'sn',       float,  'Sn',               '[DEBUG] Sn'),
         (variables,     'p_input',  float,  'P_input',          '[DEBUG] P_input'),
@@ -204,11 +205,12 @@ SAI_calc_map = _to_id_map(SAI_calcs)
 default_SAI_calc = 'copy'
 
 # fXWP calculations (switching between fSWP, fLWP and neither)
-fXWP_calcs = (
-        {'id': 'disabled',  'func': switchboard.fxwp_disabled,  'name': 'Disabled'},
-        {'id': 'fswp',      'func': switchboard.fxwp_use_fswp,  'name': 'Use fSWP'},
-        {'id': 'flwp',      'func': switchboard.fxwp_use_flwp,  'name': 'Use fLWP'},
-)
+fXWP_calcs = _to_dicts(('id', 'func', 'name'), (
+        ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
+        ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
+        ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
+        ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
+))
 
 fXWP_calc_map = _to_id_map(fXWP_calcs)
 

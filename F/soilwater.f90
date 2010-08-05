@@ -26,6 +26,7 @@ module SoilWater
     public :: Calc_LWP_steady_state
     public :: Calc_fLWP
     public :: Calc_SWP_meas
+    public :: Calc_fPAW
 
     ! Hourly intermediate
     real, public :: Ei_hr
@@ -359,5 +360,20 @@ contains
         SMD_meas = (Fc_m - Sn_meas) * D_meas
     end subroutine Calc_SWP_meas
     
+    subroutine Calc_fPAW()
+        use Variables, only: ASW, fPAW
+        use Params_Veg, only: root, fmin
+        use Params_Site, only: Fc_m
+
+        real, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
+        real, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
+        real :: ASW_FC
+
+        ! ASW at field capacity
+        ASW_FC = (Fc_m - PWP_vol) * root
+
+        fPAW = fmin + (1.0-fmin) * ((100 * (ASW/ASW_FC)) - ASW_min) / (ASW_max - ASW_min)
+        fPAW = min(1.0, max(fmin, fPAW))
+    end subroutine Calc_fPAW
 
 end module SoilWater

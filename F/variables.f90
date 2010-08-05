@@ -45,6 +45,7 @@ module Variables
     real, public, save :: Sn_diff_meas  ! Change in Sn_meas
     real, public, save :: SWP_meas      ! SWP for soil above measurement depth
     real, public, save :: SMD_meas      ! SMD for soil above measurement depth
+    real, public, save :: fPAW
 
     ! R
     real, public, save  :: Ra

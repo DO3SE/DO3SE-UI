@@ -104,6 +104,7 @@ contains
         call Calc_SWP()
         call SB_Calc_fSWP()
         call Calc_SWP_meas()
+        call Calc_fPAW()
     end subroutine Daily
 
     subroutine Calculate_Row()
