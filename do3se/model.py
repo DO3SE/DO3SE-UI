@@ -217,7 +217,7 @@ default_fXWP_calc = 'disabled'
 # fSWP calculations (switching between exponential and linear relationship
 fSWP_calcs = _to_dicts(('id', 'func', 'name'), (
         ('exp',     switchboard.fswp_exponential,   'Exponential'),
-        ('linear',  switchboard.fswp_linear,        'Linear (using SWP_min and SWP_max)'),
+        ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
 ))
 
 fSWP_calc_map = _to_id_map(fSWP_calcs)

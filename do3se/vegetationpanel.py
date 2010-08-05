@@ -202,6 +202,20 @@ class VegetationPanel(wx.Panel):
                                                 model.default_fXWP_calc))
         sbox.fgs.Add(self.fields['fxwp'].obj, 0, wx.ALIGN_RIGHT)
 
+        sbox.fgs.Add(wx.StaticText(p, label="LWP calculation"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('lwp', CalcChoiceField(p, model.LWP_calcs,
+                                               model.LWP_calc_map,
+                                               model.default_LWP_calc))
+        sbox.fgs.Add(self.fields['lwp'].obj, 0, wx.ALIGN_RIGHT)
+
+        sbox.fgs.Add(wx.StaticText(p, label="fSWP calculation"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fswp', CalcChoiceField(p, model.fSWP_calcs,
+                                               model.fSWP_calc_map,
+                                               model.default_fSWP_calc))
+        sbox.fgs.Add(self.fields['fswp'].obj, 0, wx.ALIGN_RIGHT)
+
         # Maintain integrity on environmental dependence
         def f(evt):
             if self.fields['t_opt'].GetValue() < self.fields['t_min'].GetValue():

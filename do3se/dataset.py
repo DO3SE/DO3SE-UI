@@ -80,6 +80,10 @@ class Dataset:
         self.ra_method = model.switchboard.ra_simple
         fXWP = model.fXWP_calc_map[self.vegparams.pop('fxwp', model.default_fXWP_calc)]
         self.fxwp_method = fXWP['func']
+        fSWP = model.fSWP_calc_map[self.vegparams.pop('fswp', model.default_fSWP_calc)]
+        self.fswp_method = fSWP['func']
+        LWP = model.LWP_calc_map[self.vegparams.pop('lwp', model.default_LWP_calc)]
+        self.lwp_method = LWP['func']
 
         # Soil parameters from soil type
         soil = model.soil_class_map[self.siteparams.pop('soil_tex',
@@ -117,6 +121,8 @@ class Dataset:
         model.switchboard.leaf_fphen_method = self.leaf_fphen_method
         model.switchboard.ra_method = self.ra_method
         model.switchboard.fo3_method = self.fo3_method
+        model.switchboard.fswp_method = self.fswp_method
+        model.switchboard.lwp_method = self.lwp_method
         model.switchboard.fxwp_method = self.fxwp_method
         model.switchboard.r_par_method = self.r_par_method
 
