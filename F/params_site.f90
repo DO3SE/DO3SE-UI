@@ -18,6 +18,11 @@ module Params_Site
                                                 !  - silt loam  = -0.00158
                                                 !  - loam       = -0.00188
                                                 !  - clay loam  = -0.00588
+    real, public, save  :: Ksat = 0.0002178     ! Saturated soil conductance (s-2 MPa-1 mm-1)
+                                                !  - sandy loam = 0.0009576
+                                                !  - silt loam  = 0.0002178
+                                                !  - loam       = 0.0002286
+                                                !  - clay loam  = 0.00016 (estimated)
 
     ! Measurement heights
     real, public, save :: uzR = 25      ! Windspeed measurement height (m)

@@ -145,21 +145,25 @@ soil_classes = _to_dicts(('id', 'name', 'data'), (
             'soil_b':   3.31,
             'fc_m':     0.16,
             'swp_ae':   -0.00091,
+            'ksat':     0.0009576,
         }),
         ('silt_loam',   'Silt loam (medium coarse)', {
             'soil_b':   4.38,
             'fc_m':     0.26,
             'swp_ae':   -0.00158,
+            'ksat':     0.0002178,
         }),
         ('loam',        'Loam (medium)', {
             'soil_b':   6.58,
             'fc_m':     0.29,
             'swp_ae':   -0.00188,
+            'ksat':     0.0002286,
         }),
         ('clay_loam',   'Clay loam (fine)', {
             'soil_b':   7.00,
             'fc_m':     0.37,
             'swp_ae':   -0.00588,
+            'ksat':     0.00016,
         }),
 ))
 

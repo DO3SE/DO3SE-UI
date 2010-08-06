@@ -252,7 +252,7 @@ contains
 
     subroutine Calc_LWP()
         use Params_Veg, only: root, fmin
-        use Params_Site, only: SWP_AE, soil_b
+        use Params_Site, only: SWP_AE, soil_b, Ksat
         use Variables, only: SWP, delta_LWP, LWP, fLWP
         use Inputs, only: hr
 
@@ -263,13 +263,6 @@ contains
         real :: Rc = 0.42               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
         real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
-        ! Variables related to the soil
-        ! TODO: These should probably be site parameters
-        real :: Ksat = 0.0002178    ! Saturated soil conductance (s-2 MPa-1 mm-1)
-                                    !  - sandy loam = 0.0009576
-                                    !  - silt loam  = 0.0002178
-                                    !  - loam       = 0.0002286
-                                    !  - clay loam  = 0.00016 (estimated)
 
         ! Calculated LWP parameters
         real :: Rsr         ! Soil-rot resistance
@@ -295,7 +288,7 @@ contains
     end subroutine Calc_LWP
 
     subroutine Calc_LWP_steady_state()
-        use Params_Site, only: SWP_AE, soil_b
+        use Params_Site, only: SWP_AE, soil_b, Ksat
         use Params_Veg, only: root
         use Variables, only: LWP, SWP
 
@@ -306,13 +299,6 @@ contains
         real :: Rc = 0.42               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
         real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
-        ! Variables related to the soil
-        ! TODO: These should probably be site parameters
-        real :: Ksat = 0.0002178    ! Saturated soil conductance (s-2 MPa-1 mm-1)
-                                    !  - sandy loam = 0.0009576
-                                    !  - silt loam  = 0.0002178
-                                    !  - loam       = 0.0002286
-                                    !  - clay loam  = 0.00016 (estimated)
 
         ! Calculated LWP parameters
         real :: Rsr         ! Soil-rot resistance
