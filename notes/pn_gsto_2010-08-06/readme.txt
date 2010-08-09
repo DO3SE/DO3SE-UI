@@ -9,7 +9,7 @@ The F sourcecode for the Farquar model
 
 *a.exe
 
-The exetutable of this soucecode
+The exetutable of this sourcecode
 
 
 
@@ -43,7 +43,4 @@ A_c A_q A_n
 
 
 
-If all files contain reasonable values for all necessary parameters in the 
-right format, running the a.exe programm schould produce will write the new 
-model results into the output file.
 
