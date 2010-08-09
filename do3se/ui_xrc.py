@@ -36,11 +36,16 @@ class xrcframe_mainwindow(wx.Frame):
         self.PostCreate(pre)
 
         # Define variables for the controls, bind event handlers
+        self.html_about = xrc.XRCCTRL(self, "html_about")
+        self.list_recent = xrc.XRCCTRL(self, "list_recent")
+        self.btn_open_selected = xrc.XRCCTRL(self, "btn_open_selected")
+        self.btn_open_other = xrc.XRCCTRL(self, "btn_open_other")
+        self.btn_new = xrc.XRCCTRL(self, "btn_new")
 
 
 
-class xrcframe_project(wx.Frame):
-#!XRCED:begin-block:xrcframe_project.PreCreate
+class xrcframe_projectwindow(wx.Frame):
+#!XRCED:begin-block:xrcframe_projectwindow.PreCreate
     def PreCreate(self, pre):
         """ This function is called during the class's initialization.
         
@@ -49,16 +54,22 @@ class xrcframe_project(wx.Frame):
         """
         pass
         
-#!XRCED:end-block:xrcframe_project.PreCreate
+#!XRCED:end-block:xrcframe_projectwindow.PreCreate
 
     def __init__(self, parent):
         # Two stage creation (see http://wiki.wxpython.org/index.cgi/TwoStageCreation)
         pre = wx.PreFrame()
         self.PreCreate(pre)
-        get_resources().LoadOnFrame(pre, parent, "frame_project")
+        get_resources().LoadOnFrame(pre, parent, "frame_projectwindow")
         self.PostCreate(pre)
 
         # Define variables for the controls, bind event handlers
+        self.tb_main = xrc.XRCCTRL(self, "tb_main")
+        self.html_introduction = xrc.XRCCTRL(self, "html_introduction")
+        self.btn_errors = xrc.XRCCTRL(self, "btn_errors")
+        self.prg_progress = xrc.XRCCTRL(self, "prg_progress")
+        self.btn_run = xrc.XRCCTRL(self, "btn_run")
+        self.btn_close = xrc.XRCCTRL(self, "btn_close")
 
 
 
@@ -75,15 +86,18 @@ def __init_resources():
     ui_xrc = '''\
 <?xml version="1.0" ?><resource>
   <object class="wxFrame" name="frame_mainwindow">
+    
+    <title>DO3SE</title>
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
       <object class="sizeritem">
-        <object class="wxHtmlWindow">
-          <size>500, 300</size>
+        <object class="wxHtmlWindow" name="html_about">
+          <XRCED>
+            <assign_var>1</assign_var>
+          </XRCED>
         </object>
         <option>1</option>
-        <flag>wxBOTTOM|wxEXPAND</flag>
-        <border>5</border>
+        <flag>wxEXPAND</flag>
       </object>
       <object class="sizeritem">
         <object class="wxBoxSizer">
@@ -93,53 +107,67 @@ def __init_resources():
             </object>
           </object>
           <object class="sizeritem">
-            <object class="wxListBox" name="recent_projects">
+            <object class="wxListBox" name="list_recent">
               <style>wxLB_SINGLE</style>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
             </object>
             <option>1</option>
             <flag>wxEXPAND</flag>
           </object>
-          <object class="sizeritem">
-            <object class="wxBoxSizer">
-              <object class="sizeritem">
-                <object class="wxButton" name="btn_open_recent">
-                  <label>Open &amp;selected</label>
-                </object>
-                <option>0</option>
-                <flag>wxEXPAND</flag>
-              </object>
-              <object class="spacer">
-                <size>5</size>
-              </object>
-              <object class="sizeritem">
-                <object class="wxButton" name="btn_open_other">
-                  <label>&amp;Open other...</label>
-                </object>
-                <option>0</option>
-                <flag>wxEXPAND</flag>
-              </object>
-              <object class="spacer">
-                <size>5</size>
-              </object>
-              <object class="sizeritem">
-                <object class="wxButton" name="btn_new">
-                  <label>&amp;New project</label>
-                </object>
-              </object>
-              <orient>wxHORIZONTAL</orient>
-            </object>
-            <flag>wxTOP|wxALIGN_RIGHT</flag>
-            <border>5</border>
-          </object>
           <orient>wxVERTICAL</orient>
         </object>
-        <flag>wxEXPAND</flag>
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxButton" name="btn_open_selected">
+              <label>Open &amp;selected</label>
+              <enabled>0</enabled>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
+            </object>
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+          </object>
+          <object class="spacer">
+            <size>5</size>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="btn_open_other">
+              <label>&amp;Open other...</label>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
+            </object>
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+          </object>
+          <object class="spacer">
+            <size>5</size>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="btn_new">
+              <label>&amp;New project</label>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
+            </object>
+            <option>0</option>
+            <flag>wxEXPAND</flag>
+          </object>
+          <orient>wxHORIZONTAL</orient>
+        </object>
+        <flag>wxBOTTOM|wxLEFT|wxRIGHT|wxALIGN_RIGHT</flag>
+        <border>5</border>
       </object>
     </object>
-    <size>600,400</size>
-    <title>DO3SE</title>
   </object>
-  <object class="wxFrame" name="frame_project">
+  <object class="wxFrame" name="frame_projectwindow">
     <object class="wxMenuBar">
       <object class="wxMenu">
         <object class="wxMenuItem">
@@ -177,17 +205,20 @@ def __init_resources():
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
       <object class="sizeritem">
-        <object class="wxTreebook">
+        <object class="wxTreebook" name="tb_main">
           <object class="treebookpage">
             <object class="wxPanel">
               <object class="wxBoxSizer">
                 <orient>wxVERTICAL</orient>
                 <object class="sizeritem">
-                  <object class="wxHtmlWindow">
+                  <object class="wxHtmlWindow" name="html_introduction">
                     <htmlcode>&lt;p&gt;
 This is the main project window.  Each of the items on the left refer to a group of model parameters/settings which can be changed.
 &lt;/p&gt;</htmlcode>
                     <style>wxNO_BORDER</style>
+                    <XRCED>
+                      <assign_var>1</assign_var>
+                    </XRCED>
                   </object>
                   <option>1</option>
                   <flag>wxEXPAND</flag>
@@ -197,23 +228,24 @@ This is the main project window.  Each of the items on the left refer to a group
             <label>Introduction</label>
             <depth>0</depth>
           </object>
-          <style>wxBK_LEFT</style>
+          <size>600,400</size>
+          <XRCED>
+            <assign_var>1</assign_var>
+          </XRCED>
         </object>
         <option>1</option>
         <flag>wxEXPAND</flag>
       </object>
       <object class="sizeritem">
-        <object class="wxStaticLine"/>
-        <flag>wxEXPAND</flag>
-      </object>
-      <object class="sizeritem">
         <object class="wxBoxSizer">
-          <orient>wxHORIZONTAL</orient>
           <object class="sizeritem">
             <object class="wxButton" name="btn_errors">
               <label>121 errors (click for more information)</label>
               <fg>#FF1111</fg>
               <style>wxNO_BORDER|wxNO_BORDER</style>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
             </object>
             <flag>wxEXPAND</flag>
           </object>
@@ -224,6 +256,9 @@ This is the main project window.  Each of the items on the left refer to a group
             <object class="wxGauge" name="prg_progress">
               <range>100</range>
               <value>50</value>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
             </object>
             <option>1</option>
             <flag>wxEXPAND</flag>
@@ -232,8 +267,11 @@ This is the main project window.  Each of the items on the left refer to a group
             <size>5</size>
           </object>
           <object class="sizeritem">
-            <object class="wxButton">
+            <object class="wxButton" name="btn_run">
               <label>Run</label>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
             </object>
             <flag>wxEXPAND</flag>
           </object>
@@ -241,13 +279,18 @@ This is the main project window.  Each of the items on the left refer to a group
             <size>5</size>
           </object>
           <object class="sizeritem">
-            <object class="wxButton">
+            <object class="wxButton" name="btn_close">
               <label>Close</label>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
             </object>
             <flag>wxEXPAND</flag>
           </object>
+          <orient>wxHORIZONTAL</orient>
         </object>
-        <flag>wxEXPAND</flag>
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
       </object>
     </object>
     <title>DO3SE (foo.do3se)</title>
