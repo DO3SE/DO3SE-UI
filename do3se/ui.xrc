@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <resource>
   <object class="wxFrame" name="frame_mainwindow">
-    
     <title>DO3SE</title>
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
@@ -119,6 +118,9 @@
     </object>
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
+      
+      
+      
       <object class="sizeritem">
         <object class="wxTreebook" name="tb_main">
           <object class="treebookpage">
@@ -143,13 +145,39 @@ This is the main project window.  Each of the items on the left refer to a group
             <label>Introduction</label>
             <depth>0</depth>
           </object>
-          <size>600,400</size>
           <XRCED>
             <assign_var>1</assign_var>
           </XRCED>
         </object>
         <option>1</option>
         <flag>wxEXPAND</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxPanel" name="pnl_errors">
+          <object class="wxBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Errors</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxListBox" name="list_errors">
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>1</option>
+              <flag>wxEXPAND</flag>
+            </object>
+          </object>
+          <hidden>1</hidden>
+          <XRCED>
+            <assign_var>1</assign_var>
+          </XRCED>
+        </object>
+        <flag>wxTOP|wxLEFT|wxRIGHT|wxEXPAND</flag>
+        <border>5</border>
       </object>
       <object class="sizeritem">
         <object class="wxBoxSizer">
@@ -159,6 +187,7 @@ This is the main project window.  Each of the items on the left refer to a group
               <fg>#FF1111</fg>
               <style>wxNO_BORDER|wxNO_BORDER</style>
               <XRCED>
+                <events>EVT_BUTTON</events>
                 <assign_var>1</assign_var>
               </XRCED>
             </object>
@@ -184,6 +213,7 @@ This is the main project window.  Each of the items on the left refer to a group
           <object class="sizeritem">
             <object class="wxButton" name="btn_run">
               <label>Run</label>
+              <enabled>0</enabled>
               <XRCED>
                 <assign_var>1</assign_var>
               </XRCED>
@@ -209,5 +239,8 @@ This is the main project window.  Each of the items on the left refer to a group
       </object>
     </object>
     <title>DO3SE (foo.do3se)</title>
+    <XRCED>
+      <events>EVT_CLOSE</events>
+    </XRCED>
   </object>
 </resource>

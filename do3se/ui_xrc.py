@@ -66,11 +66,27 @@ class xrcframe_projectwindow(wx.Frame):
         # Define variables for the controls, bind event handlers
         self.tb_main = xrc.XRCCTRL(self, "tb_main")
         self.html_introduction = xrc.XRCCTRL(self, "html_introduction")
+        self.pnl_errors = xrc.XRCCTRL(self, "pnl_errors")
+        self.list_errors = xrc.XRCCTRL(self, "list_errors")
         self.btn_errors = xrc.XRCCTRL(self, "btn_errors")
         self.prg_progress = xrc.XRCCTRL(self, "prg_progress")
         self.btn_run = xrc.XRCCTRL(self, "btn_run")
         self.btn_close = xrc.XRCCTRL(self, "btn_close")
 
+        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_errors
+    def OnButton_btn_errors(self, evt):
+        # Replace with event handler code
+        print "OnButton_btn_errors()"
+#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_errors        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnClose
+    def OnClose(self, evt):
+        # Replace with event handler code
+        print "OnClose()"
+#!XRCED:end-block:xrcframe_projectwindow.OnClose        
 
 
 
@@ -86,7 +102,6 @@ def __init_resources():
     ui_xrc = '''\
 <?xml version="1.0" ?><resource>
   <object class="wxFrame" name="frame_mainwindow">
-    
     <title>DO3SE</title>
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
@@ -204,6 +219,9 @@ def __init_resources():
     </object>
     <object class="wxBoxSizer">
       <orient>wxVERTICAL</orient>
+      
+      
+      
       <object class="sizeritem">
         <object class="wxTreebook" name="tb_main">
           <object class="treebookpage">
@@ -228,13 +246,39 @@ This is the main project window.  Each of the items on the left refer to a group
             <label>Introduction</label>
             <depth>0</depth>
           </object>
-          <size>600,400</size>
           <XRCED>
             <assign_var>1</assign_var>
           </XRCED>
         </object>
         <option>1</option>
         <flag>wxEXPAND</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxPanel" name="pnl_errors">
+          <object class="wxBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Errors</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxListBox" name="list_errors">
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>1</option>
+              <flag>wxEXPAND</flag>
+            </object>
+          </object>
+          <hidden>1</hidden>
+          <XRCED>
+            <assign_var>1</assign_var>
+          </XRCED>
+        </object>
+        <flag>wxTOP|wxLEFT|wxRIGHT|wxEXPAND</flag>
+        <border>5</border>
       </object>
       <object class="sizeritem">
         <object class="wxBoxSizer">
@@ -244,6 +288,7 @@ This is the main project window.  Each of the items on the left refer to a group
               <fg>#FF1111</fg>
               <style>wxNO_BORDER|wxNO_BORDER</style>
               <XRCED>
+                <events>EVT_BUTTON</events>
                 <assign_var>1</assign_var>
               </XRCED>
             </object>
@@ -269,6 +314,7 @@ This is the main project window.  Each of the items on the left refer to a group
           <object class="sizeritem">
             <object class="wxButton" name="btn_run">
               <label>Run</label>
+              <enabled>0</enabled>
               <XRCED>
                 <assign_var>1</assign_var>
               </XRCED>
@@ -294,6 +340,9 @@ This is the main project window.  Each of the items on the left refer to a group
       </object>
     </object>
     <title>DO3SE (foo.do3se)</title>
+    <XRCED>
+      <events>EVT_CLOSE</events>
+    </XRCED>
   </object>
 </resource>'''
 
