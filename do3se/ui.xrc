@@ -2,7 +2,6 @@
 <resource>
   <object class="wxFrame" name="frame_mainwindow">
     <title>DO3SE</title>
-    
     <object class="wxPanel">
       <object class="wxBoxSizer">
         <orient>wxVERTICAL</orient>
@@ -24,8 +23,14 @@
             </object>
             <object class="sizeritem">
               <object class="wxListBox" name="list_recent">
+                <content>
+                  <item>C:\\DO3SE\\A project\\project.do3se</item>
+                  <item>C:\\Users\\Alan\\My Documents\\Someplace\\someplace.do3se</item>
+                  <item>R:\\something.do3se</item>
+                </content>
                 <style>wxLB_SINGLE</style>
                 <XRCED>
+                  <events>EVT_LISTBOX|EVT_LISTBOX_DCLICK</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -44,6 +49,7 @@
                 <label>Open &amp;selected</label>
                 <enabled>0</enabled>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -119,7 +125,6 @@
         <label>&amp;Tools</label>
       </object>
     </object>
-    
     <title>DO3SE (foo.do3se)</title>
     <XRCED>
       <events>EVT_CLOSE</events>
@@ -169,6 +174,10 @@ This is the main project window.  Each of the items on the left refer to a group
               </object>
               <object class="sizeritem">
                 <object class="wxListBox" name="list_errors">
+                  <content>
+                    <item>Somebody stole your cheese sandwich</item>
+                    <item>Garden gnomes are riding your cat</item>
+                  </content>
                   <XRCED>
                     <assign_var>1</assign_var>
                   </XRCED>

@@ -42,6 +42,27 @@ class xrcframe_mainwindow(wx.Frame):
         self.btn_open_other = xrc.XRCCTRL(self, "btn_open_other")
         self.btn_new = xrc.XRCCTRL(self, "btn_new")
 
+        self.Bind(wx.EVT_LISTBOX, self.OnListbox_list_recent, self.list_recent)
+        self.Bind(wx.EVT_LISTBOX_DCLICK, self.OnListbox_dclick_list_recent, self.list_recent)
+        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_open_selected, self.btn_open_selected)
+
+#!XRCED:begin-block:xrcframe_mainwindow.OnListbox_list_recent
+    def OnListbox_list_recent(self, evt):
+        # Replace with event handler code
+        print "OnListbox_list_recent()"
+#!XRCED:end-block:xrcframe_mainwindow.OnListbox_list_recent        
+
+#!XRCED:begin-block:xrcframe_mainwindow.OnListbox_dclick_list_recent
+    def OnListbox_dclick_list_recent(self, evt):
+        # Replace with event handler code
+        print "OnListbox_dclick_list_recent()"
+#!XRCED:end-block:xrcframe_mainwindow.OnListbox_dclick_list_recent        
+
+#!XRCED:begin-block:xrcframe_mainwindow.OnButton_btn_open_selected
+    def OnButton_btn_open_selected(self, evt):
+        # Replace with event handler code
+        print "OnButton_btn_open_selected()"
+#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_open_selected        
 
 
 class xrcframe_projectwindow(wx.Frame):
@@ -103,7 +124,6 @@ def __init_resources():
 <?xml version="1.0" ?><resource>
   <object class="wxFrame" name="frame_mainwindow">
     <title>DO3SE</title>
-    
     <object class="wxPanel">
       <object class="wxBoxSizer">
         <orient>wxVERTICAL</orient>
@@ -125,8 +145,14 @@ def __init_resources():
             </object>
             <object class="sizeritem">
               <object class="wxListBox" name="list_recent">
+                <content>
+                  <item>C:\\DO3SE\\A project\\project.do3se</item>
+                  <item>C:\\Users\\Alan\\My Documents\\Someplace\\someplace.do3se</item>
+                  <item>R:\\something.do3se</item>
+                </content>
                 <style>wxLB_SINGLE</style>
                 <XRCED>
+                  <events>EVT_LISTBOX|EVT_LISTBOX_DCLICK</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -145,6 +171,7 @@ def __init_resources():
                 <label>Open &amp;selected</label>
                 <enabled>0</enabled>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -220,7 +247,6 @@ def __init_resources():
         <label>&amp;Tools</label>
       </object>
     </object>
-    
     <title>DO3SE (foo.do3se)</title>
     <XRCED>
       <events>EVT_CLOSE</events>
@@ -270,6 +296,10 @@ This is the main project window.  Each of the items on the left refer to a group
               </object>
               <object class="sizeritem">
                 <object class="wxListBox" name="list_errors">
+                  <content>
+                    <item>Somebody stole your cheese sandwich</item>
+                    <item>Garden gnomes are riding your cat</item>
+                  </content>
                   <XRCED>
                     <assign_var>1</assign_var>
                   </XRCED>
