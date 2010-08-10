@@ -11,7 +11,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def OnButton_btn_errors(self, evt):
         self.pnl_errors.Show(not self.pnl_errors.IsShown())
-        self.Layout()
+        self.pnl_errors.GetContainingSizer().Layout()
 
 if __name__ == '__main__':
     import glob

@@ -73,20 +73,20 @@ class xrcframe_projectwindow(wx.Frame):
         self.btn_run = xrc.XRCCTRL(self, "btn_run")
         self.btn_close = xrc.XRCCTRL(self, "btn_close")
 
-        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-
-#!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_errors
-    def OnButton_btn_errors(self, evt):
-        # Replace with event handler code
-        print "OnButton_btn_errors()"
-#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_errors        
+        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnClose
     def OnClose(self, evt):
         # Replace with event handler code
         print "OnClose()"
 #!XRCED:end-block:xrcframe_projectwindow.OnClose        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_errors
+    def OnButton_btn_errors(self, evt):
+        # Replace with event handler code
+        print "OnButton_btn_errors()"
+#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_errors        
 
 
 
@@ -103,82 +103,85 @@ def __init_resources():
 <?xml version="1.0" ?><resource>
   <object class="wxFrame" name="frame_mainwindow">
     <title>DO3SE</title>
-    <object class="wxBoxSizer">
-      <orient>wxVERTICAL</orient>
-      <object class="sizeritem">
-        <object class="wxHtmlWindow" name="html_about">
-          <XRCED>
-            <assign_var>1</assign_var>
-          </XRCED>
+    
+    <object class="wxPanel">
+      <object class="wxBoxSizer">
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxHtmlWindow" name="html_about">
+            <XRCED>
+              <assign_var>1</assign_var>
+            </XRCED>
+          </object>
+          <option>1</option>
+          <flag>wxEXPAND</flag>
         </object>
-        <option>1</option>
-        <flag>wxEXPAND</flag>
-      </object>
-      <object class="sizeritem">
-        <object class="wxBoxSizer">
-          <object class="sizeritem">
-            <object class="wxStaticText">
-              <label>Recent projects</label>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Recent projects</label>
+              </object>
             </object>
-          </object>
-          <object class="sizeritem">
-            <object class="wxListBox" name="list_recent">
-              <style>wxLB_SINGLE</style>
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
+            <object class="sizeritem">
+              <object class="wxListBox" name="list_recent">
+                <style>wxLB_SINGLE</style>
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>1</option>
+              <flag>wxEXPAND</flag>
             </object>
-            <option>1</option>
-            <flag>wxEXPAND</flag>
+            <orient>wxVERTICAL</orient>
           </object>
-          <orient>wxVERTICAL</orient>
+          <flag>wxALL|wxEXPAND</flag>
+          <border>5</border>
         </object>
-        <flag>wxALL|wxEXPAND</flag>
-        <border>5</border>
-      </object>
-      <object class="sizeritem">
-        <object class="wxBoxSizer">
-          <object class="sizeritem">
-            <object class="wxButton" name="btn_open_selected">
-              <label>Open &amp;selected</label>
-              <enabled>0</enabled>
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_open_selected">
+                <label>Open &amp;selected</label>
+                <enabled>0</enabled>
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>0</option>
+              <flag>wxEXPAND</flag>
             </object>
-            <option>0</option>
-            <flag>wxEXPAND</flag>
-          </object>
-          <object class="spacer">
-            <size>5</size>
-          </object>
-          <object class="sizeritem">
-            <object class="wxButton" name="btn_open_other">
-              <label>&amp;Open other...</label>
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
+            <object class="spacer">
+              <size>5</size>
             </object>
-            <option>0</option>
-            <flag>wxEXPAND</flag>
-          </object>
-          <object class="spacer">
-            <size>5</size>
-          </object>
-          <object class="sizeritem">
-            <object class="wxButton" name="btn_new">
-              <label>&amp;New project</label>
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_open_other">
+                <label>&amp;Open other...</label>
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>0</option>
+              <flag>wxEXPAND</flag>
             </object>
-            <option>0</option>
-            <flag>wxEXPAND</flag>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_new">
+                <label>&amp;New project</label>
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>0</option>
+              <flag>wxEXPAND</flag>
+            </object>
+            <orient>wxHORIZONTAL</orient>
           </object>
-          <orient>wxHORIZONTAL</orient>
+          <flag>wxBOTTOM|wxLEFT|wxRIGHT|wxALIGN_RIGHT</flag>
+          <border>5</border>
         </object>
-        <flag>wxBOTTOM|wxLEFT|wxRIGHT|wxALIGN_RIGHT</flag>
-        <border>5</border>
       </object>
     </object>
   </object>
@@ -217,53 +220,93 @@ def __init_resources():
         <label>&amp;Tools</label>
       </object>
     </object>
-    <object class="wxBoxSizer">
-      <orient>wxVERTICAL</orient>
-      
-      
-      
-      <object class="sizeritem">
-        <object class="wxTreebook" name="tb_main">
-          <object class="treebookpage">
-            <object class="wxPanel">
-              <object class="wxBoxSizer">
-                <orient>wxVERTICAL</orient>
-                <object class="sizeritem">
-                  <object class="wxHtmlWindow" name="html_introduction">
-                    <htmlcode>&lt;p&gt;
+    
+    <title>DO3SE (foo.do3se)</title>
+    <XRCED>
+      <events>EVT_CLOSE</events>
+    </XRCED>
+    <object class="wxPanel">
+      <object class="wxBoxSizer">
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxTreebook" name="tb_main">
+            <object class="treebookpage">
+              <object class="wxPanel">
+                <object class="wxBoxSizer">
+                  <orient>wxVERTICAL</orient>
+                  <object class="sizeritem">
+                    <object class="wxHtmlWindow" name="html_introduction">
+                      <htmlcode>&lt;p&gt;
 This is the main project window.  Each of the items on the left refer to a group of model parameters/settings which can be changed.
 &lt;/p&gt;</htmlcode>
-                    <style>wxNO_BORDER</style>
-                    <XRCED>
-                      <assign_var>1</assign_var>
-                    </XRCED>
+                      <style>wxNO_BORDER</style>
+                      <XRCED>
+                        <assign_var>1</assign_var>
+                      </XRCED>
+                    </object>
+                    <option>1</option>
+                    <flag>wxEXPAND</flag>
                   </object>
-                  <option>1</option>
-                  <flag>wxEXPAND</flag>
                 </object>
               </object>
+              <label>Introduction</label>
+              <depth>0</depth>
             </object>
-            <label>Introduction</label>
-            <depth>0</depth>
+            <XRCED>
+              <assign_var>1</assign_var>
+            </XRCED>
           </object>
-          <XRCED>
-            <assign_var>1</assign_var>
-          </XRCED>
+          <option>1</option>
+          <flag>wxEXPAND</flag>
         </object>
-        <option>1</option>
-        <flag>wxEXPAND</flag>
-      </object>
-      <object class="sizeritem">
-        <object class="wxPanel" name="pnl_errors">
-          <object class="wxBoxSizer">
-            <orient>wxVERTICAL</orient>
-            <object class="sizeritem">
-              <object class="wxStaticText">
-                <label>Errors</label>
+        <object class="sizeritem">
+          <object class="wxPanel" name="pnl_errors">
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>Errors</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxListBox" name="list_errors">
+                  <XRCED>
+                    <assign_var>1</assign_var>
+                  </XRCED>
+                </object>
+                <option>1</option>
+                <flag>wxEXPAND</flag>
               </object>
             </object>
+            <hidden>1</hidden>
+            <XRCED>
+              <assign_var>1</assign_var>
+            </XRCED>
+          </object>
+          <flag>wxTOP|wxLEFT|wxRIGHT|wxEXPAND</flag>
+          <border>5</border>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
             <object class="sizeritem">
-              <object class="wxListBox" name="list_errors">
+              <object class="wxButton" name="btn_errors">
+                <label>121 errors (click for more information)</label>
+                <fg>#FF1111</fg>
+                <style>wxNO_BORDER|wxNO_BORDER</style>
+                <XRCED>
+                  <events>EVT_BUTTON</events>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxGauge" name="prg_progress">
+                <range>100</range>
+                <value>50</value>
                 <XRCED>
                   <assign_var>1</assign_var>
                 </XRCED>
@@ -271,78 +314,38 @@ This is the main project window.  Each of the items on the left refer to a group
               <option>1</option>
               <flag>wxEXPAND</flag>
             </object>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_run">
+                <label>Run</label>
+                <enabled>0</enabled>
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_close">
+                <label>Close</label>
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <flag>wxEXPAND</flag>
+            </object>
+            <orient>wxHORIZONTAL</orient>
           </object>
-          <hidden>1</hidden>
-          <XRCED>
-            <assign_var>1</assign_var>
-          </XRCED>
+          <flag>wxALL|wxEXPAND</flag>
+          <border>5</border>
         </object>
-        <flag>wxTOP|wxLEFT|wxRIGHT|wxEXPAND</flag>
-        <border>5</border>
-      </object>
-      <object class="sizeritem">
-        <object class="wxBoxSizer">
-          <object class="sizeritem">
-            <object class="wxButton" name="btn_errors">
-              <label>121 errors (click for more information)</label>
-              <fg>#FF1111</fg>
-              <style>wxNO_BORDER|wxNO_BORDER</style>
-              <XRCED>
-                <events>EVT_BUTTON</events>
-                <assign_var>1</assign_var>
-              </XRCED>
-            </object>
-            <flag>wxEXPAND</flag>
-          </object>
-          <object class="spacer">
-            <size>5</size>
-          </object>
-          <object class="sizeritem">
-            <object class="wxGauge" name="prg_progress">
-              <range>100</range>
-              <value>50</value>
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
-            </object>
-            <option>1</option>
-            <flag>wxEXPAND</flag>
-          </object>
-          <object class="spacer">
-            <size>5</size>
-          </object>
-          <object class="sizeritem">
-            <object class="wxButton" name="btn_run">
-              <label>Run</label>
-              <enabled>0</enabled>
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
-            </object>
-            <flag>wxEXPAND</flag>
-          </object>
-          <object class="spacer">
-            <size>5</size>
-          </object>
-          <object class="sizeritem">
-            <object class="wxButton" name="btn_close">
-              <label>Close</label>
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
-            </object>
-            <flag>wxEXPAND</flag>
-          </object>
-          <orient>wxHORIZONTAL</orient>
-        </object>
-        <flag>wxALL|wxEXPAND</flag>
-        <border>5</border>
       </object>
     </object>
-    <title>DO3SE (foo.do3se)</title>
-    <XRCED>
-      <events>EVT_CLOSE</events>
-    </XRCED>
   </object>
 </resource>'''
 
