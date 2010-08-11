@@ -53,8 +53,7 @@ contains
     !
     subroutine Calc_ustar_uh()
         use Constants, only: k, izR
-        use Params_Site, only: u_d, u_zo, uzR
-        use Params_Veg, only: h, d, zo
+        use Parameters, only: h, d, zo, u_d, u_zo, uzR
 
         real :: ustar_w     ! ustar for where windspeed is measured
 
@@ -91,7 +90,7 @@ contains
     !
     subroutine Calc_sinB()
         ! TODO: document variables
-        use Params_Site, only: lat, lon
+        use Parameters, only: lat, lon
         use Functions, only: deg2rad, rad2deg
 
         real :: f, e, t0, LC, lonm
@@ -123,8 +122,8 @@ contains
     !
     subroutine Calc_Rn()
         ! TODO: document variables
-        use Params_Site, only: elev, lat
-        use Params_Veg, only: albedo
+        use Parameters, only: elev, lat
+        use Parameters, only: albedo
         use Constants, only: pi
         use Functions, only: deg2rad, rad2deg
 

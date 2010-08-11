@@ -1,7 +1,6 @@
 objects = constants.o \
 		  functions.o \
-		  params_veg.o \
-		  params_site.o \
+		  parameters.o \
 		  inputs.o \
 		  variables.o \
 		  environmental.o \

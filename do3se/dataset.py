@@ -127,8 +127,10 @@ class Dataset:
         model.switchboard.r_par_method = self.r_par_method
 
         # Load parameters into F model
-        util.setattrs(model.params_veg, self.vegparams)
-        util.setattrs(model.params_site, self.siteparams)
+        params = {}
+        params.update(self.vegparams)
+        params.update(self.siteparams)
+        util.setattrs(model.parameters, params)
 
         # Initialise the model
         logging.info("Initialising DOSE Fortran model")

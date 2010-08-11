@@ -49,8 +49,8 @@ contains
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
-        use Params_Site, only: Fc_m, soil_b, SWP_AE, D_meas
-        use Params_Veg, only: SWP_min, SWP_max, fmin, root
+        use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas
+        use Parameters, only: SWP_min, SWP_max, fmin, root
         use Variables, only: Sn_star, Sn, per_vol, ASW, SWP, &
                              fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP, &
                              Sn_meas, SWP_meas, SMD_meas
@@ -106,7 +106,7 @@ contains
         use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
                              Rsto_PEt, Sn, Ra, Rinc
-        use Params_Site, only: Fc_m
+        use Parameters, only: Fc_m
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
         real        :: P_Pa         ! Pressure in Pa, not kPa
@@ -207,8 +207,8 @@ contains
     !
     subroutine Calc_SWP()
         use Constants, only: SWC_sat
-        use Params_Site, only: Fc_m, soil_b, SWP_AE
-        use Params_Veg, only: SWP_min, SWP_max, fmin, root
+        use Parameters, only: Fc_m, soil_b, SWP_AE
+        use Parameters, only: SWP_min, SWP_max, fmin, root
         use Inputs, only: dd, precip_acc
         use Variables, only: AEt, Es, Ei, LAI
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
@@ -237,7 +237,7 @@ contains
     end subroutine Calc_SWP
 
     subroutine Calc_fSWP_exponential()
-        use Params_Veg, only: fmin
+        use Parameters, only: fmin
         use Variables, only: SWP, fSWP
 
         fSWP = (((-1) * SWP)** (-0.706)) * 0.355
@@ -245,15 +245,15 @@ contains
     end subroutine Calc_fSWP_exponential
 
     subroutine Calc_fSWP_linear()
-        use Params_Veg, only: fmin, SWP_min, SWP_max
+        use Parameters, only: fmin, SWP_min, SWP_max
         use Variables, only: fSWP, SWP
 
         fSWP = min(1.0, max(fmin, ((1-fmin) * ((SWP_min - SWP)/(SWP_min - SWP_max))) + fmin))
     end subroutine Calc_fSWP_linear
 
     subroutine Calc_LWP()
-        use Params_Veg, only: root, fmin
-        use Params_Site, only: SWP_AE, soil_b, Ksat
+        use Parameters, only: root, fmin
+        use Parameters, only: SWP_AE, soil_b, Ksat
         use Variables, only: SWP, delta_LWP, LWP, fLWP
         use Inputs, only: hr
 
@@ -289,8 +289,8 @@ contains
     end subroutine Calc_LWP
 
     subroutine Calc_LWP_steady_state()
-        use Params_Site, only: SWP_AE, soil_b, Ksat
-        use Params_Veg, only: root
+        use Parameters, only: SWP_AE, soil_b, Ksat
+        use Parameters, only: root
         use Variables, only: LWP, SWP
 
         ! Variables related to plant physiology
@@ -312,7 +312,7 @@ contains
     end subroutine Calc_LWP_steady_state
 
     subroutine Calc_fLWP()
-        use Params_Veg, only: fmin
+        use Parameters, only: fmin
         use Variables, only: LWP, fLWP
 
         fLWP = (((-1) * LWP)**(-0.706)) * 0.355
@@ -323,7 +323,7 @@ contains
         use Constants, only: SWC_sat
         use Variables, only: AEt, P_input, Sn_meas, Sn_diff_meas, SWP_meas, &
                              SMD_meas
-        use Params_Site, only: Fc_m, soil_b, SWP_AE, D_meas
+        use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas
 
         real :: P_input_meas, Et_meas, trans_diff_meas
 
@@ -348,8 +348,8 @@ contains
     
     subroutine Calc_fPAW()
         use Variables, only: ASW, fPAW
-        use Params_Veg, only: root, fmin
-        use Params_Site, only: Fc_m
+        use Parameters, only: root, fmin
+        use Parameters, only: Fc_m
 
         real, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
         real, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
