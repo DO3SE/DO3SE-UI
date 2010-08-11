@@ -3,14 +3,14 @@ UI redesign (2010) notes
 
 Time for a more project-oriented view!  Input/site/vegetation parameters being saved separately are 
 a bit passé...  A project file contains the settings for a single project/dataset.  This means all 
-site parameters, all vegetation parameters, and the input and output file formats.
+site parameters, all vegetation parameters, and the input file format.
 
 When launching the application, launched with no arguments it will show the "about DO3SE" stuff with 
 a list of recent projects and the opportunity to open/create a project::
 
     +--------------------------------------------------------+
     | o  DO3SE                                        _ [] X |
-    |--------------------------------------------------------|
+    +--------------------------------------------------------+
     | Blah blah blah blah all about DO3SE                    |
     |                                                        |
     |                                                        |
@@ -43,6 +43,38 @@ The single-instance behaviour should be modified to the following:
 
 The project window
 ------------------
+A project is basically a set of parameter values and an input format.  The UI can stop using one 
+arbitrary split and instead use several groups of parameters.  Using a treebook, the categories are 
+on the tree and the related things to edit are on the panel::
+
+    +---------------------------------------------------------------------------+
+    | o  DO3SE (foo.do3se)                                               _ [] X |
+    +---------------------------------------------------------------------------+
+    | File   Tools   Help                                                       |
+    |---------------------------------------------------------------------------|
+    | -- Introduction               |                                           |
+    | -- Site                       | Canopy height                     [25   ] |
+    |    |-- Location               | Leaf dimension                    [0.005] |
+    |    '-- Measurements           |                                           |
+    | -- Vegetation                 |                                           |
+    |    |-- Dimensions             |                                           |
+    |    '-- Environmental response |                                           |
+    | -- Model                      |                                           |
+    |    '-- Soil water influence   |                                           |
+    |                               |                                           |
+    |                               |                                           |
+    |                               |                                           |
+    |                               |                                           |
+    |---------------------------------------------------------------------------|
+    |  0 errors  [=============                                 ] [Run] [Close] |
+    +---------------------------------------------------------------------------+
+
+
+Handling parameters
+-------------------
+All settable parameters have been moved to ``parameters.f90``.  The best thing about this is now 
+parameters can be referred to AND set by their variable name, simplifying pretty much all handling 
+of them.
 
 
 Default parameterisations
