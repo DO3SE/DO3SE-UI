@@ -22,8 +22,7 @@ contains
         use Switchboard
         use Variables
         use SoilWater
-        use params_veg, only: Derive_d_zo
-        use params_site, only: Derive_Windspeed_d_zo, Derive_O3_d_zo
+        use Parameters, only: Derive_d_zo, Derive_Windspeed_d_zo, Derive_O3_d_zo
         use Inputs, only: Init_Inputs
 
         dd_prev = -1
