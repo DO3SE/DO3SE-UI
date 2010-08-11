@@ -45,6 +45,8 @@ class xrcframe_mainwindow(wx.Frame):
         self.Bind(wx.EVT_LISTBOX, self.OnListbox_list_recent, self.list_recent)
         self.Bind(wx.EVT_LISTBOX_DCLICK, self.OnListbox_dclick_list_recent, self.list_recent)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_open_selected, self.btn_open_selected)
+        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_open_other, self.btn_open_other)
+        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_new, self.btn_new)
 
 #!XRCED:begin-block:xrcframe_mainwindow.OnListbox_list_recent
     def OnListbox_list_recent(self, evt):
@@ -63,6 +65,18 @@ class xrcframe_mainwindow(wx.Frame):
         # Replace with event handler code
         print "OnButton_btn_open_selected()"
 #!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_open_selected        
+
+#!XRCED:begin-block:xrcframe_mainwindow.OnButton_btn_open_other
+    def OnButton_btn_open_other(self, evt):
+        # Replace with event handler code
+        print "OnButton_btn_open_other()"
+#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_open_other        
+
+#!XRCED:begin-block:xrcframe_mainwindow.OnButton_btn_new
+    def OnButton_btn_new(self, evt):
+        # Replace with event handler code
+        print "OnButton_btn_new()"
+#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_new        
 
 
 class xrcframe_projectwindow(wx.Frame):
@@ -96,6 +110,7 @@ class xrcframe_projectwindow(wx.Frame):
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
+        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_close, self.btn_close)
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnClose
     def OnClose(self, evt):
@@ -108,6 +123,12 @@ class xrcframe_projectwindow(wx.Frame):
         # Replace with event handler code
         print "OnButton_btn_errors()"
 #!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_errors        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_close
+    def OnButton_btn_close(self, evt):
+        # Replace with event handler code
+        print "OnButton_btn_close()"
+#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_close        
 
 
 
@@ -185,6 +206,7 @@ def __init_resources():
               <object class="wxButton" name="btn_open_other">
                 <label>&amp;Open other...</label>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -198,6 +220,7 @@ def __init_resources():
               <object class="wxButton" name="btn_new">
                 <label>&amp;New project</label>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -364,6 +387,7 @@ This is the main project window.  Each of the items on the left refer to a group
               <object class="wxButton" name="btn_close">
                 <label>Close</label>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>

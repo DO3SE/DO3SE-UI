@@ -63,6 +63,7 @@
               <object class="wxButton" name="btn_open_other">
                 <label>&amp;Open other...</label>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -76,6 +77,7 @@
               <object class="wxButton" name="btn_new">
                 <label>&amp;New project</label>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
@@ -242,6 +244,7 @@ This is the main project window.  Each of the items on the left refer to a group
               <object class="wxButton" name="btn_close">
                 <label>Close</label>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>
