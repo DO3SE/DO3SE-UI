@@ -110,6 +110,7 @@ class xrcframe_projectwindow(wx.Frame):
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
+        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_run, self.btn_run)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_close, self.btn_close)
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnClose
@@ -123,6 +124,12 @@ class xrcframe_projectwindow(wx.Frame):
         # Replace with event handler code
         print "OnButton_btn_errors()"
 #!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_errors        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_run
+    def OnButton_btn_run(self, evt):
+        # Replace with event handler code
+        print "OnButton_btn_run()"
+#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_run        
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_close
     def OnButton_btn_close(self, evt):
@@ -375,6 +382,7 @@ This is the main project window.  Each of the items on the left refer to a group
                 <label>Run</label>
                 <enabled>0</enabled>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>

@@ -30,6 +30,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def __init__(self, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
         self.SetSize((500,400))
+        self.btn_run.Enable(True)
         
         if projectfile:
             self.log.info("Opening project " + projectfile)
@@ -37,20 +38,12 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             self.log.info("Creating new project")
 
 
-        root = Fields()
-
-        fg1 = FieldGroup(root)
-        fg1.append(Field(root, "Foo"))
-        fg1.append(Field(root, "Bar"))
-        fg1.append(Field(root, "Baz"))
-        fg1.append(Field(root, "Bozzle"))
-        root.add_group(fg1, "Foo bar baz bozzle")
-
-        fg2 = FieldGroup(root)
-        fg2.append(Field(root, "What the hell?"))
-        root.add_group(fg2, "Om nom nom")
-
-        root.add_to_ui(self.tb_main)
+        self.fg = FieldGroup(self.tb_main)
+        self.fg.add('lat', SpinField, 'Latitude (degrees North)',
+                    min=20, max=50, initial=31)
+        self.fg.add('lon', FloatSpinField, 'Longitude (degrees East)',
+                    min=-180, max=180, step=0.01, digits=4)
+        self.tb_main.AddPage(self.fg, 'Foo bar')
 
     def OnClose(self, evt):
         evt.Skip()
@@ -58,6 +51,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def OnButton_btn_errors(self, evt):
         self.pnl_errors.Show(not self.pnl_errors.IsShown())
         self.pnl_errors.GetContainingSizer().Layout()
+
+    def OnButton_btn_run(self, evt):
+        print list(self.fg.get_values())
 
     def OnButton_btn_close(self, evt):
         self.Close()

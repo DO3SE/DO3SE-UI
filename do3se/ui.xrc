@@ -232,6 +232,7 @@ This is the main project window.  Each of the items on the left refer to a group
                 <label>Run</label>
                 <enabled>0</enabled>
                 <XRCED>
+                  <events>EVT_BUTTON</events>
                   <assign_var>1</assign_var>
                 </XRCED>
               </object>

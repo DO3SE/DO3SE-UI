@@ -1,44 +1,72 @@
+import logging
+
 import wx
 
-from do3se.util.ordereddict import OrderedDict
+import wxext
+from util.ordereddict import OrderedDict
+
 
 class Field:
-    def __init__(self, root, name):
-        self.root = root
-        self.name = name
+    def __init__(self, parent, name):
+        self.label = wx.StaticText(parent, label=name)
+        self.field = wx.TextCtrl(parent)
+        self.other = None
 
     def get_value(self):
-        pass
+        return self.field.GetValue()
 
     def set_value(self, value):
-        pass
-
-    def create_label(self, parent):
-        return wx.StaticText(parent, label=self.name)
-
-    def create_field(self, parent):
-        return wx.TextCtrl(parent)
+        self.field.SetValue(value)
 
 
-class FieldGroup:
-    def __init__(self, root):
-        self.root = root
-        self.fields = []
+class SpinField(Field):
+    def __init__(self, parent, name, min=0, max=100, initial=0):
+        self.label = wx.StaticText(parent, label=name)
+        self.field = wx.SpinCtrl(parent, min=min, max=max, initial=initial)
+        self.other = None
 
-    def append(self, field):
-        self.fields.append(field)
 
-    def create_panel(self, parent):
-        panel = wx.Panel(parent)
-        panel.SetSizer(wx.BoxSizer(wx.VERTICAL))
-        fgs = wx.FlexGridSizer(cols=2, vgap=5, hgap=5)
-        panel.GetSizer().Add(fgs, 0, wx.EXPAND|wx.ALL, 5)
+class FloatSpinField(Field):
+    def __init__(self, parent, name, min=0, max=1, initial=0, step=0.1, digits=2):
+        self.label = wx.StaticText(parent, label=name)
+        self.field = wxext.FloatSpin(parent, min_val=min, max_val=max, value=initial,
+                                     increment=step, digits=digits)
+        self.other = None
 
-        for f in self.fields:
-            fgs.Add(f.create_label(panel), 0, wx.ALIGN_CENTER_VERTICAL)
-            fgs.Add(f.create_field(panel), 0, wx.ALIGN_CENTER_VERTICAL)
+    def get_value(self):
+        return float(self.field.GetValue())
 
-        return panel
+
+class FieldGroup(OrderedDict, wx.Panel):
+    log = logging.getLogger('do3se.fields.FieldGroup')
+
+    def __init__(self, parent):
+        OrderedDict.__init__(self)
+        wx.Panel.__init__(self, parent)
+        self.SetSizer(wx.BoxSizer(wx.VERTICAL))
+        self.sizer = wx.FlexGridSizer(cols=3, vgap=5, hgap=5)
+        self.GetSizer().Add(self.sizer, 0, wx.EXPAND|wx.ALL, 5)
+
+    def get_values(self):
+        """Return field group as (key, value) pairs."""
+        return ((k, v.get_value()) for k,v in self.iteritems())
+
+    def set_values(self, values):
+        """Set field group values from (key, value) pairs."""
+        for k,v in values:
+            if k not in self:
+                self.log.warning('Skipping parameter ' + k)
+            else:
+                self[k].set_value(v)
+
+    def add(self, key, cls, *args, **kwargs):
+        self[key] = cls(self, *args, **kwargs)
+        self.sizer.Add(self[key].label, 0, wx.ALIGN_CENTER_VERTICAL)
+        self.sizer.Add(self[key].field, 0, wx.ALIGN_CENTER_VERTICAL)
+        if self[key].other is None:
+            self.sizer.AddSpacer(0)
+        else:
+            self.sizer.Add(self[key].other, 0, wx.ALIGN_CENTER_VERTICAL)
 
 
 class Fields:
