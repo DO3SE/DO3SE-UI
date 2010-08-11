@@ -37,13 +37,16 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         else:
             self.log.info("Creating new project")
 
+        
+        self.fc = FieldCollection(self.tb_main)
+        fg = self.fc.add_group('fb', 'Foo bar baz')
+        fg.add('lat', SpinField, 'Latitude (degrees North)',
+               min=20, max=50, initial=31)
+        fg.add('lon', FloatSpinField, 'Longitude (degrees East)',
+               min=-180, max=180, step=0.01, digits=4)
 
-        self.fg = FieldGroup(self.tb_main)
-        self.fg.add('lat', SpinField, 'Latitude (degrees North)',
-                    min=20, max=50, initial=31)
-        self.fg.add('lon', FloatSpinField, 'Longitude (degrees East)',
-                    min=-180, max=180, step=0.01, digits=4)
-        self.tb_main.AddPage(self.fg, 'Foo bar')
+        fg = self.fc.add_group('tu', 'Testing testing')
+        fg.add('dy', TextField, 'What\'s happening?', initial="stuff")
 
     def OnClose(self, evt):
         evt.Skip()
@@ -53,7 +56,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.pnl_errors.GetContainingSizer().Layout()
 
     def OnButton_btn_run(self, evt):
-        print list(self.fg.get_values())
+        print self.fc.get_values()
 
     def OnButton_btn_close(self, evt):
         self.Close()
