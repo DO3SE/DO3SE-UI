@@ -45,20 +45,21 @@ class FloatSpinField(Field):
 
 
 class ChoiceField(Field):
-    def create_ui(self, parent, values, default):
-        self.valuemap = OrderedDict(values)
+    def create_ui(self, parent, choices, default, choice_string=lambda x: x['name']):
+        self.choices = choices
+        self._choice_string = choice_string
 
         self.field = wx.Choice(parent)
-        for key, name in self.valuemap.iteritems():
-            self.field.Append(name, key)
+        for key, choice in self.choices.iteritems():
+            self.field.Append(self._choice_string(choice), key)
 
         self.set_value(default)
 
     def get_value(self):
         return self.field.GetClientData(self.field.GetSelection())
 
-    def set_value(self, value):
-        self.field.SetStringSelection(self.valuemap[value])
+    def set_value(self, key):
+        self.field.SetStringSelection(self._choice_string(self.choices[key]))
 
 
 class FieldGroup(OrderedDict, wx.Panel):
