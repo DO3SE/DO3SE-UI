@@ -29,7 +29,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def __init__(self, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
-        self.SetSize((500,400))
+        self.SetSize((750,550))
         self.btn_run.Enable(True)
         
         if projectfile:
@@ -37,16 +37,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         else:
             self.log.info("Creating new project")
 
-        
-        self.fc = FieldCollection(self.tb_main)
-        fg = self.fc.add_group('fb', 'Foo bar baz')
-        fg.add('lat', SpinField, 'Latitude (degrees North)',
-               min=20, max=50, initial=31)
-        fg.add('lon', FloatSpinField, 'Longitude (degrees East)',
-               min=-180, max=180, step=0.01, digits=4)
-
-        fg = self.fc.add_group('tu', 'Testing testing')
-        fg.add('dy', TextField, 'What\'s happening?', initial="stuff")
+        self.params = create_parameters_ui(self.tb_main)
 
     def OnClose(self, evt):
         evt.Skip()
@@ -56,7 +47,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.pnl_errors.GetContainingSizer().Layout()
 
     def OnButton_btn_run(self, evt):
-        print self.fc.get_values()
+        print self.params.get_values()
 
     def OnButton_btn_close(self, evt):
         self.Close()
