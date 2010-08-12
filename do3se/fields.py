@@ -44,6 +44,23 @@ class FloatSpinField(Field):
         return float(self.field.GetValue())
 
 
+class ChoiceField(Field):
+    def create_ui(self, parent, values, default):
+        self.valuemap = OrderedDict(values)
+
+        self.field = wx.Choice(parent)
+        for key, name in self.valuemap.iteritems():
+            self.field.Append(name, key)
+
+        self.set_value(default)
+
+    def get_value(self):
+        return self.field.GetClientData(self.field.GetSelection())
+
+    def set_value(self, value):
+        self.field.SetStringSelection(self.valuemap[value])
+
+
 class FieldGroup(OrderedDict, wx.Panel):
     log = logging.getLogger('do3se.fields.FieldGroup')
 
