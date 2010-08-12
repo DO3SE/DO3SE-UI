@@ -49,3 +49,13 @@ def _attempt_float(v):
         return float(v)
     except ValueError:
         return v
+
+
+def to_dicts(keys, tuples):
+    """Given an n-tuple of keys and a list of n-tuples, make a list of dicts."""
+    return [dict(zip(keys, t)) for t in tuples]
+
+
+def dicts_to_map(dicts, key, cls=dict):
+    """Create a mapping of ``m[d[key]] = d`` for a list of dicts."""
+    return cls((d[key], d) for d in dicts)

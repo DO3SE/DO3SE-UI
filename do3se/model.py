@@ -1,17 +1,13 @@
 from do3se_fortran import *
-
-def _to_dicts(fields, tuples):
-    return [dict(zip(fields, x)) for x in tuples]
-
-def _to_id_map(dicts, field='id'):
-    return dict((x[field], x) for x in dicts)
+from util import to_dicts, dicts_to_map
+from util.ordereddict import OrderedDict
 
 #
 # Define available fields
 #
 
 # Available input fields
-input_fields = _to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
+input_fields = to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
         (inputs,    'yr',       int,    False,  'Year',         'Year'),
         (inputs,    'mm',       int,    False,  'Month',        'Month'),
         (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
@@ -30,10 +26,10 @@ input_fields = _to_dicts(('module', 'variable', 'type', 'required', 'short', 'lo
 ))
 
 # Mapping from input field variable name to full field info
-input_field_map = _to_id_map(input_fields, 'variable')
+input_field_map = dicts_to_map(input_fields, 'variable')
 
 # Available output fields
-output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
+output_fields = to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         # Inputs
         (inputs,        'yr',       int,    'Year',             'Year'),
         (inputs,        'mm',       int,    'Month',            'Month'),
@@ -138,10 +134,10 @@ output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
 ))
 
 # Mapping from output field variable name to full field info
-output_field_map = _to_id_map(output_fields, 'variable')
+output_field_map = dicts_to_map(output_fields, 'variable')
 
 # Soil class data
-soil_classes = _to_dicts(('id', 'name', 'data'), (
+soil_classes = to_dicts(('id', 'name', 'data'), (
         ('sand_loam',   'Sandy Loam (coarse)', {
             'soil_b':   3.31,
             'fc_m':     0.16,
@@ -169,7 +165,7 @@ soil_classes = _to_dicts(('id', 'name', 'data'), (
 ))
 
 # Mapping from soil class id to full info
-soil_class_map = _to_id_map(soil_classes)
+soil_class_map = dicts_to_map(soil_classes, 'id', OrderedDict)
 
 default_soil_class = 'loam'
 
@@ -181,7 +177,7 @@ leaf_fphen_calcs = (
 )
 
 # Mapping from calc id to info
-leaf_fphen_calc_map = _to_id_map(leaf_fphen_calcs)
+leaf_fphen_calc_map = dicts_to_map(leaf_fphen_calcs, 'id')
 
 default_leaf_fphen_calc = 'copy'
 
@@ -193,7 +189,7 @@ fO3_calcs = (
 )
 
 # Mapping from calc id to info
-fO3_calc_map = _to_id_map(fO3_calcs)
+fO3_calc_map = dicts_to_map(fO3_calcs, 'id')
 
 default_fO3_calc = 'none'
 
@@ -205,39 +201,39 @@ SAI_calcs = (
 )
 
 # Mapping from calc id to info
-SAI_calc_map = _to_id_map(SAI_calcs)
+SAI_calc_map = dicts_to_map(SAI_calcs, 'id')
 
 default_SAI_calc = 'copy'
 
 # fXWP calculations (switching between fSWP, fLWP and neither)
-fXWP_calcs = _to_dicts(('id', 'func', 'name'), (
+fXWP_calcs = to_dicts(('id', 'func', 'name'), (
         ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
         ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
         ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
         ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
 ))
 
-fXWP_calc_map = _to_id_map(fXWP_calcs)
+fXWP_calc_map = dicts_to_map(fXWP_calcs, 'id')
 
 default_fXWP_calc = 'disabled'
 
 # fSWP calculations (switching between exponential and linear relationship
-fSWP_calcs = _to_dicts(('id', 'func', 'name'), (
+fSWP_calcs = to_dicts(('id', 'func', 'name'), (
         ('exp',     switchboard.fswp_exponential,   'Exponential'),
         ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
 ))
 
-fSWP_calc_map = _to_id_map(fSWP_calcs)
+fSWP_calc_map = dicts_to_map(fSWP_calcs, 'id')
 
 default_fSWP_calc = 'exp'
 
 # LWP calculations (steady-state and non-steady-state)
-LWP_calcs = _to_dicts(('id', 'func', 'name'), (
+LWP_calcs = to_dicts(('id', 'func', 'name'), (
         ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
         ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
 ))
 
-LWP_calc_map = _to_id_map(LWP_calcs)
+LWP_calc_map = dicts_to_map(LWP_calcs, 'id')
 
 default_LWP_calc = 'nss'
 
