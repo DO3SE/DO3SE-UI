@@ -1,0 +1,9 @@
+Because of ``python -m foo``, can move launching into do3se/__init__.py?
+
+``blah`` and ``blah_map`` should no longer be necessary with OrderedDict - change them to be just ``blah`` which is the map!
+
+Update things which aren't already using ``to_dicts()`` and ``dicts_to_map()``.
+
+Things which aren't basic fields need to become subclasses of FieldGroup.
+
+Several bugs no longer apply with new UI.
