@@ -2,6 +2,7 @@ import logging
 
 import wx
 
+import model
 import wxext
 from util.ordereddict import OrderedDict
 
@@ -121,6 +122,7 @@ _parameters_ui = (
         ('lat', FloatSpinField, ('Latitude (degrees North)', -90, 90, 50, 0.1, 3), {}),
         ('lon', FloatSpinField, ('Longitude (degrees East)', -180, 180, 0, 0.1, 3), {}),
         ('elev', SpinField, ('Elevation (m.a.s.l.)', -100, 5000, 0), {}),
+        ('soil_tex', ChoiceField, ('Soil texture', model.soil_class_map, model.default_soil_class), {}),
     )),
     ('meas', 'Measurement data', FieldGroup, (), {}, (
         ('o3zr', SpinField, ('Ozone concentration measurement height (m)', 1, 200, 25), {}),

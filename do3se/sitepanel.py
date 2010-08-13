@@ -65,18 +65,21 @@ class SitePanel(wx.Panel):
         sLocation = wxext.StaticBox2Col(p, "Site location")
         sSiteParams.Add(sLocation, 0, wx.EXPAND)
 
+        # XXX: DONE
         sLocation.fgs.Add(wx.StaticText(p, label="Latitude"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('lat', wxFloatField(wxext.FloatSpin(p,
             value=50.0, min_val=-90.0, max_val=90.0, increment=0.1, digits=3)))
         sLocation.fgs.Add(self.fields['lat'].obj, 0)
 
+        # XXX: DONE
         sLocation.fgs.Add(wx.StaticText(p, label="Longitude"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('lon', wxFloatField(wxext.FloatSpin(p,
             value=0.0, min_val=-180.0, max_val=180.0, increment=0.1, digits=3)))
         sLocation.fgs.Add(self.fields['lon'].obj, 0)
 
+        # XXX: DONE
         sLocation.fgs.Add(wx.StaticText(p, label="Elevation (metres above sea level)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('elev', wxFloatField(wx.SpinCtrl(p,
@@ -88,17 +91,20 @@ class SitePanel(wx.Panel):
         sHeights = wxext.StaticBox2Col(p, "Measurement heights")
         sSiteParams.Add(sHeights, 0, wx.EXPAND)
 
+        # XXX: DONE
         sHeights.fgs.Add(StaticFancyText(p, -1, "Ozone concentration data (h<sub>O</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('o3zr', wxFloatField(wx.SpinCtrl(p,
             min=1, max=200, initial=25)))
         sHeights.fgs.Add(self.fields['o3zr'].obj, 0)
 
+        # XXX: DONE
         sHeights.fgs.Add(StaticFancyText(p, -1, "Wind speed data (h<sub>w</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('uzr', wxFloatField(wx.SpinCtrl(p,
             min=1, max=200, initial=25)))
         sHeights.fgs.Add(self.fields['uzr'].obj, 0)
+        # XXX: DONE
         sHeights.fgs.Add(StaticFancyText(p, -1, "Soil water measurement depth (D<sub>meas</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('d_meas', wxFloatField(wxext.FloatSpin(p,
