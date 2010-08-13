@@ -7,3 +7,5 @@ Update things which aren't already using ``to_dicts()`` and ``dicts_to_map()``.
 Things which aren't basic fields need to become subclasses of FieldGroup.
 
 Several bugs no longer apply with new UI.
+
+Applying parameterisations is as simple as using ``set_values()`` on the field collection!
