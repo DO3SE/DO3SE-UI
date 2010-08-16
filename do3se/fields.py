@@ -274,11 +274,12 @@ def disableable(cls, chklabel='Disabled?'):
 
 _parameters_ui = (
     ('format', 'Input data format', SimpleFieldGroup, (), {}),
-    ('siteloc', 'Site location', SimpleFieldGroup, (), {'fields': (
+    ('siteloc', 'Location properties', SimpleFieldGroup, (), {'fields': (
         ('lat', FloatSpinField, ('Latitude (degrees North)', -90, 90, 50, 0.1, 3), {}),
         ('lon', FloatSpinField, ('Longitude (degrees East)', -180, 180, 0, 0.1, 3), {}),
         ('elev', SpinField, ('Elevation (m.a.s.l.)', -100, 5000, 0), {}),
         ('soil_tex', ChoiceField, ('Soil texture', model.soil_class_map, model.default_soil_class), {}),
+        ('rsoil', SpinField, ('Rsoil', 1, 1000, 200), {}),
     )}),
     ('meas', 'Measurement data', SimpleFieldGroup, (), {'fields': (
         ('o3zr', SpinField, ('O3 measurement height (m)', 1, 200, 25), {}),

@@ -116,12 +116,14 @@ class SitePanel(wx.Panel):
         sSoil = wxext.StaticBox2Col(p, "Soil")
         sSiteParams.Add(sSoil, 0, wx.EXPAND)
 
+        # XXX: DONE
         sSoil.fgs.Add(wx.StaticText(p, label="Texture"), 
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('soil_tex', SoilTexField(p))
         self.fields['soil_tex'].set(model.default_soil_class)
         sSoil.fgs.Add(self.fields['soil_tex'].obj, 0)
 
+        # XXX: DONE
         sSoil.fgs.Add(wx.StaticText(p, label="Rsoil"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('rsoil', wxFloatField(wx.SpinCtrl(p,
@@ -132,6 +134,7 @@ class SitePanel(wx.Panel):
         sCanopies = wxext.StaticBox2Col(p, "Reference canopy heights")
         sSiteParams.Add(sCanopies, 0, wx.EXPAND)
 
+        # XXX: DONE
         sCanopies.fgs.Add(StaticFancyText(p, -1, "Ozone concentration data (h<sub>ref,O</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteO3Canopy = wx.BoxSizer(wx.HORIZONTAL)
@@ -144,6 +147,7 @@ class SitePanel(wx.Panel):
         sSiteO3Canopy.Add(self.fields['o3_h_copy'].obj, 0)
         self.fields['o3_h_copy'].Bind(wx.EVT_CHECKBOX, self.On_o3_h_copy_EVT_CHECKBOX)
 
+        # XXX: DONE
         sCanopies.fgs.Add(StaticFancyText(p, -1, "Wind speed data (h<sub>ref,w</sub>, m)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         sSiteMetCanopy = wx.BoxSizer(wx.HORIZONTAL)
