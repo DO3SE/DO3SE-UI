@@ -136,18 +136,18 @@ class FieldGroup(OrderedDict, wx.Panel):
         self.fc = fc
 
     def get_values(self):
-        """Return field group as (key, value) pairs."""
-        return ((k, v.get_value()) for k,v in self.iteritems())
+        """Return field group as :class:`OrderedDict` of values."""
+        return OrderedDict((k, v.get_value()) for k,v in self.iteritems())
 
     def set_values(self, values):
-        """Set field group values from (key, value) pairs.
+        """Update field group with :class:`OrderedDict` of values.
         
         .. note::
             Values for keys which do not exist in the group ar ignored,
             rather than raising errors; values for other groups may be present
             in *values*.
         """
-        for k,v in values:
+        for k,v in values.iteritems():
             if k in self:
                 self[k].set_value(v)
 
@@ -228,17 +228,17 @@ class FieldCollection(OrderedDict):
         return self[key]
 
     def get_values(self):
-        """Get the values of all fields (across all groups) as (key, value) pairs."""
-        values = []
+        """Get the values of all fields, across all groups, as an :class:`OrderedDict`."""
+        values = OrderedDict()
         for group in self.itervalues():
-            values.extend(group.get_values())
+            values.update(group.get_values())
         return values
 
     def set_values(self, values):
-        """Set the values of all fields from (key, value) pairs.
+        """Set the values of all fields from an :class:`OrderedDict`.
 
-        All groups get all values, therefore groups should ignore values for
-        fields they do not contain.
+        All groups get given *values*, so groups should ignore values for fields
+        they do not contain.
         """
         for group in self.itervalues():
             group.set_values(values)
