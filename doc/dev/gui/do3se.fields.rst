@@ -16,6 +16,8 @@ Fields
 .. autoclass:: ChoiceField
     :members:
 
+.. autofunction:: disableable
+
 Groups of fields
 ----------------
 .. autoclass:: FieldGroup

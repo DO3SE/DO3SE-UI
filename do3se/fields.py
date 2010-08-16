@@ -20,6 +20,8 @@ class Field:
     """
 
     def __init__(self, parent, name, *args, **kwargs):
+        self.parent = parent
+
         self.label = wx.StaticText(parent, label=name)
         self.field = None
         self.other = None
@@ -131,6 +133,8 @@ class FieldGroup(OrderedDict, wx.Panel):
         OrderedDict.__init__(self)
         wx.Panel.__init__(self, parent)
 
+        self.fc = fc
+
     def get_values(self):
         """Return field group as (key, value) pairs."""
         return ((k, v.get_value()) for k,v in self.iteritems())
@@ -240,6 +244,34 @@ class FieldCollection(OrderedDict):
             group.set_values(values)
 
 
+def disableable(cls, chklabel='Disabled?'):
+    """Class decorator creating a new class with an added "disable" checkbox.
+
+    This decorator creates a new class which inherits from *cls*, making the
+    following changes:
+
+    + ``field.other`` becomes a checkbox with *chklabel* as it's label,
+    + The field's value becomes a ``(value, disabled)`` pair.
+    """
+    class DisableableCls(cls):
+        def create_ui(self, parent, *args, **kwargs):
+            cls.create_ui(self, parent, *args, **kwargs)
+            self.other = wx.CheckBox(parent, label=chklabel, style=wx.CHK_2STATE)
+            self.other.Bind(wx.EVT_CHECKBOX, self.OnCheckbox_disable)
+
+        def OnCheckbox_disable(self, evt):
+            self.field.Enable(not self.other.IsChecked())
+
+        def get_value(self):
+            return (cls.get_value(self), self.other.GetValue())
+
+        def set_value(self, value):
+            cls.set_value(self, value[0])
+            self.other.SetValue(value[1])
+
+    return DisableableCls
+
+
 _parameters_ui = (
     ('format', 'Input data format', SimpleFieldGroup, (), {}),
     ('siteloc', 'Site location', SimpleFieldGroup, (), {'fields': (
@@ -249,8 +281,12 @@ _parameters_ui = (
         ('soil_tex', ChoiceField, ('Soil texture', model.soil_class_map, model.default_soil_class), {}),
     )}),
     ('meas', 'Measurement data', SimpleFieldGroup, (), {'fields': (
-        ('o3zr', SpinField, ('Ozone concentration measurement height (m)', 1, 200, 25), {}),
+        ('o3zr', SpinField, ('O3 measurement height (m)', 1, 200, 25), {}),
+        ('o3_h', disableable(FloatSpinField, 'Same as target canopy'),
+            ('O3 measurement canopy height (m)', 0.1, 100, 25, 0.1, 1), {}),
         ('uzr', SpinField, ('Wind speed measurement height (m)', 1, 200, 25), {}),
+        ('u_h', disableable(FloatSpinField, 'Same as target canopy'),
+            ('Wind speed measurement canopy height (m)', 0.1, 100, 25, 0.1, 1), {}),
         ('d_meas', FloatSpinField, ('Soil water measurement depth (m)', 0.1, 2, 0.5, 0.1, 1), {}),
     )}),
     ('vegchar', 'Vegetation characteristics', SimpleFieldGroup, (), {'fields': (
