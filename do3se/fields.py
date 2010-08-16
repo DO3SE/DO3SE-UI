@@ -312,6 +312,45 @@ _parameters_ui = (
         ('swp_min', FloatSpinField, ('SWP for min. g (SWP_min, ???)', -6, 0, -1.25, 0.01, 2), {}),
         ('swp_max', FloatSpinField, ('SWP for max. g (SWP_max, ???)', -6, 0, -0.05, 0.01, 2), {}),
     )}),
+    ('modelopts', 'Model options', SimpleFieldGroup, (), {'fields': (
+        ('fo3', ChoiceField, ('fO3 calculation', model.fO3_calc_map, model.default_fO3_calc), {}),
+        ('fxwp', ChoiceField, ('Soil water influence on Gsto', model.fXWP_calc_map, model.default_fXWP_calc), {}),
+        ('lwp', ChoiceField, ('LWP calculation', model.LWP_calc_map, model.default_LWP_calc), {}),
+        ('fswp', ChoiceField, ('fSWP calculation', model.fSWP_calc_map, model.default_fSWP_calc), {}),
+    )}),
+    ('unsorted', 'UNSORTED', SimpleFieldGroup, (), {'fields': (
+        ('sgs', SpinField, ('Start of growing season (SGS, day of year)', 1, 365, 121), {}),
+        ('egs', SpinField, ('End of growing season (EGS, day of year)', 1, 365, 273), {}),
+
+        ('lai_a', FloatSpinField, ('LAI at SGS (LAI_a, m2/m2)', 0, 20, 0, 0.1, 1), {}),
+        ('lai_b', FloatSpinField, ('First mid-season LAI (LAI_b, m2/m2)', 0, 20, 4, 0.1, 1), {}),
+        ('lai_c', FloatSpinField, ('Second mid-season LAI (LAI_c, m2/m2)', 0, 20, 4, 0.1, 1), {}),
+        ('lai_d', FloatSpinField, ('LAI at EGS (LAI_d, m2/m2)', 0, 20, 0, 0.1, 1), {}),
+        ('lai_1', SpinField, ('Period from LAI_a to LAI_b (LAI_1, days)', 1, 100, 30), {}),
+        ('lai_2', SpinField, ('Period from LAI_c to LAI_d (LAI_2, days)', 1, 100, 30), {}),
+        ('sai', ChoiceField, ('SAI calculation', model.SAI_calc_map, model.default_SAI_calc), {}),
+
+        ('fphen_a', FloatSpinField, ('Fphen at SGS (fphen_a)', 0, 1, 0, 0.1, 1), {}),
+        ('fphen_b', FloatSpinField, ('First mid-season Fphen (fphen_b)', 0, 1, 1, 0.1, 1), {}),
+        ('fphen_c', FloatSpinField, ('Second mid-season Fphen (fphen_c)', 0, 1, 1, 0.1, 1), {}),
+        ('fphen_d', FloatSpinField, ('Third mid-season Fphen (fphen_d)', 0, 1, 1, 0.1, 1), {}),
+        ('fphen_e', FloatSpinField, ('Fphen at EGS (fphen_e)', 0, 1, 0, 0.1, 1), {}),
+        ('fphen_1', SpinField, ('Period from fphen_a to fphen_b (fphen_1, days)', 0, 200, 15), {}),
+        ('fphen_lima', SpinField, ('Start of SWP limitation (fphen_limA, day of year)', 0, 365, 0), {}),
+        ('fphen_2', SpinField, ('Period from fphen_b to fphen_c (fphen_2, days)', 0, 200, 1), {}),
+        ('fphen_3', SpinField, ('Period from fphen_c to fphen_d (fphen_3, days)', 0, 200, 1), {}),
+        ('fphen_limb', SpinField, ('End of SWP limitation (fphen_limB, day of year)', 0, 365, 0), {}),
+        ('fphen_4', SpinField, ('Period from fphen_d to fphen_e (fphen_4, days)', 0, 200, 20), {}),
+
+        ('leaf_fphen', ChoiceField, ('Leaf fphen calculation', model.leaf_fphen_calc_map, model.default_leaf_fphen_calc), {}),
+        ('astart', SpinField, ('Start of O3 accumulation (Astart, day of year)', 1, 365, 153), {}),
+        ('aend', SpinField, ('End of O3 accumulation (Aend, day of year)', 1, 365, 208), {}),
+        ('leaf_fphen_a', FloatSpinField, ('Leaf fphen at Astart (leaf_fphen_a)', 0, 1, 0, 0.1, 1), {}),
+        ('leaf_fphen_b', FloatSpinField, ('Leaf fphen mid-season (leaf_fphen_b)', 0, 1, 1, 0.1, 1), {}),
+        ('leaf_fphen_c', FloatSpinField, ('Leaf fphen at Aend (leaf_fphen_c)', 0, 1, 0, 0.1, 1), {}),
+        ('leaf_fphen_1', SpinField, ('Period from leaf_fphen_a to leaf_fphen_b (days)', 0, 300, 15), {}),
+        ('leaf_fphen_2', SpinField, ('Period from leaf_fphen_b to leaf_fphen_c (days)', 0, 300, 30), {}),
+    )}),
 )
 
 

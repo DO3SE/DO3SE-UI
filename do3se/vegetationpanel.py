@@ -120,6 +120,7 @@ class VegetationPanel(wx.Panel):
                 min_val=0.1, value=1.6, max_val=100.0, increment=0.1, digits=1)))
         sbox.fgs.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         sbox.fgs.Add(wx.StaticText(p, label="fO3 calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fo3', CalcChoiceField(p, model.fO3_calcs,
                                                model.fO3_calc_map,
@@ -213,6 +214,7 @@ class VegetationPanel(wx.Panel):
                 value=-0.05, increment=0.01, digits=2)))
         sbox.fgs.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         sbox.fgs.Add(wx.StaticText(p, label="Soil water influence on Gsto"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fxwp', CalcChoiceField(p, model.fXWP_calcs,
@@ -220,6 +222,7 @@ class VegetationPanel(wx.Panel):
                                                 model.default_fXWP_calc))
         sbox.fgs.Add(self.fields['fxwp'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         sbox.fgs.Add(wx.StaticText(p, label="LWP calculation"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('lwp', CalcChoiceField(p, model.LWP_calcs,
@@ -227,6 +230,7 @@ class VegetationPanel(wx.Panel):
                                                model.default_LWP_calc))
         sbox.fgs.Add(self.fields['lwp'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         sbox.fgs.Add(wx.StaticText(p, label="fSWP calculation"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fswp', CalcChoiceField(p, model.fSWP_calcs,
@@ -272,6 +276,7 @@ class VegetationPanel(wx.Panel):
         s1 = wx.BoxSizer(wx.HORIZONTAL)
         bs.Add(s1, 1, wx.EXPAND|wx.ALL, 6)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Start (SGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         s1.AddSpacer(6)
@@ -279,6 +284,7 @@ class VegetationPanel(wx.Panel):
                 min=1, max=365, initial=121)))
         s1.Add(self.fields['sgs'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.AddSpacer(12)
         s1.Add(wx.StaticText(p, label="End (EGS, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
@@ -309,40 +315,47 @@ class VegetationPanel(wx.Panel):
         bs.Add(s1, 0, wx.EXPAND|wx.ALL, 6)
         bs.Add(s2, 1, wx.EXPAND|wx.ALL, 6)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="LAI at SGS (LAI_a, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
         self.fields.add('lai_a', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_a'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Second LAI point (LAI_b, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
         self.fields.add('lai_b', wxFloatField(wxext.FloatSpin(p,
                 value=4.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_b'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Third LAI point (LAI_c, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
         self.fields.add('lai_c', wxFloatField(wxext.FloatSpin(p,
                 value=4.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_c'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="LAI at EGS (LAI_d, m^2/m^2)"),
                 0, wx. ALIGN_CENTER_VERTICAL)
         self.fields.add('lai_d', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, min_val=0, increment=0.1, digits=1)))
         s1.Add(self.fields['lai_d'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Period from LAI_a to LAI_b (LAI_1, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('lai_1', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
         s1.Add(self.fields['lai_1'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Period from LAI_c to LAI_d (LAI_2, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('lai_2', wxFloatField(wx.SpinCtrl(p, min=1, max=100, initial=30)))
         s1.Add(self.fields['lai_2'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="SAI calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('sai', CalcChoiceField(p, model.SAI_calcs,
                                                model.SAI_calc_map,
@@ -377,72 +390,84 @@ class VegetationPanel(wx.Panel):
         _s.Add(s3, 1, wx.EXPAND)
         s3.Add(s2, 0, wx.EXPAND|wx.ALL, 6)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Fphen at SGS (fphen_a)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_a', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_a'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="First mid-season Fphen (fphen_b)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_b', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_b'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Second mid-season Fphen (fphen_c)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_c', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_c'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Third mid-season Fphen (fphen_d)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_d', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_d'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Fphen at EGS (fphen_e)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_e', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s1.Add(self.fields['fphen_e'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Period from fphen_a to fphen_b (fphen_1, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_1', wxFloatField(wx.SpinCtrl(p,
                 initial=15, min=0)))
         s1.Add(self.fields['fphen_1'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Start of SWP limitation (fphen_limA, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_lima', wxFloatField(wx.SpinCtrl(p,
                 initial=0, min=0, max=365)))
         s1.Add(self.fields['fphen_lima'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Period from fphen_b to fphen_c (fphen_2, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_2', wxFloatField(wx.SpinCtrl(p,
                 initial=1, min=0)))
         s1.Add(self.fields['fphen_2'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Period from fphen_c to fphen_d (fphen_3, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_3', wxFloatField(wx.SpinCtrl(p,
                 initial=1, min=0)))
         s1.Add(self.fields['fphen_3'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="End of SWP limitation (fphen_limB, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_limb', wxFloatField(wx.SpinCtrl(p,
                 initial=0, min=0, max=365)))
         s1.Add(self.fields['fphen_limb'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s1.Add(wx.StaticText(p, label="Period from fphen_d to fphen_e (fphen_4, days)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('fphen_4', wxFloatField(wx.SpinCtrl(p,
                 initial=20, min=0)))
         s1.Add(self.fields['fphen_4'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="Leaf fphen calculation"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen', CalcChoiceField(p, model.leaf_fphen_calcs,
@@ -452,12 +477,14 @@ class VegetationPanel(wx.Panel):
         self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.On_leaf_fphen_EVT_CHOICE)
         self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.redraw_fphen_preview)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="O3 accumulation start (Astart, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('astart', wxFloatField(wx.SpinCtrl(p,
                 min=1, max=365, initial=153)))
         s2.Add(self.fields['astart'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="O3 accumulation end (Aend, day of year)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('aend', wxFloatField(wx.SpinCtrl(p,
@@ -476,30 +503,35 @@ class VegetationPanel(wx.Panel):
             evt.Skip()
         self.fields['aend'].Bind(wx.EVT_SPINCTRL, f)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="Leaf fphen at Astart (leaf_fphen_a)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen_a', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s2.Add(self.fields['leaf_fphen_a'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="Leaf fphen mid-season (leaf_fphen_b)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen_b', wxFloatField(wxext.FloatSpin(p,
                 value=1.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s2.Add(self.fields['leaf_fphen_b'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="Leaf fphen at Aend (leaf_fphen_c)"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen_c', wxFloatField(wxext.FloatSpin(p,
                 value=0.0, increment=0.1, min_val=0.0, max_val=1.0, digits=1)))
         s2.Add(self.fields['leaf_fphen_c'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="Period from leaf_fphen_a to leaf_fphen_b"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen_1', wxFloatField(wx.SpinCtrl(p,
                 initial=15, min=0)))
         s2.Add(self.fields['leaf_fphen_1'].obj, 0, wx.ALIGN_RIGHT)
 
+        # XXX: DONE
         s2.Add(wx.StaticText(p, label="Period from leaf_fphen_b to leaf_fphen_c"),
                 0, wx.ALIGN_CENTER_VERTICAL)
         self.fields.add('leaf_fphen_2', wxFloatField(wx.SpinCtrl(p,

@@ -177,7 +177,7 @@ leaf_fphen_calcs = (
 )
 
 # Mapping from calc id to info
-leaf_fphen_calc_map = dicts_to_map(leaf_fphen_calcs, 'id')
+leaf_fphen_calc_map = dicts_to_map(leaf_fphen_calcs, 'id', OrderedDict)
 
 default_leaf_fphen_calc = 'copy'
 
@@ -189,7 +189,7 @@ fO3_calcs = (
 )
 
 # Mapping from calc id to info
-fO3_calc_map = dicts_to_map(fO3_calcs, 'id')
+fO3_calc_map = dicts_to_map(fO3_calcs, 'id', OrderedDict)
 
 default_fO3_calc = 'none'
 
@@ -201,7 +201,7 @@ SAI_calcs = (
 )
 
 # Mapping from calc id to info
-SAI_calc_map = dicts_to_map(SAI_calcs, 'id')
+SAI_calc_map = dicts_to_map(SAI_calcs, 'id', OrderedDict)
 
 default_SAI_calc = 'copy'
 
@@ -213,7 +213,7 @@ fXWP_calcs = to_dicts(('id', 'func', 'name'), (
         ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
 ))
 
-fXWP_calc_map = dicts_to_map(fXWP_calcs, 'id')
+fXWP_calc_map = dicts_to_map(fXWP_calcs, 'id', OrderedDict)
 
 default_fXWP_calc = 'disabled'
 
@@ -223,7 +223,7 @@ fSWP_calcs = to_dicts(('id', 'func', 'name'), (
         ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
 ))
 
-fSWP_calc_map = dicts_to_map(fSWP_calcs, 'id')
+fSWP_calc_map = dicts_to_map(fSWP_calcs, 'id', OrderedDict)
 
 default_fSWP_calc = 'exp'
 
@@ -233,7 +233,7 @@ LWP_calcs = to_dicts(('id', 'func', 'name'), (
         ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
 ))
 
-LWP_calc_map = dicts_to_map(LWP_calcs, 'id')
+LWP_calc_map = dicts_to_map(LWP_calcs, 'id', OrderedDict)
 
 default_LWP_calc = 'nss'
 
