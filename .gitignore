@@ -11,5 +11,5 @@ tags
 *.out
 *.toc
 dose
-*.pyc
+*.py[co]
 .*.sw[aop]

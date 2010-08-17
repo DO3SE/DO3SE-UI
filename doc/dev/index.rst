@@ -7,6 +7,7 @@ Contents:
     :maxdepth: 2
 
     buildenv
+    f_model
     do3se
 
 Indices and tables

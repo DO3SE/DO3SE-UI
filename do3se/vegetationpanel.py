@@ -8,46 +8,25 @@ import wxext
 import model
 from util.fieldgroup import Field, FieldGroup, wxField, wxFloatField
 
-class LeafFphenField(Field):
-    def __init__(self, parent):
+class CalcChoiceField(Field):
+    def __init__(self, parent, calcs, calc_map, default):
+        self.calcs = calcs
+        self.calc_map = calc_map
+        self.default = default
+
         obj = wx.Choice(parent)
-        for x in model.leaf_fphen_calcs:
+        for x in calcs:
             obj.Append(x['name'], x['id'])
+
         Field.__init__(self, obj)
+
+        self.set(default)
 
     def get(self):
         return self.obj.GetClientData(self.obj.GetSelection())
 
     def set(self, value):
-        self.obj.SetStringSelection(model.leaf_fphen_calc_map[value]['name'])
-
-
-class fO3Field(Field):
-    def __init__(self, parent):
-        obj = wx.Choice(parent)
-        for x in model.fO3_calcs:
-            obj.Append(x['name'], x['id'])
-        Field.__init__(self, obj)
-
-    def get(self):
-        return self.obj.GetClientData(self.obj.GetSelection())
-
-    def set(self, value):
-        self.obj.SetStringSelection(model.fO3_calc_map[value]['name'])
-
-
-class SAIField(Field):
-    def __init__(self, parent):
-        obj = wx.Choice(parent)
-        for x in model.SAI_calcs:
-            obj.Append(x['name'], x['id'])
-        Field.__init__(self, obj)
-
-    def get(self):
-        return self.obj.GetClientData(self.obj.GetSelection())
-
-    def set(self, value):
-        self.obj.SetStringSelection(model.SAI_calc_map[value]['name'])
+        self.obj.SetStringSelection(self.calc_map[value]['name'])
 
 
 class VegetationPanel(wx.Panel):
@@ -136,8 +115,9 @@ class VegetationPanel(wx.Panel):
         sbox.fgs.Add(self.fields['y'].obj, 0, wx.ALIGN_RIGHT)
 
         sbox.fgs.Add(wx.StaticText(p, label="fO3 calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('fo3', fO3Field(p))
-        self.fields['fo3'].set(model.default_fO3_calc)
+        self.fields.add('fo3', CalcChoiceField(p, model.fO3_calcs,
+                                               model.fO3_calc_map,
+                                               model.default_fO3_calc))
         sbox.fgs.Add(self.fields['fo3'].obj, 0, wx.ALIGN_RIGHT)
 
 
@@ -215,12 +195,26 @@ class VegetationPanel(wx.Panel):
                 value=-0.05, increment=0.01, digits=2)))
         sbox.fgs.Add(self.fields['swp_max'].obj, 0, wx.ALIGN_RIGHT)
 
-        sbox.fgs.Add(wx.StaticText(p, label="Enable DO3SE model estimate of soil water"),
+        sbox.fgs.Add(wx.StaticText(p, label="Soil water influence on Gsto"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('enable_fswp', wxField(wx.CheckBox(p,
-                label="", style=wx.ALIGN_RIGHT)))
-        self.fields['enable_fswp'].set(1)
-        sbox.fgs.Add(self.fields['enable_fswp'].obj, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fxwp', CalcChoiceField(p, model.fXWP_calcs,
+                                                model.fXWP_calc_map,
+                                                model.default_fXWP_calc))
+        sbox.fgs.Add(self.fields['fxwp'].obj, 0, wx.ALIGN_RIGHT)
+
+        sbox.fgs.Add(wx.StaticText(p, label="LWP calculation"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('lwp', CalcChoiceField(p, model.LWP_calcs,
+                                               model.LWP_calc_map,
+                                               model.default_LWP_calc))
+        sbox.fgs.Add(self.fields['lwp'].obj, 0, wx.ALIGN_RIGHT)
+
+        sbox.fgs.Add(wx.StaticText(p, label="fSWP calculation"),
+                0, wx.ALIGN_CENTER_VERTICAL)
+        self.fields.add('fswp', CalcChoiceField(p, model.fSWP_calcs,
+                                               model.fSWP_calc_map,
+                                               model.default_fSWP_calc))
+        sbox.fgs.Add(self.fields['fswp'].obj, 0, wx.ALIGN_RIGHT)
 
         # Maintain integrity on environmental dependence
         def f(evt):
@@ -365,8 +359,9 @@ class VegetationPanel(wx.Panel):
         s1.Add(self.fields['lai_2'].obj, 0, wx.ALIGN_RIGHT)
 
         s1.Add(wx.StaticText(p, label="SAI calculation"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('sai', SAIField(p))
-        self.fields['sai'].set(model.default_SAI_calc)
+        self.fields.add('sai', CalcChoiceField(p, model.SAI_calcs,
+                                               model.SAI_calc_map,
+                                               model.default_SAI_calc))
         s1.Add(self.fields['sai'].obj, 0, wx.ALIGN_RIGHT)
 
         # LAI preview
@@ -465,9 +460,10 @@ class VegetationPanel(wx.Panel):
 
         s2.Add(wx.StaticText(p, label="Leaf fphen calculation"),
                 0, wx.ALIGN_CENTER_VERTICAL)
-        self.fields.add('leaf_fphen', LeafFphenField(p))
+        self.fields.add('leaf_fphen', CalcChoiceField(p, model.leaf_fphen_calcs,
+                                                      model.leaf_fphen_calc_map,
+                                                      model.default_leaf_fphen_calc))
         s2.Add(self.fields['leaf_fphen'].obj, 0, wx.ALIGN_RIGHT)
-        self.fields['leaf_fphen'].set(model.default_leaf_fphen_calc)
         self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.On_leaf_fphen_EVT_CHOICE)
         self.fields['leaf_fphen'].Bind(wx.EVT_CHOICE, self.redraw_fphen_preview)
 

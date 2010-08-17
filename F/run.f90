@@ -22,8 +22,7 @@ contains
         use Switchboard
         use Variables
         use SoilWater
-        use params_veg, only: Derive_d_zo
-        use params_site, only: Derive_Windspeed_d_zo, Derive_O3_d_zo
+        use Parameters, only: Derive_d_zo, Derive_Windspeed_d_zo, Derive_O3_d_zo
         use Inputs, only: Init_Inputs
 
         dd_prev = -1
@@ -66,6 +65,7 @@ contains
         call Calc_fVPD()
 
         call SB_Calc_fO3()
+        call SB_Calc_fXWP()
     
         call SB_Calc_Ra()
         call Calc_Rb()
@@ -75,6 +75,11 @@ contains
         call Calc_Rsur()
 
         call Calc_Penman_Monteith()
+
+        call SB_Calc_LWP()  ! This *must* happen after calculating SWP - SWP is 
+                            ! calculated as the day rolls over, and LWP should 
+                            ! use the previous day's SWP
+        call Calc_fLWP()
 
         call Calc_O3_Concentration()
         call Calc_Ftot()
@@ -97,6 +102,9 @@ contains
         call Calc_precip_acc()
         call Calc_Penman_Monteith_daily()
         call Calc_SWP()
+        call SB_Calc_fSWP()
+        call Calc_SWP_meas()
+        call Calc_fPAW()
     end subroutine Daily
 
     subroutine Calculate_Row()

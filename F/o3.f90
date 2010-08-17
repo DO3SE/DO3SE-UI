@@ -17,7 +17,7 @@ contains
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
         use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P
         use Variables, only: O3_ppb_i, O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Ra_i, Vd
-        use Params_Site, only: O3zR, O3_d, O3_zo
+        use Parameters, only: O3zR, O3_d, O3_zo
 
         real, parameter :: R = 8.314510     ! Universal gas constant (J/K/mol)
         real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
@@ -61,7 +61,7 @@ contains
     ! Calculate the upper leaf stomatal ozone flux
     !==========================================================================
     subroutine Calc_Fst()
-        use Params_Veg, only: Lm, Rext
+        use Parameters, only: Lm, Rext
         use Inputs, only: uh
         use Variables, only: Gsto_l, Rsto_l, O3_nmol_m3, Fst
 
@@ -82,7 +82,7 @@ contains
     !==========================================================================
     subroutine Calc_AFstY()
         use Variables, only: Fst, AFstY, AFst0
-        use Params_Veg, only: Y
+        use Parameters, only: Y
 
         ! Fst == 0 if Gsto_l == 0 (and Gsto_l == 0 if leaf_fphen == 0), so no
         ! need to check leaf_fphen

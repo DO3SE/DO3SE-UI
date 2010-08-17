@@ -11,7 +11,7 @@ contains
         use Variables, only: ftemp
 
         use Inputs, only: Ts_c
-        use Params_Veg, only: T_max, T_min, T_opt, fmin
+        use Parameters, only: T_max, T_min, T_opt, fmin
 
         real :: bt 
         
@@ -26,7 +26,7 @@ contains
         use Variables, only: fVPD
 
         use Inputs, only: VPD
-        use Params_Veg, only: fmin, VPD_min, VPD_max
+        use Parameters, only: fmin, VPD_min, VPD_max
 
         fVPD = ((1 - fmin)*(VPD_min - VPD)/(VPD_min - VPD_max)) + fmin
         fVPD = max(fVPD, fmin)
@@ -42,7 +42,7 @@ contains
     subroutine Calc_Flight()
         ! TODO: document variables
         use Constants, only: seaP
-        use Params_Veg, only: f_lightfac, cosA
+        use Parameters, only: f_lightfac, cosA
         use Inputs, only: P, PAR, sinB
         use Variables, only: LAI, Flight, leaf_flight
         use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &

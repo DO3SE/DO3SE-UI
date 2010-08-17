@@ -15,7 +15,7 @@ contains
     subroutine Calc_Ra_Simple()
         use Constants, only: k, izR
         use Inputs, only: ustar
-        use Params_Veg, only: h, d
+        use Parameters, only: h, d
         use Variables, only: Ra
 
         Ra = (1 / (ustar * k)) * log((izR - d) / (h - d))
@@ -28,7 +28,7 @@ contains
         use Constants, only: Rmass, Ts_K, k, g, cp, pi, z => izR
         use Inputs, only: P, Hd, Ts_C, ustar
         use Variables, only: Ra
-        use Params_Veg, only: d, zo
+        use Parameters, only: d, zo
 
         real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, rho, L, &
                 Xzo, Xzd
@@ -84,7 +84,7 @@ contains
     ! Calculate Rgs, non-vegetative surface resistance
     !==========================================================================
     subroutine Calc_Rgs()
-        use Params_Site, only: Rsoil
+        use Parameters, only: Rsoil
         use Variables, only: Rgs
 
         Rgs = Rsoil
@@ -94,7 +94,7 @@ contains
     ! Calculate Rinc, in-canopy aerodynamic resistance
     !==========================================================================
     subroutine Calc_Rinc()
-        use Params_Veg, only: Rinc_b, h
+        use Parameters, only: Rinc_b, h
         use Inputs, only: ustar
         use Variables, only: SAI, Rinc
 
@@ -105,9 +105,9 @@ contains
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
     subroutine Calc_Rsto()
-        use Params_Veg, only: gmax, gmorph, fmin, VPD_crit
+        use Parameters, only: gmax, gmorph, fmin, VPD_crit
         use Inputs, only: VPD, dd
-        use Variables, only: fphen, flight, ftemp, fVPD, fSWP, fO3, dd_prev
+        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, dd_prev
         use Variables, only: leaf_fphen, leaf_flight, LAI
         use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
                              Gsto_PEt, Rsto_PEt
@@ -130,9 +130,9 @@ contains
         end if
 
         ! Leaf Gsto
-        Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fSWP)
+        Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
         ! Mean Gsto
-        Gsto = (gmax * gmorph) * fphen * flight * max(fmin, ftemp * fVPD * fSWP)
+        Gsto = (gmax * gmorph) * fphen * flight * max(fmin, ftemp * fVPD * fXWP)
         ! Estimate canopy Gsto from mean leaf Gsto
         Gsto_c = Gsto * LAI
         ! Potential canopy Gsto for PEt calculation (non-limiting SWP)
@@ -178,8 +178,8 @@ contains
     !==========================================================================
     !==========================================================================
     subroutine Calc_Rsur()
-        use Params_Veg, only: Rext
-        use Params_Site, only: Rsoil
+        use Parameters, only: Rext
+        use Parameters, only: Rsoil
         use Variables, only: LAI, SAI, Rsto, Rinc, Rsur
         
         if ( LAI > 0 ) then

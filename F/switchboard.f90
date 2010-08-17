@@ -28,9 +28,20 @@ module Switchboard
     integer, public, save :: fo3_method = fo3_disabled
     public :: SB_Calc_fO3
 
+    integer, public, parameter :: fswp_exponential = 1
+    integer, public, parameter :: fswp_linear      = 2
+    integer, public, save :: fswp_method = fswp_exponential
+    public :: SB_Calc_fSWP
+
+    integer, public, parameter :: lwp_non_steady_state = 1
+    integer, public, parameter :: lwp_steady_state     = 2
+    integer, public, save :: lwp_method = lwp_non_steady_state
+    public :: SB_Calc_LWP
+
     integer, public, parameter :: fxwp_disabled = 1
     integer, public, parameter :: fxwp_use_fswp = 2
-    !integer, public, parameter :: fxwp_use_flwp = 3
+    integer, public, parameter :: fxwp_use_flwp = 3
+    integer, public, parameter :: fxwp_use_fpaw = 4
     integer, public, save :: fxwp_method = fxwp_disabled
     public :: SB_Calc_fXWP
 
@@ -136,8 +147,30 @@ contains
         end select
     end subroutine SB_Calc_fO3
 
+    subroutine SB_Calc_fSWP()
+        use SoilWater
+
+        select case (fswp_method)
+        case (fswp_exponential)
+            call Calc_fSWP_exponential()
+        case (fswp_linear)
+            call Calc_fSWP_linear()
+        end select
+    end subroutine SB_Calc_fSWP
+
+    subroutine SB_Calc_LWP()
+        use SoilWater
+
+        select case (lwp_method)
+        case (lwp_non_steady_state)
+            call Calc_LWP()
+        case (lwp_steady_state)
+            call Calc_LWP_steady_state()
+        end select
+    end subroutine SB_Calc_LWP
+
     subroutine SB_Calc_fXWP()
-        use Variables, only: fXWP, fSWP
+        use Variables, only: fXWP, fSWP, fLWP, fPAW
 
         select case (fxwp_method)
 
@@ -147,8 +180,11 @@ contains
         case (fxwp_use_fswp)
             fXWP = fSWP
 
-        !case (fxwp_use_flwp)
-        !    fXWP = fLWP
+        case (fxwp_use_flwp)
+            fXWP = fLWP
+
+        case (fxwp_use_fpaw)
+            fXWP = fPAW
 
         end select
     end subroutine SB_Calc_fXWP

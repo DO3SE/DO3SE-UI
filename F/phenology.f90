@@ -36,7 +36,7 @@ contains
     !                       Day of year
     !==========================================================================
     subroutine Calc_LAI()
-        use Params_Veg, only: SGS, EGS, LAI_a, LAI_b, LAI_c, LAI_d, LAI_1, LAI_2
+        use Parameters, only: SGS, EGS, LAI_a, LAI_b, LAI_c, LAI_d, LAI_1, LAI_2
         use Inputs, only: dd
         use Variables, only: LAI
 
@@ -57,7 +57,7 @@ contains
     ! SAI calculation for wheat taking growing season into account
     !==========================================================================
     subroutine Calc_SAI_Wheat()
-        use Params_Veg, only: SGS, EGS, LAI_1
+        use Parameters, only: SGS, EGS, LAI_1
         use Inputs, only: dd
         use Variables, only: LAI, SAI
 
@@ -93,9 +93,9 @@ contains
     !                                Day of Year
     !==========================================================================
     subroutine Calc_fphen()
-        use Params_Veg, only: SGS, EGS
-        use Params_Veg, only: fphen_limA, fphen_limB, fphen_1, fphen_2, fphen_3, fphen_4
-        use Params_Veg, only: fphen_a, fphen_b, fphen_c, fphen_d, fphen_e
+        use Parameters, only: SGS, EGS
+        use Parameters, only: fphen_limA, fphen_limB, fphen_1, fphen_2, fphen_3, fphen_4
+        use Parameters, only: fphen_a, fphen_b, fphen_c, fphen_d, fphen_e
         use Inputs,     only: dd
         use Variables,  only: fphen, leaf_fphen
 
@@ -122,7 +122,7 @@ contains
     ! Calculate leaf_fphen for Wheat
     !==========================================================================
     subroutine Calc_leaf_fphen_Wheat()
-        use Params_Veg, only: leaf_fphen_a, leaf_fphen_b, leaf_fphen_c, &
+        use Parameters, only: leaf_fphen_a, leaf_fphen_b, leaf_fphen_c, &
                               leaf_fphen_1, leaf_fphen_2, Astart, Aend
         use Inputs,     only: dd
         use Variables,  only: leaf_fphen

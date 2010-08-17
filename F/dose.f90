@@ -7,6 +7,8 @@ program Run_DOSE
     leaf_fphen_method = leaf_fphen_equals_fphen
     ra_method = ra_simple
     fo3_method = fo3_disabled
+    fswp_method = fswp_exponential
+    lwp_method = lwp_non_steady_state
     fxwp_method = fxwp_disabled
     r_par_method = r_par_use_inputs
     sgs_egs_method = sgs_egs_use_inputs

@@ -78,6 +78,12 @@ class Dataset:
         self.leaf_fphen_method = leaf_fphen['func']
         # TODO: switchable with heat flux calculation?
         self.ra_method = model.switchboard.ra_simple
+        fXWP = model.fXWP_calc_map[self.vegparams.pop('fxwp', model.default_fXWP_calc)]
+        self.fxwp_method = fXWP['func']
+        fSWP = model.fSWP_calc_map[self.vegparams.pop('fswp', model.default_fSWP_calc)]
+        self.fswp_method = fSWP['func']
+        LWP = model.LWP_calc_map[self.vegparams.pop('lwp', model.default_LWP_calc)]
+        self.lwp_method = LWP['func']
 
         if self.vegparams.pop('sgs_egs_lat', False):
             self.sgs_egs_method = model.switchboard.sgs_egs_latitude
@@ -122,12 +128,25 @@ class Dataset:
         model.switchboard.leaf_fphen_method = self.leaf_fphen_method
         model.switchboard.ra_method = self.ra_method
         model.switchboard.fo3_method = self.fo3_method
+        model.switchboard.fswp_method = self.fswp_method
+        model.switchboard.lwp_method = self.lwp_method
+        model.switchboard.fxwp_method = self.fxwp_method
         model.switchboard.r_par_method = self.r_par_method
         model.switchboard.sgs_egs_method = self.sgs_egs_method
 
         # Load parameters into F model
         util.setattrs(model.params_veg, self.vegparams)
         util.setattrs(model.params_site, self.siteparams)
+
+        # Initialise the model
+        logging.info("Initialising DOSE Fortran model")
+        model.run.initialise()
+
+        # Load parameters into F model
+        params = {}
+        params.update(self.vegparams)
+        params.update(self.siteparams)
+        util.setattrs(model.parameters, params)
 
         # Initialise the model
         logging.info("Initialising DOSE Fortran model")

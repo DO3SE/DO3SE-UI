@@ -1,11 +1,17 @@
 from do3se_fortran import *
 
+def _to_dicts(fields, tuples):
+    return [dict(zip(fields, x)) for x in tuples]
+
+def _to_id_map(dicts, field='id'):
+    return dict((x[field], x) for x in dicts)
+
 #
 # Define available fields
 #
 
-# Available input fields in (module, variable, type, required, shortname, longname) format
-_input_fields = (
+# Available input fields
+input_fields = _to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
         (inputs,    'yr',       int,    False,  'Year',         'Year'),
         (inputs,    'mm',       int,    False,  'Month',        'Month'),
         (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
@@ -21,21 +27,13 @@ _input_fields = (
         (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (Wh/m^2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
-)
-
-# Available input fields as a list of dicts
-input_fields = [{'module':      x[0],
-                 'variable':    x[1],
-                 'type':        x[2],
-                 'required':    x[3],
-                 'short':       x[4],
-                 'long':        x[5]} for x in _input_fields]
+))
 
 # Mapping from input field variable name to full field info
-input_field_map = dict( (x['variable'], x) for x in input_fields )
+input_field_map = _to_id_map(input_fields, 'variable')
 
-# Available output fields in (module, variable, type, shortname, longname) format
-_output_fields = (
+# Available output fields
+output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         # Inputs
         (inputs,        'yr',       int,    'Year',             'Year'),
         (inputs,        'mm',       int,    'Month',            'Month'),
@@ -78,6 +76,11 @@ _output_fields = (
         (variables,     'swp',      float,  'SWP (MPa)',        'Soil water potential (SWP, MPa)'),
         (variables,     'per_vol',  float,  'per_vol (%)',      'Volumetric water content (per_vol, %)'),
         (variables,     'smd',      float,  'SMD (m)',          'Soil moisture deficit (SMD, m)'),
+        (variables,     'lwp',      float,  'LWP (???)',        'Leaf water potential (LWP, ???)'),
+        (variables,     'sn_meas',  float,  'Sn_meas',          'Sn_meas'),
+        (variables,     'sn_diff_meas', float, 'Sn_diff_meas',  'Sn_diff_meas'),
+        (variables,     'swp_meas', float,  'SWP_meas',         'SWP_meas'),
+        (variables,     'smd_meas', float,  'SMD_meas',         'SMD_meas'),
 
         # Debug variables
         (variables,     'ra_i',     float,  'Ra_i (s/m)',       '[DEBUG] Ra at O3 measurement'),
@@ -109,6 +112,7 @@ _output_fields = (
         (variables,     'gsto_pet', float,  'Gsto_PEt (mmol/m^2/s)','[DEBUG] Gsto_PEt (Gsto_PEt, mmol/m^2/s)'),
 
         (variables,     'rb_h2o',   float,  'Rb_H2O (s/m)',     '[DEBUG] Rb_H2O (boundary resistance to water)'),
+        (variables,     'fpaw',     float,  'fPAW',             '[DEBUG] fPAW'),
         (variables,     'asw',      float,  'ASW',              '[DEBUG] ASW'),
         (variables,     'sn',       float,  'Sn',               '[DEBUG] Sn'),
         (variables,     'p_input',  float,  'P_input',          '[DEBUG] P_input'),
@@ -123,54 +127,49 @@ _output_fields = (
         (soilwater,     'et_hr',    float,  'Et_hr',            '[DEBUG] Et_hr'),
         (soilwater,     'pet_3',    float,  'PEt_3',            '[DEBUG] PEt_3'),
         (soilwater,     'et_3',     float,  'Et_3',             '[DEBUG] Et_3'),
+        (variables,     'delta_lwp',float,  'delta_LWP',        '[DEBUG] delta_LWP'),
+        (variables,     'flwp',     float,  'fLWP',             '[DEBUG] fLWP'),
+        (variables,     'fxwp',     float,  'fXWP',             '[DEBUG] fXWP'),
 
         (variables,     'ot0',      float,  'OT0',              '[DEBUG] OT0'),
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
         (variables,     'afst0',    float,  'AFst0',            '[DEBUG] Afst0'),
         (variables,     'fo3',      float,  'fO3',              '[DEBUG] fO3'),
-)
-
-# Available output fields as a list of dicts
-output_fields = [{'module':      x[0],
-                  'variable':    x[1],
-                  'type':        x[2],
-                  'short':       x[3],
-                  'long':        x[4]} for x in _output_fields]
+))
 
 # Mapping from output field variable name to full field info
-output_field_map = dict( (x['variable'], x) for x in output_fields )
+output_field_map = _to_id_map(output_fields, 'variable')
 
-# Soil class data in (id, name, data) format
-_soil_classes = (
+# Soil class data
+soil_classes = _to_dicts(('id', 'name', 'data'), (
         ('sand_loam',   'Sandy Loam (coarse)', {
             'soil_b':   3.31,
             'fc_m':     0.16,
             'swp_ae':   -0.00091,
+            'ksat':     0.0009576,
         }),
         ('silt_loam',   'Silt loam (medium coarse)', {
             'soil_b':   4.38,
             'fc_m':     0.26,
             'swp_ae':   -0.00158,
+            'ksat':     0.0002178,
         }),
         ('loam',        'Loam (medium)', {
             'soil_b':   6.58,
             'fc_m':     0.29,
             'swp_ae':   -0.00188,
+            'ksat':     0.0002286,
         }),
         ('clay_loam',   'Clay loam (fine)', {
             'soil_b':   7.00,
             'fc_m':     0.37,
             'swp_ae':   -0.00588,
+            'ksat':     0.00016,
         }),
-)
-
-# Soil classes as a list of dicts
-soil_classes = [{'id':      x[0],
-                 'name':    x[1],
-                 'data':    x[2]} for x in _soil_classes]
+))
 
 # Mapping from soil class id to full info
-soil_class_map = dict( (x['id'], x) for x in soil_classes )
+soil_class_map = _to_id_map(soil_classes)
 
 default_soil_class = 'loam'
 
@@ -182,7 +181,7 @@ leaf_fphen_calcs = (
 )
 
 # Mapping from calc id to info
-leaf_fphen_calc_map = dict( (x['id'], x) for x in leaf_fphen_calcs )
+leaf_fphen_calc_map = _to_id_map(leaf_fphen_calcs)
 
 default_leaf_fphen_calc = 'copy'
 
@@ -194,7 +193,7 @@ fO3_calcs = (
 )
 
 # Mapping from calc id to info
-fO3_calc_map = dict( (x['id'], x) for x in fO3_calcs )
+fO3_calc_map = _to_id_map(fO3_calcs)
 
 default_fO3_calc = 'none'
 
@@ -206,9 +205,41 @@ SAI_calcs = (
 )
 
 # Mapping from calc id to info
-SAI_calc_map = dict( (x['id'], x) for x in SAI_calcs )
+SAI_calc_map = _to_id_map(SAI_calcs)
 
 default_SAI_calc = 'copy'
+
+# fXWP calculations (switching between fSWP, fLWP and neither)
+fXWP_calcs = _to_dicts(('id', 'func', 'name'), (
+        ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
+        ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
+        ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
+        ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
+))
+
+fXWP_calc_map = _to_id_map(fXWP_calcs)
+
+default_fXWP_calc = 'disabled'
+
+# fSWP calculations (switching between exponential and linear relationship
+fSWP_calcs = _to_dicts(('id', 'func', 'name'), (
+        ('exp',     switchboard.fswp_exponential,   'Exponential'),
+        ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
+))
+
+fSWP_calc_map = _to_id_map(fSWP_calcs)
+
+default_fSWP_calc = 'exp'
+
+# LWP calculations (steady-state and non-steady-state)
+LWP_calcs = _to_dicts(('id', 'func', 'name'), (
+        ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
+        ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
+))
+
+LWP_calc_map = _to_id_map(LWP_calcs)
+
+default_LWP_calc = 'nss'
 
 
 def extract_outputs():
