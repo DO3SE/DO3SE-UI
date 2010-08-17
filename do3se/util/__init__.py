@@ -2,6 +2,12 @@
 Generic utility functions.
 """
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
+
 def setattrs(obj, d):
     """
     Using :obj:`d` as a mapping of attribute name to a new value, set the values

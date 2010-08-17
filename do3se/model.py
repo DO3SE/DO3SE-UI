@@ -1,6 +1,5 @@
 from do3se_fortran import *
-from util import to_dicts, dicts_to_map
-from util.ordereddict import OrderedDict
+from util import to_dicts, dicts_to_map, OrderedDict
 
 #
 # Define available fields

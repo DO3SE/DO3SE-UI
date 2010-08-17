@@ -1,7 +1,7 @@
 import wx
 
 import wxext
-from util.ordereddict import OrderedDict
+from util import OrderedDict
 
 
 class Field:
