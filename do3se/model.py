@@ -1,11 +1,7 @@
 from do3se_fortran import *
 from util import to_dicts, dicts_to_map, OrderedDict
 
-#
-# Define available fields
-#
-
-# Available input fields
+#: Available input fields
 input_fields = to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
         (inputs,    'yr',       int,    False,  'Year',         'Year'),
         (inputs,    'mm',       int,    False,  'Month',        'Month'),
@@ -24,10 +20,10 @@ input_fields = to_dicts(('module', 'variable', 'type', 'required', 'short', 'lon
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
 ))
 
-# Mapping from input field variable name to full field info
+#: Mapping from input field variable name to full field info
 input_field_map = dicts_to_map(input_fields, 'variable')
 
-# Available output fields
+#: Available output fields
 output_fields = to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         # Inputs
         (inputs,        'yr',       int,    'Year',             'Year'),
@@ -132,107 +128,90 @@ output_fields = to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         (variables,     'fo3',      float,  'fO3',              '[DEBUG] fO3'),
 ))
 
-# Mapping from output field variable name to full field info
+#: Mapping from output field variable name to full field info
 output_field_map = dicts_to_map(output_fields, 'variable')
 
-# Soil class data
-soil_classes = to_dicts(('id', 'name', 'data'), (
-        ('sand_loam',   'Sandy Loam (coarse)', {
-            'soil_b':   3.31,
-            'fc_m':     0.16,
-            'swp_ae':   -0.00091,
-            'ksat':     0.0009576,
-        }),
-        ('silt_loam',   'Silt loam (medium coarse)', {
-            'soil_b':   4.38,
-            'fc_m':     0.26,
-            'swp_ae':   -0.00158,
-            'ksat':     0.0002178,
-        }),
-        ('loam',        'Loam (medium)', {
-            'soil_b':   6.58,
-            'fc_m':     0.29,
-            'swp_ae':   -0.00188,
-            'ksat':     0.0002286,
-        }),
-        ('clay_loam',   'Clay loam (fine)', {
-            'soil_b':   7.00,
-            'fc_m':     0.37,
-            'swp_ae':   -0.00588,
-            'ksat':     0.00016,
-        }),
-))
+#: Soil class data
+soil_classes = dicts_to_map(to_dicts(('id', 'name', 'data'), (
+    ('sand_loam',   'Sandy Loam (coarse)', {
+        'soil_b':   3.31,
+        'fc_m':     0.16,
+        'swp_ae':   -0.00091,
+        'ksat':     0.0009576,
+    }),
+    ('silt_loam',   'Silt loam (medium coarse)', {
+        'soil_b':   4.38,
+        'fc_m':     0.26,
+        'swp_ae':   -0.00158,
+        'ksat':     0.0002178,
+    }),
+    ('loam',        'Loam (medium)', {
+        'soil_b':   6.58,
+        'fc_m':     0.29,
+        'swp_ae':   -0.00188,
+        'ksat':     0.0002286,
+    }),
+    ('clay_loam',   'Clay loam (fine)', {
+        'soil_b':   7.00,
+        'fc_m':     0.37,
+        'swp_ae':   -0.00588,
+        'ksat':     0.00016,
+    }),
+)), 'id', OrderedDict)
 
-# Mapping from soil class id to full info
-soil_class_map = dicts_to_map(soil_classes, 'id', OrderedDict)
-
+#: Default soil class
 default_soil_class = 'loam'
 
-# Leaf fphen calculations
-leaf_fphen_calcs = (
-        {'id': 'copy',  'func': switchboard.leaf_fphen_equals_fphen, 'name': 'Same as Fphen'},
-        {'id': 'wheat', 'func': switchboard.leaf_fphen_wheat,       'name': 'Wheat'},
-        {'id': 'potato','func': switchboard.leaf_fphen_potato,      'name': 'Potato'},
-)
-
-# Mapping from calc id to info
-leaf_fphen_calc_map = dicts_to_map(leaf_fphen_calcs, 'id', OrderedDict)
+#: Leaf fphen calculations
+leaf_fphen_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('copy',    switchboard.leaf_fphen_equals_fphen,    'Same as Fphen'),
+    ('wheat',   switchboard.leaf_fphen_wheat,           'Wheat'),
+    ('potato',  switchboard.leaf_fphen_potato,          'Potato'),
+)), 'id', OrderedDict)
 
 default_leaf_fphen_calc = 'copy'
 
 # fO3 calculations
-fO3_calcs = (
-        {'id': 'none',      'func': switchboard.fo3_disabled,   'name': 'Not used (fO3 = 1)'},
-        {'id': 'wheat',     'func': switchboard.fo3_wheat,      'name': 'Wheat'},
-        {'id': 'potato',    'func': switchboard.fo3_potato,     'name': 'Potato'},
-)
-
-# Mapping from calc id to info
-fO3_calc_map = dicts_to_map(fO3_calcs, 'id', OrderedDict)
+fO3_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('none',    switchboard.fo3_disabled,   'Not used (fO3 = 1)'),
+    ('wheat',   switchboard.fo3_wheat,      'Wheat'),
+    ('potato',  switchboard.fo3_potato,     'Potato'),
+)), 'id', OrderedDict)
 
 default_fO3_calc = 'none'
 
 # SAI calculations
-SAI_calcs = (
-        {'id': 'copy',      'func': switchboard.sai_equals_lai, 'name': 'Same as LAI'},
-        {'id': 'forest',    'func': switchboard.sai_forest,     'name': 'Forest'},
-        {'id': 'wheat',     'func': switchboard.sai_wheat,      'name': 'Wheat'},
-)
-
-# Mapping from calc id to info
-SAI_calc_map = dicts_to_map(SAI_calcs, 'id', OrderedDict)
+SAI_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('copy',    switchboard.sai_equals_lai, 'Same as LAI'),
+    ('forest',  switchboard.sai_forest,     'Forest'),
+    ('wheat',   switchboard.sai_wheat,      'Wheat'),
+)), 'id', OrderedDict)
 
 default_SAI_calc = 'copy'
 
 # fXWP calculations (switching between fSWP, fLWP and neither)
-fXWP_calcs = to_dicts(('id', 'func', 'name'), (
-        ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
-        ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
-        ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
-        ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
-))
-
-fXWP_calc_map = dicts_to_map(fXWP_calcs, 'id', OrderedDict)
+fXWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
+    ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
+    ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
+    ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
+)), 'id', OrderedDict)
 
 default_fXWP_calc = 'disabled'
 
 # fSWP calculations (switching between exponential and linear relationship
-fSWP_calcs = to_dicts(('id', 'func', 'name'), (
-        ('exp',     switchboard.fswp_exponential,   'Exponential'),
-        ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
-))
-
-fSWP_calc_map = dicts_to_map(fSWP_calcs, 'id', OrderedDict)
+fSWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('exp',     switchboard.fswp_exponential,   'Exponential'),
+    ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
+)), 'id', OrderedDict)
 
 default_fSWP_calc = 'exp'
 
 # LWP calculations (steady-state and non-steady-state)
-LWP_calcs = to_dicts(('id', 'func', 'name'), (
-        ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
-        ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
-))
-
-LWP_calc_map = dicts_to_map(LWP_calcs, 'id', OrderedDict)
+LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
+    ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
+)), 'id', OrderedDict)
 
 default_LWP_calc = 'nss'
 

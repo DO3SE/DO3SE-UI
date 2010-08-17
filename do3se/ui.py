@@ -149,7 +149,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             ('lat', FloatSpinField, ('Latitude (degrees North)', -90, 90, 50, 0.1, 3), {}),
             ('lon', FloatSpinField, ('Longitude (degrees East)', -180, 180, 0, 0.1, 3), {}),
             ('elev', SpinField, ('Elevation (m.a.s.l.)', -100, 5000, 0), {}),
-            ('soil_tex', ChoiceField, ('Soil texture', model.soil_class_map, model.default_soil_class), {}),
+            ('soil_tex', ChoiceField, ('Soil texture', model.soil_classes, model.default_soil_class), {}),
             ('rsoil', SpinField, ('Rsoil', 1, 1000, 200), {}),
         )}),
         ('meas', 'Measurement data', SimpleFieldGroup, (), {'fields': (
@@ -184,10 +184,10 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             ('swp_max', FloatSpinField, ('SWP for max. g (SWP_max, ???)', -6, 0, -0.05, 0.01, 2), {}),
         )}),
         ('modelopts', 'Model options', SimpleFieldGroup, (), {'fields': (
-            ('fo3', ChoiceField, ('fO3 calculation', model.fO3_calc_map, model.default_fO3_calc), {}),
-            ('fxwp', ChoiceField, ('Soil water influence on Gsto', model.fXWP_calc_map, model.default_fXWP_calc), {}),
-            ('lwp', ChoiceField, ('LWP calculation', model.LWP_calc_map, model.default_LWP_calc), {}),
-            ('fswp', ChoiceField, ('fSWP calculation', model.fSWP_calc_map, model.default_fSWP_calc), {}),
+            ('fo3', ChoiceField, ('fO3 calculation', model.fO3_calcs, model.default_fO3_calc), {}),
+            ('fxwp', ChoiceField, ('Soil water influence on Gsto', model.fXWP_calcs, model.default_fXWP_calc), {}),
+            ('lwp', ChoiceField, ('LWP calculation', model.LWP_calcs, model.default_LWP_calc), {}),
+            ('fswp', ChoiceField, ('fSWP calculation', model.fSWP_calcs, model.default_fSWP_calc), {}),
         )}),
         ('unsorted', 'UNSORTED', SimpleFieldGroup, (), {'fields': (
             ('sgs', SpinField, ('Start of growing season (SGS, day of year)', 1, 365, 121), {}),
@@ -199,7 +199,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             ('lai_d', FloatSpinField, ('LAI at EGS (LAI_d, m2/m2)', 0, 20, 0, 0.1, 1), {}),
             ('lai_1', SpinField, ('Period from LAI_a to LAI_b (LAI_1, days)', 1, 100, 30), {}),
             ('lai_2', SpinField, ('Period from LAI_c to LAI_d (LAI_2, days)', 1, 100, 30), {}),
-            ('sai', ChoiceField, ('SAI calculation', model.SAI_calc_map, model.default_SAI_calc), {}),
+            ('sai', ChoiceField, ('SAI calculation', model.SAI_calcs, model.default_SAI_calc), {}),
 
             ('fphen_a', FloatSpinField, ('Fphen at SGS (fphen_a)', 0, 1, 0, 0.1, 1), {}),
             ('fphen_b', FloatSpinField, ('First mid-season Fphen (fphen_b)', 0, 1, 1, 0.1, 1), {}),
@@ -213,7 +213,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             ('fphen_limb', SpinField, ('End of SWP limitation (fphen_limB, day of year)', 0, 365, 0), {}),
             ('fphen_4', SpinField, ('Period from fphen_d to fphen_e (fphen_4, days)', 0, 200, 20), {}),
 
-            ('leaf_fphen', ChoiceField, ('Leaf fphen calculation', model.leaf_fphen_calc_map, model.default_leaf_fphen_calc), {}),
+            ('leaf_fphen', ChoiceField, ('Leaf fphen calculation', model.leaf_fphen_calcs, model.default_leaf_fphen_calc), {}),
             ('astart', SpinField, ('Start of O3 accumulation (Astart, day of year)', 1, 365, 153), {}),
             ('aend', SpinField, ('End of O3 accumulation (Aend, day of year)', 1, 365, 208), {}),
             ('leaf_fphen_a', FloatSpinField, ('Leaf fphen at Astart (leaf_fphen_a)', 0, 1, 0, 0.1, 1), {}),

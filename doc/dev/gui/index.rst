@@ -9,6 +9,7 @@ F model wrapped as a compiled Python extension using F2PY.
 
     do3se.util
     do3se.fields
+    do3se.model
 
 :mod:`do3se.dataset` -- Dataset processing
 ------------------------------------------
