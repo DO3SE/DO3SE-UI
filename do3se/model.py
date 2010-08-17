@@ -1,4 +1,4 @@
-from do3se_fortran import *
+from _model import *
 from util import to_dicts, dicts_to_map, OrderedDict
 
 #: Available input fields

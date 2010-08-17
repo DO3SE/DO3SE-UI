@@ -35,7 +35,7 @@ ifeq ($(shell sh -c 'uname -s | cut -c 1-7'),MINGW32)
 	export F2PY_FCOMPILER=$(WIN32_F2PY_FCOMPILER)
 	# Set paths to compiled objects
 	export DO3SE_BIN=dose.exe
-	export PYMOD=do3se/do3se_fortran.pyd
+	export PYMOD=do3se/_model.pyd
 else
 	# Set the compilers
 	export F=$(LINUX_F)
@@ -44,7 +44,7 @@ else
 	export F2PY_FCOMPILER=$(LINUX_F2PY_FCOMPILER)
 	# Set paths to compiled objects
 	export DO3SE_BIN=dose
-	export PYMOD=do3se/do3se_fortran.so
+	export PYMOD=do3se/_model.so
 endif
     
 
@@ -71,7 +71,7 @@ py: $(PYMOD)
 
 
 do3se_fortran.pyf:
-	python f2py.py -h $@ -m do3se_fortran $(objects:%.o=F/%.f90)
+	python f2py.py -h $@ -m _model $(objects:%.o=F/%.f90)
 
 f2py-build: do3se_fortran.pyf
 	mkdir -p $@
