@@ -9,6 +9,7 @@ version     = do3se.application.app_version
 
 from numpy.distutils.core import setup, Extension, Distribution
 import os
+import re
 
 try:
     import py2exe
@@ -19,7 +20,10 @@ except ImportError:
 import numpy
 path = os.path.join(os.path.dirname(numpy.__file__),
                     'distutils', 'tests', '__init__.py')
-open(path, 'a').close()
+try:
+    open(path, 'a').close()
+except IOError:
+    print "WARNING: not able to fix NumPy installation, build might fail!"
 
 manifest = '''
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1"
@@ -71,36 +75,26 @@ build_opts = dict()
 if os.name == 'nt':
     build_opts['compiler'] = 'mingw32'
 
-files = [os.path.join('F', x) for x in [
-                        'constants.f90',
-                        'params_veg.f90',
-                        'params_site.f90',
-                        'inputs.f90',
-                        'variables.f90',
-                        'functions.f90',
-                        'environmental.f90',
-                        'evapotranspiration.f90',
-                        'irradiance.f90',
-                        'phenology.f90',
-                        'r.f90',
-                        'soil.f90',
-                        'o3.f90',
-                        'run.f90',
-]]
+# Remove need for duplication - use file list from standalone model build
+ext_files = [os.path.join('F', x) for x in
+        re.findall(r'\w+\.f90',
+            re.sub(r'(\w+)\.o', r'\1.f90',
+                open(os.path.join('F', 'objects.mk'), 'r').read()))]
+ext_name = '_model'
 
 def buildpyf(filelist, target):
     from numpy.f2py import f2py2e
     f2py2e.callcrackfortran(filelist,
             {
-                'signsfile': target,
-                'module': 'do3se_fortran',
+                'signsfile': target + '.pyf',
+                'module': target,
                 'debug': False,
                 'verbose': False,
                 'include_paths': list(),
                 'do-lower': True
             }
     )
-    return [target] + filelist
+    return [target + '.pyf'] + filelist
 
 if __name__ == "__main__":
 
@@ -170,6 +164,6 @@ if __name__ == "__main__":
             },
             ext_package     = 'do3se',
             ext_modules     = [
-                Extension('do3se_fortran', buildpyf(files, 'do3se_fortran.pyf'))
+                Extension(ext_name, buildpyf(ext_files, ext_name))
             ],
     )

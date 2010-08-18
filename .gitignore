@@ -13,3 +13,4 @@ tags
 dose
 *.py[co]
 .*.sw[aop]
+build/
