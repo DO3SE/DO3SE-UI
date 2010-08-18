@@ -1,7 +1,6 @@
 *.so
 *.pyd
 *.pyf
-f2py-build
 tags
 *.aux
 *.html
@@ -14,3 +13,4 @@ dose
 *.py[co]
 .*.sw[aop]
 build/
+dist/

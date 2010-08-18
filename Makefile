@@ -2,60 +2,6 @@
 # DOSE model build system
 #####################################################################
 
-#####################################################################
-# Compilers for different platforms
-#####################################################################
-
-# Compiler commands for Windows
-WIN32_F                 = g95 -std=F
-WIN32_F95               = g95
-WIN32_F2PY_COMPILER     = mingw32
-WIN32_F2PY_FCOMPILER    = g95
-
-# Compiler commands for Linux
-LINUX_F                 = g95 -std=F
-LINUX_F95               = gfortran -fPIC
-LINUX_F2PY_COMPILER     = unix
-LINUX_F2PY_FCOMPILER    = gnu95
-
-#####################################################################
-# Set build system variables depending on the platform.
-#
-# Platform is autodetected based on the output of the 'uname'
-# command.  (Right now it is "Windows" or "something else".)
-#####################################################################
-
-# On Windows, the 'uname' command will give MINGW32_NT-x.x (because
-# the only available uname is that from MinGW)
-ifeq ($(shell sh -c 'uname -s | cut -c 1-7'),MINGW32)
-	# Set the compilers
-	export F=$(WIN32_F)
-	export F95=$(WIN32_F95)
-	export F2PY_COMPILER=$(WIN32_F2PY_COMPILER)
-	export F2PY_FCOMPILER=$(WIN32_F2PY_FCOMPILER)
-	# Set paths to compiled objects
-	export DO3SE_BIN=dose.exe
-	export PYMOD=do3se/_model.pyd
-else
-	# Set the compilers
-	export F=$(LINUX_F)
-	export F95=$(LINUX_F95)
-	export F2PY_COMPILER=$(LINUX_F2PY_COMPILER)
-	export F2PY_FCOMPILER=$(LINUX_F2PY_FCOMPILER)
-	# Set paths to compiled objects
-	export DO3SE_BIN=dose
-	export PYMOD=do3se/_model.so
-endif
-    
-
-
-
-subdirs = F f2py-build
-.PHONY: $(subdirs)
-
-include F/objects.mk
-export objects
-
 export DIST_SRC_DIR = DO3SE-src-$(shell date +"%Y%m%d")
 export DIST_SRC_FILE = $(DIST_SRC_DIR).zip
 export DIST_F_SRC_DIR = DO3SE-src-F-$(shell date +"%Y%m%d")
@@ -64,49 +10,33 @@ export DIST_UI_DIR = DO3SE-$(shell date +"%Y%m%d")
 export DIST_UI_FILE = $(DIST_UI_DIR).zip
 
 
-all: $(DO3SE_BIN)
+all:
+	# 'make dose' for standalone model, or 'make py_ext' for Python extension for UI
 
+py_ext:
+	python setup.py build_ext
+	# Suppress errors, because there will be no .pyd on Linux or .so on Windows
+	cp build/lib.*/do3se/*.so build/lib.*/do3se/*.pyd do3se/ 2> /dev/null ; exit 0
 
-py: $(PYMOD)
+clean_py_ext:
+	rm -f do3se/*.so do3se/*.pyd *.pyf
 
-
-do3se_fortran.pyf:
-	python f2py.py -h $@ -m _model $(objects:%.o=F/%.f90)
-
-f2py-build: do3se_fortran.pyf
-	mkdir -p $@
-	cp f2py.py do3se_fortran.pyf $@/
-	cp f2py.Makefile $@/Makefile
-	$(MAKE) -C $@
-
-$(PYMOD): f2py-build
-	cp f2py-build/`basename $@` $@
-
-clean_do3se_fortran:
-	rm -rf f2py-build do3se_fortran.pyf
-
-F:
-	$(MAKE) -C $@
-
-$(DO3SE_BIN): F
-	mv F/$@ $@
-
+dose:
+	$(MAKE) -C F
+	cp F/$@ $@
 
 clean_dose:
 	$(MAKE) -C F clean
+	rm -f dose dose.exe
 
-clean: clean_do3se_fortran clean_dose
+clean: clean_dose clean_py_ext
 
-
-clean_all: clean
-	rm -f $(PYMOD) $(DO3SE_BIN)
-	
 
 #####################################################################
 # Rules for building distribution packages
 #####################################################################
 
-dist-src-win: clean_all
+dist-src-win: clean
 	rm -rf $(DIST_SRC_DIR) $(DIST_SRC_FILE)
 	mkdir -p $(DIST_SRC_DIR)
 	cp -a F/ do3se/ run-do3se.py f2py.Makefile f2py.py Makefile setup.py $(DIST_SRC_DIR)
@@ -114,7 +44,7 @@ dist-src-win: clean_all
 	zip -r $(DIST_SRC_FILE) $(DIST_SRC_DIR)
 	rm -rf $(DIST_SRC_DIR)
 
-dist-f-src-win: clean_all
+dist-f-src-win: clean
 	rm -rf $(DIST_F_SRC_DIR) $(DIST_F_SRC_FILE)
 	mkdir -p $(DIST_F_SRC_DIR)
 	cp -a F/ Makefile $(DIST_F_SRC_DIR)
