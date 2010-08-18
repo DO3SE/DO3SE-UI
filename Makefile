@@ -6,8 +6,6 @@ export DIST_SRC_DIR = DO3SE-src-$(shell date +"%Y%m%d")
 export DIST_SRC_FILE = $(DIST_SRC_DIR).zip
 export DIST_F_SRC_DIR = DO3SE-src-F-$(shell date +"%Y%m%d")
 export DIST_F_SRC_FILE = $(DIST_F_SRC_DIR).zip
-export DIST_UI_DIR = DO3SE-$(shell date +"%Y%m%d")
-export DIST_UI_FILE = $(DIST_UI_DIR).zip
 
 
 all:
@@ -39,7 +37,7 @@ clean: clean_dose clean_py_ext
 dist-src-win: clean
 	rm -rf $(DIST_SRC_DIR) $(DIST_SRC_FILE)
 	mkdir -p $(DIST_SRC_DIR)
-	cp -a F/ do3se/ run-do3se.py f2py.Makefile f2py.py Makefile setup.py $(DIST_SRC_DIR)
+	cp -a F/ do3se/ *.py Makefile $(DIST_SRC_DIR)
 	todos $(DIST_SRC_DIR)/F/*.f90
 	zip -r $(DIST_SRC_FILE) $(DIST_SRC_DIR)
 	rm -rf $(DIST_SRC_DIR)
@@ -47,13 +45,7 @@ dist-src-win: clean
 dist-f-src-win: clean
 	rm -rf $(DIST_F_SRC_DIR) $(DIST_F_SRC_FILE)
 	mkdir -p $(DIST_F_SRC_DIR)
-	cp -a F/ Makefile $(DIST_F_SRC_DIR)
-	todos $(DIST_F_SRC_DIR)/F/*.f90
+	cp -a F/*.f90 F/Makefile F/objects.mk $(DIST_F_SRC_DIR)
+	todos $(DIST_F_SRC_DIR)/*.f90
 	zip -r $(DIST_F_SRC_FILE) $(DIST_F_SRC_DIR)
 	rm -rf $(DIST_F_SRC_DIR)
-
-dist-ui-win:
-	rm -rf $(DIST_UI_DIR) $(DIST_UI_FILE)
-	python setup.py py2exe -d $(DIST_UI_DIR)
-	zip -r $(DIST_UI_FILE) $(DIST_UI_DIR)
-	rm -rf $(DIST_UI_DIR)
