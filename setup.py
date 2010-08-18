@@ -1,29 +1,33 @@
 #!/usr/bin/env python
 
+import os
+import re
 from glob import glob
+
+import numpy
+from numpy.distutils.core import setup, Extension, Distribution
+
 import do3se.application
+
+try:
+    import py2exe
+    # If we're running py2exe, we need a fixed NumPy installation!
+    # (The __init__.py is missing in numpy.distutils.tests)
+    fix_path = os.path.join(os.path.dirname(numpy.__file__),
+                            'distutils', 'tests', '__init__.py')
+    if not os.path.exists(fix_path):
+        try:
+            open(fix_path, 'a').close()
+        except IOError:
+            print "ERROR: NumPy installation is broken and can't be" + \
+                  " automatically fixed; create an empty file at " + fix_path
+            exit(1)
+except ImportError:
+    pass
 
 application = do3se.application.app_name
 description = do3se.application.app_description
 version     = do3se.application.app_version
-
-from numpy.distutils.core import setup, Extension, Distribution
-import os
-import re
-
-try:
-    import py2exe
-except ImportError:
-    pass
-
-# NumPy doesn't play nice with py2exe, an __init__.py is missing - let's fix it!
-import numpy
-path = os.path.join(os.path.dirname(numpy.__file__),
-                    'distutils', 'tests', '__init__.py')
-try:
-    open(path, 'a').close()
-except IOError:
-    print "WARNING: not able to fix NumPy installation, build might fail!"
 
 manifest = '''
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1"
