@@ -11,17 +11,6 @@ import do3se.application
 
 try:
     import py2exe
-    # If we're running py2exe, we need a fixed NumPy installation!
-    # (The __init__.py is missing in numpy.distutils.tests)
-    fix_path = os.path.join(os.path.dirname(numpy.__file__),
-                            'distutils', 'tests', '__init__.py')
-    if not os.path.exists(fix_path):
-        try:
-            open(fix_path, 'a').close()
-        except IOError:
-            print "ERROR: NumPy installation is broken and can't be" + \
-                  " automatically fixed; create an empty file at " + fix_path
-            exit(1)
 except ImportError:
     pass
 
@@ -152,14 +141,12 @@ if __name__ == "__main__":
                         'compiler',
                         'distutils',
                         'email',
+                        'numpy.core._dotblas',
                         # Packages that definitely cannot be removed
                         #'wx',
                         #'numpy',
                         #'unittest',
                         #'pyexpat',
-                        ],
-                    'packages': [
-                        'numpy',
                         ],
                     'dll_excludes': ['MSVCP90.dll'],
                     'bundle_files': 1,
