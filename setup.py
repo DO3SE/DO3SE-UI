@@ -99,7 +99,7 @@ if __name__ == "__main__":
     Distribution.console = []
     Distribution.isapi = []
     Distribution.windows = [{
-            'script': "run-do3se.py",
+            'script': "run-newui.py",
             'other_resources': [(24, 1, manifest)],
     }]
 
