@@ -250,7 +250,7 @@ def disableable(cls, chklabel='Disabled?'):
     following changes:
 
     + ``field.other`` becomes a checkbox with *chklabel* as it's label,
-    + The field's value becomes a ``(value, disabled)`` pair.
+    + The field's value becomes a dict with ``value`` and ``disabled`` keys.
     """
     class DisableableCls(cls):
         def create_ui(self, parent, *args, **kwargs):
@@ -260,12 +260,13 @@ def disableable(cls, chklabel='Disabled?'):
 
         def OnCheckbox_disable(self, evt):
             self.field.Enable(not self.other.IsChecked())
+            evt.Skip()
 
         def get_value(self):
-            return (cls.get_value(self), self.other.GetValue())
+            return dict(value=cls.get_value(self), disabled=self.other.GetValue())
 
         def set_value(self, value):
-            cls.set_value(self, value[0])
-            self.other.SetValue(value[1])
+            cls.set_value(self, value['value'])
+            self.other.SetValue(value['disabled'])
 
     return DisableableCls
