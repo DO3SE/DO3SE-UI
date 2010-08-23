@@ -246,7 +246,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def OnButton_btn_run(self, evt):
         print self.params.get_values()
 
-    def OnButton_btn_close(self, evt):
+    def OnMenu_wxID_CLOSE(self, evt):
         self.Close()
 
 
@@ -254,8 +254,7 @@ def main(args):
     logging.basicConfig(format="%(levelname)s -- %(name)s -- %(message)s",
                         level=logging.DEBUG)
     a = wx.App()
-    w = MainWindow(None)
-    w.SetSize((580, 460))
+    w = ProjectWindow(None)
     w.Show()
     a.MainLoop()
 

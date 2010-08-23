@@ -106,12 +106,52 @@ class xrcframe_projectwindow(wx.Frame):
         self.btn_errors = xrc.XRCCTRL(self, "btn_errors")
         self.prg_progress = xrc.XRCCTRL(self, "prg_progress")
         self.btn_run = xrc.XRCCTRL(self, "btn_run")
-        self.btn_close = xrc.XRCCTRL(self, "btn_close")
 
+        self.Bind(wx.EVT_MENU, self.OnMenu_wxID_NEW, id=wx.ID_NEW)
+        self.Bind(wx.EVT_MENU, self.OnMenu_wxID_OPEN, id=wx.ID_OPEN)
+        self.Bind(wx.EVT_MENU, self.OnMenu_wxID_SAVE, id=wx.ID_SAVE)
+        self.Bind(wx.EVT_MENU, self.OnMenu_wxID_SAVEAS, id=wx.ID_SAVEAS)
+        self.Bind(wx.EVT_MENU, self.OnMenu_wxID_CLOSE, id=wx.ID_CLOSE)
+        self.Bind(wx.EVT_MENU, self.OnMenu_wxID_EXIT, id=wx.ID_EXIT)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_run, self.btn_run)
-        self.Bind(wx.EVT_BUTTON, self.OnButton_btn_close, self.btn_close)
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_NEW
+    def OnMenu_wxID_NEW(self, evt):
+        # Replace with event handler code
+        print "OnMenu_wxID_NEW()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_NEW        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_OPEN
+    def OnMenu_wxID_OPEN(self, evt):
+        # Replace with event handler code
+        print "OnMenu_wxID_OPEN()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_OPEN        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_SAVE
+    def OnMenu_wxID_SAVE(self, evt):
+        # Replace with event handler code
+        print "OnMenu_wxID_SAVE()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_SAVE        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_SAVEAS
+    def OnMenu_wxID_SAVEAS(self, evt):
+        # Replace with event handler code
+        print "OnMenu_wxID_SAVEAS()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_SAVEAS        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_CLOSE
+    def OnMenu_wxID_CLOSE(self, evt):
+        # Replace with event handler code
+        print "OnMenu_wxID_CLOSE()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_CLOSE        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_EXIT
+    def OnMenu_wxID_EXIT(self, evt):
+        # Replace with event handler code
+        print "OnMenu_wxID_EXIT()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_EXIT        
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnClose
     def OnClose(self, evt):
@@ -130,12 +170,6 @@ class xrcframe_projectwindow(wx.Frame):
         # Replace with event handler code
         print "OnButton_btn_run()"
 #!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_run        
-
-#!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_close
-    def OnButton_btn_close(self, evt):
-        # Replace with event handler code
-        print "OnButton_btn_close()"
-#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_close        
 
 
 
@@ -245,31 +279,37 @@ def __init_resources():
   <object class="wxFrame" name="frame_projectwindow">
     <object class="wxMenuBar">
       <object class="wxMenu">
-        <object class="wxMenuItem">
-          <label>New</label>
-          <bitmap stock_id="wxART_NEW"/>
+        <object class="wxMenuItem" name="wxID_NEW">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
         </object>
-        <object class="wxMenuItem">
-          <label>Open...</label>
-          <bitmap stock_id="wxART_FILE_OPEN"/>
-        </object>
-        <object class="separator"/>
-        <object class="wxMenuItem">
-          <label>Save</label>
-          <bitmap stock_id="wxART_FILE_SAVE"/>
-        </object>
-        <object class="wxMenuItem">
-          <label>Save as...</label>
-          <bitmap stock_id="wxART_FILE_SAVE_AS"/>
-        </object>
-        <object class="wxMenuItem">
-          <label>Close</label>
-          <bitmap stock_id="wxART_CROSS_MARK"/>
+        <object class="wxMenuItem" name="wxID_OPEN">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
         </object>
         <object class="separator"/>
-        <object class="wxMenuItem">
-          <label>Close all</label>
-          <bitmap stock_id="wxART_QUIT"/>
+        <object class="wxMenuItem" name="wxID_SAVE">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="wxID_SAVEAS">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="wxID_CLOSE">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="wxID_EXIT">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
         </object>
         <label>&amp;Project</label>
       </object>
@@ -388,19 +428,8 @@ This is the main project window.  Each of the items on the left refer to a group
               </object>
               <flag>wxEXPAND</flag>
             </object>
-            <object class="spacer">
-              <size>5</size>
-            </object>
-            <object class="sizeritem">
-              <object class="wxButton" name="btn_close">
-                <label>Close</label>
-                <XRCED>
-                  <events>EVT_BUTTON</events>
-                  <assign_var>1</assign_var>
-                </XRCED>
-              </object>
-              <flag>wxEXPAND</flag>
-            </object>
+            
+            
             <orient>wxHORIZONTAL</orient>
           </object>
           <flag>wxALL|wxEXPAND</flag>

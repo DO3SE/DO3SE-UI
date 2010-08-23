@@ -95,31 +95,37 @@
   <object class="wxFrame" name="frame_projectwindow">
     <object class="wxMenuBar">
       <object class="wxMenu">
-        <object class="wxMenuItem">
-          <label>New</label>
-          <bitmap stock_id="wxART_NEW"/>
+        <object class="wxMenuItem" name="wxID_NEW">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
         </object>
-        <object class="wxMenuItem">
-          <label>Open...</label>
-          <bitmap stock_id="wxART_FILE_OPEN"/>
-        </object>
-        <object class="separator"/>
-        <object class="wxMenuItem">
-          <label>Save</label>
-          <bitmap stock_id="wxART_FILE_SAVE"/>
-        </object>
-        <object class="wxMenuItem">
-          <label>Save as...</label>
-          <bitmap stock_id="wxART_FILE_SAVE_AS"/>
-        </object>
-        <object class="wxMenuItem">
-          <label>Close</label>
-          <bitmap stock_id="wxART_CROSS_MARK"/>
+        <object class="wxMenuItem" name="wxID_OPEN">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
         </object>
         <object class="separator"/>
-        <object class="wxMenuItem">
-          <label>Close all</label>
-          <bitmap stock_id="wxART_QUIT"/>
+        <object class="wxMenuItem" name="wxID_SAVE">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="wxID_SAVEAS">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="wxID_CLOSE">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="wxID_EXIT">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
         </object>
         <label>&amp;Project</label>
       </object>
@@ -238,19 +244,8 @@ This is the main project window.  Each of the items on the left refer to a group
               </object>
               <flag>wxEXPAND</flag>
             </object>
-            <object class="spacer">
-              <size>5</size>
-            </object>
-            <object class="sizeritem">
-              <object class="wxButton" name="btn_close">
-                <label>Close</label>
-                <XRCED>
-                  <events>EVT_BUTTON</events>
-                  <assign_var>1</assign_var>
-                </XRCED>
-              </object>
-              <flag>wxEXPAND</flag>
-            </object>
+            
+            
             <orient>wxHORIZONTAL</orient>
           </object>
           <flag>wxALL|wxEXPAND</flag>
