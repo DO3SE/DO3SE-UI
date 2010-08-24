@@ -1,5 +1,6 @@
 # coding: utf-8
 import logging
+import os.path
 
 import wx
 import wx.html
@@ -8,6 +9,7 @@ import wxext
 import model
 import ui_xrc
 from fields import *
+from project import Project
 
 
 _intro_text = u"""
@@ -92,25 +94,9 @@ class MainWindow(ui_xrc.xrcframe_mainwindow):
         self.OnButton_btn_open_selected(evt)
 
     def OnButton_btn_new(self, evt):
-        if open_project():
-            self.Close()
-
-    def OnButton_btn_open_selected(self, evt):
-        projectfile = self.list_recent.GetString(self.list_recent.GetSelection())
-        if open_project(projectfile):
-            self.Close()
-
-
-def open_project(projectfile=None):
-    """
-    Open a project window, either for an existing project file or for a new
-    project.  Returns False if no window was created, otherwise returns True.
-    """
-    w = ProjectWindow(projectfile)
-    w.Show()
-    return True
-
-
+        w = ProjectWindow(None)
+        w.Show()
+        self.Close()
 
 
 class InputFormat(FieldGroup):
@@ -227,14 +213,35 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def __init__(self, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
         self.SetSize((780,550))
+        # TODO: only enable Run button when no errors
         self.btn_run.Enable(True)
         
-        if projectfile:
-            self.log.info("Opening project " + projectfile)
-        else:
-            self.log.info("Creating new project")
-
+        self.project = Project(projectfile, self)
         self.params = FieldCollection(self.tb_main, self.ui_specification)
+
+        # Keep track of whether or not there have been changes since last save
+        self.unsaved = False
+        self.Bind(wx.EVT_TEXT, self.OnFieldUpdate)
+        self.Bind(wx.EVT_SPINCTRL, self.OnFieldUpdate)
+        self.Bind(wx.EVT_CHOICE, self.OnFieldUpdate)
+        self.Bind(wx.EVT_CHECKBOX, self.OnFieldUpdate)
+        self.Bind(wx.EVT_LISTBOX, self.OnFieldUpdate)
+        self.UpdateTitle()
+
+    def UpdateTitle(self):
+        title = 'DO3SE'
+        if self.unsaved:
+            title = '*' + title
+        if self.project.filename is not None:
+            title += ' - ' + os.path.basename(self.project.filename)
+        self.SetTitle(title)
+
+    def OnFieldUpdate(self, evt):
+        self.log.debug('Something was updated: ' + str(evt))
+        if not self.unsaved:
+            self.unsaved = True
+            self.UpdateTitle()
+        evt.Skip()
 
     def OnClose(self, evt):
         evt.Skip()
@@ -245,6 +252,16 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def OnButton_btn_run(self, evt):
         print self.params.get_values()
+
+    def OnMenu_wxID_NEW(self, evt):
+        w = ProjectWindow(None)
+        w.Show()
+
+    def OnMenu_wxID_SAVE(self, evt):
+        self.project.data = self.params.get_values()
+        if self.project.save():
+            self.unsaved = False
+            self.UpdateTitle()
 
     def OnMenu_wxID_CLOSE(self, evt):
         self.Close()
