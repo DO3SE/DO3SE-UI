@@ -1,45 +1,40 @@
 import logging
-import shutil
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+_log = logging.getLogger('do3se.project')
 
 import wx
 
+from util.picklefile import PickleFile
 import dialogs
 
 
-class Project:
+class Project(PickleFile):
     """
     Project file handler.
 
     :param filename:    Path to the project file if it currently exists
     :param window:      :class:`wx.Frame` the project belongs to (if using GUI)
     """
-    log = logging.getLogger('do3se.project')
-
     def __init__(self, filename=None, window=None):
-        self.filename = filename
+        PickleFile.__init__(self, filename)
         self.window = window
 
-        # Load the file if this isn't a new project
         if self.filename is not None:
-            self.log.info('Opening existing project' + self.filename)
             try:
-                f = open(self.filename, 'rb')
-                self.data = pickle.load(f)
-            except:
-                # Intentionally broad 'except' clause, because opening something
-                # that isn't a pickle file can cause all kinds of errors...
-                self.log.error('Unable to load project ' + self.filename)
-                self.filename = None
+                self.load()
+            except EnvironmentError:
+                self._error('Unable to load project ' + self.filename)
                 self.data = dict()
-            finally:
-                f.close()
+            else:
+                _log.info('Opened project ' + self.filename)
         else:
-            self.log.info('Creating new project')
+            _log.info('Created new project')
             self.data = dict()
+
+    def _error(self, msg):
+        """Log an error, but also notify the user if running a GUI."""
+        _log.error(msg)
+        if self.window is not None:
+            wx.MessageBox(msg, 'Error', wx.OK|wx.ICON_ERROR, self.window)
 
     def save(self, save_as=False):
         """
@@ -49,7 +44,7 @@ class Project:
         """
         # If running in batch mode, no parent window for file dialogs
         if self.window is None:
-            self.log.error('Cannot save project in batch mode')
+            _log.error('Cannot save project in batch mode')
             return False
 
         # If we don't have a filename yet or are saving to a different file, get
@@ -64,17 +59,12 @@ class Project:
         if self.filename is None:
             return False
 
-        # Attempt to save the file atomically
-        tmpfilename = self.filename + '.tmp'
+        # Attempt to save the file
         try:
-            f = open(tmpfilename, 'wb')
-            pickle.dump(self.data, f)
-        except IOError:
-            wx.MessageBox('Failed to save project', '', wx.OK|wx.ICON_ERROR, self.window)
+            PickleFile.save(self)
+        except EnvironmentError as e:
+            self._error('Failed to save project %s (%s)' % (self.filename, str(e)))
             return False
-        finally:
-            f.close()
-        shutil.move(tmpfilename, self.filename)
-
-        self.log.info('Saved project ' + self.filename)
-        return True
+        else:
+            _log.info('Saved project ' + self.filename)
+            return True

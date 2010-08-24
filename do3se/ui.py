@@ -263,12 +263,18 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             self.unsaved = False
             self.UpdateTitle()
 
+    def OnMenu_wxID_SAVEAS(self, evt):
+        self.project.data = self.params.get_values()
+        if self.project.save(True):
+            self.unsaved = False
+            self.UpdateTitle()
+
     def OnMenu_wxID_CLOSE(self, evt):
         self.Close()
 
 
 def main(args):
-    logging.basicConfig(format="%(levelname)s -- %(name)s -- %(message)s",
+    logging.basicConfig(format="[%(levelname)-8s] %(name)s: %(message)s",
                         level=logging.DEBUG)
     a = wx.App()
     w = ProjectWindow(None)
