@@ -23,6 +23,7 @@ class Project(PickleFile):
                 self.load()
             except EnvironmentError:
                 self._error('Unable to load project ' + self.filename)
+                self.filename = None
                 self.data = dict()
             else:
                 _log.info('Opened project ' + self.filename)

@@ -8,6 +8,7 @@ import wx.html
 import wxext
 import model
 import ui_xrc
+import dialogs
 from fields import *
 from project import Project
 
@@ -216,8 +217,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         # TODO: only enable Run button when no errors
         self.btn_run.Enable(True)
         
-        self.project = Project(projectfile, self)
         self.params = FieldCollection(self.tb_main, self.ui_specification)
+        self.project = Project(projectfile, self)
+        self.params.set_values(self.project.data)
 
         # Keep track of whether or not there have been changes since last save
         self.unsaved = False
@@ -256,6 +258,12 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def OnMenu_wxID_NEW(self, evt):
         w = ProjectWindow(None)
         w.Show()
+
+    def OnMenu_wxID_OPEN(self, evt):
+        filename = dialogs.open_project(self)
+        if filename is not None:
+            w = ProjectWindow(filename)
+            w.Show()
 
     def OnMenu_wxID_SAVE(self, evt):
         self.project.data = self.params.get_values()
