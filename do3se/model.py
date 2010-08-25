@@ -1,5 +1,6 @@
 from _model import *
 from util import to_dicts, dicts_to_map, OrderedDict
+from fields import SpinField, FloatSpinField, ChoiceField, disableable
 
 #: Available input fields
 input_fields = to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
@@ -214,6 +215,79 @@ LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 )), 'id', OrderedDict)
 
 default_LWP_calc = 'nss'
+
+fields = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
+    ('siteloc', 'lat', FloatSpinField, (-90, 90, 50, 0.1, 3), 'Latitude (degrees North)'),
+    ('siteloc', 'lon', FloatSpinField, (-180, 180, 0, 0.1, 3), 'Longitude (degrees East)'),
+    ('siteloc', 'elev', SpinField, (-100, 5000, 0), 'Elevation (m.a.s.l.)'),
+    ('siteloc', 'soil_tex', ChoiceField, (soil_classes, default_soil_class), 'Soil texture'),
+    ('siteloc', 'rsoil', SpinField, (1, 1000, 200), 'Rsoil'),
+
+    ('meas', 'o3zr', SpinField, (1, 200, 25), 'O3 measurement height (m)'),
+    ('meas', 'o3_h', disableable(FloatSpinField, 'Same as target canopy'), (0.1, 100, 25, 0.1, 1),
+        'O3 measurement canopy height (m)'),
+    ('meas', 'uzr', SpinField, (1, 200, 25), 'Wind speed measurement height (m)'),
+    ('meas', 'u_h', disableable(FloatSpinField, 'Same as target canopy'), (0.1, 100, 25, 0.1, 1),
+        'Wind speed measurement canopy height'),
+    ('meas', 'd_meas', FloatSpinField, (0.1, 2, 0.5, 0.1, 1), 'Soil water measurement depth (m)',),
+
+    ('vegchar', 'h', FloatSpinField, (0.1, 100, 25, 0.1, 1), 'Canopy height (h, m)'),
+    ('vegchar', 'root', FloatSpinField, (0.1, 10, 1.2, 0.1, 1), 'Root depth (root, m)'),
+    ('vegchar', 'lm', FloatSpinField, (0.01, 1, 0.05, 0.01, 2), 'Leaf dimension (Lm, m)'),
+    ('vegchar', 'albedo', FloatSpinField, (0.01, 0.99, 0.12, 0.01, 2), 'Albedo'),
+    ('vegchar', 'gmax', SpinField, (1, 10000, 148), 'gmax'),
+    ('vegchar', 'gmorph', FloatSpinField, (0.01, 1, 1, 0.01, 2), 'gmorph'),
+    ('vegchar', 'fmin', FloatSpinField, (0.01, 0.99, 0.13, 0.01, 2), 'fmin'),
+    ('vegchar', 'rext', SpinField, (0, 20000, 2500), 'External plant cuticle resistance (Rext, s/m)'),
+    ('vegchar', 'y', FloatSpinField, (0.1, 100, 1.6, 0.1, 1), 'Threshold Y for AFstY (nmol/m2/s)'),
+
+    ('vegenv', 'f_lightfac', FloatSpinField, (0.001, 0.999, 0.006, 0.001, 3), 'light_a'),
+    ('vegenv', 't_min', SpinField, (-10, 100, 0), u'Minimum temperature (T_min, \u00b0C)'),
+    ('vegenv', 't_opt', SpinField, (-10, 100, 21), u'Optimum temperature (T_opt, \u00b0C)'),
+    ('vegenv', 't_max', SpinField, (-10, 100, 35), u'Maximum temperature (T_max, \u00b0C)'),
+    ('vegenv', 'vpd_max', FloatSpinField, (0, 100, 1, 0.01, 2), 'VPD for max. g (VPD_max, kPa)'),
+    ('vegenv', 'vpd_min', FloatSpinField, (0, 100, 3.25, 0.01, 2), 'VPD for min. g (VPD_min, kPa)'),
+    ('vegenv', 'vpd_crit', FloatSpinField, (0, 1000, 1000, 1, 1), 'Critical daily VPD sum (VPD_crit, kPa)'),
+    ('vegenv', 'swp_min', FloatSpinField, (-6, 0, -1.25, 0.01, 2), 'SWP for min. g (SWP_min, ???)'),
+    ('vegenv', 'swp_max', FloatSpinField, (-6, 0, -0.05, 0.01, 2), 'SWP for max. g (SWP_max, ???)'),
+
+    ('modelopts', 'fo3', ChoiceField, (fO3_calcs, default_fO3_calc), 'fO3 calculation'),
+    ('modelopts', 'fxwp', ChoiceField, (fXWP_calcs, default_fXWP_calc), 'Soil water influence on Gsto'),
+    ('modelopts', 'lwp', ChoiceField, (LWP_calcs, default_LWP_calc), 'LWP calculation'),
+    ('modelopts', 'fswp', ChoiceField, (fSWP_calcs, default_fSWP_calc), 'fSWP calculation'),
+
+    ('unsorted', 'sgs', SpinField, (1, 365, 121), 'Start of growing season (SGS, day of year)'),
+    ('unsorted', 'egs', SpinField, (1, 365, 273), 'End of growing season (EGS, day of year)'),
+
+    ('unsorted', 'lai_a', FloatSpinField, (0, 20, 0, 0.1, 1), 'LAI at SGS (LAI_a, m2/m2)'),
+    ('unsorted', 'lai_b', FloatSpinField, (0, 20, 4, 0.1, 1), 'First mid-season LAI (LAI_b, m2/m2)'),
+    ('unsorted', 'lai_c', FloatSpinField, (0, 20, 4, 0.1, 1), 'Second mid-season LAI (LAI_c, m2/m2)'),
+    ('unsorted', 'lai_d', FloatSpinField, (0, 20, 0, 0.1, 1), 'LAI at EGS (LAI_d, m2/m2)'),
+    ('unsorted', 'lai_1', SpinField, (1, 100, 30), 'Period from LAI_a to LAI_b (LAI_1, days)'),
+    ('unsorted', 'lai_2', SpinField, (1, 100, 30), 'Period from LAI_c to LAI_d (LAI_2, days)'),
+    ('unsorted', 'sai', ChoiceField, (SAI_calcs, default_SAI_calc), 'SAI calculation'),
+
+    ('unsorted', 'fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Fphen at SGS (fphen_a)'),
+    ('unsorted', 'fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'First mid-season Fphen (fphen_b)'),
+    ('unsorted', 'fphen_c', FloatSpinField, (0, 1, 1, 0.1, 1), 'Second mid-season Fphen (fphen_c)'),
+    ('unsorted', 'fphen_d', FloatSpinField, (0, 1, 1, 0.1, 1), 'Third mid-season Fphen (fphen_d)'),
+    ('unsorted', 'fphen_e', FloatSpinField, (0, 1, 0, 0.1, 1), 'Fphen at EGS (fphen_e)'),
+    ('unsorted', 'fphen_1', SpinField, (0, 200, 15), 'Period from fphen_a to fphen_b (fphen_1, days)'),
+    ('unsorted', 'fphen_lima', SpinField, (0, 365, 0), 'Start of SWP limitation (fphen_limA, day of year)'),
+    ('unsorted', 'fphen_2', SpinField, (0, 200, 1), 'Period from fphen_b to fphen_c (fphen_2, days)'),
+    ('unsorted', 'fphen_3', SpinField, (0, 200, 1), 'Period from fphen_c to fphen_d (fphen_3, days)'),
+    ('unsorted', 'fphen_limb', SpinField, (0, 365, 0), 'End of SWP limitation (fphen_limB, day of year)'),
+    ('unsorted', 'fphen_4', SpinField, (0, 200, 20), 'Period from fphen_d to fphen_e (fphen_4, days)'),
+
+    ('unsorted', 'leaf_fphen', ChoiceField, (leaf_fphen_calcs, default_leaf_fphen_calc), 'Leaf fphen calculation'),
+    ('unsorted', 'astart', SpinField, (1, 365, 153), 'Start of O3 accumulation (Astart, day of year)'),
+    ('unsorted', 'aend', SpinField, (1, 365, 208), 'End of O3 accumulation (Aend, day of year)'),
+    ('unsorted', 'leaf_fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Astart (leaf_fphen_a)'),
+    ('unsorted', 'leaf_fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'Leaf fphen mid-season (leaf_fphen_b)'),
+    ('unsorted', 'leaf_fphen_c', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Aend (leaf_fphen_c)'),
+    ('unsorted', 'leaf_fphen_1', SpinField, (0, 300, 15), 'Period from leaf_fphen_a to leaf_fphen_b (days)'),
+    ('unsorted', 'leaf_fphen_2', SpinField, (0, 300, 30), 'Period from leaf_fphen_b to leaf_fphen_c (days)'),
+)), 'variable', OrderedDict)
 
 
 def extract_outputs():
