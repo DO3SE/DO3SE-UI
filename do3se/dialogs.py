@@ -83,8 +83,8 @@ class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin):
 class PresetCreatorDialog(wx.Dialog):
     """Dialog for creating a named preset by selecting parameters."""
     def __init__(self, parent, values):
-        wx.Dialog.__init__(self, parent, title='Save preset',
-                           size=(500,300), style=wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, parent, title='Save preset', size=(500,300),
+                           style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
 
         s = wx.BoxSizer(wx.HORIZONTAL)
