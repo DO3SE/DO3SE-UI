@@ -10,6 +10,7 @@ Data definitions
 .. autodata:: output_fields
 .. autodata:: soil_classes
 .. autodata:: default_soil_class
+.. autodata:: fields
 
 Helper functions
 ----------------

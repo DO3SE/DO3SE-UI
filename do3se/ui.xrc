@@ -131,6 +131,18 @@
       </object>
       <object class="wxMenu">
         <label>&amp;Tools</label>
+        <object class="wxMenuItem" name="create_preset">
+          <label>&amp;Create preset</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="manage_presets">
+          <label>Manage/&amp;apply presets</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
       </object>
     </object>
     <title>DO3SE (foo.do3se)</title>
@@ -244,8 +256,6 @@ This is the main project window.  Each of the items on the left refer to a group
               </object>
               <flag>wxEXPAND</flag>
             </object>
-            
-            
             <orient>wxHORIZONTAL</orient>
           </object>
           <flag>wxALL|wxEXPAND</flag>

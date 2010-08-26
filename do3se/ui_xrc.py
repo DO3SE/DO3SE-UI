@@ -113,6 +113,8 @@ class xrcframe_projectwindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnMenu_wxID_SAVEAS, id=wx.ID_SAVEAS)
         self.Bind(wx.EVT_MENU, self.OnMenu_wxID_CLOSE, id=wx.ID_CLOSE)
         self.Bind(wx.EVT_MENU, self.OnMenu_wxID_EXIT, id=wx.ID_EXIT)
+        self.Bind(wx.EVT_MENU, self.OnMenu_create_preset, id=xrc.XRCID('create_preset'))
+        self.Bind(wx.EVT_MENU, self.OnMenu_manage_presets, id=xrc.XRCID('manage_presets'))
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_run, self.btn_run)
@@ -152,6 +154,18 @@ class xrcframe_projectwindow(wx.Frame):
         # Replace with event handler code
         print "OnMenu_wxID_EXIT()"
 #!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_EXIT        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_create_preset
+    def OnMenu_create_preset(self, evt):
+        # Replace with event handler code
+        print "OnMenu_create_preset()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_create_preset        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_manage_presets
+    def OnMenu_manage_presets(self, evt):
+        # Replace with event handler code
+        print "OnMenu_manage_presets()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_manage_presets        
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnClose
     def OnClose(self, evt):
@@ -315,6 +329,18 @@ def __init_resources():
       </object>
       <object class="wxMenu">
         <label>&amp;Tools</label>
+        <object class="wxMenuItem" name="create_preset">
+          <label>&amp;Create preset</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="manage_presets">
+          <label>Manage/&amp;apply presets</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
       </object>
     </object>
     <title>DO3SE (foo.do3se)</title>
@@ -428,8 +454,6 @@ This is the main project window.  Each of the items on the left refer to a group
               </object>
               <flag>wxEXPAND</flag>
             </object>
-            
-            
             <orient>wxHORIZONTAL</orient>
           </object>
           <flag>wxALL|wxEXPAND</flag>

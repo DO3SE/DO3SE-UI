@@ -216,7 +216,11 @@ LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 
 default_LWP_calc = 'nss'
 
+#: Parameters
 fields = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
+    ('input', 'input_fields', None, None, 'Input data fields'),
+    ('input', 'input_trim', None, None, 'Number of input rows to discard'),
+
     ('siteloc', 'lat', FloatSpinField, (-90, 90, 50, 0.1, 3), 'Latitude (degrees North)'),
     ('siteloc', 'lon', FloatSpinField, (-180, 180, 0, 0.1, 3), 'Longitude (degrees East)'),
     ('siteloc', 'elev', SpinField, (-100, 5000, 0), 'Elevation (m.a.s.l.)'),

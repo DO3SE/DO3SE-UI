@@ -230,6 +230,10 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.Bind(wx.EVT_LISTBOX, self.OnFieldUpdate)
         self.UpdateTitle()
 
+        from util.picklefile import PickleFile
+        self.config = PickleFile()
+        self.config.data = OrderedDict((('presets', OrderedDict()),))
+
     def UpdateTitle(self):
         title = 'DO3SE'
         if self.unsaved:
@@ -279,6 +283,11 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def OnMenu_wxID_CLOSE(self, evt):
         self.Close()
+
+    def OnMenu_create_preset(self, evt):
+        dialogs.make_preset(self,
+                            self.config.data['presets'],
+                            self.params.get_values().items())
 
 
 def main(args):
