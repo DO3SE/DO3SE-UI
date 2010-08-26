@@ -264,4 +264,38 @@ This is the main project window.  Each of the items on the left refer to a group
       </object>
     </object>
   </object>
+  <object class="wxDialog" name="dialog_presets">
+    <object class="wxSplitterWindow">
+      <object class="wxTreeCtrl"/>
+      <object class="wxPanel">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxListCtrl"/>
+            <option>1</option>
+            <flag>wxEXPAND</flag>
+          </object>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <object class="sizeritem">
+                <object class="wxButton" name="wxID_CANCEL"/>
+              </object>
+              <object class="spacer">
+                <size>5</size>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton" name="wxID_APPLY"/>
+              </object>
+              <orient>wxHORIZONTAL</orient>
+            </object>
+            <flag>wxALL|wxALIGN_RIGHT</flag>
+            <border>5</border>
+          </object>
+          <orient>wxVERTICAL</orient>
+        </object>
+      </object>
+      <orientation>vertical</orientation>
+      <sashpos>120</sashpos>
+    </object>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+  </object>
 </resource>

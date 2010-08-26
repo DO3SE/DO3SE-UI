@@ -186,6 +186,29 @@ class xrcframe_projectwindow(wx.Frame):
 #!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_run        
 
 
+class xrcdialog_presets(wx.Dialog):
+#!XRCED:begin-block:xrcdialog_presets.PreCreate
+    def PreCreate(self, pre):
+        """ This function is called during the class's initialization.
+        
+        Override it for custom setup before the window is created usually to
+        set additional window styles using SetWindowStyle() and SetExtraStyle().
+        """
+        pass
+        
+#!XRCED:end-block:xrcdialog_presets.PreCreate
+
+    def __init__(self, parent):
+        # Two stage creation (see http://wiki.wxpython.org/index.cgi/TwoStageCreation)
+        pre = wx.PreDialog()
+        self.PreCreate(pre)
+        get_resources().LoadOnDialog(pre, parent, "dialog_presets")
+        self.PostCreate(pre)
+
+        # Define variables for the controls, bind event handlers
+
+
+
 
 
 # ------------------------ Resource data ----------------------
@@ -461,6 +484,40 @@ This is the main project window.  Each of the items on the left refer to a group
         </object>
       </object>
     </object>
+  </object>
+  <object class="wxDialog" name="dialog_presets">
+    <object class="wxSplitterWindow">
+      <object class="wxTreeCtrl"/>
+      <object class="wxPanel">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxListCtrl"/>
+            <option>1</option>
+            <flag>wxEXPAND</flag>
+          </object>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <object class="sizeritem">
+                <object class="wxButton" name="wxID_CANCEL"/>
+              </object>
+              <object class="spacer">
+                <size>5</size>
+              </object>
+              <object class="sizeritem">
+                <object class="wxButton" name="wxID_APPLY"/>
+              </object>
+              <orient>wxHORIZONTAL</orient>
+            </object>
+            <flag>wxALL|wxALIGN_RIGHT</flag>
+            <border>5</border>
+          </object>
+          <orient>wxVERTICAL</orient>
+        </object>
+      </object>
+      <orientation>vertical</orientation>
+      <sashpos>120</sashpos>
+    </object>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
   </object>
 </resource>'''
 
