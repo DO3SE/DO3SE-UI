@@ -232,7 +232,7 @@ fields = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
         'O3 measurement canopy height (m)'),
     ('meas', 'uzr', SpinField, (1, 200, 25), 'Wind speed measurement height (m)'),
     ('meas', 'u_h', disableable(FloatSpinField, 'Same as target canopy'), (0.1, 100, 25, 0.1, 1),
-        'Wind speed measurement canopy height'),
+        'Wind speed measurement canopy height (m)'),
     ('meas', 'd_meas', FloatSpinField, (0.1, 2, 0.5, 0.1, 1), 'Soil water measurement depth (m)',),
 
     ('vegchar', 'h', FloatSpinField, (0.1, 100, 25, 0.1, 1), 'Canopy height (h, m)'),
