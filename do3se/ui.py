@@ -134,17 +134,17 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     ui_specification = (
         ('format', 'Input data format', InputFormat, (), {}),
         ('siteloc', 'Location properties', SimpleFieldGroup, (),
-            {'fields': filter(lambda x: x['group'] == 'siteloc', model.fields.itervalues())}),
+            {'fields': model.parameters_by_group('siteloc')}),
         ('meas', 'Measurement data', SimpleFieldGroup, (),
-            {'fields': filter(lambda x: x['group'] == 'meas', model.fields.itervalues())}),
+            {'fields': model.parameters_by_group('meas')}),
         ('vegchar', 'Vegetation characteristics', SimpleFieldGroup, (),
-            {'fields': filter(lambda x: x['group'] == 'vegchar', model.fields.itervalues())}),
+            {'fields': model.parameters_by_group('vegchar')}),
         ('vegenv', 'Environmental response', SimpleFieldGroup, (),
-            {'fields': filter(lambda x: x['group'] == 'vegenv', model.fields.itervalues())}),
+            {'fields': model.parameters_by_group('vegenv')}),
         ('modelopts', 'Model options', SimpleFieldGroup, (),
-            {'fields': filter(lambda x: x['group'] == 'modelopts', model.fields.itervalues())}),
+            {'fields': model.parameters_by_group('modelopts')}),
         ('unsorted', 'UNSORTED', SimpleFieldGroup, (),
-            {'fields': filter(lambda x: x['group'] == 'unsorted', model.fields.itervalues())}),
+            {'fields': model.parameters_by_group('unsorted')}),
     )
 
     def __init__(self, projectfile):

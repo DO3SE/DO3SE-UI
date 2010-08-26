@@ -292,6 +292,13 @@ fields = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
     ('unsorted', 'leaf_fphen_1', SpinField, (0, 300, 15), 'Period from leaf_fphen_a to leaf_fphen_b (days)'),
     ('unsorted', 'leaf_fphen_2', SpinField, (0, 300, 30), 'Period from leaf_fphen_b to leaf_fphen_c (days)'),
 )), 'variable', OrderedDict)
+parameters = fields
+
+
+def parameters_by_group(group):
+    for p in parameters.itervalues():
+        if p['group'] == group:
+            yield p
 
 
 def extract_outputs():
