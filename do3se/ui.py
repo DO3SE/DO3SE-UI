@@ -183,7 +183,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         if not self.unsaved:
             self.unsaved = True
             self.UpdateTitle()
-        evt.Skip()
+        if evt is not None:
+            evt.Skip()
 
     def OnClose(self, evt):
         evt.Skip()
@@ -224,6 +225,12 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         dialogs.make_preset(self,
                             self.config.data['presets'],
                             self.params.get_values().items())
+
+    def OnMenu_manage_presets(self, evt):
+        values = dialogs.apply_preset(self, self.config.data['presets'], dict())
+        self.params.set_values(dict(values))
+        if len(values) > 0:
+            self.OnFieldUpdate(None)
 
 
 def main(args):

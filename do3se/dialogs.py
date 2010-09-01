@@ -5,6 +5,7 @@ import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 
 import model
+import ui_xrc
 
 
 #: Default/suggested file extension for project files
@@ -48,21 +49,30 @@ def open_project(parent):
         return None
 
 
-class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin):
+class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
     """Widget for selecting a subset of parameter values.
 
     Displays a list of parameter names and values with a checkbox next to each.
-    *values* is a list of ``(key, value)`` pairs, where each ``key`` corresponds
-    to a key in :data:`do3se.model.fields`.
     """
-    def __init__(self, parent, values):
+    def __init__(self, parent, values=[]):
         wx.ListCtrl.__init__(self, parent, style=wx.LC_REPORT)
         CheckListCtrlMixin.__init__(self)
-
-        self.values = values
+        ListCtrlAutoWidthMixin.__init__(self)
 
         self.InsertColumn(0, 'Parameter')
         self.InsertColumn(1, 'Value')
+
+        self.SetValues(values)
+
+    def SetValues(self, values):
+        """Set the available values to select from.
+
+        *values* is a list of ``(key, value)`` pairs, where each ``key`` corresponds
+        to a key in :data:`do3se.model.fields`.
+        """
+        self.values = values
+
+        self.DeleteAllItems()
 
         for k, v in self.values:
             index = self.InsertStringItem(sys.maxint, model.fields[k]['name'])
@@ -72,12 +82,17 @@ class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin):
         self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
 
     def GetSelections(self):
-        """Get currently selected parameter values as ``(key, value)`` pairs."""
+        """Get currently checked parameter values as ``(key, value)`` pairs."""
         selections = list()
         for index in xrange(self.GetItemCount()):
             if self.IsChecked(index):
                 selections.append(self.values[index])
         return selections
+
+    def CheckAll(self):
+        """Check all items."""
+        for index in xrange(self.GetItemCount()):
+            self.CheckItem(index, True)
 
 
 class PresetCreatorDialog(wx.Dialog):
@@ -154,3 +169,83 @@ def make_preset(parent, presets, values):
         # If we got this far, no problems!
         presets[pcd.GetName()] = pcd.GetParameters()
         break
+
+
+class PresetManagerDialog(ui_xrc.xrcdialog_presets):
+    """Dialog for applying or deleting presets."""
+    def __init__(self, parent, user_presets, default_presets):
+        ui_xrc.xrcdialog_presets.__init__(self, parent)
+
+        self.user_presets = user_presets
+        self.default_presets = default_presets
+
+        self.SetSize((700, 500))
+        self.SetAffirmativeId(wx.ID_APPLY)
+
+        # Replace the placeholder panel with a ParameterSelectionCtrl
+        self.paramlist = ParameterSelectionCtrl(self)
+        self.paramlist_dummy.GetContainingSizer().Replace(self.paramlist_dummy, self.paramlist)
+        self.paramlist_dummy.Destroy()
+        self.paramlist.GetContainingSizer().Layout()
+
+        # Initialise presets list
+        plroot = self.presetlist.AddRoot('')
+        # (user-defined presets)
+        self.user_presets_root = self.presetlist.AppendItem(plroot, 'User presets')
+        for k in self.user_presets.iterkeys():
+            self.presetlist.AppendItem(self.user_presets_root, k)
+        self.presetlist.Expand(self.user_presets_root)
+        # (application-default presets)
+        self.default_presets_root = self.presetlist.AppendItem(plroot, 'Default presets')
+        for k in self.default_presets.iterkeys():
+            self.presetlist.AppendItem(self.default_presets_root, k)
+        self.presetlist.Expand(self.default_presets_root)
+
+        self.presetlist.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelChanged_presetlist)
+
+    def GetParameters(self):
+        """Get the selected parameters to apply."""
+        return self.paramlist.GetSelections()
+
+    def OnTreeSelChanged_presetlist(self, evt):
+        """When a preset is selected, update the parameters list."""
+        item = evt.GetItem()
+        label = self.presetlist.GetItemText(item)
+        parent = self.presetlist.GetItemParent(item)
+
+        # Selected a user-defined preset
+        if parent == self.user_presets_root:
+            self.paramlist.SetValues(self.user_presets[label])
+            self.paramlist.CheckAll()
+
+        # Selected a default preset
+        elif parent == self.default_presets_root:
+            self.paramlist.SetValues(self.default_presets[label])
+            self.paramlist.CheckAll()
+
+        evt.Skip()
+
+    def OnButton_wxID_DELETE(self, evt):
+        """Delete the selected user-created preset."""
+        item = self.presetlist.GetSelection()
+        parent = self.presetlist.GetItemParent(self.presetlist.GetSelection())
+        if parent == self.user_presets_root:
+            label = self.presetlist.GetItemText(item)
+            response = wx.MessageBox('Delete preset "%s"?  This cannot be undone.' % (label,),
+                                     'Delete preset', wx.YES_NO|wx.ICON_QUESTION, self)
+            if response == wx.YES:
+                del self.user_presets[label]
+                self.presetlist.Delete(item)
+                self.paramlist.SetValues([])
+
+        evt.Skip()
+
+
+def apply_preset(parent, user_presets, default_presets):
+    pmd = PresetManagerDialog(parent, user_presets, default_presets)
+
+    response = pmd.ShowModal()
+    if response == wx.ID_APPLY:
+        return pmd.GetParameters()
+    else:
+        return []
