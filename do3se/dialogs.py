@@ -223,6 +223,9 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
             self.paramlist.SetValues(self.default_presets[label])
             self.paramlist.CheckAll()
 
+        # Enabled delete button only if user preset selected
+        self.wxID_DELETE.Enable(parent == self.user_presets_root)
+
         evt.Skip()
 
     def OnButton_wxID_DELETE(self, evt):

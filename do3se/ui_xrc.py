@@ -208,8 +208,9 @@ class xrcdialog_presets(wx.Dialog):
         # Define variables for the controls, bind event handlers
         self.presetlist = xrc.XRCCTRL(self, "presetlist")
         self.paramlist_dummy = xrc.XRCCTRL(self, "paramlist_dummy")
+        self.wxID_DELETE = xrc.XRCCTRL(self, "wxID_DELETE")
 
-        self.Bind(wx.EVT_BUTTON, self.OnButton_wxID_DELETE, id=xrc.XRCID('wxID_DELETE'))
+        self.Bind(wx.EVT_BUTTON, self.OnButton_wxID_DELETE, self.wxID_DELETE)
 
 #!XRCED:begin-block:xrcdialog_presets.OnButton_wxID_DELETE
     def OnButton_wxID_DELETE(self, evt):
@@ -530,8 +531,10 @@ This is the main project window.  Each of the items on the left refer to a group
         <object class="wxBoxSizer">
           <object class="sizeritem">
             <object class="wxButton" name="wxID_DELETE">
+              <enabled>0</enabled>
               <XRCED>
                 <events>EVT_BUTTON</events>
+                <assign_var>1</assign_var>
               </XRCED>
             </object>
           </object>
