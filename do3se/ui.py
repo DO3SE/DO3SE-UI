@@ -11,6 +11,7 @@ import ui_xrc
 import dialogs
 from fields import *
 from project import Project
+from util import load_presets
 
 
 _intro_text = u"""
@@ -83,8 +84,9 @@ from the Swedish International Development Agency (Sida).
 
 
 class MainWindow(ui_xrc.xrcframe_mainwindow):
-    def __init__(self, parent):
+    def __init__(self, app, parent):
         ui_xrc.xrcframe_mainwindow.__init__(self, parent)
+        self.app = app
         self.html_about.SetPage(_intro_text)
 
     def OnListbox_list_recent(self, evt):
@@ -95,7 +97,7 @@ class MainWindow(ui_xrc.xrcframe_mainwindow):
         self.OnButton_btn_open_selected(evt)
 
     def OnButton_btn_new(self, evt):
-        w = ProjectWindow(None)
+        w = ProjectWindow(self.app, None)
         w.Show()
         self.Close()
 
@@ -147,12 +149,13 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             {'fields': model.parameters_by_group('unsorted')}),
     )
 
-    def __init__(self, projectfile):
+    def __init__(self, app, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
         self.SetSize((780,550))
         # TODO: only enable Run button when no errors
         self.btn_run.Enable(True)
         
+        self.app = app
         self.params = FieldCollection(self.tb_main, self.ui_specification)
         self.project = Project(projectfile, self)
         self.params.set_values(self.project.data)
@@ -165,10 +168,6 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.Bind(wx.EVT_CHECKBOX, self.OnFieldUpdate)
         self.Bind(wx.EVT_LISTBOX, self.OnFieldUpdate)
         self.UpdateTitle()
-
-        from util.picklefile import PickleFile
-        self.config = PickleFile()
-        self.config.data = OrderedDict((('presets', OrderedDict()),))
 
     def UpdateTitle(self):
         title = 'DO3SE'
@@ -197,13 +196,13 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         print self.params.get_values()
 
     def OnMenu_wxID_NEW(self, evt):
-        w = ProjectWindow(None)
+        w = ProjectWindow(self.app, None)
         w.Show()
 
     def OnMenu_wxID_OPEN(self, evt):
         filename = dialogs.open_project(self)
         if filename is not None:
-            w = ProjectWindow(filename)
+            w = ProjectWindow(self.app, filename)
             w.Show()
 
     def OnMenu_wxID_SAVE(self, evt):
@@ -223,25 +222,15 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def OnMenu_create_preset(self, evt):
         dialogs.make_preset(self,
-                            self.config.data['presets'],
+                            self.app.config.data['presets'],
                             self.params.get_values().items())
+        self.app.config.save()
 
     def OnMenu_manage_presets(self, evt):
-        values = dialogs.apply_preset(self, self.config.data['presets'], dict())
+        values = dialogs.apply_preset(self, self.app.config.data['presets'],
+                                      self.app.default_presets)
         self.params.set_values(dict(values))
         if len(values) > 0:
             self.OnFieldUpdate(None)
-
-
-def main(args):
-    logging.basicConfig(format="[%(levelname)-8s] %(name)s: %(message)s",
-                        level=logging.DEBUG)
-    a = wx.App()
-    w = ProjectWindow(None)
-    w.Show()
-    a.MainLoop()
-
-
-if __name__ == '__main__':
-    import sys
-    main(sys.argv[1:])
+        # Save the config, in case presets were deleted
+        self.app.config.save()

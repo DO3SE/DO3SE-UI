@@ -1,81 +1,45 @@
 import logging
+_log = logging.getLogger('do3se.config')
 
-from do3se.util.jsondict import JsonDict
-from do3se.util import csv2dict
+from util.picklefile import PickleFile
+from util import OrderedDict
 
-class Config(JsonDict):
+class Config(PickleFile):
+    """Application configuration file handler.
+
+    Extends :class:`PickleFile` to implement application configuration logic,
+    such as ensuring certain configuration keys always exist.
     """
-    Extend JsonDict to implement application specific configuration methods
-    """
+    def __init__(self, filename):
+        PickleFile.__init__(self, filename)
+        
+        # Load file if it exists
+        if self.exists():
+            self.load()
+            _log.info('Loaded configuration file ' + self.filename)
+        else:
+            self.data = dict()
+            _log.info('Creating new configuration file ' + self.filename)
 
-    def __init__(self, filename, veg_csv=None):
-        empty = {
-            'file_history': list(),
-            'input_format': dict(),
-            'output_format': dict(),
-            'site_params': dict(),
-            'veg_params': dict(),
-        }
+        # Make sure required items exist
+        if not 'presets' in self.data:
+            self.data['presets'] = OrderedDict()
+        if not 'recent_projects' in self.data:
+            self.data['recent_projects'] = list()
 
-        self.blacklist = {
-                'input_format': list(),
-                'output_format': list(),
-                'site_params': list(),
-                'veg_params': list(),
-        }
-
-        logging.info("Loading configuration file: " + filename)
-        JsonDict.__init__(self, filename, empty)
-
-        # Add supplied presets to stored presets
-        if veg_csv:
-            logging.debug('Loading extra presets: ' + veg_csv)
-            veg_presets = csv2dict(open(veg_csv, 'r'))
-            self.blacklist['veg_params'].extend(veg_presets.keys())
-            self['veg_params'].update(veg_presets)
-
-
-
-    def sync(self, *args, **kwargs):
-        logging.debug("Saving configuration")
-        JsonDict.sync(self, *args, **kwargs)
-
-
-    def close(self, *args, **kwargs):
-        logging.info("Closing configuration file")
-        JsonDict.close(self, *args, **kwargs)
-
-
-    def add_to_file_history(self, path):
-        """
-        Add a path to the file history
-
-        The FileHistory object needs at most 9 paths.  This method adds a path
-        to the file history list, and then trims it to the most recent 9 paths.
+    def add_recent_project(self, path):
+        """Add a path to the recent project list.
+        
+        This keeps a list of no more than the 9 most recently loaded/saved
+        projects.  The limit of 9 entries mirrors that of the
+        :class:`wx.FileHistor` class.
         """
         # Remove duplicates
         try:
-            self['file_history'].remove(path)
+            self.data['recent_projects'].remove(path)
         except ValueError:
             pass
-
         # Add path
-        self['file_history'].append(path)
-        # Trim to 9 lines
-        self['file_history'] = self['file_history'][-9:]
-        # Save the config
-        self.sync()
-
-
-    def sanitise(self):
-        """
-        Sanitise the configuration, removing references to fields that don't
-        exists, etc.
-        """
-        import model
-        # Remove references to non-existant input fields
-        for key, preset in self['input_format'].iteritems():
-            preset['fields'] = [x for x in preset['fields'] if x in model.input_field_map]
-        # Remove references to non-existant output fields
-        for key, preset in self['output_format'].iteritems():
-            preset['fields'] = [x for x in preset['fields'] if x in model.output_field_map]
+        self.data['recent_projects'].append(path)
+        # Trim to most recent 9
+        self.data['recent_projects'] = self.data['recent_projects'][-9:]
