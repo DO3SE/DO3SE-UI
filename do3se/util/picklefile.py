@@ -37,8 +37,12 @@ class PickleFile:
     def __init__(self, filename=None, autoload=False):
         self.filename = filename
 
-        if autoload:
+        if autoload and self.exists():
             self.load()
+
+    def exists(self):
+        """Find out if the pickle file exists."""
+        return (self.filename is not None and os.path.exists(self.filename))
 
     def save(self, filename=None):
         """
