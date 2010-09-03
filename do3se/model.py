@@ -296,9 +296,7 @@ parameters = fields
 
 
 def parameters_by_group(group):
-    for p in parameters.itervalues():
-        if p['group'] == group:
-            yield p
+    return [p for p in parameters.itervalues() if p['group'] == group]
 
 
 def extract_outputs():
