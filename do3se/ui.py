@@ -86,6 +86,7 @@ from the Swedish International Development Agency (Sida).
 class MainWindow(ui_xrc.xrcframe_mainwindow):
     def __init__(self, app, parent):
         ui_xrc.xrcframe_mainwindow.__init__(self, parent)
+        self.SetSize((500,500))
         self.app = app
         self.html_about.SetPage(_intro_text)
 
@@ -100,6 +101,13 @@ class MainWindow(ui_xrc.xrcframe_mainwindow):
         w = ProjectWindow(self.app, None)
         w.Show()
         self.Close()
+
+    def OnButton_btn_open_other(self, evt):
+        filename = dialogs.open_project(self)
+        if filename is not None:
+            w = ProjectWindow(self.app, filename)
+            w.Show()
+            self.Close()
 
 
 class InputFormat(FieldGroup):
@@ -170,7 +178,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.UpdateTitle()
 
     def UpdateTitle(self):
-        title = 'DO3SE'
+        title = self.app.GetAppName()
         if self.unsaved:
             title = '*' + title
         if self.project.filename is not None:
@@ -186,7 +194,23 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             evt.Skip()
 
     def OnClose(self, evt):
-        evt.Skip()
+        if self.unsaved:
+            response = wx.MessageBox('Project has unsaved changes.  Save?',
+                                     'Unsaved changes',
+                                     wx.YES_NO|wx.CANCEL|wx.ICON_EXCLAMATION,
+                                     self)
+            if response == wx.CANCEL:
+                evt.Veto()
+            elif response == wx.NO:
+                evt.Skip()
+            else:
+                self.project.data = self.params.get_values()
+                if self.project.save():
+                    evt.Skip()
+                else:
+                    evt.Veto()
+        else:
+            evt.Skip()
 
     def OnButton_btn_errors(self, evt):
         self.pnl_errors.Show(not self.pnl_errors.IsShown())

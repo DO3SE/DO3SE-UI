@@ -66,7 +66,7 @@ def main(args):
     logging.basicConfig(format="[%(levelname)-8s] %(name)s: %(message)s",
                         level=level)
     app = App()
-    w = ProjectWindow(app, None)
+    w = MainWindow(app, None)
     w.Show()
     app.MainLoop()
 
