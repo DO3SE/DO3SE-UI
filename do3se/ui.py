@@ -167,6 +167,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.params = FieldCollection(self.tb_main, self.ui_specification)
         self.project = Project(projectfile, self)
         self.params.set_values(self.project.data)
+        self.app.windows.add(self)
 
         # Keep track of whether or not there have been changes since last save
         self.unsaved = False
@@ -194,23 +195,27 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             evt.Skip()
 
     def OnClose(self, evt):
+        really_close = False
         if self.unsaved:
             response = wx.MessageBox('Project has unsaved changes.  Save?',
                                      'Unsaved changes',
                                      wx.YES_NO|wx.CANCEL|wx.ICON_EXCLAMATION,
                                      self)
-            if response == wx.CANCEL:
-                evt.Veto()
-            elif response == wx.NO:
-                evt.Skip()
-            else:
+            if response == wx.NO:
+                really_close = True
+            elif response == wx.YES:
                 self.project.data = self.params.get_values()
                 if self.project.save():
-                    evt.Skip()
-                else:
-                    evt.Veto()
+                    really_close = True
         else:
+            really_close = True
+
+        if really_close:
+            self.app.windows.remove(self)
             evt.Skip()
+        else:
+            evt.Veto()
+
 
     def OnButton_btn_errors(self, evt):
         self.pnl_errors.Show(not self.pnl_errors.IsShown())
@@ -243,6 +248,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def OnMenu_wxID_CLOSE(self, evt):
         self.Close()
+
+    def OnMenu_wxID_EXIT(self, evt):
+        self.app.Quit()
 
     def OnMenu_create_preset(self, evt):
         dialogs.make_preset(self,

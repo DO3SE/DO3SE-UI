@@ -47,13 +47,27 @@ class App(wx.App):
         # Load default presets
         self.default_presets = load_presets(open('resources/default_veg_presets.csv', 'r'))
 
-        return True
+        # Keep track of existing project windows - ProjectWindow instances add
+        # and remove themselves from this
+        self.windows = set()
 
+        return True
 
     def OnExit(self):
         """Application clean-up when exiting."""
         self.config.save()
         del self.sichecker
+
+    def Quit(self):
+        """Close all project windows and exit application.
+
+        This method calls the :meth:`Close` method on each open window.  If all
+        windows are successfully closed then :class:`wx.App`'s own exit
+        mechanism will end the application.
+        """
+        # Need to duplicate set of windows, set will change during iteration
+        for w in set(self.windows):
+            w.Close()
 
 
 def main(args):
