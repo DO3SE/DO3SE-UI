@@ -10,8 +10,8 @@ class DataTable(gridlib.PyGridTableBase):
         gridlib.PyGridTableBase.__init__(self)
 
         self.dataset = dataset
-        self.fields = [x['variable'] for x in model.output_fields]
-        self.col_labels = [x['short'] for x in model.output_fields]
+        self.fields = model.output_fields.keys()
+        self.col_labels = [x['short'] for x in model.output_fields.itervalues()]
 
 
     def GetNumberRows(self):

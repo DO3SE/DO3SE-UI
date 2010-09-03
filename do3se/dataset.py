@@ -44,7 +44,7 @@ class Dataset:
         self.vegparams = vegparams.copy()
 
         # Check required fields are present
-        required = (x['variable'] for x in model.input_fields if x['required'])
+        required = [k for k,v in model.input_fields.iteritems() if v['required']]
         for f in required:
             if not f in fields:
                 raise RequiredFieldError([f])
@@ -173,7 +173,7 @@ class Dataset:
                 quoting=csv.QUOTE_NONNUMERIC)
 
         if headers:
-            w.writerow(dict( (f, model.output_field_map[f]['short']) for f in fields ))
+            w.writerow(dict( (f, model.output_fields[f]['short']) for f in fields ))
         
         count = 0
         if period:

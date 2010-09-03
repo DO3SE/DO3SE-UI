@@ -109,7 +109,7 @@ class InputFormat(FieldGroup):
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
 
         self.input_fields = wxext.ListSelectCtrl(self)
-        self.input_fields.SetAvailable([(x['long'], x['variable']) for x in model.input_fields])
+        self.input_fields.SetAvailable([(v['long'], k) for k,v in model.input_fields.iteritems()])
         self.GetSizer().Add(self.input_fields, 1, wx.EXPAND|wx.ALL, 5)
 
         self.input_trim = SpinField(self, 0, 10, 0)
@@ -126,7 +126,7 @@ class InputFormat(FieldGroup):
 
     def set_values(self, values):
         if 'input_fields' in values:
-            self.input_fields.SetSelection([model.input_field_map[x]['long'] for x in values['input_fields']])
+            self.input_fields.SetSelection([model.input_fields[x]['long'] for x in values['input_fields']])
         if 'input_trim' in values:
             self.input_trim.set_value(values['input_trim'])
 

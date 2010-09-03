@@ -3,7 +3,7 @@ from util import to_dicts, dicts_to_map, OrderedDict
 from fields import SpinField, FloatSpinField, ChoiceField, disableable
 
 #: Available input fields
-input_fields = to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
+input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
         (inputs,    'yr',       int,    False,  'Year',         'Year'),
         (inputs,    'mm',       int,    False,  'Month',        'Month'),
         (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
@@ -19,13 +19,10 @@ input_fields = to_dicts(('module', 'variable', 'type', 'required', 'short', 'lon
         (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (Wh/m^2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
-))
-
-#: Mapping from input field variable name to full field info
-input_field_map = dicts_to_map(input_fields, 'variable')
+)), 'variable', OrderedDict)
 
 #: Available output fields
-output_fields = to_dicts(('module', 'variable', 'type', 'short', 'long'), (
+output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         # Inputs
         (inputs,        'yr',       int,    'Year',             'Year'),
         (inputs,        'mm',       int,    'Month',            'Month'),
@@ -127,10 +124,7 @@ output_fields = to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
         (variables,     'afst0',    float,  'AFst0',            '[DEBUG] Afst0'),
         (variables,     'fo3',      float,  'fO3',              '[DEBUG] fO3'),
-))
-
-#: Mapping from output field variable name to full field info
-output_field_map = dicts_to_map(output_fields, 'variable')
+)), 'variable', OrderedDict)
 
 #: Soil class data
 soil_classes = dicts_to_map(to_dicts(('id', 'name', 'data'), (
@@ -217,7 +211,7 @@ LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 default_LWP_calc = 'nss'
 
 #: Parameters
-fields = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
+parameters = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
     ('input', 'input_fields', None, None, 'Input data fields'),
     ('input', 'input_trim', None, None, 'Number of input rows to discard'),
 
@@ -292,18 +286,17 @@ fields = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
     ('unsorted', 'leaf_fphen_1', SpinField, (0, 300, 15), 'Period from leaf_fphen_a to leaf_fphen_b (days)'),
     ('unsorted', 'leaf_fphen_2', SpinField, (0, 300, 30), 'Period from leaf_fphen_b to leaf_fphen_c (days)'),
 )), 'variable', OrderedDict)
-parameters = fields
 
 
 def parameters_by_group(group):
+    """Get all parameter definitions in a particular group."""
     return [p for p in parameters.itervalues() if p['group'] == group]
 
 
 def extract_outputs():
-    """
-    Extract all output variables
+    """Extract all output variables.
 
     Extract a dict containing the values of all of the variables defined in
     output_fields.
     """
-    return dict( (x['variable'], x['type'](getattr(x['module'], x['variable']))) for x in output_fields )
+    return dict((x['variable'], x['type'](getattr(x['module'], x['variable']))) for x in output_fields.itervalues())
