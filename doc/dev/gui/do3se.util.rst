@@ -4,25 +4,8 @@
 .. automodule:: do3se.util
     :members:
 
-:mod:`do3se.util.fieldgroup` -- Manage groups of parameters
------------------------------------------------------------
+.. class:: do3se.util.OrderedDict
 
-.. automodule:: do3se.util.fieldgroup
-    :members:
-
-:mod:`do3se.util.jsondict` -- Dictionary with JSON file backend
------------------------------------------------------------------
-
-.. automodule:: do3se.util.jsondict
-    :members:
-
-:mod:`do3se.util.ordereddict` -- Ordered mapping type
------------------------------------------------------
-
-.. module:: do3se.util.ordereddict
-
-.. class:: OrderedDict
-
-    Ordered dictionary type obtained from http://code.activestate.com/recipes/576693/.  Is imported 
-    into :mod:`do3se.util` in such a way that :mod:`colections.OrderedDict` will take precedence in 
-    Python 2.7.
+    Ordered dictionary type.  With Python 2.7 and later it is :class:`collections.OrderedDict`, in 
+    any other version it is imported from :mod:`do3se.util.ordereddict` which itself was obtained 
+    from http://code.activestate.com/recipes/576693/.
