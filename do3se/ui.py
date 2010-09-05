@@ -84,8 +84,8 @@ from the Swedish International Development Agency (Sida).
 
 
 class MainWindow(ui_xrc.xrcframe_mainwindow):
-    def __init__(self, app, parent):
-        ui_xrc.xrcframe_mainwindow.__init__(self, parent)
+    def __init__(self, app):
+        ui_xrc.xrcframe_mainwindow.__init__(self, None)
         self.SetSize((500,500))
         self.app = app
         self.html_about.SetPage(_intro_text)

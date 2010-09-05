@@ -80,7 +80,7 @@ def main(args):
     logging.basicConfig(format="[%(levelname)-8s] %(name)s: %(message)s",
                         level=level)
     app = App()
-    w = MainWindow(app, None)
+    w = MainWindow(app)
     w.Show()
     app.MainLoop()
 
