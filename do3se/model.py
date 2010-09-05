@@ -289,7 +289,7 @@ parameters = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'),
 
 
 def parameters_by_group(group):
-    """Get all parameter definitions in a particular group."""
+    """Get a list of all parameter definitions from :data:`parameters` that are in in *group*."""
     return [p for p in parameters.itervalues() if p['group'] == group]
 
 
