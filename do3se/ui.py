@@ -14,6 +14,7 @@ from fields import *
 from project import Project
 from util import load_presets
 from dataset import Dataset
+from resultswindow import ResultsWindow
 
 
 _intro_text = u"""
@@ -242,7 +243,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             return
 
         d = Dataset(open(filename, 'r'), self.params.get_values())
-        # TODO: finish this
+        r = d.run()
+        w = ResultsWindow(self.app, self, r, os.path.basename(filename))
+        w.Show()
 
     def OnMenu_wxID_NEW(self, evt):
         w = ProjectWindow(self.app, None)

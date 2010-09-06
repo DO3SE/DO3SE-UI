@@ -1,6 +1,7 @@
 import csv
 import logging
 _log = logging.getLogger('do3se.dataset')
+from itertools import ifilter
 
 import util
 import model
@@ -117,7 +118,7 @@ class Dataset:
     def run(self):
         """Run the DO3SE model with this dataset.
 
-        :returns:   2-tuple of ``(result_count, skipped_row_count)``
+        Returns a :class:`Resultset` object with the model run results.
         """
         skippedrows = 0
 
@@ -130,7 +131,7 @@ class Dataset:
         _log.info("Initialising DOSE Fortran model")
         model.run.initialise()
 
-        self.results = []
+        results = []
         # Iterate through dataset
         _log.info("Running calculations ...")
         for row in self.input:
@@ -147,19 +148,34 @@ class Dataset:
                 raise InvalidFieldCountError()
 
             model.run.calculate_row()
-            self.results.append(model.extract_outputs())
+            results.append(model.extract_outputs())
 
-        _log.info("Got %d results" % len(self.results))
-        return (len(self.results), skippedrows)
+        _log.info("Got %d results" % len(results))
+        return Resultset(results, skippedrows, self.params)
 
+
+class Resultset:
+    """Results data from a model run.
+
+    Contains the model run results as :attr:`data`, the number of rows skipped
+    as :attr:`skipped`, the (modified) parameters used for the model run as
+    :attr:`params`, and provides the ability to :meth:`save` the results to a
+    file.
+    """
+    def __init__(self, data, skipped, params):
+        self.data = data
+        self.skipped = skipped
+        self.params = params
 
     def save(self, outfile, fields, headers=False, period=None):
-        """Save the results to a CSV file according to the output format.
+        """Save results to a CSV file.
 
-        :param outfile:     The file to save results to
-        :param fields:      Identifiers of fields to include in output, in order
-        :param headers:     Include field headers in output?
-        :param period:      Day range, inclusive, to include rows for: ``(start, end)``
+        Save the result columns specified in *fields* to *outfile* in CSV
+        format.  If *headers* is True, the first row consists of the short
+        field description for each row (from :mod:`do3se.model.output_fields`).
+        If a pair is supplied as the *period* argument, it is treated as an
+        (inclusive) day range for which results should be output, otherwise
+        all rows are written.
         """
         _log.debug("Output data format: %s" % (",".join(fields)))
 
@@ -169,14 +185,10 @@ class Dataset:
         if headers:
             w.writerow(dict( (f, model.output_fields[f]['short']) for f in fields ))
         
-        count = 0
-        if period:
-            for r in self.results:
-                if r['dd'] >= period[0] and r['dd'] <= period[1]:
-                    w.writerow(r)
-                    count += 1
+        if period is None:
+            w.writerows(self.data)
+            _log.info('Wrote all %d rows' % (len(self.data),))
         else:
-            w.writerows(self.results)
-            count = len(self.results)
-        
-        _log.info("Wrote %d records" % (count,))
+            start, end = period
+            w.writerows(ifilter(lambda r: r['dd'] >= start and r['dd'] <= end, self.data))
+            _log.info('Wrote rows from dd=%d to dd=%d' % (start, end))

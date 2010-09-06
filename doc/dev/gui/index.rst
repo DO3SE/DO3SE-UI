@@ -11,6 +11,7 @@ F model wrapped as a compiled Python extension using F2PY.
     do3se.fields
     do3se.model
     do3se.dialogs
+    do3se.datapanel
 
 :mod:`do3se.dataset` -- Dataset processing
 ------------------------------------------

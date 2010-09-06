@@ -52,6 +52,24 @@ def open_project(parent):
         return None
 
 
+def save_datafile(parent, default='output'+DATAFILE_EXTENSION):
+    """Promet the user for an output file name.
+
+    Returns the path to save the output file as, unless the user cancelled, in
+    which case None is returned.
+    """
+    fd = wx.FileDialog(parent, message='Save project',
+                       defaultDir=os.path.dirname(default),
+                       defaultFile=os.path.basename(default),
+                       wildcard=DATAFILE_WILDCARD,
+                       style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR)
+
+    if fd.ShowModal() == wx.ID_OK:
+        return fd.GetPath()
+    else:
+        return None
+
+
 def open_datafile(parent):
     """Prompt the user to select a data file to open.
     

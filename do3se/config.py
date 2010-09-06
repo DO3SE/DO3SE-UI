@@ -24,6 +24,8 @@ class Config(PickleFile):
         # Make sure required items exist
         if not 'presets' in self.data:
             self.data['presets'] = OrderedDict()
+        if not 'output_formats' in self.data:
+            self.data['output_formats'] = OrderedDict()
         if not 'recent_projects' in self.data:
             self.data['recent_projects'] = list()
         if not 'recent_files' in self.data:
