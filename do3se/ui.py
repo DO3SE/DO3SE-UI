@@ -1,6 +1,7 @@
 # coding: utf-8
-import logging
 import os.path
+import logging
+_log = logging.getLogger('do3se.ui')
 
 import wx
 import wx.html
@@ -89,6 +90,9 @@ class MainWindow(ui_xrc.xrcframe_mainwindow):
         self.SetSize((500,500))
         self.app = app
         self.html_about.SetPage(_intro_text)
+        self.list_recent.Clear()
+        for p in reversed(self.app.config.data['recent_projects']):
+            self.list_recent.Append(p)
 
     def OnListbox_list_recent(self, evt):
         enabled = self.list_recent.GetSelection() != wx.NOT_FOUND
@@ -99,6 +103,12 @@ class MainWindow(ui_xrc.xrcframe_mainwindow):
 
     def OnButton_btn_new(self, evt):
         w = ProjectWindow(self.app, None)
+        w.Show()
+        self.Close()
+
+    def OnButton_btn_open_selected(self, evt):
+        filename = self.list_recent.GetStringSelection()
+        w = ProjectWindow(self.app, filename)
         w.Show()
         self.Close()
 
@@ -140,7 +150,6 @@ class InputFormat(FieldGroup):
 
 
 class ProjectWindow(ui_xrc.xrcframe_projectwindow):
-    log = logging.getLogger('do3se.projectwindow')
     ui_specification = (
         ('format', 'Input data format', InputFormat, (), {}),
         ('siteloc', 'Location properties', SimpleFieldGroup, (),
@@ -169,6 +178,11 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.params.set_values(self.project.data)
         self.app.windows.add(self)
 
+        # If the project file exists, add it to recent project list
+        if self.project.exists():
+            self.app.config.add_recent_project(self.project.filename)
+            self.app.config.save()
+
         # Keep track of whether or not there have been changes since last save
         self.unsaved = False
         self.Bind(wx.EVT_TEXT, self.OnFieldUpdate)
@@ -187,7 +201,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.SetTitle(title)
 
     def OnFieldUpdate(self, evt):
-        self.log.debug('Something was updated: ' + str(evt))
+        _log.debug('Something was updated: ' + str(evt))
         if not self.unsaved:
             self.unsaved = True
             self.UpdateTitle()

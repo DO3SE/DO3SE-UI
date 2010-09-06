@@ -26,13 +26,15 @@ class Config(PickleFile):
             self.data['presets'] = OrderedDict()
         if not 'recent_projects' in self.data:
             self.data['recent_projects'] = list()
+        if not 'recent_files' in self.data:
+            self.data['recent_files'] = list()
 
     def add_recent_project(self, path):
         """Add a path to the recent project list.
         
         This keeps a list of no more than the 9 most recently loaded/saved
         projects.  The limit of 9 entries mirrors that of the
-        :class:`wx.FileHistor` class.
+        :class:`wx.FileHistory` class.
         """
         # Remove duplicates
         try:
@@ -43,3 +45,20 @@ class Config(PickleFile):
         self.data['recent_projects'].append(path)
         # Trim to most recent 9
         self.data['recent_projects'] = self.data['recent_projects'][-9:]
+
+    def add_recent_file(self, path):
+        """Add a path to the recent data file list.
+
+        Maintains a lits of no more than the 9 most recently run data fies
+        in ``data['recent_files']``.  The limit mirrors that of the
+        :class:`wx.FileHistory` class.
+        """
+        # Remove duplicates
+        try:
+            self.data['recent_files'].remove(path)
+        except ValueError:
+            pass
+        # Add path
+        self.data['recent_files'].append(path)
+        # Trim to most recent 9
+        self.data['recent_files'] = self.data['recent_files'][-9:]
