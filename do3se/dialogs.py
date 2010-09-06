@@ -9,12 +9,15 @@ import ui_xrc
 
 
 #: Default/suggested file extension for project files
-FILE_EXTENSION = '.do3se'
+PROJECT_EXTENSION = '.do3se'
 #: Wildcard string for :class:`wx.FileDialog`
-FILE_WILDCARD = 'DO3SE project files (*%s)|*%s|All (*.*)|*.*' % (FILE_EXTENSION, FILE_EXTENSION)
+PROJECT_WILDCARD = 'DO3SE project files (*%s)|*%s|All (*.*)|*.*' % (PROJECT_EXTENSION, PROJECT_EXTENSION)
+#: Default/suggested file extension for data files
+DATAFILE_EXTENSION = '.csv'
+DATAFILE_WILDCARD = 'Comma-separated values (*%s)|*%s|All (*.*)|*.*' % (DATAFILE_EXTENSION, DATAFILE_EXTENSION)
 
 
-def save_project(parent, default='project'+FILE_EXTENSION):
+def save_project(parent, default='project'+PROJECT_EXTENSION):
     """Get a valid project filename for saving a project.
 
     Returns either a valid file path to save the project as, or None if the user
@@ -24,7 +27,7 @@ def save_project(parent, default='project'+FILE_EXTENSION):
     fd = wx.FileDialog(parent, message='Save project',
                        defaultDir=os.path.dirname(default),
                        defaultFile=os.path.basename(default),
-                       wildcard=FILE_WILDCARD,
+                       wildcard=PROJECT_WILDCARD,
                        style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR)
 
     if fd.ShowModal() == wx.ID_OK:
@@ -40,9 +43,23 @@ def open_project(parent):
     *parent* is used as the window the dialog is associated with.
     """
     fd = wx.FileDialog(parent, message='Open project',
-                       wildcard=FILE_WILDCARD,
+                       wildcard=PROJECT_WILDCARD,
                        style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR)
 
+    if fd.ShowModal() == wx.ID_OK:
+        return fd.GetPath()
+    else:
+        return None
+
+
+def open_datafile(parent):
+    """Prompt the user to select a data file to open.
+    
+    Returns the path to the selected file, or None if the user cancelled.
+    """
+    fd = wx.FileDialog(parent, message='Open data file',
+                       wildcard=DATAFILE_WILDCARD,
+                       style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR)
     if fd.ShowModal() == wx.ID_OK:
         return fd.GetPath()
     else:

@@ -13,6 +13,7 @@ import dialogs
 from fields import *
 from project import Project
 from util import load_presets
+from dataset import Dataset
 
 
 _intro_text = u"""
@@ -236,7 +237,12 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.pnl_errors.GetContainingSizer().Layout()
 
     def OnButton_btn_run(self, evt):
-        print self.params.get_values()
+        filename = dialogs.open_datafile(self)
+        if filename is None:
+            return
+
+        d = Dataset(open(filename, 'r'), self.params.get_values())
+        # TODO: finish this
 
     def OnMenu_wxID_NEW(self, evt):
         w = ProjectWindow(self.app, None)
