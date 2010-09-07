@@ -152,7 +152,7 @@ class InputFormat(FieldGroup):
             self.input_trim.set_value(values['input_trim'])
 
 
-class SeasonParams(SimpleFieldGroup):
+class PreviewCanvasFieldGroup(SimpleFieldGroup):
     def __init__(self, fc, parent, fields):
         SimpleFieldGroup.__init__(self, fc, parent, fields)
 
@@ -165,6 +165,15 @@ class SeasonParams(SimpleFieldGroup):
         self.update_preview(None)
         self.Bind(EVT_VALUE_CHANGED, self.update_preview)
 
+    def update_preview(self, evt):
+        raise NotImplementedError
+
+    def set_values(self, values):
+        SimpleFieldGroup.set_values(self, values)
+        self.update_preview(None)
+
+
+class SeasonParams(PreviewCanvasFieldGroup):
     @wxext.autoeventskip
     def update_preview(self, evt):
         lai_a = self['lai_a'].get_value()
@@ -197,18 +206,10 @@ class SeasonParams(SimpleFieldGroup):
         self.preview.Draw(graphics=gfx)
 
 
-class FphenParams(SimpleFieldGroup):
-    def __init__(self, fc, parent, fields):
-        SimpleFieldGroup.__init__(self, fc, parent, fields)
+class FphenParams(PreviewCanvasFieldGroup):
+    def __init__(self, *args, **kwargs):
+        PreviewCanvasFieldGroup.__init__(self, *args, **kwargs)
 
-        self.preview = wx.lib.plot.PlotCanvas(self)
-        self.preview.SetEnableTitle(False)
-        self.preview.SetEnableLegend(False)
-        self.preview.SetSizeHints(minW=-1, minH=150, maxH=200)
-        self.GetSizer().Add(self.preview, 1, wx.EXPAND|wx.ALL, 5)
-
-        self.update_preview(None)
-        self.Bind(EVT_VALUE_CHANGED, self.update_preview)
         # TODO: This will need to happen somewhere else if the panels are in
         # a different order...
         self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
