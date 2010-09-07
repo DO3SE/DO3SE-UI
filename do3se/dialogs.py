@@ -6,6 +6,7 @@ from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 
 import model
 import ui_xrc
+import wxext
 
 
 #: Default/suggested file extension for project files
@@ -242,6 +243,7 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
         """Get the selected parameters to apply."""
         return self.paramlist.GetSelections()
 
+    @wxext.autoeventskip
     def OnTreeSelChanged_presetlist(self, evt):
         """When a preset is selected, update the parameters list."""
         item = evt.GetItem()
@@ -261,8 +263,7 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
         # Enabled delete button only if user preset selected
         self.wxID_DELETE.Enable(parent == self.user_presets_root)
 
-        evt.Skip()
-
+    @wxext.autoeventskip
     def OnButton_wxID_DELETE(self, evt):
         """Delete the selected user-created preset."""
         item = self.presetlist.GetSelection()
@@ -275,8 +276,6 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
                 del self.user_presets[label]
                 self.presetlist.Delete(item)
                 self.paramlist.SetValues([])
-
-        evt.Skip()
 
 
 def apply_preset(parent, user_presets, default_presets):

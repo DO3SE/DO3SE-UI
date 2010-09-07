@@ -243,9 +243,9 @@ def disableable(cls, chklabel='Disabled?'):
             self.other = wx.CheckBox(parent, label=chklabel, style=wx.CHK_2STATE)
             self.other.Bind(wx.EVT_CHECKBOX, self.OnCheckbox_disable)
 
+        @wxext.autoeventskip
         def OnCheckbox_disable(self, evt):
             self.field.Enable(not self.other.IsChecked())
-            evt.Skip()
 
         def get_value(self):
             return dict(value=cls.get_value(self), disabled=self.other.GetValue())

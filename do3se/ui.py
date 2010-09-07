@@ -202,13 +202,12 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             title += ' - ' + os.path.basename(self.project.filename)
         self.SetTitle(title)
 
+    @wxext.autoeventskip
     def OnFieldUpdate(self, evt):
         _log.debug('Something was updated: ' + str(evt))
         if not self.unsaved:
             self.unsaved = True
             self.UpdateTitle()
-        if evt is not None:
-            evt.Skip()
 
     def OnClose(self, evt):
         really_close = False
