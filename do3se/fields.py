@@ -1,7 +1,12 @@
 import wx
+import wx.lib.newevent
 
 import wxext
 from util import OrderedDict
+
+
+# Generic "value changed" event
+ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
 
 
 class Field:
@@ -12,6 +17,10 @@ class Field:
     controls.  A :class:`Field` object should have :attr:`field` and
     :attr:`other` attributes which may either be None or some :class:`wx.Widget`
     that is a child of *parent*.
+
+    :class:`Field` subclasses should in some way bind events that indictate
+    they have changed to :meth:`OnChanged` so that :class:`ValueChangedEvent`
+    events are emitted.
     """
     def __init__(self, parent):
         self.parent = parent
@@ -26,6 +35,12 @@ class Field:
         """Set the field value (assuming a simple wx control)."""
         self.field.SetValue(value)
 
+    @wxext.autoeventskip
+    def OnChanged(self, evt):
+        """Post a :class:`ValueChangedEvent`."""
+        newevt = ValueChangedEvent(evt.GetId())
+        wx.PostEvent(self.field, newevt)
+
 
 class TextField(Field):
     """Field using :class:`wx.TextCtrl`."""
@@ -35,6 +50,8 @@ class TextField(Field):
         self.field = wx.TextCtrl(parent)
         self.field.SetValue(initial)
 
+        self.field.Bind(wx.EVT_TEXT, self.OnChanged)
+
 
 class SpinField(Field):
     """Field using :class:`wx.SpinCtrl`."""
@@ -42,6 +59,8 @@ class SpinField(Field):
         Field.__init__(self, parent)
 
         self.field = wx.SpinCtrl(parent, min=min, max=max, initial=initial)
+
+        self.field.Bind(wx.EVT_SPINCTRL, self.OnChanged)
 
 
 class FloatSpinField(Field):
@@ -51,6 +70,8 @@ class FloatSpinField(Field):
 
         self.field = wxext.FloatSpin(parent, min_val=min, max_val=max, value=initial,
                                      increment=step, digits=digits)
+
+        self.field.Bind(wx.EVT_SPINCTRL, self.OnChanged)
 
     def get_value(self):
         """Get field value as a float."""
@@ -82,6 +103,8 @@ class ChoiceField(Field):
             self.field.Append(self._choice_string(choice), key)
 
         self.set_value(default)
+
+        self.field.Bind(wx.EVT_CHOICE, self.OnChanged)
 
     def get_value(self):
         """Get the value corresponding to the selected choice."""
@@ -242,6 +265,7 @@ def disableable(cls, chklabel='Disabled?'):
             cls.__init__(self, parent, *args, **kwargs)
             self.other = wx.CheckBox(parent, label=chklabel, style=wx.CHK_2STATE)
             self.other.Bind(wx.EVT_CHECKBOX, self.OnCheckbox_disable)
+            self.other.Bind(wx.EVT_CHECKBOX, self.OnChanged)
 
         @wxext.autoeventskip
         def OnCheckbox_disable(self, evt):

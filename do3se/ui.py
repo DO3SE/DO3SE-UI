@@ -187,11 +187,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
         # Keep track of whether or not there have been changes since last save
         self.unsaved = False
-        self.Bind(wx.EVT_TEXT, self.OnFieldUpdate)
-        self.Bind(wx.EVT_SPINCTRL, self.OnFieldUpdate)
-        self.Bind(wx.EVT_CHOICE, self.OnFieldUpdate)
-        self.Bind(wx.EVT_CHECKBOX, self.OnFieldUpdate)
-        self.Bind(wx.EVT_LISTBOX, self.OnFieldUpdate)
+        self.Bind(EVT_VALUE_CHANGED, self.OnFieldUpdate)
+        # TODO: catch changes in input format panel!
         self.UpdateTitle()
 
     def UpdateTitle(self):
