@@ -5,6 +5,7 @@ _log = logging.getLogger('do3se.ui')
 
 import wx
 import wx.html
+import wx.lib.plot
 
 import wxext
 import model
@@ -151,6 +152,53 @@ class InputFormat(FieldGroup):
             self.input_trim.set_value(values['input_trim'])
 
 
+class FphenParams(SimpleFieldGroup):
+    def __init__(self, fc, parent, fields):
+        SimpleFieldGroup.__init__(self, fc, parent, fields)
+
+        self.preview = wx.lib.plot.PlotCanvas(self)
+        self.preview.SetEnableTitle(False)
+        self.preview.SetEnableLegend(False)
+        self.preview.SetSizeHints(minW=-1, minH=150)
+        self.GetSizer().Add(self.preview, 1, wx.EXPAND|wx.ALL, 5)
+
+        self.update_preview(None)
+        self.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        # TODO: This will need to happen somewhere else if the panels are in
+        # a different order...
+        self.fc['unsorted']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        self.fc['unsorted']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+
+    @wxext.autoeventskip
+    def update_preview(self, evt):
+        sgs = self.fc['unsorted']['sgs'].get_value()
+        egs = self.fc['unsorted']['egs'].get_value()
+        v = self.get_values()
+
+        points = list()
+        points.append((sgs, v['fphen_a']))
+        points.append((sgs + v['fphen_1'], v['fphen_b']))
+        if v['fphen_lima'] > 0:
+            points.append((v['fphen_lima'], v['fphen_b']))
+            points.append((v['fphen_lima'] + v['fphen_2'], v['fphen_c']))
+        if v['fphen_limb'] > 0:
+            points.append((v['fphen_limb'] - v['fphen_3'], v['fphen_c']))
+            points.append((v['fphen_limb'], v['fphen_d']))
+        points.append((egs - v['fphen_4'], v['fphen_d']))
+        points.append((egs, v['fphen_e']))
+
+        fphen = wx.lib.plot.PolyLine(points=points,
+                                     colour='green',
+                                     legend='Fphen')
+
+        gfx = wx.lib.plot.PlotGraphics([fphen],
+                                       'Fphen preview',
+                                       'Day of year (dd)',
+                                       'Fphen')
+
+        self.preview.Draw(graphics=gfx)
+
+
 class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     ui_specification = (
         ('format', 'Input data format', InputFormat, (), {}),
@@ -166,6 +214,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             {'fields': model.parameters_by_group('modelopts')}),
         ('unsorted', 'UNSORTED', SimpleFieldGroup, (),
             {'fields': model.parameters_by_group('unsorted')}),
+        ('fphen', 'fphen', FphenParams, (),
+            {'fields': model.parameters_by_group('fphen')}),
     )
 
     def __init__(self, app, projectfile):
