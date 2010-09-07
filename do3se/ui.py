@@ -152,6 +152,51 @@ class InputFormat(FieldGroup):
             self.input_trim.set_value(values['input_trim'])
 
 
+class SeasonParams(SimpleFieldGroup):
+    def __init__(self, fc, parent, fields):
+        SimpleFieldGroup.__init__(self, fc, parent, fields)
+
+        self.preview = wx.lib.plot.PlotCanvas(self)
+        self.preview.SetEnableTitle(False)
+        self.preview.SetEnableLegend(False)
+        self.preview.SetSizeHints(minW=-1, minH=150, maxH=200)
+        self.GetSizer().Add(self.preview, 1, wx.EXPAND|wx.ALL, 5)
+
+        self.update_preview(None)
+        self.Bind(EVT_VALUE_CHANGED, self.update_preview)
+
+    @wxext.autoeventskip
+    def update_preview(self, evt):
+        lai_a = self['lai_a'].get_value()
+        lai_b = self['lai_b'].get_value()
+        lai_c = self['lai_c'].get_value()
+        lai_d = self['lai_d'].get_value()
+        lai_1 = self['lai_1'].get_value()
+        lai_2 = self['lai_2'].get_value()
+        sgs = self['sgs'].get_value()
+        egs = self['egs'].get_value()
+
+        wrap_point = lai_a - (lai_a - lai_d) * sgs / (sgs + 365 - egs)
+
+        points = [(1, wrap_point),
+                  (sgs, lai_a),
+                  (sgs + lai_1, lai_b),
+                  (egs - lai_2, lai_c),
+                  (egs, lai_d),
+                  (365, wrap_point)]
+
+        lai = wx.lib.plot.PolyLine(points=points,
+                                   colour='green',
+                                   legend='LAI')
+
+        gfx = wx.lib.plot.PlotGraphics([lai],
+                                       'LAI preview',
+                                       'Day of year (dd)',
+                                       'Leaf Area Index')
+
+        self.preview.Draw(graphics=gfx)
+
+
 class FphenParams(SimpleFieldGroup):
     def __init__(self, fc, parent, fields):
         SimpleFieldGroup.__init__(self, fc, parent, fields)
@@ -159,20 +204,20 @@ class FphenParams(SimpleFieldGroup):
         self.preview = wx.lib.plot.PlotCanvas(self)
         self.preview.SetEnableTitle(False)
         self.preview.SetEnableLegend(False)
-        self.preview.SetSizeHints(minW=-1, minH=150)
+        self.preview.SetSizeHints(minW=-1, minH=150, maxH=200)
         self.GetSizer().Add(self.preview, 1, wx.EXPAND|wx.ALL, 5)
 
         self.update_preview(None)
         self.Bind(EVT_VALUE_CHANGED, self.update_preview)
         # TODO: This will need to happen somewhere else if the panels are in
         # a different order...
-        self.fc['unsorted']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
-        self.fc['unsorted']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        self.fc['season']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
 
     @wxext.autoeventskip
     def update_preview(self, evt):
-        sgs = self.fc['unsorted']['sgs'].get_value()
-        egs = self.fc['unsorted']['egs'].get_value()
+        sgs = self.fc['season']['sgs'].get_value()
+        egs = self.fc['season']['egs'].get_value()
         v = self.get_values()
 
         points = list()
@@ -214,6 +259,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             {'fields': model.parameters_by_group('modelopts')}),
         ('unsorted', 'UNSORTED', SimpleFieldGroup, (),
             {'fields': model.parameters_by_group('unsorted')}),
+        ('season', 'Season', SeasonParams, (),
+            {'fields': model.parameters_by_group('season')}),
         ('fphen', 'fphen', FphenParams, (),
             {'fields': model.parameters_by_group('fphen')}),
     )
