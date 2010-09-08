@@ -11,6 +11,7 @@ import wxext
 import model
 import ui_xrc
 import dialogs
+import graphs
 from fields import *
 from project import Project
 from util import load_presets
@@ -162,7 +163,6 @@ class PreviewCanvasFieldGroup(SimpleFieldGroup):
         self.preview.SetSizeHints(minW=-1, minH=150, maxH=200)
         self.GetSizer().Add(self.preview, 1, wx.EXPAND|wx.ALL, 5)
 
-        self.update_preview(None)
         self.Bind(EVT_VALUE_CHANGED, self.update_preview)
 
     def update_preview(self, evt):
@@ -176,33 +176,10 @@ class PreviewCanvasFieldGroup(SimpleFieldGroup):
 class SeasonParams(PreviewCanvasFieldGroup):
     @wxext.autoeventskip
     def update_preview(self, evt):
-        lai_a = self['lai_a'].get_value()
-        lai_b = self['lai_b'].get_value()
-        lai_c = self['lai_c'].get_value()
-        lai_d = self['lai_d'].get_value()
-        lai_1 = self['lai_1'].get_value()
-        lai_2 = self['lai_2'].get_value()
-        sgs = self['sgs'].get_value()
-        egs = self['egs'].get_value()
-
-        wrap_point = lai_a - (lai_a - lai_d) * sgs / (sgs + 365 - egs)
-
-        points = [(1, wrap_point),
-                  (sgs, lai_a),
-                  (sgs + lai_1, lai_b),
-                  (egs - lai_2, lai_c),
-                  (egs, lai_d),
-                  (365, wrap_point)]
-
-        lai = wx.lib.plot.PolyLine(points=points,
-                                   colour='green',
-                                   legend='LAI')
-
-        gfx = wx.lib.plot.PlotGraphics([lai],
+        gfx = wx.lib.plot.PlotGraphics([graphs.lai_preview(self.fc)],
                                        'LAI preview',
                                        'Day of year (dd)',
                                        'Leaf Area Index')
-
         self.preview.Draw(graphics=gfx)
 
 
@@ -217,32 +194,46 @@ class FphenParams(PreviewCanvasFieldGroup):
 
     @wxext.autoeventskip
     def update_preview(self, evt):
-        sgs = self.fc['season']['sgs'].get_value()
-        egs = self.fc['season']['egs'].get_value()
-        v = self.get_values()
-
-        points = list()
-        points.append((sgs, v['fphen_a']))
-        points.append((sgs + v['fphen_1'], v['fphen_b']))
-        if v['fphen_lima'] > 0:
-            points.append((v['fphen_lima'], v['fphen_b']))
-            points.append((v['fphen_lima'] + v['fphen_2'], v['fphen_c']))
-        if v['fphen_limb'] > 0:
-            points.append((v['fphen_limb'] - v['fphen_3'], v['fphen_c']))
-            points.append((v['fphen_limb'], v['fphen_d']))
-        points.append((egs - v['fphen_4'], v['fphen_d']))
-        points.append((egs, v['fphen_e']))
-
-        fphen = wx.lib.plot.PolyLine(points=points,
-                                     colour='green',
-                                     legend='Fphen')
-
-        gfx = wx.lib.plot.PlotGraphics([fphen],
+        gfx = wx.lib.plot.PlotGraphics([graphs.fphen_preview(self.fc)],
                                        'Fphen preview',
                                        'Day of year (dd)',
                                        'Fphen')
-
         self.preview.Draw(graphics=gfx)
+
+
+class LeafFphenParams(PreviewCanvasFieldGroup):
+    def __init__(self, *args, **kwargs):
+        PreviewCanvasFieldGroup.__init__(self, *args, **kwargs)
+
+        # TODO: This will need to happen somewhere else if the panels are in
+        # a different order...
+        self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        self.fc['season']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        # Might be following Fphen instead of leaf_fphen
+        self.fc['fphen'].Bind(EVT_VALUE_CHANGED, self.update_preview)
+
+        self['leaf_fphen'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
+        self.update_disabled(None)
+
+    def set_values(self, values):
+        """Ensure the enabled/disabled state gets updated when values are set."""
+        PreviewCanvasFieldGroup.set_values(self, values)
+        self.update_disabled(None)
+        
+    @wxext.autoeventskip
+    def update_preview(self, evt):
+        gfx = wx.lib.plot.PlotGraphics([graphs.leaf_fphen_preview(self.fc)],
+                                       'Leaf fphen preview',
+                                       'Day of year (dd)',
+                                       'leaf_fphen')
+        self.preview.Draw(graphics=gfx)
+
+    @wxext.autoeventskip
+    def update_disabled(self, evt):
+        enabled = self['leaf_fphen'].get_value() != 'copy'
+        for field in self.itervalues():
+            if field is not self['leaf_fphen']:
+                field.field.Enable(enabled)
 
 
 class ProjectWindow(ui_xrc.xrcframe_projectwindow):
@@ -258,12 +249,12 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             {'fields': model.parameters_by_group('vegenv')}),
         ('modelopts', 'Model options', SimpleFieldGroup, (),
             {'fields': model.parameters_by_group('modelopts')}),
-        ('unsorted', 'UNSORTED', SimpleFieldGroup, (),
-            {'fields': model.parameters_by_group('unsorted')}),
         ('season', 'Season', SeasonParams, (),
             {'fields': model.parameters_by_group('season')}),
         ('fphen', 'fphen', FphenParams, (),
             {'fields': model.parameters_by_group('fphen')}),
+        ('leaf_fphen', 'Leaf fphen', LeafFphenParams, (),
+            {'fields': model.parameters_by_group('leaf_fphen')}),
     )
 
     def __init__(self, app, projectfile):
@@ -274,6 +265,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         
         self.app = app
         self.params = FieldCollection(self.tb_main, self.ui_specification)
+        for group in self.params.itervalues():
+            if isinstance(group, PreviewCanvasFieldGroup):
+                group.update_preview(None)
         self.project = Project(projectfile, self)
         self.params.set_values(self.project.data)
         self.app.windows.add(self)

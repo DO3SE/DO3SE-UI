@@ -276,14 +276,14 @@ parameters = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'),
     ('fphen', 'fphen_limb', SpinField, (0, 365, 0), 'End of SWP limitation (fphen_limB, day of year)'),
     ('fphen', 'fphen_4', SpinField, (0, 200, 20), 'Period from fphen_d to fphen_e (fphen_4, days)'),
 
-    ('unsorted', 'leaf_fphen', ChoiceField, (leaf_fphen_calcs, default_leaf_fphen_calc), 'Leaf fphen calculation'),
-    ('unsorted', 'astart', SpinField, (1, 365, 153), 'Start of O3 accumulation (Astart, day of year)'),
-    ('unsorted', 'aend', SpinField, (1, 365, 208), 'End of O3 accumulation (Aend, day of year)'),
-    ('unsorted', 'leaf_fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Astart (leaf_fphen_a)'),
-    ('unsorted', 'leaf_fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'Leaf fphen mid-season (leaf_fphen_b)'),
-    ('unsorted', 'leaf_fphen_c', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Aend (leaf_fphen_c)'),
-    ('unsorted', 'leaf_fphen_1', SpinField, (0, 300, 15), 'Period from leaf_fphen_a to leaf_fphen_b (days)'),
-    ('unsorted', 'leaf_fphen_2', SpinField, (0, 300, 30), 'Period from leaf_fphen_b to leaf_fphen_c (days)'),
+    ('leaf_fphen', 'leaf_fphen', ChoiceField, (leaf_fphen_calcs, default_leaf_fphen_calc), 'Leaf fphen calculation'),
+    ('leaf_fphen', 'astart', SpinField, (1, 365, 153), 'Start of O3 accumulation (Astart, day of year)'),
+    ('leaf_fphen', 'aend', SpinField, (1, 365, 208), 'End of O3 accumulation (Aend, day of year)'),
+    ('leaf_fphen', 'leaf_fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Astart (leaf_fphen_a)'),
+    ('leaf_fphen', 'leaf_fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'Leaf fphen mid-season (leaf_fphen_b)'),
+    ('leaf_fphen', 'leaf_fphen_c', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Aend (leaf_fphen_c)'),
+    ('leaf_fphen', 'leaf_fphen_1', SpinField, (0, 300, 15), 'Period from leaf_fphen_a to leaf_fphen_b (days)'),
+    ('leaf_fphen', 'leaf_fphen_2', SpinField, (0, 300, 30), 'Period from leaf_fphen_b to leaf_fphen_c (days)'),
 )), 'variable', OrderedDict)
 
 
