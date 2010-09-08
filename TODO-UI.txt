@@ -1,9 +1,0 @@
-``blah`` and ``blah_map`` should no longer be necessary with OrderedDict - change them to be just ``blah`` which is the map!
-
-Update things which aren't already using ``to_dicts()`` and ``dicts_to_map()``.
-
-Several bugs no longer apply with new UI.
-
-Application object should keep track of open windows, have method for closing all windows
-
-MASSIVE BUG: widgets not drawing when new windows are created!
