@@ -11,7 +11,6 @@ import wx
 
 from util import load_presets
 from config import Config
-from ui import MainWindow, ProjectWindow
 
 class App(wx.App):
     """DO3SE application.
@@ -71,6 +70,7 @@ class App(wx.App):
 
 
 def main(args):
+    from ui import MainWindow
     # If the app is frozen (i.e. made into an executable), don't annoy the user
     # with log messages they don't care about.
     if hasattr(sys, 'frozen') and sys.frozen:
