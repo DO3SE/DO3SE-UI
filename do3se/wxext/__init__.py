@@ -1,6 +1,7 @@
 """ 
 Custom wxPython widgets
 """
+import functools
 
 from floatctrl import FloatCtrl
 from listselectctrl import ListSelectCtrl
@@ -23,6 +24,7 @@ def autoeventskip(f):
     ``if evt: evt.Skip()`` and ``if evt is not None: evt.Skip()`` etc.  Used to
     decorate functions that always, unconditionally, pass the event on.
     """
+    @functools.wraps(f)
     def new_f(self, evt):
         f(self, evt)
         if evt is not None:
