@@ -71,27 +71,16 @@ class InputFormatParams(FieldGroup):
 
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
 
-        self.input_fields = wxext.ListSelectCtrl(self)
-        self.input_fields.SetAvailable([(v['long'], k) for k,v in model.input_fields.iteritems()])
-        self.GetSizer().Add(self.input_fields, 1, wx.EXPAND|wx.ALL, 5)
+        self['input_fields'] = ColumnsSelectField(self, model.input_fields)
+        self.GetSizer().Add(self['input_fields'].field, 1, wx.EXPAND|wx.ALL, 5)
 
-        self.input_trim = SpinField(self, 0, 10, 0)
+        self['input_trim'] = SpinField(self, 0, 10, 0)
         s = wx.BoxSizer(wx.HORIZONTAL)
         self.GetSizer().Add(s, 0, wx.ALL|wx.ALIGN_LEFT, 5)
         s.Add(wx.StaticText(self, label='Number of lines to trim from ' + \
                             'beginning of file (e.g. for column headers'),
               0, wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
-        s.Add(self.input_trim.field, 0, wx.EXPAND)
-
-    def get_values(self):
-        return OrderedDict((('input_fields', [b for a,b in self.input_fields.GetSelectionWithData()]),
-                            ('input_trim', self.input_trim.get_value())))
-
-    def set_values(self, values):
-        if 'input_fields' in values:
-            self.input_fields.SetSelection([model.input_fields[x]['long'] for x in values['input_fields']])
-        if 'input_trim' in values:
-            self.input_trim.set_value(values['input_trim'])
+        s.Add(self['input_trim'].field, 0, wx.EXPAND)
 
 
 class SiteLocationParams(ParameterGroup):

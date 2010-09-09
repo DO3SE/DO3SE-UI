@@ -161,7 +161,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         # Keep track of whether or not there have been changes since last save
         self.unsaved = False
         self.Bind(fields.EVT_VALUE_CHANGED, self.OnFieldUpdate)
-        # TODO: catch changes in input format panel!
+
         self.UpdateTitle()
         self.UpdateErrors()
 

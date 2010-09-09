@@ -139,6 +139,39 @@ class ChoiceField(Field):
         self.field.SetStringSelection(self._choice_string(self.choices[key]))
 
 
+class ColumnsSelectField(Field):
+    """Wrap :class:`~do3se.wxext.listselectctrl.ListSelectCtrl` as a :class:`Field`.
+
+    *choices* should be either :data:`do3se.model.input_fields` or
+    :data:`do3se.model.output_fields`.  The "value" of the field is a list of
+    column variable names.
+
+    :data:`EVT_VALUE_CHANGED` events are emitted when columns are added, removed
+    or moved around.
+    """
+    def __init__(self, parent, choices):
+        Field.__init__(self, parent)
+
+        self.choices = choices
+        
+        self.field = wxext.ListSelectCtrl(parent)
+        self.field.SetAvailable([(v['long'], k) for k,v in self.choices.iteritems()])
+
+        # Emit EVT_VALUE_CHANGED at appropriate times
+        self.field.button_add.Bind(wx.EVT_BUTTON, self.OnChanged)
+        self.field.button_remove.Bind(wx.EVT_BUTTON, self.OnChanged)
+        self.field.button_up.Bind(wx.EVT_BUTTON, self.OnChanged)
+        self.field.button_down.Bind(wx.EVT_BUTTON, self.OnChanged)
+    
+    def get_value(self):
+        """Get the keys of the columns that are selected."""
+        return [b for a,b in self.field.GetSelectionWithData()]
+
+    def set_value(self, value):
+        """Set the current selection from a list of column keys."""
+        self.field.SetSelection([self.choices[k]['long'] for k in value])
+
+
 class FieldGroup(OrderedDict, wx.Panel):
     """Base class for groups of fields.
 
