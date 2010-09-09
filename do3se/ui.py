@@ -11,8 +11,8 @@ import wxext
 import model
 import ui_xrc
 import dialogs
-import graphs
-from fields import *
+import fields
+import fieldgroups
 from project import Project
 from util import load_presets
 from dataset import Dataset
@@ -124,137 +124,17 @@ class MainWindow(ui_xrc.xrcframe_mainwindow):
             self.Close()
 
 
-class InputFormat(FieldGroup):
-    def __init__(self, fc, parent):
-        FieldGroup.__init__(self, fc, parent)
-
-        self.SetSizer(wx.BoxSizer(wx.VERTICAL))
-
-        self.input_fields = wxext.ListSelectCtrl(self)
-        self.input_fields.SetAvailable([(v['long'], k) for k,v in model.input_fields.iteritems()])
-        self.GetSizer().Add(self.input_fields, 1, wx.EXPAND|wx.ALL, 5)
-
-        self.input_trim = SpinField(self, 0, 10, 0)
-        s = wx.BoxSizer(wx.HORIZONTAL)
-        self.GetSizer().Add(s, 0, wx.ALL|wx.ALIGN_LEFT, 5)
-        s.Add(wx.StaticText(self, label='Number of lines to trim from ' + \
-                            'beginning of file (e.g. for column headers'),
-              0, wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
-        s.Add(self.input_trim.field, 0, wx.EXPAND)
-
-    def get_values(self):
-        return OrderedDict((('input_fields', [b for a,b in self.input_fields.GetSelectionWithData()]),
-                            ('input_trim', self.input_trim.get_value())))
-
-    def set_values(self, values):
-        if 'input_fields' in values:
-            self.input_fields.SetSelection([model.input_fields[x]['long'] for x in values['input_fields']])
-        if 'input_trim' in values:
-            self.input_trim.set_value(values['input_trim'])
-
-
-class PreviewCanvasFieldGroup(SimpleFieldGroup):
-    def __init__(self, fc, parent, fields):
-        SimpleFieldGroup.__init__(self, fc, parent, fields)
-
-        self.preview = wx.lib.plot.PlotCanvas(self)
-        self.preview.SetEnableTitle(False)
-        self.preview.SetEnableLegend(False)
-        self.preview.SetSizeHints(minW=-1, minH=150, maxH=200)
-        self.GetSizer().Add(self.preview, 1, wx.EXPAND|wx.ALL, 5)
-
-        self.Bind(EVT_VALUE_CHANGED, self.update_preview)
-
-    def update_preview(self, evt):
-        raise NotImplementedError
-
-    def set_values(self, values):
-        SimpleFieldGroup.set_values(self, values)
-        self.update_preview(None)
-
-
-class SeasonParams(PreviewCanvasFieldGroup):
-    @wxext.autoeventskip
-    def update_preview(self, evt):
-        gfx = wx.lib.plot.PlotGraphics([graphs.lai_preview(self.fc)],
-                                       'LAI preview',
-                                       'Day of year (dd)',
-                                       'Leaf Area Index')
-        self.preview.Draw(graphics=gfx)
-
-
-class FphenParams(PreviewCanvasFieldGroup):
-    def __init__(self, *args, **kwargs):
-        PreviewCanvasFieldGroup.__init__(self, *args, **kwargs)
-
-        # TODO: This will need to happen somewhere else if the panels are in
-        # a different order...
-        self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
-        self.fc['season']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
-
-    @wxext.autoeventskip
-    def update_preview(self, evt):
-        gfx = wx.lib.plot.PlotGraphics([graphs.fphen_preview(self.fc)],
-                                       'Fphen preview',
-                                       'Day of year (dd)',
-                                       'Fphen')
-        self.preview.Draw(graphics=gfx)
-
-
-class LeafFphenParams(PreviewCanvasFieldGroup):
-    def __init__(self, *args, **kwargs):
-        PreviewCanvasFieldGroup.__init__(self, *args, **kwargs)
-
-        # TODO: This will need to happen somewhere else if the panels are in
-        # a different order...
-        self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
-        self.fc['season']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
-        # Might be following Fphen instead of leaf_fphen
-        self.fc['fphen'].Bind(EVT_VALUE_CHANGED, self.update_preview)
-
-        self['leaf_fphen'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
-        self.update_disabled(None)
-
-    def set_values(self, values):
-        """Ensure the enabled/disabled state gets updated when values are set."""
-        PreviewCanvasFieldGroup.set_values(self, values)
-        self.update_disabled(None)
-        
-    @wxext.autoeventskip
-    def update_preview(self, evt):
-        gfx = wx.lib.plot.PlotGraphics([graphs.leaf_fphen_preview(self.fc)],
-                                       'Leaf fphen preview',
-                                       'Day of year (dd)',
-                                       'leaf_fphen')
-        self.preview.Draw(graphics=gfx)
-
-    @wxext.autoeventskip
-    def update_disabled(self, evt):
-        enabled = self['leaf_fphen'].get_value() != 'copy'
-        for field in self.itervalues():
-            if field is not self['leaf_fphen']:
-                field.field.Enable(enabled)
-
-
 class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     ui_specification = (
-        ('format', 'Input data format', InputFormat, (), {}),
-        ('siteloc', 'Location properties', SimpleFieldGroup, (),
-            {'fields': model.parameters_by_group('siteloc')}),
-        ('meas', 'Measurement data', SimpleFieldGroup, (),
-            {'fields': model.parameters_by_group('meas')}),
-        ('vegchar', 'Vegetation characteristics', SimpleFieldGroup, (),
-            {'fields': model.parameters_by_group('vegchar')}),
-        ('vegenv', 'Environmental response', SimpleFieldGroup, (),
-            {'fields': model.parameters_by_group('vegenv')}),
-        ('modelopts', 'Model options', SimpleFieldGroup, (),
-            {'fields': model.parameters_by_group('modelopts')}),
-        ('season', 'Season', SeasonParams, (),
-            {'fields': model.parameters_by_group('season')}),
-        ('fphen', 'fphen', FphenParams, (),
-            {'fields': model.parameters_by_group('fphen')}),
-        ('leaf_fphen', 'Leaf fphen', LeafFphenParams, (),
-            {'fields': model.parameters_by_group('leaf_fphen')}),
+        ('format', 'Input data format', fieldgroups.InputFormatParams, (), {}),
+        ('siteloc', 'Location properties', fieldgroups.SiteLocationParams, (), {}),
+        ('meas', 'Measurement data', fieldgroups.MeasurementParams, (), {}),
+        ('vegchar', 'Vegetation characteristics', fieldgroups.VegCharParams, (), {}),
+        ('vegenv', 'Environmental response', fieldgroups.VegEnvParams, (), {}),
+        ('modelopts', 'Model options', fieldgroups.ModelOptionsParams, (), {}),
+        ('season', 'Season', fieldgroups.SeasonParams, (), {}),
+        ('fphen', 'fphen', fieldgroups.FphenParams, (), {}),
+        ('leaf_fphen', 'Leaf fphen', fieldgroups.LeafFphenParams, (), {}),
     )
 
     def __init__(self, app, projectfile):
@@ -264,9 +144,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.btn_run.Enable(True)
         
         self.app = app
-        self.params = FieldCollection(self.tb_main, self.ui_specification)
+        self.params = fields.FieldCollection(self.tb_main, self.ui_specification)
         for group in self.params.itervalues():
-            if isinstance(group, PreviewCanvasFieldGroup):
+            if isinstance(group, fieldgroups.PreviewCanvasMixin):
                 group.update_preview(None)
         self.project = Project(projectfile, self)
         self.params.set_values(self.project.data)
@@ -279,7 +159,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
         # Keep track of whether or not there have been changes since last save
         self.unsaved = False
-        self.Bind(EVT_VALUE_CHANGED, self.OnFieldUpdate)
+        self.Bind(fields.EVT_VALUE_CHANGED, self.OnFieldUpdate)
         # TODO: catch changes in input format panel!
         self.UpdateTitle()
 
