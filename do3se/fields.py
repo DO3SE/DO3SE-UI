@@ -9,6 +9,30 @@ from util import OrderedDict
 ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
 
 
+class ValidationError:
+    """Field group validation error.
+
+    For now this just wraps a message string, but might be extended to do more
+    useful stuff at a later date.  When a :class:`FieldGroup` is validated, it
+    returns a list of these errors; an empty list means everything is valid.
+    """
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __unicode__(self):
+        return unicode(self.msg)
+
+
+def validate(errors, assertion, msg):
+    """Helper function for validation.
+    
+    Adds a :class:`ValidationError` wrapped around *msg* to *errors* if
+    *assertion* is False.
+    """
+    if not assertion:
+        errors.append(ValidationError(msg))
+
+
 class Field:
     """Abstract base class for fields.
 
@@ -159,6 +183,33 @@ class FieldGroup(OrderedDict, wx.Panel):
             if k in self:
                 self[k].set_value(v)
 
+    def validate(self):
+        """Validate the contents of the field group.
+
+        Return a list of :class:`ValidationError` objects, one per error; an
+        empty list means everything is OK.
+        """
+        return []
+
+    def extract(self, *args):
+        """Get the values of fields specified in *args* as a list.
+        
+        Allows code like this:
+
+        .. code-block:: python
+
+            sgs = self['sgs'].get_value()
+            egs = self['egs'].get_value()
+            lai_a = self['lai_a'].get_value()
+
+        To become this:
+
+        .. code-block:: python
+
+            sgs, egs, lai_a = self.extract('sgs', 'egs', 'lai_a')
+        """
+        return map(lambda k: self[k].get_value(), args)
+
 
 class SimpleFieldGroup(FieldGroup):
     """Simple group of fields in a grid.
@@ -249,6 +300,16 @@ class FieldCollection(OrderedDict):
         """
         for group in self.itervalues():
             group.set_values(values)
+
+    def validate(self):
+        """Validation all field groups.
+
+        Returns all errors from all field groups.
+        """
+        errors = []
+        for fg in self.itervalues():
+            errors.extend(fg.validate())
+        return errors
 
 
 def disableable(cls, chklabel='Disabled?'):

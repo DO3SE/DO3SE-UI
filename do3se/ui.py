@@ -162,6 +162,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.Bind(fields.EVT_VALUE_CHANGED, self.OnFieldUpdate)
         # TODO: catch changes in input format panel!
         self.UpdateTitle()
+        self.UpdateErrors()
 
     def UpdateTitle(self):
         title = self.app.GetAppName()
@@ -171,12 +172,27 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             title += ' - ' + os.path.basename(self.project.filename)
         self.SetTitle(title)
 
+    def UpdateErrors(self):
+        errors = self.params.validate()
+        self.list_errors.Clear()
+        self.list_errors.InsertItems(map(unicode, errors), 0)
+        if len(errors) == 0:
+            self.btn_run.Enable(True)
+            self.btn_errors.SetLabel('No errors')
+            self.btn_errors.SetForegroundColour(wx.NullColour)
+        else:
+            self.btn_run.Enable(False)
+            self.btn_errors.SetLabel('%d errors (click for more information)' % (len(errors),))
+            self.btn_errors.SetForegroundColour(wx.RED)
+        self.btn_errors.GetContainingSizer().Layout()
+
     @wxext.autoeventskip
     def OnFieldUpdate(self, evt):
         _log.debug('Something was updated: ' + str(evt))
         if not self.unsaved:
             self.unsaved = True
             self.UpdateTitle()
+        self.UpdateErrors()
 
     def OnClose(self, evt):
         really_close = False

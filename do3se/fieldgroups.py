@@ -113,6 +113,16 @@ class VegEnvParams(ParameterGroup):
     """Vegetation environmental response parameters group."""
     PARAMETERS = model.parameters_by_group('vegenv')
 
+    def validate(self):
+        errors = []
+
+        t_min, t_opt, t_max = self.extract('t_min', 't_opt', 't_max')
+        validate(errors, t_min < t_max, 'T_min must be less than T_max')
+        validate(errors, t_opt > t_min, 'T_opt must be greater than T_min')
+        validate(errors, t_opt < t_max, 'T_opt must be less than T_max')
+
+        return errors
+
 
 class ModelOptionsParams(ParameterGroup):
     """Model options group."""

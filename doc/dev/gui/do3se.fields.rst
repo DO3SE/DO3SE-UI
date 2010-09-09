@@ -32,3 +32,5 @@ Validation
 ----------
 .. autoclass:: ValidationError
     :members:
+
+.. autofunction:: validate
