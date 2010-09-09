@@ -26,3 +26,9 @@ Groups of fields
     :members:
 .. autoclass:: FieldCollection
     :members:
+
+
+Validation
+----------
+.. autoclass:: ValidationError
+    :members:

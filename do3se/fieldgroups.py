@@ -1,3 +1,8 @@
+"""
+While the :mod:`~do3se.fields` module provides the generic framework for
+handling groups of fields, in reality most groups of fields have some special
+behaviour.  The classes in this module encapsulate that special behaviour.
+"""
 import wx
 import wx.lib.plot
 
@@ -8,6 +13,16 @@ import graphs
 
 
 class ParameterGroup(SimpleFieldGroup):
+    """Group of parameters using :class:`~do3se.fields.SimpleFieldGroup`.
+    
+    Most of the groups start with the :class:`~do3se.fields.SimpleFieldGroup`
+    layout containing parameters taken from :data:`do3se.model.parameters`
+    filtered by group.  This class abstracts that one step further by
+    defining the fields to use as the class data attribute :attr:`PARAMETERS`.
+    """
+    #: Parameters to use in the field group.  (Empty since this is the base
+    #: class, but provided as an example of how to get the correct value.)
+    #: Subclasses should set this appropriately.
     PARAMETERS = model.parameters_by_group(None)
 
     def __init__(self, *args, **kwargs):
@@ -16,6 +31,20 @@ class ParameterGroup(SimpleFieldGroup):
 
 
 class PreviewCanvasMixin:
+    """Add a preview canvas to a field group.
+
+    A canvas is added to the field group's top-level sizer, and made available
+    as the :attr:`preview` attribute.
+
+    By default, :data:`~do3se.fields.EVT_VALUE_CHANGED` is bound to
+    :meth:`update_preview` so that any changes in the group cause the preview
+    to be updated.  If a preview depends on any other events then those should
+    also be bound to :meth:`update_preview`.
+
+    .. attribute:: preview
+        
+        A :class:`wx.lib.plot.PlotCanvas` instance to use as a preview canvas.
+    """
     def __init__(self):
         self.preview = wx.lib.plot.PlotCanvas(self)
         self.preview.SetEnableTitle(False)
@@ -26,14 +55,17 @@ class PreviewCanvasMixin:
         self.Bind(EVT_VALUE_CHANGED, self.update_preview)
 
     def update_preview(self, evt):
+        """Redraw the preview (should be overridden in subclass)."""
         raise NotImplementedError
 
     def set_values(self, values):
+        """Update the preview when values are set."""
         ParameterGroup.set_values(self, values)
         self.update_preview(None)
 
 
 class InputFormatParams(FieldGroup):
+    """Data file input format parameter group."""
     def __init__(self, fc, parent):
         FieldGroup.__init__(self, fc, parent)
 
@@ -63,26 +95,35 @@ class InputFormatParams(FieldGroup):
 
 
 class SiteLocationParams(ParameterGroup):
+    """Site location parameters group."""
     PARAMETERS = model.parameters_by_group('siteloc')
 
 
 class MeasurementParams(ParameterGroup):
+    """Measurement location parameters group."""
     PARAMETERS = model.parameters_by_group('meas')
 
 
 class VegCharParams(ParameterGroup):
+    """Vegetation characteristics parameters group."""
     PARAMETERS = model.parameters_by_group('vegchar')
 
 
 class VegEnvParams(ParameterGroup):
+    """Vegetation environmental response parameters group."""
     PARAMETERS = model.parameters_by_group('vegenv')
 
 
 class ModelOptionsParams(ParameterGroup):
+    """Model options group."""
     PARAMETERS = model.parameters_by_group('modelopts')
 
 
 class SeasonParams(ParameterGroup, PreviewCanvasMixin):
+    """Season parameters group.
+
+    Has a graph previewing the LAI function.
+    """
     PARAMETERS = model.parameters_by_group('season')
 
     def __init__(self, *args, **kwargs):
@@ -99,6 +140,11 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
 
 
 class FphenParams(ParameterGroup, PreviewCanvasMixin):
+    """Canopy Fphen parameters group.
+
+    Has a graph previewing the fphen function.  Also depends on ``sgs`` and
+    ``egs`` from the season parameters group.
+    """
     PARAMETERS = model.parameters_by_group('fphen')
 
     def __init__(self, *args, **kwargs):
@@ -120,6 +166,12 @@ class FphenParams(ParameterGroup, PreviewCanvasMixin):
 
 
 class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
+    """Leaf fphen parameters group.
+
+    Has a graph previewing the leaf fphen function.  Also depends on ``sgs`` and
+    ``egs`` from the season parameters group, plus everything in the Fphen group
+    (since it might be following the canopy fphen calculation).
+    """
     PARAMETERS = model.parameters_by_group('leaf_fphen')
 
     def __init__(self, *args, **kwargs):
@@ -151,6 +203,7 @@ class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
 
     @wxext.autoeventskip
     def update_disabled(self, evt):
+        """Disable input fields when following canopy Fphen."""
         enabled = self['leaf_fphen'].get_value() != 'copy'
         for field in self.itervalues():
             if field is not self['leaf_fphen']:
