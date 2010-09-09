@@ -6,6 +6,7 @@ _log = logging.getLogger('do3se.ui')
 import wx
 import wx.html
 import wx.lib.plot
+import wx.lib.delayedresult
 
 import wxext
 import model
@@ -222,14 +223,30 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.pnl_errors.GetContainingSizer().Layout()
 
     def OnButton_btn_run(self, evt):
+        """Run project with a data file.
+
+        The user is prompted for a data file to load.  The input data is
+        loaded, then the model is run in a separate thread (to maintain UI
+        responsiveness) and a results window opened.  During the model run,
+        the window is disabled and made modal to ensure there is no risk of
+        another concurrent model run.
+        """
         filename = dialogs.open_datafile(self)
         if filename is None:
             return
 
         d = Dataset(open(filename, 'r'), self.params.get_values())
-        r = d.run()
-        w = ResultsWindow(self.app, self, r, os.path.basename(filename))
-        w.Show()
+
+        # Function to return to when the model has been run
+        def f(dr):
+            self.Enable(True)
+            self.MakeModal(False)
+            w = ResultsWindow(self.app, self, dr.get(), os.path.basename(filename))
+            w.Show()
+
+        self.MakeModal(True)
+        self.Enable(False)
+        wx.lib.delayedresult.startWorker(f, d.run, wargs=[self.prg_progress])
 
     def OnMenu_wxID_NEW(self, evt):
         w = ProjectWindow(self.app, None)

@@ -115,8 +115,12 @@ class Dataset:
 
         _log.info("Loaded %d data rows" % len(self.input))
 
-    def run(self):
+    def run(self, progressbar=None, progress_interval=100):
         """Run the DO3SE model with this dataset.
+
+        If a :class:`wx.Gauge` is supplied as the *progressbar* argument, it
+        will have it's range set to the number of input rows, and will be
+        updated every *progress_interval* rows.
 
         Returns a :class:`Resultset` object with the model run results.
         """
@@ -131,10 +135,22 @@ class Dataset:
         _log.info("Initialising DOSE Fortran model")
         model.run.initialise()
 
+        # Initialise progress bar
+        if progressbar is not None:
+            progressbar.SetRange(len(self.input))
+            progressbar.SetValue(0)
+        prog_counter = progress_interval
+
         results = []
         # Iterate through dataset
         _log.info("Running calculations ...")
         for row in self.input:
+            if progressbar is not None:
+                prog_counter -= 1
+                if prog_counter == 0:
+                    prog_counter = progress_interval
+                    progressbar.SetValue(progressbar.GetValue() + progress_interval)
+
             # Skip rows that are missing values
             if '' in row.values():
                 skippedrows += 1
@@ -149,6 +165,9 @@ class Dataset:
 
             model.run.calculate_row()
             results.append(model.extract_outputs())
+
+        if progressbar is not None:
+            progressbar.SetValue(0)
 
         _log.info("Got %d results" % len(results))
         return Resultset(results, skippedrows, self.params)
