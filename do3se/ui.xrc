@@ -145,10 +145,6 @@
         </object>
       </object>
     </object>
-    <title>DO3SE (foo.do3se)</title>
-    <XRCED>
-      <events>EVT_CLOSE</events>
-    </XRCED>
     <object class="wxPanel">
       <object class="wxBoxSizer">
         <orient>wxVERTICAL</orient>
@@ -234,7 +230,7 @@ This is the main project window.  Each of the items on the left refer to a group
             <object class="sizeritem">
               <object class="wxGauge" name="prg_progress">
                 <range>100</range>
-                <value>50</value>
+                <value>0</value>
                 <XRCED>
                   <assign_var>1</assign_var>
                 </XRCED>
@@ -263,6 +259,10 @@ This is the main project window.  Each of the items on the left refer to a group
         </object>
       </object>
     </object>
+    <title>DO3SE (foo.do3se)</title>
+    <XRCED>
+      <events>EVT_CLOSE</events>
+    </XRCED>
   </object>
   <object class="wxDialog" name="dialog_presets">
     <object class="wxBoxSizer">

@@ -115,9 +115,9 @@ class xrcframe_projectwindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnMenu_wxID_EXIT, id=wx.ID_EXIT)
         self.Bind(wx.EVT_MENU, self.OnMenu_create_preset, id=xrc.XRCID('create_preset'))
         self.Bind(wx.EVT_MENU, self.OnMenu_manage_presets, id=xrc.XRCID('manage_presets'))
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_run, self.btn_run)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_NEW
     def OnMenu_wxID_NEW(self, evt):
@@ -167,12 +167,6 @@ class xrcframe_projectwindow(wx.Frame):
         print "OnMenu_manage_presets()"
 #!XRCED:end-block:xrcframe_projectwindow.OnMenu_manage_presets        
 
-#!XRCED:begin-block:xrcframe_projectwindow.OnClose
-    def OnClose(self, evt):
-        # Replace with event handler code
-        print "OnClose()"
-#!XRCED:end-block:xrcframe_projectwindow.OnClose        
-
 #!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_errors
     def OnButton_btn_errors(self, evt):
         # Replace with event handler code
@@ -184,6 +178,12 @@ class xrcframe_projectwindow(wx.Frame):
         # Replace with event handler code
         print "OnButton_btn_run()"
 #!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_run        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnClose
+    def OnClose(self, evt):
+        # Replace with event handler code
+        print "OnClose()"
+#!XRCED:end-block:xrcframe_projectwindow.OnClose        
 
 
 class xrcdialog_presets(wx.Dialog):
@@ -376,10 +376,6 @@ def __init_resources():
         </object>
       </object>
     </object>
-    <title>DO3SE (foo.do3se)</title>
-    <XRCED>
-      <events>EVT_CLOSE</events>
-    </XRCED>
     <object class="wxPanel">
       <object class="wxBoxSizer">
         <orient>wxVERTICAL</orient>
@@ -465,7 +461,7 @@ This is the main project window.  Each of the items on the left refer to a group
             <object class="sizeritem">
               <object class="wxGauge" name="prg_progress">
                 <range>100</range>
-                <value>50</value>
+                <value>0</value>
                 <XRCED>
                   <assign_var>1</assign_var>
                 </XRCED>
@@ -494,6 +490,10 @@ This is the main project window.  Each of the items on the left refer to a group
         </object>
       </object>
     </object>
+    <title>DO3SE (foo.do3se)</title>
+    <XRCED>
+      <events>EVT_CLOSE</events>
+    </XRCED>
   </object>
   <object class="wxDialog" name="dialog_presets">
     <object class="wxBoxSizer">
