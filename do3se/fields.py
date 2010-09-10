@@ -62,7 +62,7 @@ class Field:
     @wxext.autoeventskip
     def OnChanged(self, evt):
         """Post a :class:`ValueChangedEvent`."""
-        newevt = ValueChangedEvent(evt.GetId())
+        newevt = ValueChangedEvent(self.field.GetId())
         wx.PostEvent(self.field, newevt)
 
 
