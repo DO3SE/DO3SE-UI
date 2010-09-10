@@ -146,6 +146,14 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
         ParameterGroup.__init__(self, *args, **kwargs)
         PreviewCanvasMixin.__init__(self)
 
+        self['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
+        self['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_sgs_egs)
+        self.fc['siteloc']['lat'].field.Bind(EVT_VALUE_CHANGED,
+                                             self.update_sgs_egs)
+
+        self.update_disabled(None)
+        self.update_sgs_egs(None)
+
     @wxext.autoeventskip
     def update_preview(self, evt):
         gfx = wx.lib.plot.PlotGraphics([graphs.lai_preview(self.fc)],
@@ -153,6 +161,25 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
                                        'Day of year (dd)',
                                        'Leaf Area Index')
         self.preview.Draw(graphics=gfx)
+
+    @wxext.autoeventskip
+    def update_disabled(self, evt):
+        """Disable SGS/EGS inputs if they're not being used."""
+        enabled = self['sgs_egs_calc'].get_value() == 'inputs'
+        self['sgs'].field.Enable(enabled)
+        self['egs'].field.Enable(enabled)
+
+    @wxext.autoeventskip
+    def update_sgs_egs(self, evt):
+        """Keep SGS/EGS up to date when following latitude function."""
+        if self['sgs_egs_calc'].get_value() == 'latitude':
+            lat = self.fc['siteloc']['lat'].get_value()
+            sgs, egs = model.phenology.latitude_sgs_egs(lat)
+            self['sgs'].set_value(sgs)
+            self['egs'].set_value(egs)
+            # Propagate changes, e.g. to preview graphs
+            self['sgs'].OnChanged(None)
+            self['egs'].OnChanged(None)
 
 
 class FphenParams(ParameterGroup, PreviewCanvasMixin):
