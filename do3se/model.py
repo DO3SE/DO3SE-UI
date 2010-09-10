@@ -16,7 +16,7 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
         (inputs,    'p',        float,  True,   'P (kPa)',      'Pressure (P, kPa)'),
         (inputs,    'o3_ppb_zr',float,  True,   'O3_zR (ppb)',  'Measured O3 density (O3_zR, ppb)'),
         (inputs,    'hd',       float,  False,  'Hd (Wh/m^2)',  'Sensible heat flux (Hd, Wh/m^2)'),
-        (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (Wh/m^2)'),
+        (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (R, Wh/m^2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
 )), 'variable', OrderedDict)
@@ -36,7 +36,7 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (inputs,        'p',        float,  'P (kPa)',          'Pressure (P, kPa)'),
         (inputs,        'o3_ppb_zr',float,  'O3_zR (ppb)',      'Measured O3 density (O3_zR, ppb)'),
         (inputs,        'hd',       float,  'Hd (Wh/m^2)',      'Sensible heat flux (Hd, Wh/m^2)'),
-        (inputs,        'r',        float,  'R (Wh/m^2)',       'Global radiation (Wh/m^2)'),
+        (inputs,        'r',        float,  'R (Wh/m^2)',       'Global radiation (R, Wh/m^2)'),
         (inputs,        'par',      float,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
 
         # Calculated variables

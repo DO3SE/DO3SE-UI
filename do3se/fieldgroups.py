@@ -83,6 +83,23 @@ class InputFormatParams(FieldGroup):
         s.Add(self['input_trim'].field, 0, wx.EXPAND)
 
 
+    def validate(self):
+        """Ensure that required input fields are selected."""
+        errors = []
+        
+        req = [k for k,v in model.input_fields.iteritems() if v['required']]
+        cols = set(self['input_fields'].get_value())
+        missing = [k for k in req if k not in cols]
+
+        validate(errors, len(missing) == 0,
+                 'Required input fields missing: ' + ', '.join(missing))
+
+        validate(errors, 'par' in cols or 'r' in cols,
+                 'Required input fields missing: supply at least PAR or R')
+
+        return errors
+
+
 class SiteLocationParams(ParameterGroup):
     """Site location parameters group."""
     PARAMETERS = model.parameters_by_group('siteloc')
