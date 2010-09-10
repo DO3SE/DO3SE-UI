@@ -210,6 +210,14 @@ LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 
 default_LWP_calc = 'nss'
 
+# SGS/EGS calculations (latitude function or inputs)
+SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('inputs',      switchboard.sgs_egs_use_inputs,     'Use inputs below'),
+    ('latitude',    switchboard.sgs_egs_latitude,       'Latitude function (forests)'),
+)), 'id', OrderedDict)
+
+default_SGS_EGS_calc = 'inputs'
+
 #: Parameters
 parameters = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'), (
     ('input', 'input_fields', None, None, 'Input data fields'),
@@ -254,6 +262,7 @@ parameters = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name'),
     ('modelopts', 'lwp', ChoiceField, (LWP_calcs, default_LWP_calc), 'LWP calculation'),
     ('modelopts', 'fswp', ChoiceField, (fSWP_calcs, default_fSWP_calc), 'fSWP calculation'),
 
+    ('season', 'sgs_egs_calc', ChoiceField, (SGS_EGS_calcs, default_SGS_EGS_calc), 'SGS/EGS method'),
     ('season', 'sgs', SpinField, (1, 365, 121), 'Start of growing season (SGS, day of year)'),
     ('season', 'egs', SpinField, (1, 365, 273), 'End of growing season (EGS, day of year)'),
     ('season', 'lai_a', FloatSpinField, (0, 20, 0, 0.1, 1), 'LAI at SGS (LAI_a, m2/m2)'),
