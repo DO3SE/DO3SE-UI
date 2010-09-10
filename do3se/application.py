@@ -4,6 +4,7 @@ app_version = '2.0-alpha'
 
 import sys
 import os.path
+import optparse
 import logging
 _log = logging.getLogger('do3se.application')
 
@@ -70,18 +71,33 @@ class App(wx.App):
 
 
 def main(args):
-    from ui import MainWindow
-    # If the app is frozen (i.e. made into an executable), don't annoy the user
-    # with log messages they don't care about.
-    if hasattr(sys, 'frozen') and sys.frozen:
-        level = logging.CRITICAL
-    else:
-        level = logging.DEBUG
+    from ui import MainWindow, ProjectWindow
+
+    parser = optparse.OptionParser(usage='Usage: %prog [options] ...')
+    parser.add_option('-v', '--verbose',
+                      action='store_const',
+                      dest='loglevel',
+                      const=logging.INFO)
+    parser.add_option('-d', '--debug',
+                      action='store_const',
+                      dest='loglevel',
+                      const=logging.DEBUG)
+    parser.set_defaults(loglevel=logging.CRITICAL)
+    
+    (options, args) = parser.parse_args(args)
+
     logging.basicConfig(format="[%(levelname)-8s] %(name)s: %(message)s",
-                        level=level)
+                        level=options.loglevel)
+
+    # Show a project window for each argument, or launch the main window
     app = App()
-    w = MainWindow(app)
-    w.Show()
+    if len(args) > 0:
+        for filename in args:
+            w = ProjectWindow(app, filename)
+            w.Show()
+    else:
+        w = MainWindow(app)
+        w.Show()
     app.MainLoop()
 
 
