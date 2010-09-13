@@ -187,6 +187,17 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
         self.update_disabled(None)
         self.update_sgs_egs(None)
 
+    def validate(self):
+        errors = []
+
+        sgs, egs, lai_1, lai_2 = self.extract('sgs', 'egs', 'lai_1', 'lai_2')
+
+        validate(errors, sgs < egs, 'SGS must be before EGS')
+        validate(errors, (sgs + lai_1) < (egs - lai_2),
+                 'SGS + LAI_1 must be less than EGS - LAI_2')
+
+        return errors
+
 
 class FphenParams(ParameterGroup, PreviewCanvasMixin):
     """Canopy Fphen parameters group.
@@ -212,6 +223,29 @@ class FphenParams(ParameterGroup, PreviewCanvasMixin):
                                        'Day of year (dd)',
                                        'Fphen')
         self.preview.Draw(graphics=gfx)
+
+    def validate(self):
+        errors = []
+
+        sgs, egs = self.fc['season'].extract('sgs', 'egs')
+        fphen_1, fphen_2, fphen_3, fphen_4 = self.extract('fphen_1', 'fphen_2',
+                                                          'fphen_3', 'fphen_4')
+        fphen_a, fphen_b, fphen_c = self.extract('fphen_a', 'fphen_b', 'fphen_c')
+        fphen_d, fphen_e = self.extract('fphen_d', 'fphen_e')
+        fphen_lima, fphen_limb = self.extract('fphen_lima', 'fphen_limb')
+
+        validate(errors, (sgs + fphen_1) < (egs - fphen_4),
+                'SGS + fphen_1 must be less than EGS - fphen_4')
+
+        if fphen_lima > 0 or fphen_limb > 0:
+            validate(errors, fphen_lima > (sgs + fphen_1),
+                    'fphen_limA must be after SGS + fphen_1')
+            validate(errors, fphen_limb > fphen_lima,
+                    'fphen_limB must be after fphen_limA')
+            validate(errors, fphen_limb < (egs - fphen_4),
+                    'fphen_limB must be before EGS - fphen_4')
+
+        return errors
 
 
 class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
