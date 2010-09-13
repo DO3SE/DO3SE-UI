@@ -181,6 +181,12 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
             self['sgs'].OnChanged(None)
             self['egs'].OnChanged(None)
 
+    def set_values(self, values):
+        """Ensure the enabled/disabled states and SGS/EGS are updated."""
+        ParameterGroup.set_values(self, values)
+        self.update_disabled(None)
+        self.update_sgs_egs(None)
+
 
 class FphenParams(ParameterGroup, PreviewCanvasMixin):
     """Canopy Fphen parameters group.
