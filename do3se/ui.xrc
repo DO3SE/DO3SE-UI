@@ -158,6 +158,9 @@
                     <object class="wxHtmlWindow" name="html_introduction">
                       <htmlcode>&lt;p&gt;
 This is the main project window.  Each of the items on the left refer to a group of model parameters/settings which can be changed.
+&lt;/p&gt;
+&lt;p&gt;
+To get help on a particular parameter, click the question mark in the bottom left corner of the window and then click the parameter input.  For further help, refer to the user manual.
 &lt;/p&gt;</htmlcode>
                       <style>wxNO_BORDER</style>
                       <XRCED>

@@ -51,6 +51,9 @@ class App(wx.App):
         # and remove themselves from this
         self.windows = set()
 
+        # Set up context help provider
+        wx.HelpProvider_Set(wx.SimpleHelpProvider())
+
         return True
 
     def OnExit(self):

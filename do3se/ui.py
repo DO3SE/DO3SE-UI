@@ -141,8 +141,11 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def __init__(self, app, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
         self.SetSize((780,550))
-        # TODO: only enable Run button when no errors
-        self.btn_run.Enable(True)
+        # Add context help button
+        _s = self.btn_run.GetContainingSizer()
+        _s.PrependSpacer(5)
+        self.btn_help = wx.ContextHelpButton(_s.GetContainingWindow())
+        _s.Prepend(self.btn_help, 0, wx.EXPAND)
         
         self.app = app
         self.params = fields.FieldCollection(self.tb_main, self.ui_specification)

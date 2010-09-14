@@ -264,7 +264,7 @@ class SimpleFieldGroup(FieldGroup):
         FieldGroup.__init__(self, fc, parent)
 
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
-        self.sizer = wx.FlexGridSizer(cols=3, vgap=5, hgap=5)
+        self.sizer = wx.FlexGridSizer(cols=3, vgap=5, hgap=15)
         self.GetSizer().Add(self.sizer, 0, wx.EXPAND|wx.ALL, 5)
 
         for field in fields:
@@ -273,6 +273,7 @@ class SimpleFieldGroup(FieldGroup):
     def add(self, field):
         """Create a new field in the group."""
         self[field['variable']] = field['cls'](self, *field['args'])
+        self[field['variable']].field.SetHelpText(field['contexthelp'])
         self.sizer.Add(wx.StaticText(self, label=field['name']),
                        0, wx.ALIGN_CENTER_VERTICAL)
         self._add_widget_or_spacer(self[field['variable']].field)
