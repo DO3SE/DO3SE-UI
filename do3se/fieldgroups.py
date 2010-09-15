@@ -49,8 +49,9 @@ class PreviewCanvasMixin:
         self.preview = wx.lib.plot.PlotCanvas(self)
         self.preview.SetEnableTitle(False)
         self.preview.SetEnableLegend(False)
-        self.preview.SetSizeHints(minW=-1, minH=150, maxH=200)
-        self.GetSizer().Add(self.preview, 1, wx.EXPAND|wx.ALL, 5)
+        self.preview.SetSizeHints(minW=400, minH=200, maxH=200)
+        self.GetSizer().AddStretchSpacer(1)
+        self.GetSizer().Add(self.preview, 0, wx.EXPAND|wx.ALL, 5)
 
         self.Bind(EVT_VALUE_CHANGED, self.update_preview)
 
