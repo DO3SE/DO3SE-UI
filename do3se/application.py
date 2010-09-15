@@ -56,6 +56,15 @@ class App(wx.App):
 
         return True
 
+    def IsProjectOpen(self, filename):
+        """Check if another project window has *filename* open."""
+        filename = os.path.abspath(filename)
+        for w in self.windows:
+            if w.project.exists():
+                if os.path.abspath(w.project.filename) == filename:
+                    return True
+        return False
+
     def OnExit(self):
         """Application clean-up when exiting."""
         self.config.save()

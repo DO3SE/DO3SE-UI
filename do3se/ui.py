@@ -141,6 +141,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def __init__(self, app, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
         self.SetSize((780,700))
+        
         # Add context help button
         _s = self.btn_run.GetContainingSizer()
         _s.PrependSpacer(5)
@@ -148,11 +149,21 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         _s.Prepend(self.btn_help, 0, wx.EXPAND)
         
         self.app = app
+        
         self.params = fields.FieldCollection(self.tb_main, self.ui_specification)
         for group in self.params.itervalues():
             if isinstance(group, fieldgroups.PreviewCanvasMixin):
                 group.update_preview(None)
+
+        if projectfile is not None and self.app.IsProjectOpen(projectfile):
+            _log.warning('Project already open: ' + projectfile)
+            projectfile = None
+            wx.MessageBox('Project already open, empty project created instead',
+                          'Error',
+                          wx.OK|wx.ICON_ERROR,
+                          self)
         self.project = Project(projectfile, self)
+        
         self.params.set_values(self.project.data)
         self.app.windows.add(self)
 
