@@ -109,6 +109,10 @@ class MeasurementParams(ParameterGroup):
     """Measurement location parameters group."""
     PARAMETERS = model.parameters_by_group('meas')
 
+    def __init__(self, *args, **kwargs):
+        ParameterGroup.__init__(self, *args, **kwargs)
+        self.GetSizer().Add(wxext.static_bitmap_from_file(self, 'resources/ozone_transfer.png'))
+
 
 class VegCharParams(ParameterGroup):
     """Vegetation characteristics parameters group."""
@@ -118,6 +122,10 @@ class VegCharParams(ParameterGroup):
 class VegEnvParams(ParameterGroup):
     """Vegetation environmental response parameters group."""
     PARAMETERS = model.parameters_by_group('vegenv')
+
+    def __init__(self, *args, **kwargs):
+        ParameterGroup.__init__(self, *args, **kwargs)
+        self.GetSizer().Add(wxext.static_bitmap_from_file(self, 'resources/functions_small.png'))
 
     def validate(self):
         errors = []

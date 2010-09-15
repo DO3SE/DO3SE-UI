@@ -140,7 +140,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def __init__(self, app, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
-        self.SetSize((780,550))
+        self.SetSize((780,700))
         # Add context help button
         _s = self.btn_run.GetContainingSizer()
         _s.PrependSpacer(5)
