@@ -104,14 +104,14 @@ class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthM
         """Set the available values to select from.
 
         *values* is a list of ``(key, value)`` pairs, where each ``key`` corresponds
-        to a key in :data:`do3se.model.parameters`.
+        to a key in :data:`do3se.model.paramdefs`.
         """
         self.values = values
 
         self.DeleteAllItems()
 
         for k, v in self.values:
-            index = self.InsertStringItem(sys.maxint, model.parameters[k]['name'])
+            index = self.InsertStringItem(sys.maxint, model.paramdefs[k]['name'])
             self.SetStringItem(index, 1, str(v))
 
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
@@ -168,7 +168,7 @@ def make_preset(parent, presets, values):
     Prompts the user for a preset name and which parameters to store, and if
     successful will add the preset to the *presets* dictionary.  The *values*
     supplied are ``(key, value)`` pairs where each ``key`` corresponds to a key
-    in :data:`do3se.model.parameters`.
+    in :data:`do3se.model.paramdefs`.
     """
     pcd = PresetCreatorDialog(parent, values)
     

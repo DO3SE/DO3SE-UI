@@ -56,7 +56,7 @@ These data definitions associate useful information with parts of the Fortran mo
     | ``long``      | Long field description, used in column selection widget                      |
     +---------------+------------------------------------------------------------------------------+
 
-.. data:: parameters
+.. data:: paramdefs
 
     Attempts to centrally define the majority of the model parameters in a way that is useful for UI 
     generation.

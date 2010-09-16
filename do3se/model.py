@@ -218,8 +218,8 @@ SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 
 default_SGS_EGS_calc = 'inputs'
 
-#: Parameters
-parameters = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 'contexthelp'), (
+#: Parameter definitions
+paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 'contexthelp'), (
     ('input', 'input_fields', None, None, 'Input data fields', ''),
     ('input', 'input_trim', None, None, 'Number of input rows to discard', ''),
 
@@ -302,7 +302,7 @@ parameters = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 
 
 def parameters_by_group(group):
     """Get a list of all parameter definitions from :data:`parameters` that are in in *group*."""
-    return [p for p in parameters.itervalues() if p['group'] == group]
+    return [p for p in paramdefs.itervalues() if p['group'] == group]
 
 
 def extract_outputs():

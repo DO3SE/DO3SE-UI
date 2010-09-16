@@ -17,7 +17,7 @@ class ParameterGroup(SimpleFieldGroup):
     """Group of parameters using :class:`~do3se.fields.SimpleFieldGroup`.
     
     Most of the groups start with the :class:`~do3se.fields.SimpleFieldGroup`
-    layout containing parameters taken from :data:`do3se.model.parameters`
+    layout containing parameters taken from :data:`do3se.model.paramdefs`
     filtered by group.  This class abstracts that one step further by
     defining the fields to use as the class data attribute :attr:`PARAMETERS`.
     """
