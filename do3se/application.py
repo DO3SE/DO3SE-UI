@@ -1,6 +1,6 @@
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '2.0-alpha'
+app_version = '2.0-beta'
 
 import sys
 import os.path
