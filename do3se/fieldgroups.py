@@ -10,6 +10,7 @@ import wxext
 import model
 from fields import *
 import graphs
+import resources
 
 
 class ParameterGroup(SimpleFieldGroup):
@@ -112,7 +113,9 @@ class MeasurementParams(ParameterGroup):
 
     def __init__(self, *args, **kwargs):
         ParameterGroup.__init__(self, *args, **kwargs)
-        self.GetSizer().Add(wxext.static_bitmap_from_file(self, 'resources/ozone_transfer.png'))
+        bmp = resources.OzoneTransfer.GetBitmap()
+        self.GetSizer().Add(wx.StaticBitmap(self, wx.ID_ANY, bmp,
+                                            size=(bmp.GetWidth(), bmp.GetHeight())))
 
 
 class VegCharParams(ParameterGroup):
@@ -126,7 +129,9 @@ class VegEnvParams(ParameterGroup):
 
     def __init__(self, *args, **kwargs):
         ParameterGroup.__init__(self, *args, **kwargs)
-        self.GetSizer().Add(wxext.static_bitmap_from_file(self, 'resources/functions_small.png'))
+        bmp = resources.Functions.GetBitmap()
+        self.GetSizer().Add(wx.StaticBitmap(self, wx.ID_ANY, bmp,
+                                            size=(bmp.GetWidth(), bmp.GetHeight())))
 
     def validate(self):
         errors = []

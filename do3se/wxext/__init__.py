@@ -32,9 +32,3 @@ def autoeventskip(f):
         if evt is not None:
             evt.Skip()
     return new_f
-
-
-def static_bitmap_from_file(parent, filename):
-    """Create a :class:`wx.StaticBitmap` from an image file."""
-    bmp = wx.Image(filename).ConvertToBitmap()
-    return wx.StaticBitmap(parent, wx.ID_ANY, bmp, size=(bmp.GetWidth(), bmp.GetHeight()))

@@ -10,6 +10,7 @@ _log = logging.getLogger('do3se.application')
 
 import wx
 
+import resources
 from util import load_presets
 from config import Config
 
@@ -37,7 +38,10 @@ class App(wx.App):
         # Load configuration
         self.config = open_config()
         # Load default presets
-        self.default_presets = load_presets(open('resources/default_veg_presets.csv', 'r'))
+        _f = wx.FileSystem().OpenFile('memory:resources/default_veg_presets.csv')
+        import StringIO
+        _lines = StringIO.StringIO(_f.Stream.read())
+        self.default_presets = load_presets(resources.get_memoryfs_stream('resources/default_veg_presets.csv'))
 
         # Keep track of existing project windows - ProjectWindow instances add
         # and remove themselves from this

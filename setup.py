@@ -111,13 +111,6 @@ if __name__ == "__main__":
             author_email    = 'sei@alanbriolat.co.uk',
             packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
             data_files      = [
-                ('resources', [
-                    'resources/default_veg_presets.csv',
-                    'resources/resistance.png',
-                    'resources/ozone_transfer.png',
-                    'resources/functions_small.png',
-                    ]
-                ),
                 ('Microsoft.VC90.CRT',
                     glob('resources/Microsoft.VC90.CRT/*')),
                 ],

@@ -36,7 +36,7 @@ reduction strategies for Europe.
 </p>
 
 <p align="center">
-<img src="resources/resistance.png" />
+<img src="memory:resources/resistance.png" />
 </p>
 
 <p>
