@@ -150,7 +150,7 @@ contains
         Et_hr_prev = Et_hr
         Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 
-        if (Sn < Fc_m .or. LAI >= 1.0) then
+        if (Sn < Fc_m) then
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)
