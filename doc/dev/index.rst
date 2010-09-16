@@ -6,9 +6,9 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    buildenv
-    f_model
-    do3se
+    gui/index
+    fmodel/index
+    devel/index
 
 Indices and tables
 ==================

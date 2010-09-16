@@ -54,6 +54,14 @@ module Switchboard
     integer, public, save :: r_par_method = r_par_use_inputs
     public :: SB_Calc_R_PAR
 
+    ! Use supplied SGS/EGS
+    integer, public, parameter :: sgs_egs_use_inputs = 1
+    ! Use latitude function to calculate SGS/EGS
+    integer, public, parameter :: sgs_egs_latitude   = 2
+    integer, public, save :: sgs_egs_method = sgs_egs_use_inputs
+    public :: SB_Calc_SGS_EGS
+
+
 contains
 
     subroutine SB_Calc_SAI()
@@ -197,5 +205,20 @@ contains
 
         end select
     end subroutine SB_Calc_R_PAR
+
+    subroutine SB_Calc_SGS_EGS()
+        use Parameters, only: lat, SGS, EGS
+        use Phenology, only: Latitude_SGS_EGS
+
+        select case (sgs_egs_method)
+
+        ! Use inputs, nothing to do
+        !case (sgs_egs_use_inputs)
+        
+        case (sgs_egs_latitude)
+            call Latitude_SGS_EGS(lat, SGS, EGS)
+
+        end select
+    end subroutine SB_Calc_SGS_EGS
 
 end module Switchboard

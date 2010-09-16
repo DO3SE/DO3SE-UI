@@ -1,12 +1,12 @@
-:mod:`do3se_fortran` -- The F Model
-===================================
+:mod:`do3se._model` -- The F Model
+==================================
 
-.. module:: do3se_fortran
+.. module:: do3se._model
 
-:mod:`do3se_fortran.run` -- Model run framework
+:mod:`do3se._model.run` -- Model run framework
 -----------------------------------------------
 
-.. module:: do3se_fortran.run
+.. module:: do3se._model.run
 
 .. function:: initialise
 
@@ -83,10 +83,10 @@
     the correct value.
 
 
-:mod:`do3se_fortran.switchboard` -- Calculation switchboard
+:mod:`do3se._model.switchboard` -- Calculation switchboard
 -----------------------------------------------------------
 
-.. module:: do3se_fortran.switchboard
+.. module:: do3se._model.switchboard
     :synopsis: Calculation switchboard
 
 Several parts of the DO3SE model have different calculations for the same thing, and there needs to 

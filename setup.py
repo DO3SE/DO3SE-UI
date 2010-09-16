@@ -1,25 +1,22 @@
 #!/usr/bin/env python
 
-from glob import glob
-import do3se.application
-
-application = do3se.application.app_name
-description = do3se.application.app_description
-version     = do3se.application.app_version
-
-from numpy.distutils.core import setup, Extension, Distribution
 import os
+import re
+from glob import glob
+
+import numpy
+from numpy.distutils.core import setup, Extension, Distribution
+
+import do3se.application
 
 try:
     import py2exe
 except ImportError:
     pass
 
-# NumPy doesn't play nice with py2exe, an __init__.py is missing - let's fix it!
-import numpy
-path = os.path.join(os.path.dirname(numpy.__file__),
-                    'distutils', 'tests', '__init__.py')
-open(path, 'a').close()
+application = do3se.application.app_name
+description = do3se.application.app_description
+version     = do3se.application.app_version
 
 manifest = '''
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1"
@@ -71,36 +68,26 @@ build_opts = dict()
 if os.name == 'nt':
     build_opts['compiler'] = 'mingw32'
 
-files = [os.path.join('F', x) for x in [
-                        'constants.f90',
-                        'params_veg.f90',
-                        'params_site.f90',
-                        'inputs.f90',
-                        'variables.f90',
-                        'functions.f90',
-                        'environmental.f90',
-                        'evapotranspiration.f90',
-                        'irradiance.f90',
-                        'phenology.f90',
-                        'r.f90',
-                        'soil.f90',
-                        'o3.f90',
-                        'run.f90',
-]]
+# Remove need for duplication - use file list from standalone model build
+ext_files = [os.path.join('F', x) for x in
+        re.findall(r'\w+\.f90',
+            re.sub(r'(\w+)\.o', r'\1.f90',
+                open(os.path.join('F', 'objects.mk'), 'r').read()))]
+ext_name = '_model'
 
 def buildpyf(filelist, target):
     from numpy.f2py import f2py2e
     f2py2e.callcrackfortran(filelist,
             {
-                'signsfile': target,
-                'module': 'do3se_fortran',
+                'signsfile': target + '.pyf',
+                'module': target,
                 'debug': False,
                 'verbose': False,
                 'include_paths': list(),
                 'do-lower': True
             }
     )
-    return [target] + filelist
+    return [target + '.pyf'] + filelist
 
 if __name__ == "__main__":
 
@@ -112,7 +99,7 @@ if __name__ == "__main__":
     Distribution.console = []
     Distribution.isapi = []
     Distribution.windows = [{
-            'script': "run-do3se.py",
+            'script': "DO3SE.py",
             'other_resources': [(24, 1, manifest)],
     }]
 
@@ -124,13 +111,6 @@ if __name__ == "__main__":
             author_email    = 'sei@alanbriolat.co.uk',
             packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
             data_files      = [
-                ('resources', [
-                    'resources/default_veg_presets.csv',
-                    'resources/resistance.png',
-                    'resources/transfer.png',
-                    'resources/functions.png',
-                    ]
-                ),
                 ('Microsoft.VC90.CRT',
                     glob('resources/Microsoft.VC90.CRT/*')),
                 ],
@@ -154,14 +134,12 @@ if __name__ == "__main__":
                         'compiler',
                         'distutils',
                         'email',
+                        'numpy.core._dotblas',
                         # Packages that definitely cannot be removed
                         #'wx',
                         #'numpy',
                         #'unittest',
                         #'pyexpat',
-                        ],
-                    'packages': [
-                        'numpy',
                         ],
                     'dll_excludes': ['MSVCP90.dll'],
                     'bundle_files': 1,
@@ -170,6 +148,6 @@ if __name__ == "__main__":
             },
             ext_package     = 'do3se',
             ext_modules     = [
-                Extension('do3se_fortran', buildpyf(files, 'do3se_fortran.pyf'))
+                Extension(ext_name, buildpyf(ext_files, ext_name))
             ],
     )

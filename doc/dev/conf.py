@@ -84,7 +84,7 @@ exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+modindex_common_prefix = ['do3se.']
 
 
 # -- Options for HTML output ---------------------------------------------------

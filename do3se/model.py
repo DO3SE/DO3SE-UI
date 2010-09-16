@@ -1,17 +1,9 @@
-from do3se_fortran import *
+from _model import *
+from util import to_dicts, dicts_to_map, OrderedDict
+from fields import SpinField, FloatSpinField, ChoiceField, disableable
 
-def _to_dicts(fields, tuples):
-    return [dict(zip(fields, x)) for x in tuples]
-
-def _to_id_map(dicts, field='id'):
-    return dict((x[field], x) for x in dicts)
-
-#
-# Define available fields
-#
-
-# Available input fields
-input_fields = _to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
+#: Available input fields
+input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
         (inputs,    'yr',       int,    False,  'Year',         'Year'),
         (inputs,    'mm',       int,    False,  'Month',        'Month'),
         (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
@@ -24,16 +16,13 @@ input_fields = _to_dicts(('module', 'variable', 'type', 'required', 'short', 'lo
         (inputs,    'p',        float,  True,   'P (kPa)',      'Pressure (P, kPa)'),
         (inputs,    'o3_ppb_zr',float,  True,   'O3_zR (ppb)',  'Measured O3 density (O3_zR, ppb)'),
         (inputs,    'hd',       float,  False,  'Hd (Wh/m^2)',  'Sensible heat flux (Hd, Wh/m^2)'),
-        (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (Wh/m^2)'),
+        (inputs,    'r',        float,  False,  'R (Wh/m^2)',   'Global radiation (R, Wh/m^2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  'Net radiation (Rn, MJ/m^2)'),
-))
+)), 'variable', OrderedDict)
 
-# Mapping from input field variable name to full field info
-input_field_map = _to_id_map(input_fields, 'variable')
-
-# Available output fields
-output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
+#: Available output fields
+output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         # Inputs
         (inputs,        'yr',       int,    'Year',             'Year'),
         (inputs,        'mm',       int,    'Month',            'Month'),
@@ -47,7 +36,7 @@ output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         (inputs,        'p',        float,  'P (kPa)',          'Pressure (P, kPa)'),
         (inputs,        'o3_ppb_zr',float,  'O3_zR (ppb)',      'Measured O3 density (O3_zR, ppb)'),
         (inputs,        'hd',       float,  'Hd (Wh/m^2)',      'Sensible heat flux (Hd, Wh/m^2)'),
-        (inputs,        'r',        float,  'R (Wh/m^2)',       'Global radiation (Wh/m^2)'),
+        (inputs,        'r',        float,  'R (Wh/m^2)',       'Global radiation (R, Wh/m^2)'),
         (inputs,        'par',      float,  'PAR (umol/m^2/s)', 'Photosynthetically active radiation (PAR, umol/m^2/s)'),
 
         # Calculated variables
@@ -135,118 +124,191 @@ output_fields = _to_dicts(('module', 'variable', 'type', 'short', 'long'), (
         (variables,     'aot0',     float,  'AOT0',             '[DEBUG] AOT0'),
         (variables,     'afst0',    float,  'AFst0',            '[DEBUG] Afst0'),
         (variables,     'fo3',      float,  'fO3',              '[DEBUG] fO3'),
-))
+)), 'variable', OrderedDict)
 
-# Mapping from output field variable name to full field info
-output_field_map = _to_id_map(output_fields, 'variable')
+#: Soil class data
+soil_classes = dicts_to_map(to_dicts(('id', 'name', 'data'), (
+    ('sand_loam',   'Sandy Loam (coarse)', {
+        'soil_b':   3.31,
+        'fc_m':     0.16,
+        'swp_ae':   -0.00091,
+        'ksat':     0.0009576,
+    }),
+    ('silt_loam',   'Silt loam (medium coarse)', {
+        'soil_b':   4.38,
+        'fc_m':     0.26,
+        'swp_ae':   -0.00158,
+        'ksat':     0.0002178,
+    }),
+    ('loam',        'Loam (medium)', {
+        'soil_b':   6.58,
+        'fc_m':     0.29,
+        'swp_ae':   -0.00188,
+        'ksat':     0.0002286,
+    }),
+    ('clay_loam',   'Clay loam (fine)', {
+        'soil_b':   7.00,
+        'fc_m':     0.37,
+        'swp_ae':   -0.00588,
+        'ksat':     0.00016,
+    }),
+)), 'id', OrderedDict)
 
-# Soil class data
-soil_classes = _to_dicts(('id', 'name', 'data'), (
-        ('sand_loam',   'Sandy Loam (coarse)', {
-            'soil_b':   3.31,
-            'fc_m':     0.16,
-            'swp_ae':   -0.00091,
-            'ksat':     0.0009576,
-        }),
-        ('silt_loam',   'Silt loam (medium coarse)', {
-            'soil_b':   4.38,
-            'fc_m':     0.26,
-            'swp_ae':   -0.00158,
-            'ksat':     0.0002178,
-        }),
-        ('loam',        'Loam (medium)', {
-            'soil_b':   6.58,
-            'fc_m':     0.29,
-            'swp_ae':   -0.00188,
-            'ksat':     0.0002286,
-        }),
-        ('clay_loam',   'Clay loam (fine)', {
-            'soil_b':   7.00,
-            'fc_m':     0.37,
-            'swp_ae':   -0.00588,
-            'ksat':     0.00016,
-        }),
-))
-
-# Mapping from soil class id to full info
-soil_class_map = _to_id_map(soil_classes)
-
+#: Default soil class
 default_soil_class = 'loam'
 
-# Leaf fphen calculations
-leaf_fphen_calcs = (
-        {'id': 'copy',  'func': switchboard.leaf_fphen_equals_fphen, 'name': 'Same as Fphen'},
-        {'id': 'wheat', 'func': switchboard.leaf_fphen_wheat,       'name': 'Wheat'},
-        {'id': 'potato','func': switchboard.leaf_fphen_potato,      'name': 'Potato'},
-)
-
-# Mapping from calc id to info
-leaf_fphen_calc_map = _to_id_map(leaf_fphen_calcs)
+#: Leaf fphen calculations
+leaf_fphen_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('copy',    switchboard.leaf_fphen_equals_fphen,    'Same as Fphen'),
+    ('wheat',   switchboard.leaf_fphen_wheat,           'Wheat'),
+    ('potato',  switchboard.leaf_fphen_potato,          'Potato'),
+)), 'id', OrderedDict)
 
 default_leaf_fphen_calc = 'copy'
 
 # fO3 calculations
-fO3_calcs = (
-        {'id': 'none',      'func': switchboard.fo3_disabled,   'name': 'Not used (fO3 = 1)'},
-        {'id': 'wheat',     'func': switchboard.fo3_wheat,      'name': 'Wheat'},
-        {'id': 'potato',    'func': switchboard.fo3_potato,     'name': 'Potato'},
-)
-
-# Mapping from calc id to info
-fO3_calc_map = _to_id_map(fO3_calcs)
+fO3_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('none',    switchboard.fo3_disabled,   'Not used (fO3 = 1)'),
+    ('wheat',   switchboard.fo3_wheat,      'Wheat'),
+    ('potato',  switchboard.fo3_potato,     'Potato'),
+)), 'id', OrderedDict)
 
 default_fO3_calc = 'none'
 
 # SAI calculations
-SAI_calcs = (
-        {'id': 'copy',      'func': switchboard.sai_equals_lai, 'name': 'Same as LAI'},
-        {'id': 'forest',    'func': switchboard.sai_forest,     'name': 'Forest'},
-        {'id': 'wheat',     'func': switchboard.sai_wheat,      'name': 'Wheat'},
-)
-
-# Mapping from calc id to info
-SAI_calc_map = _to_id_map(SAI_calcs)
+SAI_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('copy',    switchboard.sai_equals_lai, 'Same as LAI'),
+    ('forest',  switchboard.sai_forest,     'Forest'),
+    ('wheat',   switchboard.sai_wheat,      'Wheat'),
+)), 'id', OrderedDict)
 
 default_SAI_calc = 'copy'
 
 # fXWP calculations (switching between fSWP, fLWP and neither)
-fXWP_calcs = _to_dicts(('id', 'func', 'name'), (
-        ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
-        ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
-        ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
-        ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
-))
-
-fXWP_calc_map = _to_id_map(fXWP_calcs)
+fXWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
+    ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
+    ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
+    ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
+)), 'id', OrderedDict)
 
 default_fXWP_calc = 'disabled'
 
 # fSWP calculations (switching between exponential and linear relationship
-fSWP_calcs = _to_dicts(('id', 'func', 'name'), (
-        ('exp',     switchboard.fswp_exponential,   'Exponential'),
-        ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
-))
-
-fSWP_calc_map = _to_id_map(fSWP_calcs)
+fSWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('exp',     switchboard.fswp_exponential,   'Exponential'),
+    ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
+)), 'id', OrderedDict)
 
 default_fSWP_calc = 'exp'
 
 # LWP calculations (steady-state and non-steady-state)
-LWP_calcs = _to_dicts(('id', 'func', 'name'), (
-        ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
-        ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
-))
-
-LWP_calc_map = _to_id_map(LWP_calcs)
+LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
+    ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
+)), 'id', OrderedDict)
 
 default_LWP_calc = 'nss'
 
+# SGS/EGS calculations (latitude function or inputs)
+SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('inputs',      switchboard.sgs_egs_use_inputs,     'Use inputs below'),
+    ('latitude',    switchboard.sgs_egs_latitude,       'Latitude function (forests)'),
+)), 'id', OrderedDict)
+
+default_SGS_EGS_calc = 'inputs'
+
+#: Parameter definitions
+paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 'contexthelp'), (
+    ('input', 'input_fields', None, None, 'Input data fields', ''),
+    ('input', 'input_trim', None, None, 'Number of input rows to discard', ''),
+
+    ('siteloc', 'lat', FloatSpinField, (-90, 90, 50, 0.1, 3), 'Latitude (degrees North)', ''),
+    ('siteloc', 'lon', FloatSpinField, (-180, 180, 0, 0.1, 3), 'Longitude (degrees East)', ''),
+    ('siteloc', 'elev', SpinField, (-100, 5000, 0), 'Elevation (m.a.s.l.)', ''),
+    ('siteloc', 'soil_tex', ChoiceField, (soil_classes, default_soil_class), 'Soil texture', ''),
+    ('siteloc', 'rsoil', SpinField, (1, 1000, 200), 'Rsoil', ''),
+
+    ('meas', 'o3zr', SpinField, (1, 200, 25), 'O3 measurement height (m)',
+        'The height above ground level at which O3 concentration is measured'),
+    ('meas', 'o3_h', disableable(FloatSpinField, 'Same as target canopy'), (0.1, 100, 25, 0.1, 1),
+        'O3 measurement canopy height (m)',
+        'The height of the vegetation that O3 concentration is measured above'),
+    ('meas', 'uzr', SpinField, (1, 200, 25), 'Wind speed measurement height (m)',
+        'The height above ground level at which windspeed is measured'),
+    ('meas', 'u_h', disableable(FloatSpinField, 'Same as target canopy'), (0.1, 100, 25, 0.1, 1),
+        'Wind speed measurement canopy height (m)',
+        'The height of the vegetation over which windspeed is measured'),
+    ('meas', 'd_meas', FloatSpinField, (0.1, 2, 0.5, 0.1, 1), 'Soil water measurement depth (m)', ''),
+
+    ('vegchar', 'h', FloatSpinField, (0.1, 100, 25, 0.1, 1), 'Canopy height (h, m)', ''),
+    ('vegchar', 'root', FloatSpinField, (0.1, 10, 1.2, 0.1, 1), 'Root depth (root, m)', ''),
+    ('vegchar', 'lm', FloatSpinField, (0.01, 1, 0.05, 0.01, 2), 'Leaf dimension (Lm, m)', ''),
+    ('vegchar', 'albedo', FloatSpinField, (0.01, 0.99, 0.12, 0.01, 2), 'Albedo', ''),
+    ('vegchar', 'gmax', SpinField, (1, 10000, 148), 'gmax', ''),
+    ('vegchar', 'gmorph', FloatSpinField, (0.01, 1, 1, 0.01, 2), 'gmorph', ''),
+    ('vegchar', 'fmin', FloatSpinField, (0.01, 0.99, 0.13, 0.01, 2), 'fmin', ''),
+    ('vegchar', 'rext', SpinField, (0, 20000, 2500), 'External plant cuticle resistance (Rext, s/m)', ''),
+    ('vegchar', 'y', FloatSpinField, (0.1, 100, 1.6, 0.1, 1), 'Threshold Y for AFstY (nmol/m2/s)', ''),
+
+    ('vegenv', 'f_lightfac', FloatSpinField, (0.001, 0.999, 0.006, 0.001, 3), 'light_a', ''),
+    ('vegenv', 't_min', SpinField, (-10, 100, 0), u'Minimum temperature (T_min, \u00b0C)', ''),
+    ('vegenv', 't_opt', SpinField, (-10, 100, 21), u'Optimum temperature (T_opt, \u00b0C)', ''),
+    ('vegenv', 't_max', SpinField, (-10, 100, 35), u'Maximum temperature (T_max, \u00b0C)', ''),
+    ('vegenv', 'vpd_max', FloatSpinField, (0, 100, 1, 0.01, 2), 'VPD for max. g (VPD_max, kPa)', ''),
+    ('vegenv', 'vpd_min', FloatSpinField, (0, 100, 3.25, 0.01, 2), 'VPD for min. g (VPD_min, kPa)', ''),
+    ('vegenv', 'vpd_crit', FloatSpinField, (0, 1000, 1000, 1, 1), 'Critical daily VPD sum (VPD_crit, kPa)', ''),
+    ('vegenv', 'swp_min', FloatSpinField, (-6, 0, -1.25, 0.01, 2), 'SWP for min. g (SWP_min, ???)', ''),
+    ('vegenv', 'swp_max', FloatSpinField, (-6, 0, -0.05, 0.01, 2), 'SWP for max. g (SWP_max, ???)', ''),
+
+    ('modelopts', 'fo3', ChoiceField, (fO3_calcs, default_fO3_calc), 'fO3 calculation', ''),
+    ('modelopts', 'fxwp', ChoiceField, (fXWP_calcs, default_fXWP_calc), 'Soil water influence on Gsto', ''),
+    ('modelopts', 'lwp', ChoiceField, (LWP_calcs, default_LWP_calc), 'LWP calculation', ''),
+    ('modelopts', 'fswp', ChoiceField, (fSWP_calcs, default_fSWP_calc), 'fSWP calculation', ''),
+
+    ('season', 'sgs_egs_calc', ChoiceField, (SGS_EGS_calcs, default_SGS_EGS_calc), 'SGS/EGS method', ''),
+    ('season', 'sgs', SpinField, (1, 365, 121), 'Start of growing season (SGS, day of year)', ''),
+    ('season', 'egs', SpinField, (1, 365, 273), 'End of growing season (EGS, day of year)', ''),
+    ('season', 'lai_a', FloatSpinField, (0, 20, 0, 0.1, 1), 'LAI at SGS (LAI_a, m2/m2)', ''),
+    ('season', 'lai_b', FloatSpinField, (0, 20, 4, 0.1, 1), 'First mid-season LAI (LAI_b, m2/m2)', ''),
+    ('season', 'lai_c', FloatSpinField, (0, 20, 4, 0.1, 1), 'Second mid-season LAI (LAI_c, m2/m2)', ''),
+    ('season', 'lai_d', FloatSpinField, (0, 20, 0, 0.1, 1), 'LAI at EGS (LAI_d, m2/m2)', ''),
+    ('season', 'lai_1', SpinField, (1, 100, 30), 'Period from LAI_a to LAI_b (LAI_1, days)', ''),
+    ('season', 'lai_2', SpinField, (1, 100, 30), 'Period from LAI_c to LAI_d (LAI_2, days)', ''),
+    ('season', 'sai', ChoiceField, (SAI_calcs, default_SAI_calc), 'SAI calculation', ''),
+
+    ('fphen', 'fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Fphen at SGS (fphen_a)', ''),
+    ('fphen', 'fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'First mid-season Fphen (fphen_b)', ''),
+    ('fphen', 'fphen_c', FloatSpinField, (0, 1, 1, 0.1, 1), 'Second mid-season Fphen (fphen_c)', ''),
+    ('fphen', 'fphen_d', FloatSpinField, (0, 1, 1, 0.1, 1), 'Third mid-season Fphen (fphen_d)', ''),
+    ('fphen', 'fphen_e', FloatSpinField, (0, 1, 0, 0.1, 1), 'Fphen at EGS (fphen_e)', ''),
+    ('fphen', 'fphen_1', SpinField, (0, 200, 15), 'Period from fphen_a to fphen_b (fphen_1, days)', ''),
+    ('fphen', 'fphen_lima', SpinField, (0, 365, 0), 'Start of SWP limitation (fphen_limA, day of year)', ''),
+    ('fphen', 'fphen_2', SpinField, (0, 200, 1), 'Period from fphen_b to fphen_c (fphen_2, days)', ''),
+    ('fphen', 'fphen_3', SpinField, (0, 200, 1), 'Period from fphen_c to fphen_d (fphen_3, days)', ''),
+    ('fphen', 'fphen_limb', SpinField, (0, 365, 0), 'End of SWP limitation (fphen_limB, day of year)', ''),
+    ('fphen', 'fphen_4', SpinField, (0, 200, 20), 'Period from fphen_d to fphen_e (fphen_4, days)', ''),
+
+    ('leaf_fphen', 'leaf_fphen', ChoiceField, (leaf_fphen_calcs, default_leaf_fphen_calc), 'Leaf fphen calculation', ''),
+    ('leaf_fphen', 'astart', SpinField, (1, 365, 153), 'Start of O3 accumulation (Astart, day of year)', ''),
+    ('leaf_fphen', 'aend', SpinField, (1, 365, 208), 'End of O3 accumulation (Aend, day of year)', ''),
+    ('leaf_fphen', 'leaf_fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Astart (leaf_fphen_a)', ''),
+    ('leaf_fphen', 'leaf_fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'Leaf fphen mid-season (leaf_fphen_b)', ''),
+    ('leaf_fphen', 'leaf_fphen_c', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Aend (leaf_fphen_c)', ''),
+    ('leaf_fphen', 'leaf_fphen_1', SpinField, (0, 300, 15), 'Period from leaf_fphen_a to leaf_fphen_b (days)', ''),
+    ('leaf_fphen', 'leaf_fphen_2', SpinField, (0, 300, 30), 'Period from leaf_fphen_b to leaf_fphen_c (days)', ''),
+)), 'variable', OrderedDict)
+
+
+def parameters_by_group(group):
+    """Get a list of all parameter definitions from :data:`parameters` that are in in *group*."""
+    return [p for p in paramdefs.itervalues() if p['group'] == group]
+
 
 def extract_outputs():
-    """
-    Extract all output variables
+    """Extract all output variables.
 
     Extract a dict containing the values of all of the variables defined in
     output_fields.
     """
-    return dict( (x['variable'], x['type'](getattr(x['module'], x['variable']))) for x in output_fields )
+    return dict((x['variable'], x['type'](getattr(x['module'], x['variable']))) for x in output_fields.itervalues())

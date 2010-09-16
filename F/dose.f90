@@ -11,6 +11,7 @@ program Run_DOSE
     lwp_method = lwp_non_steady_state
     fxwp_method = fxwp_disabled
     r_par_method = r_par_use_inputs
+    sgs_egs_method = sgs_egs_use_inputs
 
     call Run_With_Files("input_newstyle.csv", "output.csv")
 end program Run_DOSE
