@@ -300,7 +300,13 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         values = dialogs.apply_preset(self, self.app.config.data['presets'],
                                       self.app.default_presets)
         self.params.set_values(dict(values))
+            
         if len(values) > 0:
             self.OnFieldUpdate(None)
+            # Update parts of the UI that depend on field values
+            for group in self.params.itervalues():
+                newevt = fields.ValueChangedEvent(group.GetId())
+                wx.PostEvent(group, newevt)
+
         # Save the config, in case presets were deleted
         self.app.config.save()
