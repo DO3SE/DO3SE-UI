@@ -7,6 +7,7 @@ from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 import model
 import ui_xrc
 import wxext
+from util import OrderedDict
 
 
 #: Default/suggested file extension for project files
@@ -250,14 +251,24 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
         label = self.presetlist.GetItemText(item)
         parent = self.presetlist.GetItemParent(item)
 
-        # Selected a user-defined preset
         if parent == self.user_presets_root:
-            self.paramlist.SetValues(self.user_presets[label])
-            self.paramlist.CheckAll()
-
-        # Selected a default preset
+            # Selected a user-defined preset
+            preset = OrderedDict(self.user_presets[label])
         elif parent == self.default_presets_root:
-            self.paramlist.SetValues(self.default_presets[label])
+            # Selected a default preset
+            preset = OrderedDict(self.default_presets[label])
+        else:
+            preset = None
+
+        if preset is not None:
+            if 'comment' in preset:
+                self.lbl_comment.SetLabel(preset.pop('comment'))
+                self.lbl_comment.Show()
+            else:
+                self.lbl_comment.Hide()
+            self.lbl_comment.GetContainingSizer().Layout()
+
+            self.paramlist.SetValues(preset.items())
             self.paramlist.CheckAll()
 
         # Enabled delete button only if user preset selected

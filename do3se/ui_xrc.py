@@ -208,6 +208,7 @@ class xrcdialog_presets(wx.Dialog):
         # Define variables for the controls, bind event handlers
         self.presetlist = xrc.XRCCTRL(self, "presetlist")
         self.paramlist_dummy = xrc.XRCCTRL(self, "paramlist_dummy")
+        self.lbl_comment = xrc.XRCCTRL(self, "lbl_comment")
         self.wxID_DELETE = xrc.XRCCTRL(self, "wxID_DELETE")
 
         self.Bind(wx.EVT_BUTTON, self.OnButton_wxID_DELETE, self.wxID_DELETE)
@@ -251,6 +252,7 @@ def __init_resources():
               <object class="wxStaticText">
                 <label>Recent projects</label>
               </object>
+              <flag>wxEXPAND</flag>
             </object>
             <object class="sizeritem">
               <object class="wxListBox" name="list_recent">
@@ -518,10 +520,28 @@ To get help on a particular parameter, click the question mark in the bottom lef
           </object>
           <orient>wxHORIZONTAL</orient>
           <object class="sizeritem">
-            <object class="wxPanel" name="paramlist_dummy">
-              <XRCED>
-                <assign_var>1</assign_var>
-              </XRCED>
+            <object class="wxBoxSizer">
+              <object class="sizeritem">
+                <object class="wxPanel" name="paramlist_dummy">
+                  <XRCED>
+                    <assign_var>1</assign_var>
+                  </XRCED>
+                </object>
+                <option>1</option>
+                <flag>wxEXPAND</flag>
+              </object>
+              <object class="sizeritem">
+                <object class="wxStaticText" name="lbl_comment">
+                  <label>(No description)</label>
+                  <hidden>1</hidden>
+                  <XRCED>
+                    <assign_var>1</assign_var>
+                  </XRCED>
+                </object>
+                <flag>wxTOP|wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+                <border>5</border>
+              </object>
+              <orient>wxVERTICAL</orient>
             </object>
             <option>2</option>
             <flag>wxEXPAND</flag>
