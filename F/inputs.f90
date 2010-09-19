@@ -26,6 +26,10 @@ module Inputs
     real, public, save :: uh            ! Windspeed at canopy
     real, public, save :: precip_acc    ! Previous day's accumulated precip (m)
 
+    ! These input variables are only required for certain model configurations
+    real, public, save :: T_avg         ! Daily average temperature (degrees C)
+    real, public, save :: T_sum         ! Thermal time; cumulative sum of T_avg above 0
+
     public :: Init_Inputs
     public :: Calc_ustar_uh
     public :: Accumulate_precip

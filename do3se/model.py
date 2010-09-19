@@ -20,6 +20,8 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
         (inputs,    'r',        float,  False,  'R (Wh/m^2)',   u'Global radiation (R, Wh/m\u00b2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', u'Photosynthetically active radiation (PAR, umol/m\u00b2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  u'Net radiation (Rn, MJ/m\u00b2)'),
+        (inputs,    't_avg',    float,  False,  'T_avg (C)',    'Daily average temperature (T_avg, Celcius)'),
+        (inputs,    't_sum',    float,  False,  'T_sum (C)',    'Thermal time (T_sum, Celcius)'),
 )), 'variable', OrderedDict)
 
 #: Available output fields
@@ -39,6 +41,8 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (inputs,        'hd',       float,  'Hd (Wh/m^2)',      u'Sensible heat flux (Hd, Wh/m\u00b2)'),
         (inputs,        'r',        float,  'R (Wh/m^2)',       u'Global radiation (R, Wh/m\u00b2)'),
         (inputs,        'par',      float,  'PAR (umol/m^2/s)', u'Photosynthetically active radiation (PAR, umol/m\u00b2/s)'),
+        (inputs,        't_avg',    float,  'T_avg (C)',        'Daily average temperature (T_avg, Celcius)'),
+        (inputs,        't_sum',    float,  'T_sum (C)',        'Thermal time (T_sum, Celcius)'),
 
         # Calculated variables
         (inputs,        'ustar',    float,  'u* (m/s)',         'Friction velocity (u*, m/s)'),

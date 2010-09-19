@@ -1,7 +1,7 @@
 import csv
 import logging
 _log = logging.getLogger('do3se.dataset')
-from itertools import ifilter
+from itertools import ifilter, groupby
 
 import util
 import model
@@ -25,6 +25,24 @@ class RequiredFieldError(Exception):
     """One or more required fields missing from input format."""
     def __init__(self, fields):
         self.fields = fields
+
+
+def generate_thermal_time(data):
+    """Generate daily average and thermal time data.
+
+    Daily average and thermal time values can be calculated from hourly
+    temperature values.  This function fills in the ``t_avg`` and ``t_sum``
+    input values for each row.
+    """
+    t_sum = 0.0
+    for dd, _day in groupby(data, lambda x: x['dd']):
+        day = list(_day)
+        t_avg = sum(map(lambda x: x['ts_c'], day)) / len(day)
+        if t_avg > 0.0:
+            t_sum += t_avg
+        for row in day:
+            row['t_avg'] = t_avg
+            row['t_sum'] = t_sum
 
 
 class Dataset:
@@ -116,6 +134,11 @@ class Dataset:
             raise InsufficientTrimError()
 
         _log.info("Loaded %d data rows" % len(self.input))
+
+        if self.switchboard['leaf_fphen_method'] == model.leaf_fphen_calcs['thermaltime']['func'] \
+                and ('t_avg' not in input_fields or 't_sum' not in input_fields):
+            _log.info('Generating values for T_avg and T_sum')
+            generate_thermal_time(self.input)
 
     def run(self, progressbar=None, progress_interval=100):
         """Run the DO3SE model with this dataset.
