@@ -144,6 +144,14 @@
             <events>EVT_MENU</events>
           </XRCED>
         </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="thermal_season">
+          <label>SGS/EGS from thermal time</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+            <assign_var>1</assign_var>
+          </XRCED>
+        </object>
       </object>
     </object>
     <object class="wxPanel">

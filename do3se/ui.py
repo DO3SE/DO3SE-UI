@@ -195,10 +195,12 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             self.btn_run.Enable(True)
             self.btn_errors.SetLabel('No errors')
             self.btn_errors.SetForegroundColour(wx.NullColour)
+            self.thermal_season.Enable(True)
         else:
             self.btn_run.Enable(False)
             self.btn_errors.SetLabel('%d errors (click for more information)' % (len(errors),))
             self.btn_errors.SetForegroundColour(wx.RED)
+            self.thermal_season.Enable(False)
         self.btn_errors.GetContainingSizer().Layout()
 
     @wxext.autoeventskip
@@ -310,3 +312,25 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
         # Save the config, in case presets were deleted
         self.app.config.save()
+
+    @wxext.autoeventskip
+    def OnMenu_thermal_season(self, evt):
+        if self.params['season']['sgs_egs_calc'].get_value() != 'inputs':
+            wx.MessageBox('"SGS/EGS method" must be set to "use inputs"',
+                          'Error',
+                          wx.OK|wx.ICON_ERROR,
+                          self)
+            return
+
+        filename = dialogs.open_datafile(self)
+        if filename is None:
+            return
+
+        d = Dataset(open(filename, 'r'), self.params.get_values())
+        sgs, egs = d.season_from_thermal_time()
+
+        self.params['season']['sgs'].set_value(sgs)
+        self.params['season']['egs'].set_value(egs)
+
+        self.params['season']['sgs'].OnChanged(None)
+        self.params['season']['egs'].OnChanged(None)

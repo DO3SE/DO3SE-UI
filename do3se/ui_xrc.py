@@ -99,6 +99,7 @@ class xrcframe_projectwindow(wx.Frame):
         self.PostCreate(pre)
 
         # Define variables for the controls, bind event handlers
+        self.thermal_season = self.GetMenuBar().FindItemById(xrc.XRCID("thermal_season"))
         self.tb_main = xrc.XRCCTRL(self, "tb_main")
         self.html_introduction = xrc.XRCCTRL(self, "html_introduction")
         self.pnl_errors = xrc.XRCCTRL(self, "pnl_errors")
@@ -115,6 +116,7 @@ class xrcframe_projectwindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnMenu_wxID_EXIT, id=wx.ID_EXIT)
         self.Bind(wx.EVT_MENU, self.OnMenu_create_preset, id=xrc.XRCID('create_preset'))
         self.Bind(wx.EVT_MENU, self.OnMenu_manage_presets, id=xrc.XRCID('manage_presets'))
+        self.Bind(wx.EVT_MENU, self.OnMenu_thermal_season, self.thermal_season)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_run, self.btn_run)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -166,6 +168,12 @@ class xrcframe_projectwindow(wx.Frame):
         # Replace with event handler code
         print "OnMenu_manage_presets()"
 #!XRCED:end-block:xrcframe_projectwindow.OnMenu_manage_presets        
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_thermal_season
+    def OnMenu_thermal_season(self, evt):
+        # Replace with event handler code
+        print "OnMenu_thermal_season()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_thermal_season        
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_errors
     def OnButton_btn_errors(self, evt):
@@ -374,6 +382,14 @@ def __init_resources():
           <label>Manage/&amp;apply presets</label>
           <XRCED>
             <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="thermal_season">
+          <label>SGS/EGS from thermal time</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+            <assign_var>1</assign_var>
           </XRCED>
         </object>
       </object>

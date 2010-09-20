@@ -134,11 +134,30 @@ class Dataset:
             raise InsufficientTrimError()
 
         _log.info("Loaded %d data rows" % len(self.input))
-
-        if self.switchboard['leaf_fphen_method'] == model.leaf_fphen_calcs['thermaltime']['func'] \
-                and ('t_avg' not in input_fields or 't_sum' not in input_fields):
+        
+        # Generate data for fields not supplied (if possible)
+        if 't_avg' not in input_fields or 't_sum' not in input_fields:
             _log.info('Generating values for T_avg and T_sum')
             generate_thermal_time(self.input)
+
+    def season_from_thermal_time(self):
+        """Get SGS/EGS based on thermal time.
+
+        SGS is defined as the first day ``T_avg`` is above 0 degrees.  EGS is
+        the day that ``T_sum`` exceeds 1775.  The result is returned as a
+        ``(sgs, egs)`` pair.
+        """
+        sgs = -1
+        egs = -1
+        for row in self.input:
+            if row['t_avg'] > 0.0:
+                sgs = row['dd']
+                break
+        for row in self.input:
+            if row['t_sum'] > 1775:
+                egs = row['dd']
+                break
+        return (sgs, egs)
 
     def run(self, progressbar=None, progress_interval=100):
         """Run the DO3SE model with this dataset.
