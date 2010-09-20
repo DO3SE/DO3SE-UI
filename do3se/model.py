@@ -165,8 +165,8 @@ default_soil_class = 'loam'
 #: Leaf fphen calculations
 leaf_fphen_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('copy',    switchboard.leaf_fphen_equals_fphen,    'Same as Fphen'),
-    ('wheat',   switchboard.leaf_fphen_wheat,           'Wheat'),
-    ('potato',  switchboard.leaf_fphen_potato,          'Potato'),
+    ('fixedday', switchboard.leaf_fphen_fixed_day,      'Fixed day'),
+    ('thermaltime', switchboard.leaf_fphen_thermal_time, 'Thermal time'),
 )), 'id', OrderedDict)
 
 default_leaf_fphen_calc = 'copy'

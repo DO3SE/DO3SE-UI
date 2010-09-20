@@ -4,7 +4,8 @@ module Phenology
     public :: Calc_LAI
     public :: Calc_SAI_Wheat
     public :: Calc_fphen
-    public :: Calc_leaf_fphen_Wheat
+    public :: Calc_leaf_fphen_fixed_day
+    public :: Calc_leaf_fphen_thermal_time
 
 contains 
 
@@ -119,9 +120,9 @@ contains
     end subroutine Calc_fphen
 
     !==========================================================================
-    ! Calculate leaf_fphen for Wheat
+    ! Calculate leaf_fphen
     !==========================================================================
-    subroutine Calc_leaf_fphen_Wheat()
+    subroutine Calc_leaf_fphen_fixed_day()
         use Parameters, only: leaf_fphen_a, leaf_fphen_b, leaf_fphen_c, &
                               leaf_fphen_1, leaf_fphen_2, Astart, Aend
         use Inputs,     only: dd
@@ -136,6 +137,29 @@ contains
         else if (dd <= Aend) then
             leaf_fphen = leaf_fphen_c + (leaf_fphen_b - leaf_fphen_c) * (Aend - dd) / leaf_fphen_2
         end if
-    end subroutine Calc_leaf_fphen_Wheat
+    end subroutine Calc_leaf_fphen_fixed_day
+
+
+    !==========================================================================
+    ! Calculate leaf_fphen based on thermal time
+    !
+    ! TODO: should 875, 1175, 1600 and 1775 be vegetation parameters?
+    !==========================================================================
+    subroutine Calc_leaf_fphen_thermal_time()
+        use Inputs, only: T_sum
+        use Variables, only: leaf_fphen
+
+        if (T_sum < 875) then
+            leaf_fphen = 0
+        else if (T_sum < 1175) then
+            leaf_fphen = 1
+        else if (T_sum < 1600) then
+            leaf_fphen = ((1-0.7)*(1600-T_sum)/425)+0.7
+        else if (T_sum < 1775) then
+            leaf_fphen = 0.7*((1775-T_sum)/175)
+        else
+            leaf_fphen = 0
+        end if
+    end subroutine Calc_leaf_fphen_thermal_time
 
 end module Phenology
