@@ -7,6 +7,4 @@ Contents:
 .. toctree::
     :maxdepth: 2
     
-    ftools
-    buildenv
-    build
+    buildenv_windows

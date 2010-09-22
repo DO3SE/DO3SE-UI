@@ -6,9 +6,9 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    devel/index
     gui/index
     fmodel/index
-    devel/index
 
 Indices and tables
 ==================
