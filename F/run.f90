@@ -12,7 +12,6 @@ module Run
     public :: Read_Row_From_File
     public :: Write_Row_To_File
 
-    !integer, private :: dd_prev
     integer, private :: inunit = 8
     integer, private :: outunit = 9
 
