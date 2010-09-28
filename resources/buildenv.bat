@@ -9,6 +9,7 @@
 set basepath=%~dp0
 :: Modify PATH variable so all tool commands are accessible
 set PATH=%basepath%msys\1.0\bin;%PATH%
+set PATH=%basepath%MinGW\msys\1.0\bin;%PATH%
 set PATH=%basepath%MinGW\bin;%PATH%
 set PATH=%basepath%g95\lib\gcc-lib\i686-pc-mingw32\4.0.4;%PATH%
 set PATH=%basepath%g95\bin;%PATH%
