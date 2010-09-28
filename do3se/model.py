@@ -20,6 +20,7 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
         (inputs,    'r',        float,  False,  'R (Wh/m^2)',   u'Global radiation (R, Wh/m\u00b2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', u'Photosynthetically active radiation (PAR, umol/m\u00b2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  u'Net radiation (Rn, MJ/m\u00b2)'),
+        (inputs,    'leaf_fphen_input', float, False, 'Leaf fphen', 'Leaf fphen'),
 )), 'variable', OrderedDict)
 
 #: Available output fields
@@ -148,6 +149,7 @@ default_soil_class = 'loam'
 leaf_fphen_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('copy',    switchboard.leaf_fphen_equals_fphen,    'Same as Fphen'),
     ('fixedday', switchboard.leaf_fphen_fixed_day,      'Fixed day'),
+    ('input',   switchboard.leaf_fphen_use_input,       'Use input'),
 )), 'id', OrderedDict)
 
 default_leaf_fphen_calc = 'copy'

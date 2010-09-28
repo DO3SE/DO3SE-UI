@@ -308,3 +308,12 @@ class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
         # Hide preview graph if not using a graphable method
         self.preview.Show(enabled)
         self.preview.GetContainingSizer().Layout()
+
+    def validate(self):
+        errors = []
+
+        validate(errors, not self['leaf_fphen'].get_value() == 'input' or
+                         'leaf_fphen_input' in self.fc['format']['input_fields'].get_value(),
+                 'Leaf fphen input field required by "Use input" leaf fphen method')
+
+        return errors

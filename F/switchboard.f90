@@ -13,6 +13,7 @@ module Switchboard
 
     integer, public, parameter :: leaf_fphen_equals_fphen = 1
     integer, public, parameter :: leaf_fphen_fixed_day    = 2
+    integer, public, parameter :: leaf_fphen_use_input    = 3
     integer, public, save :: leaf_fphen_method = leaf_fphen_equals_fphen
     public :: SB_Calc_leaf_fphen
 
@@ -97,6 +98,7 @@ contains
 
     subroutine SB_Calc_leaf_fphen()
         use Phenology, only: Calc_leaf_fphen_fixed_day
+        use Inputs, only: leaf_fphen_input
         use Variables, only: fphen, leaf_fphen
 
         select case (leaf_fphen_method)
@@ -106,6 +108,9 @@ contains
         
         case (leaf_fphen_fixed_day)
             call Calc_leaf_fphen_fixed_day()
+
+        case (leaf_fphen_use_input)
+            leaf_fphen = leaf_fphen_input
         
         end select
     end subroutine SB_Calc_leaf_fphen

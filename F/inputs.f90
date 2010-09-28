@@ -17,6 +17,7 @@ module Inputs
 
     ! These input variables usually aren't available, but have derivations
     real, public, save :: Rn            ! Net radiation (MJ/m^2/h)
+    real, public, save :: leaf_fphen_input
 
     ! These input variables are always calculated from others
     real, public, save :: sinB          ! Solar elevation angle
