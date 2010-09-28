@@ -207,8 +207,8 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
         sgs, egs, lai_1, lai_2 = self.extract('sgs', 'egs', 'lai_1', 'lai_2')
 
         validate(errors, sgs < egs, 'SGS must be before EGS')
-        validate(errors, (sgs + lai_1) < (egs - lai_2),
-                 'SGS + LAI_1 must be less than EGS - LAI_2')
+        validate(errors, (sgs + lai_1) <= (egs - lai_2),
+                 'SGS + LAI_1 cannot be later than EGS - LAI_2')
 
         return errors
 
@@ -248,8 +248,8 @@ class FphenParams(ParameterGroup, PreviewCanvasMixin):
         fphen_d, fphen_e = self.extract('fphen_d', 'fphen_e')
         fphen_lima, fphen_limb = self.extract('fphen_lima', 'fphen_limb')
 
-        validate(errors, (sgs + fphen_1) < (egs - fphen_4),
-                'SGS + fphen_1 must be less than EGS - fphen_4')
+        validate(errors, (sgs + fphen_1) <= (egs - fphen_4),
+                'SGS + fphen_1 cannot be later than EGS - fphen_4')
 
         if fphen_lima > 0 or fphen_limb > 0:
             validate(errors, fphen_lima > (sgs + fphen_1),
