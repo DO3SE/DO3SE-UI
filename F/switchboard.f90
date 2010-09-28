@@ -12,8 +12,7 @@ module Switchboard
     public :: SB_Calc_Rn
 
     integer, public, parameter :: leaf_fphen_equals_fphen = 1
-    integer, public, parameter :: leaf_fphen_wheat        = 2
-    integer, public, parameter :: leaf_fphen_potato       = 3
+    integer, public, parameter :: leaf_fphen_fixed_day    = 2
     integer, public, save :: leaf_fphen_method = leaf_fphen_equals_fphen
     public :: SB_Calc_leaf_fphen
 
@@ -97,7 +96,7 @@ contains
     end subroutine SB_Calc_Rn
 
     subroutine SB_Calc_leaf_fphen()
-        use Phenology, only: Calc_leaf_fphen_Wheat
+        use Phenology, only: Calc_leaf_fphen_fixed_day
         use Variables, only: fphen, leaf_fphen
 
         select case (leaf_fphen_method)
@@ -105,12 +104,8 @@ contains
         case (leaf_fphen_equals_fphen)
             leaf_fphen = fphen
         
-        case (leaf_fphen_wheat)
-            call Calc_leaf_fphen_Wheat()
-
-        case (leaf_fphen_potato)
-            ! Potato calculation is the same as that for wheat
-            call Calc_leaf_fphen_Wheat()
+        case (leaf_fphen_fixed_day)
+            call Calc_leaf_fphen_fixed_day()
         
         end select
     end subroutine SB_Calc_leaf_fphen

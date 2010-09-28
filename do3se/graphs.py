@@ -66,14 +66,8 @@ def fphen_preview(fc, colour='green', label='Fphen'):
 def leaf_fphen_preview(fc, colour='green', label='leaf_fphen'):
     """Create leaf_fphen preview graph.
 
-    If the leaf_fphen calculation is set to be the same as the Fphen calculation
-    then the Fphen preview function is used instead.
+    Creates a preview graph for the leaf_fphen fixed-day method.
     """
-    if fc['leaf_fphen']['leaf_fphen'].get_value() == 'copy':
-        return fphen_preview(fc, label=label)
-
-    sgs = fc['season']['sgs'].get_value()
-    egs = fc['season']['egs'].get_value()
     astart = fc['leaf_fphen']['astart'].get_value()
     aend = fc['leaf_fphen']['aend'].get_value()
     leaf_fphen_a = fc['leaf_fphen']['leaf_fphen_a'].get_value()

@@ -301,7 +301,10 @@ class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
     @wxext.autoeventskip
     def update_disabled(self, evt):
         """Disable input fields when following canopy Fphen."""
-        enabled = self['leaf_fphen'].get_value() != 'copy'
+        enabled = self['leaf_fphen'].get_value() == 'fixedday'
         for field in self.itervalues():
             if field is not self['leaf_fphen']:
                 field.field.Enable(enabled)
+        # Hide preview graph if not using a graphable method
+        self.preview.Show(enabled)
+        self.preview.GetContainingSizer().Layout()
