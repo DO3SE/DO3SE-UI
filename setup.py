@@ -14,6 +14,10 @@ try:
 except ImportError:
     pass
 
+# Force use of gfortran
+import sys
+sys.argv[1:] = ['config_fc', '--fcompiler=gnu95'] + sys.argv[1:]
+
 application = do3se.application.app_name
 description = do3se.application.app_description
 version     = do3se.application.app_version
