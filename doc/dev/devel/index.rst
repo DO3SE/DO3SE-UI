@@ -7,4 +7,4 @@ Contents:
 .. toctree::
     :maxdepth: 2
     
-    buildenv_windows
+    buildenv

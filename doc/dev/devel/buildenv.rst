@@ -1,7 +1,10 @@
-Build Environment (Windows)
-===========================
+Build Environment
+=================
 
 :Author: Alan Briolat <sei@alanbriolat.co.uk>
+
+Windows
+-------
 
 To build either the F code or the GUI on Windows, there are several dependencies that must be 
 installed.  Going through the process of installing them is quite a lengthy and potentially 
@@ -16,7 +19,7 @@ work.
 
 
 :file:`DO3SE_buildenv_F` -- Minimal Fortran90/F build environment
------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Building any F program requires the G95 Fortran compiler.  To build the DO3SE F model, GNU Make is 
 also required to use the Makefile which contains instructions for building the model from several 
@@ -51,7 +54,7 @@ source files.  GNU Make and associated utilities are provided by MSYS.
 
 
 :file:`DO3SE_buildenv_GUI` -- Full GUI build environment
---------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Building the GUI requires a lot more dependencies than just building the F model, and also a 
 different Fortran compiler.  For this reason, a different build environment bundle is created.  This 
@@ -110,11 +113,56 @@ bundle still includes all the tools required to build the F model.
 
 
 Using a build environment
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To use a build environment, simply unpack it somewhere and run the contained :file:`buildenv.bat`.  
 This batch script sets up the environment variables such that all the required tools are accessible 
 from within the console session that is launched.
+
+
+
+Linux
+-----
+
+F build environment
+^^^^^^^^^^^^^^^^^^^
+
+To build the standalone F model, the G95 Fortran compiler and GNU Make are required.  Make is often 
+installed by default in most Linux distributions---and can easily be installed from the package 
+manager if not)---but G95 must be installed manually.  To install G95:
+
+1.  From the G95_ downloads page, download the latest stable version appropriate for your platform; 
+    on 32-bit Linux this will be "Linux x86", for 64-bit Linux use "Linux x86_64/EMT64 (32 bit 
+    D.I.)".
+2.  Unpack the downloaded tarball to :file:`/opt`, e.g.::
+    
+        sudo tar xzf g95-x86_64-32-linux.tgz -C /opt
+
+3.  Make a link for the :file:`g95` executable so it's in your :envvar:`PATH`, e.g.::
+
+        sudo ln -s /opt/g95-install/bin/x86_64-unknown-linux-gnu-g95 /usr/local/bin/g95
+
+GUI build environment
+^^^^^^^^^^^^^^^^^^^^^
+
+To build and run the GUI, the following dependencies must be met:
+
+* GNU Make
+* Python 2.6, including development files (or newer, not 3.x)
+* NumPy 1.2 (or newer, not 2.x)
+* wxGTK 2.8
+* wxPython 2.8
+* gfortran
+
+Most Linux distributions have Make and the Python runtime installed by default, but not the Python 
+development files or the other dependencies.  For Ubuntu Linux, the following command will install 
+the rest of the dependencies::
+
+    sudo apt-get install python-dev python-numpy python-wxgtk2.8 gfortran
+
+Other Linux distributions will have a similar method.  (If you're using a distribution that doesn't 
+have a comprehensive package manager, you probably know how to get what you need from the dependency 
+list above.)
 
 
 .. [#novcredist] Necessary to remove dependency on having Visual C++ redistributable installed.
