@@ -14,6 +14,6 @@ echo "Building ${distdir} (${archive})"
 # Remove existing built files
 rm -rf build "${distdir}" "${archive}"
 # Build the GUI
-python setup.py py2exe -d ${distdir}
+python setup.py py2exe -d "${distdir}"
 # Package it into a .zip
 7za a -tzip "${archive}" "${distdir}"
