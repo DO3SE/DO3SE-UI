@@ -15,7 +15,6 @@ import dialogs
 import fields
 import fieldgroups
 from project import Project
-from util import load_presets
 from dataset import Dataset
 from resultswindow import ResultsWindow
 

@@ -8,12 +8,13 @@ import wx.lib.plot
 
 import wxext
 import model
-from fields import *
+import fields
+from fields import EVT_VALUE_CHANGED, validate
 import graphs
 import resources
 
 
-class ParameterGroup(SimpleFieldGroup):
+class ParameterGroup(fields.SimpleFieldGroup):
     """Group of parameters using :class:`~do3se.fields.SimpleFieldGroup`.
     
     Most of the groups start with the :class:`~do3se.fields.SimpleFieldGroup`
@@ -28,7 +29,7 @@ class ParameterGroup(SimpleFieldGroup):
 
     def __init__(self, *args, **kwargs):
         kwargs['fields'] = self.PARAMETERS
-        SimpleFieldGroup.__init__(self, *args, **kwargs)
+        fields.SimpleFieldGroup.__init__(self, *args, **kwargs)
 
 
 class PreviewCanvasMixin:
@@ -66,17 +67,17 @@ class PreviewCanvasMixin:
         self.update_preview(None)
 
 
-class InputFormatParams(FieldGroup):
+class InputFormatParams(fields.FieldGroup):
     """Data file input format parameter group."""
     def __init__(self, fc, parent):
-        FieldGroup.__init__(self, fc, parent)
+        fields.FieldGroup.__init__(self, fc, parent)
 
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
 
-        self['input_fields'] = ColumnsSelectField(self, model.input_fields)
+        self['input_fields'] = fields.ColumnsSelectField(self, model.input_fields)
         self.GetSizer().Add(self['input_fields'].field, 1, wx.EXPAND|wx.ALL, 5)
 
-        self['input_trim'] = SpinField(self, 0, 10, 0)
+        self['input_trim'] = fields.SpinField(self, 0, 10, 0)
         s = wx.BoxSizer(wx.HORIZONTAL)
         self.GetSizer().Add(s, 0, wx.ALL|wx.ALIGN_LEFT, 5)
         s.Add(wx.StaticText(self, label='Number of lines to trim from ' + \

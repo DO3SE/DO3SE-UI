@@ -1,8 +1,7 @@
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '2.0-beta'
+app_version = '2.0'
 
-import sys
 import os.path
 import optparse
 import logging
@@ -38,9 +37,6 @@ class App(wx.App):
         # Load configuration
         self.config = open_config()
         # Load default presets
-        _f = wx.FileSystem().OpenFile('memory:resources/default_veg_presets.csv')
-        import StringIO
-        _lines = StringIO.StringIO(_f.Stream.read())
         self.default_presets = load_presets(resources.get_memoryfs_stream('resources/default_veg_presets.csv'))
 
         # Keep track of existing project windows - ProjectWindow instances add
