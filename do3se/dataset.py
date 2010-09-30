@@ -6,22 +6,17 @@ from itertools import ifilter
 import util
 import model
 
-class InvalidFieldCountError(Exception):
+
+class DatasetError(Exception):
+    pass
+
+
+class InvalidFieldCountError(DatasetError):
     """Mismatch between specified field count and data column count."""
     pass
 
 
-class InsufficientTrimError(Exception):
-    """Not enough lines trimmed from beginning of data.
-
-    This exception occurs when invalid data was found when attempting to read
-    from a CSV file.  This is usually due to headers being present because not
-    enough lines were trimmed from the beginning.
-    """
-    pass
-
-
-class RequiredFieldError(Exception):
+class RequiredFieldError(DatasetError):
     """One or more required fields missing from input format."""
     def __init__(self, fields):
         self.fields = fields
@@ -104,17 +99,7 @@ class Dataset:
         o3_h = self.params.pop('o3_h')
         self.params['o3_h'] = self.params['h'] if o3_h['disabled'] else o3_h['value']
 
-        # Skip the trimmed lines
-        for n in xrange(0, input_trim): infile.next()
-        # Load all of the data
-        _log.debug("Input data format: %s" % (",".join(input_fields)))
-        try:
-            self.input = list(csv.DictReader(infile, fieldnames = input_fields, 
-                quoting=csv.QUOTE_NONNUMERIC))
-        except ValueError:
-            # ValueError here usually means the headers didn't get trimmed
-            raise InsufficientTrimError()
-
+        self.input = data_from_csv(infile, input_fields, input_trim)
         _log.info("Loaded %d data rows" % len(self.input))
 
     def run(self, progressbar=None, progress_interval=100):
@@ -213,3 +198,105 @@ class Resultset:
             start, end = period
             w.writerows(ifilter(lambda r: r['dd'] >= start and r['dd'] <= end, self.data))
             _log.info('Wrote rows from dd=%d to dd=%d' % (start, end))
+
+
+class NoDataError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'No data in file')
+
+
+class NotEnoughColumnsError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'Not enough columns in input')
+
+
+class NotEnoughTrimError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'Non-numeric data at start of input, maybe'
+                ' not enough header rows were trimmed?')
+
+
+class InvalidDataError(DatasetError):
+    def __init__(self, row, col):
+        self.row = row
+        self.col = col
+        DatasetError.__init__(self, 'Invalid/empty value at row %d, '
+                                    'column %d'% (row, col))
+
+
+class UnquotedStringError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'CSV file invalid, unquoted string found')
+
+
+def data_from_csv(infile, keys, trim):
+    """Load data from CSV file.
+
+    Data is loaded from *infile* as a list of dictionaries using *keys* to
+    determine which key to store column's value under.  Lines are stripped from
+    the beginning of the file according to *trim* to skip header rows.
+
+    The requirements for the data input are more restrictive than
+    :class:`csv.DictReader` is capable of, so instead the reading is done with
+    a plain :class:`csv.reader` and the data checked before being used.  This
+    function attempts to anticipate all common errors, raising an exception
+    (which is always a subclass of :class:`DatasetError`) when a problem is
+    encountered.  Among the errors handled are:
+
+    * Empty data file
+    * Not enough columns
+    * Missing values
+    * Invalid values
+    * Not enough rows trimmed for headers
+    """
+    data = []
+
+    # Skip header rows
+    try:
+        for x in xrange(trim):
+            infile.next()
+    except StopIteration:
+        raise NoDataError()
+
+    csvreader = csv.reader(infile, quoting=csv.QUOTE_NONNUMERIC)
+
+    # Look at the first row, we can tell a lot from it...
+    try:
+        row1 = csvreader.next()
+    except StopIteration:
+        raise NoDataError()
+    except ValueError:
+        raise UnquotedStringError()
+    else:
+        # Check that there are enough input columns to satisfy the input format
+        if len(row1) < len(keys):
+            raise NotEnoughColumnsError()
+
+        # Check for non-empty strings, means header rows might still exist
+        for x in row1[:len(keys)]:
+            if isinstance(x, basestring) and len(x) > 0:
+                raise NotEnoughTrimError()
+
+        # Otherwise, in general, strings mean values couldn't be converted to float
+        for i, x in enumerate(row1[:len(keys)], 1):
+            if isinstance(x, basestring):
+                raise InvalidDataError(trim + 1, i)
+        # Empty strings mean missing values
+        for i, x in enumerate(row1[:len(keys)], 1):
+            if x == '':
+                raise InvalidDataError(trim + 1, i)
+
+        # If we got this far, we can go ahead and add the first row
+        data.append(dict(zip(keys, row1)))
+
+    # Run for the rest of the data
+    try:
+        for r, row in enumerate(csvreader, trim + 2):
+            for c, val in enumerate(row[:len(keys)], 1):
+                if isinstance(val, basestring):
+                    raise InvalidDataError(r, c)
+            data.append(dict(zip(keys, row)))
+    except ValueError:
+        raise UnquotedStringError()
+
+    return data
