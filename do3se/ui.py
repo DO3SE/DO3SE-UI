@@ -15,7 +15,7 @@ import dialogs
 import fields
 import fieldgroups
 from project import Project
-from dataset import Dataset
+from dataset import Dataset, DatasetError
 from resultswindow import ResultsWindow
 
 
@@ -248,7 +248,14 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         if filename is None:
             return
 
-        d = Dataset(open(filename, 'r'), self.params.get_values())
+        try:
+            d = Dataset(open(filename, 'r'), self.params.get_values())
+        except DatasetError as e:
+            wx.MessageBox('Error occurred while loading data file: ' + unicode(e),
+                          'Error',
+                          wx.OK|wx.ICON_ERROR,
+                          self)
+            return
 
         # Function to return to when the model has been run
         def f(dr):
