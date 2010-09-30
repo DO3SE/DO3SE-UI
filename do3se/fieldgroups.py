@@ -81,7 +81,7 @@ class InputFormatParams(fields.FieldGroup):
         s = wx.BoxSizer(wx.HORIZONTAL)
         self.GetSizer().Add(s, 0, wx.ALL|wx.ALIGN_LEFT, 5)
         s.Add(wx.StaticText(self, label='Number of lines to trim from ' + \
-                            'beginning of file (e.g. for column headers'),
+                            'beginning of file (e.g. for column headers)'),
               0, wx.RIGHT|wx.ALIGN_CENTER_VERTICAL, 5)
         s.Add(self['input_trim'].field, 0, wx.EXPAND)
 
