@@ -7,6 +7,8 @@ export DIST_SRC_FILE = $(DIST_SRC_DIR).zip
 export DIST_F_SRC_DIR = DO3SE-src-F-$(shell date +"%Y%m%d")
 export DIST_F_SRC_FILE = $(DIST_F_SRC_DIR).zip
 
+.PHONY: doc
+
 
 all:
 	# 'make dose' for standalone model, or 'make py_ext' for Python extension for UI
@@ -26,6 +28,12 @@ dose:
 clean_dose:
 	$(MAKE) -C F clean
 	rm -f dose dose.exe
+
+doc:
+	$(MAKE) -C doc/dev html
+
+clean_doc:
+	$(MAKE) -C doc/dev clean
 
 clean: clean_dose clean_py_ext
 
