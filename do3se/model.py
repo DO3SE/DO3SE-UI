@@ -215,7 +215,7 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('siteloc', 'lon', FloatSpinField, (-180, 180, 0, 0.1, 3), 'Longitude (degrees East)', ''),
     ('siteloc', 'elev', SpinField, (-100, 5000, 0), 'Elevation (m.a.s.l.)', ''),
     ('siteloc', 'soil_tex', ChoiceField, (soil_classes, default_soil_class), 'Soil texture', ''),
-    ('siteloc', 'rsoil', SpinField, (1, 1000, 200), 'Rsoil', ''),
+    ('siteloc', 'rsoil', SpinField, (1, 1000, 100), 'Rsoil', ''),
 
     ('meas', 'o3zr', SpinField, (1, 200, 25), 'O3 measurement height (m)',
         'The height above ground level at which O3 concentration is measured'),

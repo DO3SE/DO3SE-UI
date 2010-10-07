@@ -261,7 +261,7 @@ contains
         ! TODO: These should probably be vegetation parameters
         real :: K1 = 0.0000000000035    ! constant related to root density
         real :: C = 1                   ! plant capacitance (MPa mm-1)
-        real :: Rc = 0.42               ! storage/destorage hydraulic resistance
+        real :: Rc = 0.43               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
         real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
 
@@ -297,7 +297,7 @@ contains
         ! TODO: These should probably be vegetation parameters
         real :: K1 = 0.0000000000035    ! constant related to root density
         real :: C = 1                   ! plant capacitance (MPa mm-1)
-        real :: Rc = 0.42               ! storage/destorage hydraulic resistance
+        real :: Rc = 0.43               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
         real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
 

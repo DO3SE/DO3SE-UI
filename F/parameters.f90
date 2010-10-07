@@ -4,7 +4,7 @@ module Parameters
     ! Site-specific parameters
     !==========================================================================
 
-    real, public, save  :: Rsoil = 200      ! Soil resistance in (s/m)
+    real, public, save  :: Rsoil = 100      ! Soil resistance in (s/m)
 
     ! Soil properties all set based on "Soil texture"
     real, public, save  :: soil_b = 4.38        ! SWC constant b
