@@ -27,6 +27,7 @@ module SoilWater
     public :: Calc_fLWP
     public :: Calc_SWP_meas
     public :: Calc_fPAW
+    public :: fSWP_exp_curve
 
     ! Hourly intermediate
     real, public :: Ei_hr
@@ -83,7 +84,7 @@ contains
         SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
 
         ! Calculate fSWP and SMD for initial water content
-        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
+        fSWP = fSWP_exp_curve(SWP, fmin)
         SMD = (Fc_m - Sn) * root
 
         ! Initial fLWP = 1
@@ -240,8 +241,7 @@ contains
         use Parameters, only: fmin
         use Variables, only: SWP, fSWP
 
-        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
-        fSWP = min(max(fSWP, fmin), 1.0)
+        fSWP = fSWP_exp_curve(SWP, fmin)
     end subroutine Calc_fSWP_exponential
 
     subroutine Calc_fSWP_linear()
@@ -315,8 +315,7 @@ contains
         use Parameters, only: fmin
         use Variables, only: LWP, fLWP
 
-        fLWP = (((-1) * LWP)**(-0.706)) * 0.355
-        fLWP = min(1.0, max(fLWP, fmin))
+        fLWP = fSWP_exp_curve(LWP, fmin)
     end subroutine Calc_fLWP
 
     subroutine Calc_SWP_meas()
@@ -361,5 +360,13 @@ contains
         fPAW = fmin + (1.0-fmin) * ((100 * (ASW/ASW_FC)) - ASW_min) / (ASW_max - ASW_min)
         fPAW = min(1.0, max(fmin, fPAW))
     end subroutine Calc_fPAW
+
+    function fSWP_exp_curve(SWP, fmin) result(fSWP)
+        real, intent(in) :: SWP, fmin
+        real :: fSWP
+
+        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
+        fSWP = min(max(fSWP, fmin), 1.0)
+    end function fSWP_exp_curve
 
 end module SoilWater
