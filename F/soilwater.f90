@@ -106,8 +106,8 @@ contains
         use Constants, only: seaP, Ts_K, Dratio
         use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
-                             Rsto_PEt, Sn, Ra, Rinc
-        use Parameters, only: Fc_m
+                             Rsto_PEt, Sn, Ra, Rinc, SWP
+        use Parameters, only: Fc_m, SWP_max, Rsoil
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
         real        :: P_Pa         ! Pressure in Pa, not kPa
@@ -151,22 +151,21 @@ contains
         Et_hr_prev = Et_hr
         Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 
-        if (Sn < Fc_m) then
+        if (SWP < SWP_max) then
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)
             Es_Rn = Rn * t
             Es_G = 0.1 * Es_Rn
-            Es_1 = (delta * (Es_Rn - Es_G)) / lambda
-            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Ra + Rb_H2O) / lambda
-            Es_3 = delta + psychro
+            Es_1 = (delta * (Rn - G)) / lambda
+            Es_2 = ((3600 * Pair * Cair * VPD_Pa) - (delta * Rinc * ((Rn - G) - (Es_Rn - Es_G)))) / (Rinc + Rb_H2O) / lambda
+            Es_3 = delta + (psychro * (1.0 + (Rsoil / (Rb_H2O + Rinc))))
             Es_hr = (Es_1 + Es_2) / Es_3 / 1000
         endif
 
         ! Calculate AEt from Et and Es (after Shuttleworth and Wallace, 1985)
         SW_a = (delta + psychro) * (Ra + Rb_H2O)
-        SW_s = (delta + psychro) * Rinc + (psychro * 0)  ! Rsoil assumed to be 0 
-                                                         ! at soil surface
+        SW_s = (delta + psychro) * Rinc + (psychro * Rsoil)
         SW_c = (delta + psychro) * 0 + (psychro + Rsto_c) ! Boundary layer 
                                                           ! resistance = 0
         C_canopy = 1 / (1 + ((SW_c * SW_a) / (SW_s * (SW_c + SW_a))))
