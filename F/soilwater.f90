@@ -29,6 +29,13 @@ module SoilWater
     public :: Calc_fPAW
     public :: fSWP_exp_curve
 
+    ! Constants
+    real, public, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
+    real, public, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
+
+    ! Calculated constants
+    real, public :: ASW_FC
+
     ! Hourly intermediate
     real, public :: Ei_hr
     real, public :: Es_hr
@@ -81,6 +88,7 @@ contains
 
         ! ASW and SWP for initial volumetric water content
         ASW = (Sn - PWP_vol) * root
+        ASW_FC = (Fc_m - PWP_vol) * root
         SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
 
         ! Calculate fSWP and SMD for initial water content
@@ -106,8 +114,8 @@ contains
         use Constants, only: seaP, Ts_K, Dratio
         use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
-                             Rsto_PEt, Sn, Ra, Rinc, SWP
-        use Parameters, only: Fc_m, SWP_max, Rsoil
+                             Rsto_PEt, Sn, Ra, Rinc, Es_blocked
+        use Parameters, only: Fc_m, Rsoil
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
         real        :: P_Pa         ! Pressure in Pa, not kPa
@@ -151,7 +159,7 @@ contains
         Et_hr_prev = Et_hr
         Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 
-        if (SWP < SWP_max) then
+        if (Es_blocked) then
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)
@@ -348,13 +356,6 @@ contains
         use Variables, only: ASW, fPAW
         use Parameters, only: root, fmin
         use Parameters, only: Fc_m
-
-        real, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
-        real, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
-        real :: ASW_FC
-
-        ! ASW at field capacity
-        ASW_FC = (Fc_m - PWP_vol) * root
 
         fPAW = fmin + (1.0-fmin) * ((100 * (ASW/ASW_FC)) - ASW_min) / (ASW_max - ASW_min)
         fPAW = min(1.0, max(fmin, fPAW))

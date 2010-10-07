@@ -44,6 +44,7 @@ module Switchboard
     integer, public, parameter :: fxwp_use_fpaw = 4
     integer, public, save :: fxwp_method = fxwp_disabled
     public :: SB_Calc_fXWP
+    public :: SB_Calc_Es_blocked
 
     ! Both R and PAR are inputs, do nothing
     integer, public, parameter :: r_par_use_inputs = 1
@@ -188,6 +189,20 @@ contains
 
         end select
     end subroutine SB_Calc_fXWP
+
+    ! Calculate if there should be no soil evaporation depending on
+    ! the current fSWP method
+    subroutine SB_Calc_Es_blocked()
+        use Soilwater, only: ASW_FC, ASW_max
+        use Parameters, only: SWP_max
+        use Variables, only: Es_blocked, ASW, SWP
+
+        if (fxwp_method == fxwp_use_fpaw) then
+            Es_blocked = (ASW < (ASW_FC * (ASW_max / 100.0)))
+        else
+            Es_blocked = (SWP < SWP_max)
+        end if
+    end subroutine SB_Calc_Es_blocked
 
     subroutine SB_Calc_R_PAR()
         use Inputs, only: R, PAR

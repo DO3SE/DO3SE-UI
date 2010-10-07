@@ -73,6 +73,7 @@ contains
         call Calc_Rsto()
         call Calc_Rsur()
 
+        call SB_Calc_Es_blocked()
         call Calc_Penman_Monteith()
 
         call SB_Calc_LWP()  ! This *must* happen after calculating SWP - SWP is 
