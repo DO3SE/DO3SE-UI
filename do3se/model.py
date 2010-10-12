@@ -259,8 +259,8 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('season', 'lai_b', FloatSpinField, (0, 20, 4, 0.1, 1), u'First mid-season LAI (LAI_b, m\u00b2/m\u00b2)', ''),
     ('season', 'lai_c', FloatSpinField, (0, 20, 4, 0.1, 1), u'Second mid-season LAI (LAI_c, m\u00b2/m\u00b2)', ''),
     ('season', 'lai_d', FloatSpinField, (0, 20, 0, 0.1, 1), u'LAI at EGS (LAI_d, m\u00b2/m\u00b2)', ''),
-    ('season', 'lai_1', SpinField, (1, 100, 30), 'Period from LAI_a to LAI_b (LAI_1, days)', ''),
-    ('season', 'lai_2', SpinField, (1, 100, 30), 'Period from LAI_c to LAI_d (LAI_2, days)', ''),
+    ('season', 'lai_1', SpinField, (1, 250, 30), 'Period from LAI_a to LAI_b (LAI_1, days)', ''),
+    ('season', 'lai_2', SpinField, (1, 250, 30), 'Period from LAI_c to LAI_d (LAI_2, days)', ''),
     ('season', 'sai', ChoiceField, (SAI_calcs, default_SAI_calc), 'SAI calculation', ''),
 
     ('fphen', 'fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Fphen at SGS (fphen_a)', ''),
