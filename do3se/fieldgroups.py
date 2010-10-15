@@ -149,6 +149,14 @@ class ModelOptionsParams(ParameterGroup):
     """Model options group."""
     PARAMETERS = model.parameters_by_group('modelopts')
 
+    def __init__(self, *args, **kwargs):
+        ParameterGroup.__init__(self, *args, **kwargs)
+        self.GetSizer().Add(wx.StaticText(self, label='N.B. fLWP, fSWP and fPAW'
+            ' are always calculated.  "Soil water influence on Gsto" only '
+            'controls which is used in the Gsto calculation.  fPAW is '
+            'calculated assuming an upper threshold of 50% of maximum PAW.'),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+
 
 class SeasonParams(ParameterGroup, PreviewCanvasMixin):
     """Season parameters group.

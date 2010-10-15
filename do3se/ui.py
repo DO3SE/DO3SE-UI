@@ -20,6 +20,13 @@ from resultswindow import ResultsWindow
 
 
 _intro_text = u"""
+<h2>DO<sub>3</sub>SE model user interface</h2>
+
+To start using the model, click the "New project" button at the bottom.  To 
+use an existing project either click it in the "Recent projects" list and click
+"Open selected", or click "Open other..." and locate your project (.do3se) file.
+
+<h5>Background</h5>
 <p>
 DO<sub>3</sub>SE (Deposition of Ozone for Stomatal Exchange) is a dry deposition
 model designed to estimate the total and stomatal deposition (or flux) of ozone
@@ -51,31 +58,31 @@ surface (R<sub>soil</sub>) which encompasses features such as leaf litter and
 ground vegetation under forest canopies; as well as resistance to adsorption to
 the external plant parts (R<sub>ext</sub>) including cuticle, bark etc.  The
 stomatal resistance term (R<sub>sto</sub>) determines the resistance to
-O3 uptake by the vegetation and hence is relevant for risk assessment
+O<sub>3</sub> uptake by the vegetation and hence is relevant for risk assessment
 since it is via the stomates that O<sub>3</sub> enters and causes damage to
 vegetation.
 </p>
 
 <p>
-This interfaced version of the model (DO3SE_INTv1.0) is provided for users to
-estimate total and stomatal O3 flux on a site-specific basis
-according to local meteorological and O3 concentration data.
+This interfaced version of the model (DO3SE_INTv2.0) is provided for users to
+estimate total and stomatal O<sub>3</sub> flux on a site-specific basis
+according to local meteorological and O<sub>3</sub> concentration data.
 Default parameterisation is provided for certain cover-types and species though
 users have the option of using their own local parameterisation.  The model
 provides estimates of key deposition parameters including: total deposition
 (F<sub>tot</sub>), deposition velocity (V<sub>g</sub>), stomatal conductance
 (g<sub>sto</sub>) and accumulated leaf-level stomtal flux above a threshold
-(AFstY).
+(PODy).
 </p>
 
 <p>
-Full referenced documentation of the DO<sub>3</sub>SE model and a DO3SE_INTv1.0
+Full referenced documentation of the DO<sub>3</sub>SE model and a DO3SE_INTv2.0
 user manual is provided with this model interface.
 </p>
 
 <p>
 <b>For any comments or queries please contact either Patrick Büker
-(pb25@york.ac.uk) or Lisa Emberson (l.emberson@york.ac.uk).</b>
+(patrick.bueker@york.ac.uk) or Lisa Emberson (l.emberson@york.ac.uk).</b>
 </p>
 
 <h5>Acknowledgements</h5>
