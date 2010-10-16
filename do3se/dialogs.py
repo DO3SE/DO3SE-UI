@@ -227,16 +227,16 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
 
         # Initialise presets list
         plroot = self.presetlist.AddRoot('')
-        # (user-defined presets)
-        self.user_presets_root = self.presetlist.AppendItem(plroot, 'User presets')
-        for k in self.user_presets.iterkeys():
-            self.presetlist.AppendItem(self.user_presets_root, k)
-        self.presetlist.Expand(self.user_presets_root)
         # (application-default presets)
         self.default_presets_root = self.presetlist.AppendItem(plroot, 'Default presets')
         for k in self.default_presets.iterkeys():
             self.presetlist.AppendItem(self.default_presets_root, k)
         self.presetlist.Expand(self.default_presets_root)
+        # (user-defined presets)
+        self.user_presets_root = self.presetlist.InsertItemBefore(plroot, 0, 'User presets')
+        for k in self.user_presets.iterkeys():
+            self.presetlist.AppendItem(self.user_presets_root, k)
+        self.presetlist.Expand(self.user_presets_root)
 
         self.presetlist.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelChanged_presetlist)
 
