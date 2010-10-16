@@ -28,3 +28,31 @@ def autoeventskip(f):
         if evt is not None:
             evt.Skip()
     return new_f
+
+
+class AutowrapStaticText(wx.StaticText):
+    """:class:`wx.StaticText` which automatically wraps it's text.
+
+    Text in :class:`wx.StaticText` doesn't automatically wrap on wxMSW, so this
+    class catches resize events and wraps the text accordingly.
+    """
+    def __init__(self, parent, id=wx.ID_ANY, label='', pos=wx.DefaultPosition,
+                 size=wx.DefaultSize, style=0, name=wx.StaticTextNameStr):
+        self._label = label
+        wx.StaticText.__init__(self, parent, id, label, pos, size, style, name)
+        self.Bind(wx.EVT_SIZE, self.OnResize)
+
+    def SetLabel(self, label):
+        """Cache the unmangled text when setting the label."""
+        self._label = label
+        wx.StaticText.SetLabel(self, label)
+
+    def GetRawLabel(self):
+        """Get the unmangled label (the :meth:`Wrap` method inserts newlines)."""
+        return self._label
+
+    def OnResize(self, evt):
+        """Re-wrap the label text on resize."""
+        wx.StaticText.SetLabel(self, self._label)
+        self.Wrap(evt.GetSize().x)
+        evt.Skip()

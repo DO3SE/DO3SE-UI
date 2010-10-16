@@ -154,11 +154,14 @@ class ModelOptionsParams(ParameterGroup):
 
     def __init__(self, *args, **kwargs):
         ParameterGroup.__init__(self, *args, **kwargs)
-        self.GetSizer().Add(wx.StaticText(self, label='N.B. fLWP, fSWP and fPAW'
-            ' are always calculated.  "Soil water influence on Gsto" only '
-            'controls which is used in the Gsto calculation.  fPAW is '
-            'calculated assuming an upper threshold of 50% of maximum PAW.'),
+        self.GetSizer().Add(wxext.AutowrapStaticText(self, label='N.B. fLWP, '
+            'fSWP and fPAW are always calculated.  "Soil water influence on '
+            'Gsto" only controls which is used in the Gsto calculation.  fPAW '
+            'is calculated assuming an upper threshold of 50% of maximum PAW.',
+            style=wx.ST_NO_AUTORESIZE),
             flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+        # The first draw of the label is incorrect if this isn't done on win32
+        self.Layout()
 
 
 class SeasonParams(ParameterGroupWithPreview):
