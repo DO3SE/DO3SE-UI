@@ -32,8 +32,8 @@ class ParameterGroup(fields.SimpleFieldGroup):
         fields.SimpleFieldGroup.__init__(self, *args, **kwargs)
 
 
-class PreviewCanvasMixin:
-    """Add a preview canvas to a field group.
+class ParameterGroupWithPreview(ParameterGroup):
+    """A parameter group with a preview canvas.
 
     A canvas is added to the field group's top-level sizer, and made available
     as the :attr:`preview` attribute.
@@ -41,13 +41,16 @@ class PreviewCanvasMixin:
     By default, :data:`~do3se.fields.EVT_VALUE_CHANGED` is bound to
     :meth:`update_preview` so that any changes in the group cause the preview
     to be updated.  If a preview depends on any other events then those should
-    also be bound to :meth:`update_preview`.
+    also be bound to :meth:`update_preview`.  :meth:`update_preview` is also
+    called after :meth:`set_values`.
 
     .. attribute:: preview
         
         A :class:`wx.lib.plot.PlotCanvas` instance to use as a preview canvas.
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        ParameterGroup.__init__(self, *args, **kwargs)
+
         self.preview = wx.lib.plot.PlotCanvas(self)
         self.preview.SetEnableTitle(False)
         self.preview.SetEnableLegend(False)
@@ -158,7 +161,7 @@ class ModelOptionsParams(ParameterGroup):
             flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
 
 
-class SeasonParams(ParameterGroup, PreviewCanvasMixin):
+class SeasonParams(ParameterGroupWithPreview):
     """Season parameters group.
 
     Has a graph previewing the LAI function.
@@ -166,8 +169,7 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
     PARAMETERS = model.parameters_by_group('season')
 
     def __init__(self, *args, **kwargs):
-        ParameterGroup.__init__(self, *args, **kwargs)
-        PreviewCanvasMixin.__init__(self)
+        ParameterGroupWithPreview.__init__(self, *args, **kwargs)
 
         self['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
         self['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_sgs_egs)
@@ -206,7 +208,7 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
 
     def set_values(self, values):
         """Ensure the enabled/disabled states and SGS/EGS are updated."""
-        ParameterGroup.set_values(self, values)
+        ParameterGroupWithPreview.set_values(self, values)
         self.update_disabled(None)
         self.update_sgs_egs(None)
 
@@ -222,7 +224,7 @@ class SeasonParams(ParameterGroup, PreviewCanvasMixin):
         return errors
 
 
-class FphenParams(ParameterGroup, PreviewCanvasMixin):
+class FphenParams(ParameterGroupWithPreview):
     """Canopy Fphen parameters group.
 
     Has a graph previewing the fphen function.  Also depends on ``sgs`` and
@@ -231,8 +233,7 @@ class FphenParams(ParameterGroup, PreviewCanvasMixin):
     PARAMETERS = model.parameters_by_group('fphen')
 
     def __init__(self, *args, **kwargs):
-        ParameterGroup.__init__(self, *args, **kwargs)
-        PreviewCanvasMixin.__init__(self)
+        ParameterGroupWithPreview.__init__(self, *args, **kwargs)
         
         # TODO: This will need to happen somewhere else if the panels are in
         # a different order...
@@ -271,7 +272,7 @@ class FphenParams(ParameterGroup, PreviewCanvasMixin):
         return errors
 
 
-class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
+class LeafFphenParams(ParameterGroupWithPreview):
     """Leaf fphen parameters group.
 
     Has a graph previewing the leaf fphen function.  Also depends on ``sgs`` and
@@ -281,8 +282,7 @@ class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
     PARAMETERS = model.parameters_by_group('leaf_fphen')
 
     def __init__(self, *args, **kwargs):
-        ParameterGroup.__init__(self, *args, **kwargs)
-        PreviewCanvasMixin.__init__(self)
+        ParameterGroupWithPreview.__init__(self, *args, **kwargs)
 
         # TODO: This will need to happen somewhere else if the panels are in
         # a different order...
@@ -296,7 +296,7 @@ class LeafFphenParams(ParameterGroup, PreviewCanvasMixin):
 
     def set_values(self, values):
         """Ensure the enabled/disabled state gets updated when values are set."""
-        ParameterGroup.set_values(self, values)
+        ParameterGroupWithPreview.set_values(self, values)
         self.update_disabled(None)
         
     @wxext.autoeventskip

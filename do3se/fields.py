@@ -372,5 +372,7 @@ def disableable(cls, chklabel='Disabled?'):
         def set_value(self, value):
             cls.set_value(self, value['value'])
             self.other.SetValue(value['disabled'])
+            # Update enabled/disabled state
+            self.OnCheckbox_disable(None)
 
     return DisableableCls

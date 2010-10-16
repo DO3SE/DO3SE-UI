@@ -157,9 +157,6 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.app = app
         
         self.params = fields.FieldCollection(self.tb_main, self.ui_specification)
-        for group in self.params.itervalues():
-            if isinstance(group, fieldgroups.PreviewCanvasMixin):
-                group.update_preview(None)
 
         if projectfile is not None and self.app.IsProjectOpen(projectfile):
             _log.warning('Project already open: ' + projectfile)
