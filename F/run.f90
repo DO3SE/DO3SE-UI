@@ -12,7 +12,6 @@ module Run
     public :: Read_Row_From_File
     public :: Write_Row_To_File
 
-    !integer, private :: dd_prev
     integer, private :: inunit = 8
     integer, private :: outunit = 9
 
@@ -33,6 +32,7 @@ contains
         AOT40 = 0
 
         ! Put calls to initialisation functions here
+        call SB_Calc_SGS_EGS()
         call Derive_d_zo()
         call Derive_Windspeed_d_zo()
         call Derive_O3_d_zo()
@@ -73,6 +73,7 @@ contains
         call Calc_Rsto()
         call Calc_Rsur()
 
+        call SB_Calc_Es_blocked()
         call Calc_Penman_Monteith()
 
         call SB_Calc_LWP()  ! This *must* happen after calculating SWP - SWP is 

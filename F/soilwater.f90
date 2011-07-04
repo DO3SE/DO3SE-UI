@@ -27,6 +27,14 @@ module SoilWater
     public :: Calc_fLWP
     public :: Calc_SWP_meas
     public :: Calc_fPAW
+    public :: fSWP_exp_curve
+
+    ! Constants
+    real, public, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
+    real, public, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
+
+    ! Calculated constants
+    real, public :: ASW_FC
 
     ! Hourly intermediate
     real, public :: Ei_hr
@@ -80,10 +88,11 @@ contains
 
         ! ASW and SWP for initial volumetric water content
         ASW = (Sn - PWP_vol) * root
+        ASW_FC = (Fc_m - PWP_vol) * root
         SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
 
         ! Calculate fSWP and SMD for initial water content
-        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
+        fSWP = fSWP_exp_curve(SWP, fmin)
         SMD = (Fc_m - Sn) * root
 
         ! Initial fLWP = 1
@@ -105,8 +114,8 @@ contains
         use Constants, only: seaP, Ts_K, Dratio
         use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
-                             Rsto_PEt, Sn, Ra, Rinc
-        use Parameters, only: Fc_m
+                             Rsto_PEt, Sn, Ra, Rinc, Es_blocked
+        use Parameters, only: Fc_m, Rsoil
 
         real        :: VPD_Pa       ! VPD in Pa, not kPa
         real        :: P_Pa         ! Pressure in Pa, not kPa
@@ -150,22 +159,21 @@ contains
         Et_hr_prev = Et_hr
         Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 
-        if (Sn < Fc_m .or. LAI >= 1.0) then
+        if (Es_blocked) then
             Es_hr = 0
         else
             t = exp(-0.5 * LAI)
             Es_Rn = Rn * t
             Es_G = 0.1 * Es_Rn
-            Es_1 = (delta * (Es_Rn - Es_G)) / lambda
-            Es_2 = 3600 * Pair * Cair * VPD_Pa / (Ra + Rb_H2O) / lambda
-            Es_3 = delta + psychro
+            Es_1 = (delta * (Rn - G)) / lambda
+            Es_2 = ((3600 * Pair * Cair * VPD_Pa) - (delta * Rinc * ((Rn - G) - (Es_Rn - Es_G)))) / (Rinc + Rb_H2O) / lambda
+            Es_3 = delta + (psychro * (1.0 + (Rsoil / (Rb_H2O + Rinc))))
             Es_hr = (Es_1 + Es_2) / Es_3 / 1000
         endif
 
         ! Calculate AEt from Et and Es (after Shuttleworth and Wallace, 1985)
         SW_a = (delta + psychro) * (Ra + Rb_H2O)
-        SW_s = (delta + psychro) * Rinc + (psychro * 0)  ! Rsoil assumed to be 0 
-                                                         ! at soil surface
+        SW_s = (delta + psychro) * Rinc + (psychro * Rsoil)
         SW_c = (delta + psychro) * 0 + (psychro + Rsto_c) ! Boundary layer 
                                                           ! resistance = 0
         C_canopy = 1 / (1 + ((SW_c * SW_a) / (SW_s * (SW_c + SW_a))))
@@ -240,8 +248,7 @@ contains
         use Parameters, only: fmin
         use Variables, only: SWP, fSWP
 
-        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
-        fSWP = min(max(fSWP, fmin), 1.0)
+        fSWP = fSWP_exp_curve(SWP, fmin)
     end subroutine Calc_fSWP_exponential
 
     subroutine Calc_fSWP_linear()
@@ -261,7 +268,7 @@ contains
         ! TODO: These should probably be vegetation parameters
         real :: K1 = 0.0000000000035    ! constant related to root density
         real :: C = 1                   ! plant capacitance (MPa mm-1)
-        real :: Rc = 0.42               ! storage/destorage hydraulic resistance
+        real :: Rc = 0.43               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
         real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
 
@@ -297,7 +304,7 @@ contains
         ! TODO: These should probably be vegetation parameters
         real :: K1 = 0.0000000000035    ! constant related to root density
         real :: C = 1                   ! plant capacitance (MPa mm-1)
-        real :: Rc = 0.42               ! storage/destorage hydraulic resistance
+        real :: Rc = 0.43               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
         real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
 
@@ -315,8 +322,7 @@ contains
         use Parameters, only: fmin
         use Variables, only: LWP, fLWP
 
-        fLWP = (((-1) * LWP)**(-0.706)) * 0.355
-        fLWP = min(1.0, max(fLWP, fmin))
+        fLWP = fSWP_exp_curve(LWP, fmin)
     end subroutine Calc_fLWP
 
     subroutine Calc_SWP_meas()
@@ -351,15 +357,16 @@ contains
         use Parameters, only: root, fmin
         use Parameters, only: Fc_m
 
-        real, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
-        real, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
-        real :: ASW_FC
-
-        ! ASW at field capacity
-        ASW_FC = (Fc_m - PWP_vol) * root
-
         fPAW = fmin + (1.0-fmin) * ((100 * (ASW/ASW_FC)) - ASW_min) / (ASW_max - ASW_min)
         fPAW = min(1.0, max(fmin, fPAW))
     end subroutine Calc_fPAW
+
+    function fSWP_exp_curve(SWP, fmin) result(fSWP)
+        real, intent(in) :: SWP, fmin
+        real :: fSWP
+
+        fSWP = (((-1) * SWP)** (-0.706)) * 0.355
+        fSWP = min(max(fSWP, fmin), 1.0)
+    end function fSWP_exp_curve
 
 end module SoilWater

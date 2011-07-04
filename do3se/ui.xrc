@@ -1,0 +1,357 @@
+<?xml version="1.0" ?>
+<resource>
+  <object class="wxFrame" name="frame_mainwindow">
+    <title>DO3SE</title>
+    <object class="wxPanel">
+      <object class="wxBoxSizer">
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxHtmlWindow" name="html_about">
+            <XRCED>
+              <assign_var>1</assign_var>
+            </XRCED>
+          </object>
+          <option>1</option>
+          <flag>wxEXPAND</flag>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Recent projects</label>
+              </object>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxListBox" name="list_recent">
+                <content>
+                  <item>C:\\DO3SE\\A project\\project.do3se</item>
+                  <item>C:\\Users\\Alan\\My Documents\\Someplace\\someplace.do3se</item>
+                  <item>R:\\something.do3se</item>
+                </content>
+                <style>wxLB_SINGLE</style>
+                <XRCED>
+                  <events>EVT_LISTBOX|EVT_LISTBOX_DCLICK</events>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>1</option>
+              <flag>wxEXPAND</flag>
+            </object>
+            <orient>wxVERTICAL</orient>
+          </object>
+          <flag>wxALL|wxEXPAND</flag>
+          <border>5</border>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_open_selected">
+                <label>Open &amp;selected</label>
+                <enabled>0</enabled>
+                <XRCED>
+                  <events>EVT_BUTTON</events>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>0</option>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_open_other">
+                <label>&amp;Open other...</label>
+                <XRCED>
+                  <events>EVT_BUTTON</events>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>0</option>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_new">
+                <label>&amp;New project</label>
+                <XRCED>
+                  <events>EVT_BUTTON</events>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>0</option>
+              <flag>wxEXPAND</flag>
+            </object>
+            <orient>wxHORIZONTAL</orient>
+          </object>
+          <flag>wxBOTTOM|wxLEFT|wxRIGHT|wxALIGN_RIGHT</flag>
+          <border>5</border>
+        </object>
+      </object>
+    </object>
+  </object>
+  <object class="wxFrame" name="frame_projectwindow">
+    <object class="wxMenuBar">
+      <object class="wxMenu">
+        <object class="wxMenuItem" name="wxID_NEW">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="wxID_OPEN">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="wxID_SAVE">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="wxID_SAVEAS">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="wxID_CLOSE">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="wxID_EXIT">
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <label>&amp;Project</label>
+      </object>
+      <object class="wxMenu">
+        <label>&amp;Tools</label>
+        <object class="wxMenuItem" name="create_preset">
+          <label>&amp;Create preset</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="manage_presets">
+          <label>Manage/&amp;apply presets</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+      </object>
+    </object>
+    <object class="wxPanel">
+      <object class="wxBoxSizer">
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxTreebook" name="tb_main">
+            <object class="treebookpage">
+              <object class="wxPanel">
+                <object class="wxBoxSizer">
+                  <orient>wxVERTICAL</orient>
+                  <object class="sizeritem">
+                    <object class="wxHtmlWindow" name="html_introduction">
+                      <htmlcode>&lt;p&gt;
+This is the main project window.  Each of the items on the left refer to a group of model parameters/settings which can be changed.
+&lt;/p&gt;
+&lt;p&gt;
+To get help on a particular parameter, click the question mark in the bottom left corner of the window and then click the parameter input.  For further help, refer to the user manual.
+&lt;/p&gt;</htmlcode>
+                      <style>wxNO_BORDER</style>
+                      <XRCED>
+                        <assign_var>1</assign_var>
+                      </XRCED>
+                    </object>
+                    <option>1</option>
+                    <flag>wxEXPAND</flag>
+                  </object>
+                </object>
+              </object>
+              <label>Introduction</label>
+              <depth>0</depth>
+            </object>
+            <XRCED>
+              <assign_var>1</assign_var>
+            </XRCED>
+          </object>
+          <option>1</option>
+          <flag>wxEXPAND</flag>
+        </object>
+        <object class="sizeritem">
+          <object class="wxPanel" name="pnl_errors">
+            <object class="wxBoxSizer">
+              <orient>wxVERTICAL</orient>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>Errors</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxListBox" name="list_errors">
+                  <content>
+                    <item>Somebody stole your cheese sandwich</item>
+                    <item>Garden gnomes are riding your cat</item>
+                  </content>
+                  <XRCED>
+                    <assign_var>1</assign_var>
+                  </XRCED>
+                </object>
+                <option>1</option>
+                <flag>wxEXPAND</flag>
+              </object>
+            </object>
+            <hidden>1</hidden>
+            <XRCED>
+              <assign_var>1</assign_var>
+            </XRCED>
+          </object>
+          <flag>wxTOP|wxLEFT|wxRIGHT|wxEXPAND</flag>
+          <border>5</border>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_errors">
+                <label>121 errors (click for more information)</label>
+                <fg>#FF1111</fg>
+                <style>wxNO_BORDER|wxNO_BORDER</style>
+                <XRCED>
+                  <events>EVT_BUTTON</events>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxGauge" name="prg_progress">
+                <range>100</range>
+                <value>0</value>
+                <XRCED>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <option>1</option>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="spacer">
+              <size>5</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="btn_run">
+                <label>Run</label>
+                <enabled>0</enabled>
+                <XRCED>
+                  <events>EVT_BUTTON</events>
+                  <assign_var>1</assign_var>
+                </XRCED>
+              </object>
+              <flag>wxEXPAND</flag>
+            </object>
+            <orient>wxHORIZONTAL</orient>
+          </object>
+          <flag>wxALL|wxEXPAND</flag>
+          <border>5</border>
+        </object>
+      </object>
+    </object>
+    <title>DO3SE (foo.do3se)</title>
+    <XRCED>
+      <events>EVT_CLOSE</events>
+    </XRCED>
+  </object>
+  <object class="wxDialog" name="dialog_presets">
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxTreeCtrl" name="presetlist">
+              <style>wxTR_HIDE_ROOT|wxTR_DEFAULT_STYLE</style>
+              <XRCED>
+                <assign_var>1</assign_var>
+              </XRCED>
+            </object>
+            <option>1</option>
+            <flag>wxEXPAND</flag>
+          </object>
+          <object class="spacer">
+            <size>5</size>
+          </object>
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <object class="wxBoxSizer">
+              <object class="sizeritem">
+                <object class="wxPanel" name="paramlist_dummy">
+                  <XRCED>
+                    <assign_var>1</assign_var>
+                  </XRCED>
+                </object>
+                <option>1</option>
+                <flag>wxEXPAND</flag>
+              </object>
+              <object class="sizeritem">
+                <object class="wxStaticText" name="lbl_comment">
+                  <label>(No description)</label>
+                  <hidden>1</hidden>
+                  <XRCED>
+                    <assign_var>1</assign_var>
+                  </XRCED>
+                </object>
+                <flag>wxTOP|wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+                <border>5</border>
+              </object>
+              <orient>wxVERTICAL</orient>
+            </object>
+            <option>2</option>
+            <flag>wxEXPAND</flag>
+          </object>
+        </object>
+        <option>1</option>
+        <flag>wxEXPAND</flag>
+      </object>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxButton" name="wxID_DELETE">
+              <enabled>0</enabled>
+              <XRCED>
+                <events>EVT_BUTTON</events>
+                <assign_var>1</assign_var>
+              </XRCED>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxPanel"/>
+            <option>1</option>
+            <flag>wxEXPAND</flag>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="wxID_CANCEL"/>
+            <flag>wxALIGN_RIGHT</flag>
+          </object>
+          <object class="spacer">
+            <size>5</size>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="wxID_APPLY"/>
+            <flag>wxALIGN_RIGHT</flag>
+          </object>
+          <orient>wxHORIZONTAL</orient>
+        </object>
+        <flag>wxALL|wxEXPAND|wxALIGN_RIGHT</flag>
+        <border>5</border>
+      </object>
+    </object>
+    <title>Apply preset</title>
+    <style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+  </object>
+</resource>

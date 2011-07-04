@@ -12,8 +12,8 @@ module Switchboard
     public :: SB_Calc_Rn
 
     integer, public, parameter :: leaf_fphen_equals_fphen = 1
-    integer, public, parameter :: leaf_fphen_wheat        = 2
-    integer, public, parameter :: leaf_fphen_potato       = 3
+    integer, public, parameter :: leaf_fphen_fixed_day    = 2
+    integer, public, parameter :: leaf_fphen_use_input    = 3
     integer, public, save :: leaf_fphen_method = leaf_fphen_equals_fphen
     public :: SB_Calc_leaf_fphen
 
@@ -44,6 +44,7 @@ module Switchboard
     integer, public, parameter :: fxwp_use_fpaw = 4
     integer, public, save :: fxwp_method = fxwp_disabled
     public :: SB_Calc_fXWP
+    public :: SB_Calc_Es_blocked
 
     ! Both R and PAR are inputs, do nothing
     integer, public, parameter :: r_par_use_inputs = 1
@@ -53,6 +54,14 @@ module Switchboard
     integer, public, parameter :: r_par_derive_par = 3
     integer, public, save :: r_par_method = r_par_use_inputs
     public :: SB_Calc_R_PAR
+
+    ! Use supplied SGS/EGS
+    integer, public, parameter :: sgs_egs_use_inputs = 1
+    ! Use latitude function to calculate SGS/EGS
+    integer, public, parameter :: sgs_egs_latitude   = 2
+    integer, public, save :: sgs_egs_method = sgs_egs_use_inputs
+    public :: SB_Calc_SGS_EGS
+
 
 contains
 
@@ -89,7 +98,8 @@ contains
     end subroutine SB_Calc_Rn
 
     subroutine SB_Calc_leaf_fphen()
-        use Phenology, only: Calc_leaf_fphen_Wheat
+        use Phenology, only: Calc_leaf_fphen_fixed_day
+        use Inputs, only: leaf_fphen_input
         use Variables, only: fphen, leaf_fphen
 
         select case (leaf_fphen_method)
@@ -97,12 +107,11 @@ contains
         case (leaf_fphen_equals_fphen)
             leaf_fphen = fphen
         
-        case (leaf_fphen_wheat)
-            call Calc_leaf_fphen_Wheat()
+        case (leaf_fphen_fixed_day)
+            call Calc_leaf_fphen_fixed_day()
 
-        case (leaf_fphen_potato)
-            ! Potato calculation is the same as that for wheat
-            call Calc_leaf_fphen_Wheat()
+        case (leaf_fphen_use_input)
+            leaf_fphen = leaf_fphen_input
         
         end select
     end subroutine SB_Calc_leaf_fphen
@@ -181,6 +190,20 @@ contains
         end select
     end subroutine SB_Calc_fXWP
 
+    ! Calculate if there should be no soil evaporation depending on
+    ! the current fSWP method
+    subroutine SB_Calc_Es_blocked()
+        use Soilwater, only: ASW_FC, ASW_max
+        use Parameters, only: SWP_max
+        use Variables, only: Es_blocked, ASW, SWP
+
+        if (fxwp_method == fxwp_use_fpaw) then
+            Es_blocked = (ASW < (ASW_FC * (ASW_max / 100.0)))
+        else
+            Es_blocked = (SWP < SWP_max)
+        end if
+    end subroutine SB_Calc_Es_blocked
+
     subroutine SB_Calc_R_PAR()
         use Inputs, only: R, PAR
 
@@ -197,5 +220,20 @@ contains
 
         end select
     end subroutine SB_Calc_R_PAR
+
+    subroutine SB_Calc_SGS_EGS()
+        use Parameters, only: lat, SGS, EGS
+        use Phenology, only: Latitude_SGS_EGS
+
+        select case (sgs_egs_method)
+
+        ! Use inputs, nothing to do
+        !case (sgs_egs_use_inputs)
+        
+        case (sgs_egs_latitude)
+            call Latitude_SGS_EGS(lat, SGS, EGS)
+
+        end select
+    end subroutine SB_Calc_SGS_EGS
 
 end module Switchboard

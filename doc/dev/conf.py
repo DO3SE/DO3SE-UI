@@ -17,6 +17,7 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.append(os.path.abspath('.'))
+sys.path.append(os.path.abspath('../..'))
 
 # -- General configuration -----------------------------------------------------
 
@@ -84,7 +85,7 @@ exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+modindex_common_prefix = ['do3se.']
 
 
 # -- Options for HTML output ---------------------------------------------------

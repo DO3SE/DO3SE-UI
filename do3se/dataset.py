@@ -1,25 +1,22 @@
 import csv
 import logging
+_log = logging.getLogger('do3se.dataset')
+from itertools import ifilter
 
 import util
 import model
 
-class InvalidFieldCountError(Exception):
+
+class DatasetError(Exception):
+    pass
+
+
+class InvalidFieldCountError(DatasetError):
     """Mismatch between specified field count and data column count."""
     pass
 
 
-class InsufficientTrimError(Exception):
-    """Not enough lines trimmed from beginning of data.
-
-    This exception occurs when invalid data was found when attempting to read
-    from a CSV file.  This is usually due to headers being present because not
-    enough lines were trimmed from the beginning.
-    """
-    pass
-
-
-class RequiredFieldError(Exception):
+class RequiredFieldError(DatasetError):
     """One or more required fields missing from input format."""
     def __init__(self, fields):
         self.fields = fields
@@ -31,115 +28,116 @@ class Dataset:
     This class is responsible for loading input data, running the model over
     it, storing the results, and saving them to a file.
 
-    :param infile:      A file-like object to read from
-    :param fields:      Names of the fields/columns in the input file
-    :param trim:        Number of lines to trim from beginning of file, to
-                        skip the existing column headers
-    :param siteparams:  Site parameters
-    :param vegparams:   Vegetation parameters
+    *parameters* is a dictionary-like object of parameter values, and will be
+    modified by the constructor as "virtual" parameters are replaced with real
+    parameters and control parameters are removed.
     """
-    def __init__(self, infile, fields, trim, siteparams, vegparams):
-        """Initialise the Dataset object and load the data from the file."""
-        self.siteparams = siteparams.copy()
-        self.vegparams = vegparams.copy()
+    def __init__(self, infile, params):
+        self.params = params
+        self.switchboard = dict()
+
+        # Extract parameters which control loading of data
+        input_fields = self.params.pop('input_fields', [])
+        input_trim = self.params.pop('input_trim', 0)
 
         # Check required fields are present
-        required = (x['variable'] for x in model.input_fields if x['required'])
+        required = [k for k,v in model.input_fields.iteritems() if v['required']]
         for f in required:
-            if not f in fields:
+            if not f in input_fields:
                 raise RequiredFieldError([f])
         
         # Handle PAR/Global radiation input/derivation
-        if 'par' in fields and 'r' in fields:
-            self.r_par_method = model.switchboard.r_par_use_inputs
-        elif 'par' in fields:
-            self.r_par_method = model.switchboard.r_par_derive_r
-        elif 'r' in fields:
-            self.r_par_method = model.switchboard.r_par_derive_par
+        if 'par' in input_fields and 'r' in input_fields:
+            self.switchboard['r_par_method'] = model.switchboard.r_par_use_inputs
+            _log.debug('R/PAR calculation: use inputs')
+        elif 'par' in input_fields:
+            self.switchboard['r_par_method'] = model.switchboard.r_par_derive_r
+            _log.debug('R/PAR calculation: derive R')
+        elif 'r' in input_fields:
+            self.switchboard['r_par_method'] = model.switchboard.r_par_derive_par
+            _log.debug('R/PAR calculation: derive PAR')
         else:
             raise RequiredFieldError(['par', 'r'])
 
         # Calculate net radiation if not supplied
-        if 'rn' in fields:
-            self.rn_method = model.switchboard.rn_use_input
+        if 'rn' in input_fields:
+            self.switchboard['rn_method'] = model.switchboard.rn_use_input
+            _log.debug('Rn calculation: use input')
         else:
-            self.rn_method = model.switchboard.rn_calculate
+            self.switchboard['rn_method'] = model.switchboard.rn_calculate
+            _log.debug('Rn calculation: calculate')
 
         # Other switchable procedures
-        fO3 = model.fO3_calc_map[self.vegparams.pop('fo3', model.default_fO3_calc)]
-        logging.debug('fO3 calculation: "%(name)s" (%(id)s)' % fO3)
-        self.fo3_method = fO3['func']
-        SAI = model.SAI_calc_map[self.vegparams.pop('sai', model.default_SAI_calc)]
-        logging.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
-        self.sai_method = SAI['func']
-        leaf_fphen = model.leaf_fphen_calc_map[
-                self.vegparams.pop('leaf_fphen', model.default_leaf_fphen_calc)]
-        logging.debug('leaf_fphen calculation: "%(name)s" (%(id)s)' % leaf_fphen)
-        self.leaf_fphen_method = leaf_fphen['func']
+        fO3 = model.fO3_calcs[self.params.pop('fo3', model.default_fO3_calc)]
+        _log.debug('fO3 calculation: "%(name)s" (%(id)s)' % fO3)
+        self.switchboard['fo3_method'] = fO3['func']
+        SAI = model.SAI_calcs[self.params.pop('sai', model.default_SAI_calc)]
+        _log.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
+        self.switchboard['sai_method'] = SAI['func']
+        leaf_fphen = model.leaf_fphen_calcs[
+                self.params.pop('leaf_fphen', model.default_leaf_fphen_calc)]
+        _log.debug('leaf_fphen calculation: "%(name)s" (%(id)s)' % leaf_fphen)
+        self.switchboard['leaf_fphen_method'] = leaf_fphen['func']
         # TODO: switchable with heat flux calculation?
-        self.ra_method = model.switchboard.ra_simple
-        fXWP = model.fXWP_calc_map[self.vegparams.pop('fxwp', model.default_fXWP_calc)]
-        self.fxwp_method = fXWP['func']
-        fSWP = model.fSWP_calc_map[self.vegparams.pop('fswp', model.default_fSWP_calc)]
-        self.fswp_method = fSWP['func']
-        LWP = model.LWP_calc_map[self.vegparams.pop('lwp', model.default_LWP_calc)]
-        self.lwp_method = LWP['func']
+        self.switchboard['ra_method'] = model.switchboard.ra_simple
+        fXWP = model.fXWP_calcs[self.params.pop('fxwp', model.default_fXWP_calc)]
+        self.switchboard['fxwp_method'] = fXWP['func']
+        fSWP = model.fSWP_calcs[self.params.pop('fswp', model.default_fSWP_calc)]
+        self.switchboard['fswp_method'] = fSWP['func']
+        LWP = model.LWP_calcs[self.params.pop('lwp', model.default_LWP_calc)]
+        self.switchboard['lwp_method'] = LWP['func']
+        SGS_EGS = model.SGS_EGS_calcs[self.params.pop('sgs_egs_calc', model.default_SGS_EGS_calc)]
+        self.switchboard['sgs_egs_method'] = SGS_EGS['func']
 
         # Soil parameters from soil type
-        soil = model.soil_class_map[self.siteparams.pop('soil_tex',
-                                                        model.default_soil_class)]
-        self.siteparams.update(soil['data'])
+        soil = model.soil_classes[self.params.pop('soil_tex', model.default_soil_class)]
+        self.params.update(soil['data'])
 
-        if self.siteparams['u_h_copy']:
-            self.siteparams['u_h'] = self.vegparams['h']
-        if self.siteparams['o3_h_copy']:
-            self.siteparams['o3_h'] = self.vegparams['h']
+        # Use/copy measurement vegetation heights
+        u_h = self.params.pop('u_h')
+        self.params['u_h'] = self.params['h'] if u_h['disabled'] else u_h['value']
+        o3_h = self.params.pop('o3_h')
+        self.params['o3_h'] = self.params['h'] if o3_h['disabled'] else o3_h['value']
 
-        # Skip the trimmed lines
-        for n in xrange(0,trim): infile.next()
-        # Load all of the data
-        logging.debug("Input data format: %s" % (",".join(fields)))
-        try:
-            self.input = list(csv.DictReader(infile, fieldnames = fields, 
-                quoting=csv.QUOTE_NONNUMERIC))
-        except ValueError:
-            # ValueError here usually means the headers didn't get trimmed
-            raise InsufficientTrimError()
+        self.input = data_from_csv(infile, input_fields, input_trim)
+        _log.info("Loaded %d data rows" % len(self.input))
 
-        logging.info("Loaded %d data rows" % len(self.input))
-
-    def run(self):
+    def run(self, progressbar=None, progress_interval=100):
         """Run the DO3SE model with this dataset.
 
-        :returns:   2-tuple of ``(result_count, skipped_row_count)``
+        If a :class:`wx.Gauge` is supplied as the *progressbar* argument, it
+        will have it's range set to the number of input rows, and will be
+        updated every *progress_interval* rows.
+
+        Returns a :class:`Resultset` object with the model run results.
         """
         skippedrows = 0
 
-        # Setup function switchboard
-        model.switchboard.sai_method = self.sai_method
-        model.switchboard.rn_method = self.rn_method
-        model.switchboard.leaf_fphen_method = self.leaf_fphen_method
-        model.switchboard.ra_method = self.ra_method
-        model.switchboard.fo3_method = self.fo3_method
-        model.switchboard.fswp_method = self.fswp_method
-        model.switchboard.lwp_method = self.lwp_method
-        model.switchboard.fxwp_method = self.fxwp_method
-        model.switchboard.r_par_method = self.r_par_method
-
-        # Load parameters into F model
-        params = {}
-        params.update(self.vegparams)
-        params.update(self.siteparams)
-        util.setattrs(model.parameters, params)
+        # Initialise function switchboard
+        util.setattrs(model.switchboard, self.switchboard)
+        # Load parameters
+        util.setattrs(model.parameters, self.params)
 
         # Initialise the model
-        logging.info("Initialising DOSE Fortran model")
+        _log.info("Initialising DOSE Fortran model")
         model.run.initialise()
 
-        self.results = []
+        # Initialise progress bar
+        if progressbar is not None:
+            progressbar.SetRange(len(self.input))
+            progressbar.SetValue(0)
+        prog_counter = progress_interval
+
+        results = []
         # Iterate through dataset
-        logging.info("Running calculations ...")
+        _log.info("Running calculations ...")
         for row in self.input:
+            if progressbar is not None:
+                prog_counter -= 1
+                if prog_counter == 0:
+                    prog_counter = progress_interval
+                    progressbar.SetValue(progressbar.GetValue() + progress_interval)
+
             # Skip rows that are missing values
             if '' in row.values():
                 skippedrows += 1
@@ -153,36 +151,152 @@ class Dataset:
                 raise InvalidFieldCountError()
 
             model.run.calculate_row()
-            self.results.append(model.extract_outputs())
+            results.append(model.extract_outputs())
 
-        logging.info("Got %d results" % len(self.results))
-        return (len(self.results), skippedrows)
+        if progressbar is not None:
+            progressbar.SetValue(0)
 
+        _log.info("Got %d results" % len(results))
+        return Resultset(results, skippedrows, self.params)
+
+
+class Resultset:
+    """Results data from a model run.
+
+    Contains the model run results as :attr:`data`, the number of rows skipped
+    as :attr:`skipped`, the (modified) parameters used for the model run as
+    :attr:`params`, and provides the ability to :meth:`save` the results to a
+    file.
+    """
+    def __init__(self, data, skipped, params):
+        self.data = data
+        self.skipped = skipped
+        self.params = params
 
     def save(self, outfile, fields, headers=False, period=None):
-        """Save the results to a CSV file according to the output format.
+        """Save results to a CSV file.
 
-        :param outfile:     The file to save results to
-        :param fields:      Identifiers of fields to include in output, in order
-        :param headers:     Include field headers in output?
-        :param period:      Day range, inclusive, to include rows for: ``(start, end)``
+        Save the result columns specified in *fields* to *outfile* in CSV
+        format.  If *headers* is True, the first row consists of the short
+        field description for each row (from :mod:`do3se.model.output_fields`).
+        If a pair is supplied as the *period* argument, it is treated as an
+        (inclusive) day range for which results should be output, otherwise
+        all rows are written.
         """
-        logging.debug("Output data format: %s" % (",".join(fields)))
+        _log.debug("Output data format: %s" % (",".join(fields)))
 
         w = csv.DictWriter(outfile, fieldnames=fields, extrasaction='ignore',
                 quoting=csv.QUOTE_NONNUMERIC)
 
         if headers:
-            w.writerow(dict( (f, model.output_field_map[f]['short']) for f in fields ))
+            w.writerow(dict( (f, model.output_fields[f]['short']) for f in fields ))
         
-        count = 0
-        if period:
-            for r in self.results:
-                if r['dd'] >= period[0] and r['dd'] <= period[1]:
-                    w.writerow(r)
-                    count += 1
+        if period is None:
+            w.writerows(self.data)
+            _log.info('Wrote all %d rows' % (len(self.data),))
         else:
-            w.writerows(self.results)
-            count = len(self.results)
-        
-        logging.info("Wrote %d records" % (count,))
+            start, end = period
+            w.writerows(ifilter(lambda r: r['dd'] >= start and r['dd'] <= end, self.data))
+            _log.info('Wrote rows from dd=%d to dd=%d' % (start, end))
+
+
+class NoDataError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'No data in file')
+
+
+class NotEnoughColumnsError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'Not enough columns in input')
+
+
+class NotEnoughTrimError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'Non-numeric data at start of input, maybe'
+                ' not enough header rows were trimmed?')
+
+
+class InvalidDataError(DatasetError):
+    def __init__(self, row, col):
+        self.row = row
+        self.col = col
+        DatasetError.__init__(self, 'Invalid/empty value at row %d, '
+                                    'column %d'% (row, col))
+
+
+class UnquotedStringError(DatasetError):
+    def __init__(self):
+        DatasetError.__init__(self, 'CSV file invalid, unquoted string found')
+
+
+def data_from_csv(infile, keys, trim):
+    """Load data from CSV file.
+
+    Data is loaded from *infile* as a list of dictionaries using *keys* to
+    determine which key to store column's value under.  Lines are stripped from
+    the beginning of the file according to *trim* to skip header rows.
+
+    The requirements for the data input are more restrictive than
+    :class:`csv.DictReader` is capable of, so instead the reading is done with
+    a plain :class:`csv.reader` and the data checked before being used.  This
+    function attempts to anticipate all common errors, raising an exception
+    (which is always a subclass of :class:`DatasetError`) when a problem is
+    encountered.  Among the errors handled are:
+
+    * Empty data file
+    * Not enough columns
+    * Missing values
+    * Invalid values
+    * Not enough rows trimmed for headers
+    """
+    data = []
+
+    # Skip header rows
+    try:
+        for x in xrange(trim):
+            infile.next()
+    except StopIteration:
+        raise NoDataError()
+
+    csvreader = csv.reader(infile, quoting=csv.QUOTE_NONNUMERIC)
+
+    # Look at the first row, we can tell a lot from it...
+    try:
+        row1 = csvreader.next()
+    except StopIteration:
+        raise NoDataError()
+    except ValueError:
+        raise UnquotedStringError()
+    else:
+        # Check that there are enough input columns to satisfy the input format
+        if len(row1) < len(keys):
+            raise NotEnoughColumnsError()
+
+        # Check for non-empty strings, means header rows might still exist
+        for x in row1[:len(keys)]:
+            if isinstance(x, basestring) and len(x) > 0:
+                raise NotEnoughTrimError()
+
+        # Otherwise, in general, strings mean values couldn't be converted to float
+        for i, x in enumerate(row1[:len(keys)], 1):
+            if isinstance(x, basestring):
+                raise InvalidDataError(trim + 1, i)
+        # Empty strings mean missing values
+        for i, x in enumerate(row1[:len(keys)], 1):
+            if x == '':
+                raise InvalidDataError(trim + 1, i)
+
+        # If we got this far, we can go ahead and add the first row
+        data.append(dict(zip(keys, row1)))
+
+    # Run for the rest of the data
+    try:
+        for r, row in enumerate(csvreader, trim + 2):
+            for c, val in enumerate(row[:len(keys)], 1):
+                if isinstance(val, basestring):
+                    raise InvalidDataError(r, c)
+            data.append(dict(zip(keys, row)))
+    except ValueError:
+        raise UnquotedStringError()
+
+    return data

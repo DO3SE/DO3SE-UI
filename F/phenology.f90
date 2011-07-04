@@ -1,11 +1,23 @@
 module Phenology
 
+    public :: Latitude_SGS_EGS
     public :: Calc_LAI
     public :: Calc_SAI_Wheat
     public :: Calc_fphen
-    public :: Calc_leaf_fphen_Wheat
+    public :: Calc_leaf_fphen_fixed_day
 
 contains 
+
+    !
+    ! Latitude function for calculating start and end of growing season
+    !
+    subroutine Latitude_SGS_EGS(lat, SGS, EGS)
+        real, intent(in) :: lat
+        integer, intent(out) :: SGS, EGS
+
+        SGS = nint(((lat - 50) * 1.5) + 105)
+        EGS = nint(297 - ((lat - 50) * 2))
+    end subroutine Latitude_SGS_EGS
 
     !==========================================================================
     ! LAI calculation based on growing season - uses polygon calculation
@@ -107,9 +119,9 @@ contains
     end subroutine Calc_fphen
 
     !==========================================================================
-    ! Calculate leaf_fphen for Wheat
+    ! Calculate leaf_fphen using fixed-day method
     !==========================================================================
-    subroutine Calc_leaf_fphen_Wheat()
+    subroutine Calc_leaf_fphen_fixed_day()
         use Parameters, only: leaf_fphen_a, leaf_fphen_b, leaf_fphen_c, &
                               leaf_fphen_1, leaf_fphen_2, Astart, Aend
         use Inputs,     only: dd
@@ -124,6 +136,6 @@ contains
         else if (dd <= Aend) then
             leaf_fphen = leaf_fphen_c + (leaf_fphen_b - leaf_fphen_c) * (Aend - dd) / leaf_fphen_2
         end if
-    end subroutine Calc_leaf_fphen_Wheat
+    end subroutine Calc_leaf_fphen_fixed_day
 
 end module Phenology

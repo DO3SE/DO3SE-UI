@@ -4,7 +4,7 @@ module Parameters
     ! Site-specific parameters
     !==========================================================================
 
-    real, public, save  :: Rsoil = 200      ! Soil resistance in (s/m)
+    real, public, save  :: Rsoil = 100      ! Soil resistance in (s/m)
 
     ! Soil properties all set based on "Soil texture"
     real, public, save  :: soil_b = 4.38        ! SWC constant b
@@ -86,8 +86,8 @@ module Parameters
     real, public, save :: d                 ! Displacement height (m)
 
     ! Growing season
-    real, public, save :: SGS = 121         ! Start of bulk canopy growth period
-    real, public, save :: EGS = 273         ! End of bulk canopy growth period
+    integer, public, save :: SGS = 121      ! Start of bulk canopy growth period
+    integer, public, save :: EGS = 273      ! End of bulk canopy growth period
 
     ! Leaf area index
     real, public, save :: LAI_a = 0.0       ! First LAI point (at SGS)

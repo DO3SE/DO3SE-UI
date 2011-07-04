@@ -46,6 +46,7 @@ module Variables
     real, public, save :: SWP_meas      ! SWP for soil above measurement depth
     real, public, save :: SMD_meas      ! SMD for soil above measurement depth
     real, public, save :: fPAW
+    logical, public, save :: Es_blocked ! Is soil evaporation blocked?
 
     ! R
     real, public, save  :: Ra

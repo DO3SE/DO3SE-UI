@@ -1,5 +1,7 @@
+F = g95 -std=F
+
 # Default target
-all: $(DO3SE_BIN)
+all: dose
 
 # Objects
 include objects.mk
@@ -8,8 +10,8 @@ include objects.mk
 %.o %.mod: %.f90
 	$(F) -c $<
 
-$(DO3SE_BIN): $(objects) dose.o
+dose: $(objects) dose.o
 	$(F) -o $@ $^
 
 clean:
-	rm -f *.o *.mod $(DO3SE_BIN)
+	rm -f *.o *.mod dose dose.exe
