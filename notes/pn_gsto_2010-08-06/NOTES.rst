@@ -10,9 +10,17 @@ Hourly inputs are:
       + To simplify matters, set it as a per-site/per-dataset constant, example values in 
         documentation/tooltips
       + Default to mean atmospheric CO2 concentration from literature?
+      + *MUST BE AN INPUT*
+      + Drop-down to select between constant or hourly, silently inject CO2 hourly when using 
+        constant
   + Leaf temperature
       + No sensible derivation?
       + Possibly use a simple derivation (e.g. = air temp) in absence of real data
+      + Lisa has a simple derivation in her thesis based on a boundary layer
+      + Jannis did some research into this, maybe a good starting point
+      + Jones p232, Thornley p418
+          + Can start with single leaf temperature, then start bringing it together.
+
 
 Parameter inputs (vegetation-specific) are:
 
@@ -37,3 +45,10 @@ Should hopefully be able to reduce parameter inputs to remove Teta, H_a/H_d and 
 
 **NOTE:** This method is going to be computationally more expensive than others due to it's 
 iterative nature.  Maybe the value search can be improved?
+
+
+Wider model implications:
+
+  + User can choose which Gsto to use, but only one is used at a time
+      + multiplicative, pn, pn + multiplicative
+  + Need to calculate Pn Gsto for sun and shade leaves and combine
