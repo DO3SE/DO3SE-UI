@@ -1,0 +1,130 @@
+\documentclass[a4paper]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage[colorlinks=true,citecolor=black,filecolor=black,linkcolor=black,urlcolor=black]{hyperref}
+
+\title{Leaf temperature derivation}
+\date{}
+
+\begin{document}
+
+%\maketitle
+
+% p_to_d(e_s(T) + delta(T), 18.01528, T+1) - p_to_d(e_s(T), 18.01528, T)
+
+%\section{The Equation}
+
+\section{Derivation}
+
+Thornley (1990, p.~418) gives an equation for canopy/leaf temperature ($T_l$):
+\begin{equation}
+\label{e:main}
+T_l =  T_a + \frac{\phi_N - \lambda g_w \Delta \rho_{va}}{\lambda \left(s g_w + \gamma g_a\right)}
+\end{equation}
+
+The latent heat of vapourisation of water ($\lambda$) can be estimated from the air temperature 
+($T_a$) with the following (from \url{http://en.wikipedia.org/wiki/Latent_heat}):
+\begin{equation}
+\lambda = -0.0000614342 T_a^3 + 0.00158927 T_a^2 - 2.36418 T_a + 2500.79
+\end{equation}
+
+Equation \eqref{e:main} depends on the vapour \emph{density} deficit ($\Delta \rho_{va}$), however 
+usually vapour \emph{pressure} deficit is the measured quantity.  Thornley (1990, p.~409) gives an 
+equation to convert vapour pressure to vapour density:
+\begin{equation}
+\label{e:ptod}
+\rho_v = \frac{\rho \varepsilon p_v}{P}
+\end{equation}
+
+We can now find the vapour density deficit by calculating the saturation ($e_s$) and actual ($e$) 
+    vapour pressures.  From Monteith (1990, p.~10):
+\begin{eqnarray}
+\label{e:es}
+e_s & = & 0.611 \times \text{exp}\left(\frac{17.27 T_a}{T_a + 237.3}\right) \\
+e & = & e_s - \Delta p_v
+\end{eqnarray}
+
+Combining \eqref{e:ptod}, \eqref{e:es} and \eqref{e:e}:
+\begin{equation}
+\label{e:e}
+\Delta \rho_{va} = \frac{\rho \varepsilon e_s}{P} - \frac{\rho \varepsilon e}{P} = \frac{\rho 
+    \varepsilon (e_s - e)}{P} = \frac{\rho \varepsilon \Delta p_v}{P}
+\end{equation}
+
+The slope of the saturation vapour \emph{pressure} curve ($\Delta$) is obtained by differentiating 
+the equation for $e_s$ (from \url{http://www.fao.org/docrep/X0490E/x0490e0k.htm}):
+\begin{equation}
+\label{e:deltavp}
+\Delta = \frac{4098 e_s}{(T_a + 237.3)^2}
+\end{equation}
+
+Assuming this equation is correct\footnote{I have not checked this myself, there are many variations 
+on the calculation for $e_s$ with different constants.}, the value can simply be converted to 
+density in the same manner as for the vapour pressure itself\footnote{This method gives values 
+    higher than those quoted by Thornley (1990, p.~408), apparently by some scaling factor.}:
+\begin{equation}
+s = \frac{4098 \rho \varepsilon e_s}{P(T_a + 237.3)^2}
+\end{equation}
+
+The above equations depend on $\rho$, the density of dry air.  From Monteith (1990, p.~12):
+\begin{equation}
+\rho = \frac{P M_A}{R (T_a + 273.15)}
+\end{equation}
+
+The psychrometric parameter ($\gamma$) is calculated as (Thornley 1990, p.~407):
+\begin{equation}
+\gamma = \frac{\rho c_p}{\lambda}
+\end{equation}
+
+The conductance for water vapour ($g_w$) is the result of the air ($g_a$) and canopy ($g_c$) 
+    conductances in series (Thornley 1990, p.~407):
+\begin{equation}
+\frac{1}{g_w} = \frac{1}{g_a} + \frac{1}{g_c}
+\end{equation}
+
+We calculate $R_a$ in the DO3SE model, and the equation for $g_a$ given by Thornley (1990, p.~415) 
+        corresponds to the DO3SE calculation for $R_a$, therefore we can simply use:
+\begin{equation}
+g_a = \frac{1}{R_a}
+\end{equation}
+
+The $g_c$ term refers to the canopy stomatal conductance.  This is a core component of the DO3SE 
+model, and we already have this in the form $G_{\text{sto,c}}$.
+
+The only remaining component is $\phi_N$, the available energy balance.  This is equivalent to the 
+net radiation ($R_N$) already calculated in the DO3SE model.\footnote{This assumption may be 
+    incorrect and should be checked.}
+
+
+
+
+\section{Symbols}
+\begin{tabularx}{\textwidth}{l | l | X}
+Term & Units & Description \\
+\hline
+$T_l$ & $^{\circ}$C & Leaf temperature \\
+$T_a$ & $^{\circ}$C & Air temperature \\
+$\phi_N$ & W m$^{-2}$ & Energy balance \\
+$\lambda$ & J g$^{-1}$ & Latent heat vapourisation of water \\
+$g_w$ & m s$^{-1}$ & Conductance for water vapour \\
+$g_a$ & m s$^{-1}$ & Boundary layer conductance of water vapour \\
+$g_c$ & m s$^{-1}$ & Canopy conductance of water vapour \\
+$\Delta \rho_{va}$ & kg m$^{-3}$ & Atmospheric vapour density deficit \\
+$\rho$ & kg m$^{-3}$ & Density of dry air \\
+$\varepsilon$ & --- & Ratio of molecular mass of water and air, 0.622 \\
+$e_s$ & kPa & Saturation vapour pressure at $T_a$\\
+$e$ & kPa & Actual vapour pressure \\
+$\Delta p_v$ & kPa & Vapour pressure deficit, $e_s - e$ \\
+$P$ & kPa & Atmospheric pressure \\
+$s$ & kg m$^{-3}$ K$^{-1}$ & Slope of saturation vapour density curve $\delta \rho'_v / \delta T (T 
+= T_a)$ \\
+$M_A$ & g mol$^{-1}$ & Molecular weight of air, 29 \\
+$R$ & J mol$^{-1}$ K$^{-1}$ & Universal gas constant, 8.3144621 \\
+$\gamma$ & kg m$^{-3}$ K$^{-1}$ & Psychrometric parameter \\
+$c_p$ & J g$^{-1}$ K$^{-1}$ & Specific heat capacity of dry air, 1.010 \\
+$R_a$ & s m$^{-1}$ & Atmospheric resistance \\
+\end{tabularx}
+
+\end{document}
