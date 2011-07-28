@@ -26,7 +26,7 @@ contains
         ! Saturation vapour pressure, kPa
         e_s = 0.611 * exp(17.27 * Tair / (Tair + 237.3))
         ! Slope of saturation VDD curve, kg m-3 K-1
-        s = (4098.0 * rho * 0.622 * e_s) / ((Tair + 237.3)**2)
+        s = (4098.0 * rho * 0.622 * e_s) / (P * (Tair + 237.3)**2)
         ! Latent heat vapourisation of water, J g-1
         lambda = -0.0000614342*Tair**3 + 0.00158927*Tair**2 - 2.36418*Tair + 2500.79
         ! Psychrometric parameter, kg m-3 K-1
@@ -37,11 +37,46 @@ contains
         g_w = 1.0 / ((1.0 / g_a) + (1.0 / g_c))
         ! Leaf temperature, degrees C
         Tleaf = Tair + ((phi - lambda * g_w * VDD) / (lambda * (s * g_w + psychro * g_a)))
+        print *, rho, lambda, VDD, psychro, s, g_w
     end function Tleaf
 
 end module LeafTemp
 
 
 program TestLeafTemp
+
+    use LeafTemp, only: Tleaf
+
+    real :: Tair
+    real :: P
+    real :: Rn
+    real :: VPD
+    real :: g_a
+    real :: g_c
+
+    real, parameter :: zR = 3, h = 1.7, d = h * 0.7, zo = h * 0.1
+    real, parameter :: k = 0.41
+    real :: u, ustar, Ra, Tl
+
+    do
+        ! Read row of data
+        read (*, *, iostat=ios) Tair, P, Rn , VPD, u, g_c
+
+        ! Derive g_a
+        ustar = (u * k) / log((zR - d) / zo)
+        ustar = max(0.0001, ustar)
+        Ra = (1 / (ustar * k)) * log((zR - d) / (h - d))
+        g_a = 1.0 / Ra
+
+        g_a = 0.05
+        g_c = 0.025
+
+        ! Output results
+        Tl = Tleaf(Tair, P, Rn, VPD, g_a, g_c)
+        !write (*, *) ustar, Ra, g_a, Tl, Tl - Tair
+
+        ! Stop if we reached the end of the file
+        if (ios /= 0) exit
+    end do
 
 end program TestLeafTemp
