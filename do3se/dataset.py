@@ -113,6 +113,9 @@ class Dataset:
         """
         skippedrows = 0
 
+        # These parameters need special handling
+        co2_const = self.params.pop('co2_constant')
+
         # Initialise function switchboard
         util.setattrs(model.switchboard, self.switchboard)
         # Load parameters
@@ -121,6 +124,11 @@ class Dataset:
         # Initialise the model
         _log.info("Initialising DOSE Fortran model")
         model.run.initialise()
+
+        # Handle special parameters
+        if not co2_const['disabled']:
+            _log.debug('Using constant CO2 concentration: %s ppm' % co2_const['value'])
+            util.setattrs(model.inputs, {'co2': co2_const['value']})
 
         # Initialise progress bar
         if progressbar is not None:

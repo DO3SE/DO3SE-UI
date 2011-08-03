@@ -11,6 +11,7 @@ module Inputs
     real, public, save :: precip        ! Precipitation (mm)
     real, public, save :: P             ! Atmospheric pressure (kPa)
     real, public, save :: O3_ppb_zR     ! O3 concentration at height czR (parts per billion)
+    real, public, save :: CO2           ! Ambient CO2 concentration (ppm)
     real, public, save :: Hd            ! Sensible heat flux (W/m^2)
     real, public, save :: R             ! Global radiation (Wh/m^2)
     real, public, save :: PAR           ! PAR (umol/m^2/s)

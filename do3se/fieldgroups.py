@@ -110,6 +110,16 @@ class SiteLocationParams(ParameterGroup):
     """Site location parameters group."""
     PARAMETERS = model.parameters_by_group('siteloc')
 
+    def validate(self):
+        errors = []
+
+        validate(errors, not self['co2_constant'].get_value()['disabled']
+                         or 'co2' in self.fc['format']['input_fields'].get_value(),
+                 '"Ambient CO2" input field required when "Use input" selected ' + \
+                 'for CO2 concentration')
+
+        return errors
+
 
 class MeasurementParams(ParameterGroup):
     """Measurement location parameters group."""
