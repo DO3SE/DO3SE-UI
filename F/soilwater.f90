@@ -112,7 +112,7 @@ contains
     !
     subroutine Calc_Penman_Monteith()
         use Constants, only: seaP, Ts_K, Dratio
-        use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn
+        use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn, esat_kPa => esat, eact_kPa => eact
         use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
                              Rsto_PEt, Sn, Ra, Rinc, Es_blocked
         use Parameters, only: Fc_m, Rsoil
@@ -133,9 +133,8 @@ contains
         VPD_Pa = VPD * 1000
         P_Pa = P * 1000
 
-        esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
-        esat = esat * 1000  ! Convert to Pa
-        eact = esat - VPD_Pa
+        esat = 1000 * esat_kPa
+        eact = 1000 * eact_kPa
 
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P_Pa)))
         delta= ((4098*esat)/((Ts_c+237.3)**2)) 

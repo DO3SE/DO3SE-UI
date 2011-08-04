@@ -27,6 +27,9 @@ module Inputs
     real, public, save :: uh_i          ! Windspeed at intermediate height
     real, public, save :: uh            ! Windspeed at canopy
     real, public, save :: precip_acc    ! Previous day's accumulated precip (m)
+    real, public, save :: esat          ! Saturated vapour pressure (kPa)
+    real, public, save :: eact          ! Actual vapour pressure (kPa)
+    real, public, save :: RH            ! Relative humidity (fraction)
 
     public :: Init_Inputs
     public :: Calc_ustar_uh
@@ -34,6 +37,7 @@ module Inputs
     public :: Calc_precip_acc
     public :: Calc_sinB
     public :: Calc_Rn
+    public :: Calc_humidity
 
     ! These are intermediate variables not used outside of this module
     real, private :: precip_dd  ! Accumulated precip for today so far
@@ -172,5 +176,12 @@ contains
         ! Calculate Rn in W/m2
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
+
+    ! Calculated saturation/actual vapour pressure and relative humidity
+    subroutine Calc_humidity()
+        esat = 0.611 * exp(17.27 * Ts_C / (Ts_C + 237.3))
+        eact = esat - VPD
+        RH = eact / esat
+    end subroutine Calc_humidity
 
 end module Inputs
