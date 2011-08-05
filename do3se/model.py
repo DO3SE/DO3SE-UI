@@ -206,6 +206,14 @@ SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 
 default_SGS_EGS_calc = 'inputs'
 
+# Stomatal conductance calculations (multiplicative, photosynthetic)
+gsto_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('multiplicative', switchboard.gsto_multiplicative, 'Multiplicative'),
+    ('photosynthetic', switchboard.gsto_photosynthetic, 'Photosynthetic'),
+)), 'id', OrderedDict)
+
+default_gsto_calc = 'multiplicative'
+
 #: Parameter definitions
 paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 'contexthelp'), (
     ('input', 'input_fields', None, None, 'Input data fields', ''),
@@ -251,6 +259,7 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('vegenv', 'swp_min', FloatSpinField, (-6, 0, -1.25, 0.01, 2), 'SWP for min. g (SWP_min, MPa)', ''),
     ('vegenv', 'swp_max', FloatSpinField, (-6, 0, -0.05, 0.01, 2), 'SWP for max. g (SWP_max, MPa)', ''),
 
+    ('modelopts', 'gsto', ChoiceField, (gsto_calcs, default_gsto_calc), 'Stomatal conductance model', ''),
     ('modelopts', 'fo3', ChoiceField, (fO3_calcs, default_fO3_calc), 'fO3 calculation', ''),
     ('modelopts', 'fxwp', ChoiceField, (fXWP_calcs, default_fXWP_calc), 'Soil water influence on Gsto', ''),
     ('modelopts', 'lwp', ChoiceField, (LWP_calcs, default_LWP_calc), 'LWP calculation', ''),

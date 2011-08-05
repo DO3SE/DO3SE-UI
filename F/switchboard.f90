@@ -22,6 +22,11 @@ module Switchboard
     integer, public, save :: ra_method = ra_simple
     public :: SB_Calc_Ra
 
+    integer, public, parameter :: gsto_multiplicative = 1
+    integer, public, parameter :: gsto_photosynthetic = 2
+    integer, public, save :: gsto_method = gsto_multiplicative
+    public :: SB_Calc_Gsto
+
     integer, public, parameter :: fo3_disabled = 1
     integer, public, parameter :: fo3_wheat    = 2
     integer, public, parameter :: fo3_potato   = 3
@@ -129,6 +134,21 @@ contains
 
         end select
     end subroutine SB_Calc_Ra
+
+    subroutine SB_Calc_gsto()
+        use R, only: Calc_Rsto
+        use Pn_Gsto, only: Calc_Gsto_Pn
+
+        select case (gsto_method)
+
+        case (gsto_multiplicative)
+            call Calc_Rsto()
+
+        case (gsto_photosynthetic)
+            call Calc_Gsto_Pn()
+
+        end select
+    end subroutine SB_Calc_Gsto
 
     subroutine SB_Calc_fO3()
         use O3, only: Calc_fO3_Wheat, Calc_fO3_Potato

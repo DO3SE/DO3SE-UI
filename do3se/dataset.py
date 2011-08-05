@@ -88,6 +88,8 @@ class Dataset:
         self.switchboard['lwp_method'] = LWP['func']
         SGS_EGS = model.SGS_EGS_calcs[self.params.pop('sgs_egs_calc', model.default_SGS_EGS_calc)]
         self.switchboard['sgs_egs_method'] = SGS_EGS['func']
+        gsto = model.gsto_calcs[self.params.pop('gsto', model.default_gsto_calc)]
+        self.switchboard['gsto_method'] = gsto['func']
 
         # Soil parameters from soil type
         soil = model.soil_classes[self.params.pop('soil_tex', model.default_soil_class)]

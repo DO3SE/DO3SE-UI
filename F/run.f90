@@ -71,7 +71,7 @@ contains
         call Calc_Rb()
         call Calc_Rgs()
         call Calc_Rinc()
-        call Calc_Rsto()
+        call SB_Calc_gsto()
         call Calc_Rsur()
 
         call SB_Calc_Es_blocked()
