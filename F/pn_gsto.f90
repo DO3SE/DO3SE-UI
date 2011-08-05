@@ -14,20 +14,20 @@ module Pn_Gsto
     real, parameter :: R_d_20 = 0.32         !R_d at reference temperature 20    [micro mol/(m^2*s)]Leuning1995
     real, parameter :: Gamma_star_25 = 42.75 !CO2 compensation point at T= 25    [micro mol/mol]    Medlyn2002
 
-    ! species spedific model parameters
-    real :: alpha                            !efficiency light energy conversion [mol electrons/mol photons]
-    real :: g_sto_0                          !Conductance with closed stomata    [micro mol/(m^2*s)]
-    real :: m                                !fudge factor                       []
-    real :: V_cmax_25                        !value of Vcmax at 25 degrees C     [micro mol/(m^2*s)]
-    real :: J_max_25                         !values of Jmax at 25 degrees C     [micro mol/(m^2*s)]
-    real :: Teta                             !shape of J~Q determining factor    []
-    real :: H_a_jmax                         !activation energy for J_max        [J/mol]
-    real :: H_d_jmax                         !deactivation energy for J_max      [J/mol]
-    real :: H_a_vcmax                        !activation energy for V_cmax       [J/mol]
-    real :: H_d_vcmax                        !deactivation energy for V_cmax     [J/mol]
-    real :: S_V_vcmax                        !entropy terms                      [J/(mol*K)]
-    real :: S_V_jmax                         !entropy terms                      [J/(mol*K)
-    real :: d                                !characteristic size of the leaf    [m]
+    ! species spedific model parameters (triticum)
+    real :: alpha = 0.3                      !efficiency light energy conversion [mol electrons/mol photons]
+    real :: g_sto_0 = 50000                  !Conductance with closed stomata    [micro mol/(m^2*s)]
+    real :: m = 7.65                         !fudge factor                       []
+    real :: V_cmax_25 = 70.03                !value of Vcmax at 25 degrees C     [micro mol/(m^2*s)]
+    real :: J_max_25 = 163.05                !values of Jmax at 25 degrees C     [micro mol/(m^2*s)]
+    real :: Teta = 0.95                      !shape of J~Q determining factor    []
+    real :: H_a_jmax = 50300                 !activation energy for J_max        [J/mol]
+    real :: H_d_jmax = 152044                !deactivation energy for J_max      [J/mol]
+    real :: H_a_vcmax = 73637                !activation energy for V_cmax       [J/mol]
+    real :: H_d_vcmax = 149252               !deactivation energy for V_cmax     [J/mol]
+    real :: S_V_vcmax = 486                  !entropy terms                      [J/(mol*K)]
+    real :: S_V_jmax = 495                   !entropy terms                      [J/(mol*K)
+    real :: d = 0.02                         !characteristic size of the leaf    [m]
 
 contains
 
