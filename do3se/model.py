@@ -91,9 +91,10 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (variables,     'smd_meas', float,  'SMD_meas (m)',     'Soil moisture deficit at measurement depth (SMD_meas, m)'),
 
         # Debug variables
+        (pn_gsto,       'pngsto',   float,  'Pn Gsto',          '[DEBUG] Photosynthetic Gsto'),
         #(variables,     'flight',   float,  'flight',           '[DEBUG] flight'),
         #(variables,     'leaf_flight',float,'leaf_flight',      '[DEBUG] leaf_flight'),
-        #(variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
+        (variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
         #(variables,     'leaf_fphen',float, 'leaf_fphen',       '[DEBUG] leaf_fphen'),
         #(variables,     'ftemp',    float,  'ftemp',            '[DEBUG] ftemp'),
         #(variables,     'fvpd',     float,  'fVPD',             '[DEBUG] fVPD'),

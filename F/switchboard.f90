@@ -139,15 +139,15 @@ contains
         use R, only: Calc_Rsto
         use Pn_Gsto, only: Calc_Gsto_Pn
 
-        select case (gsto_method)
+        !select case (gsto_method)
 
-        case (gsto_multiplicative)
+        !case (gsto_multiplicative)
             call Calc_Rsto()
 
-        case (gsto_photosynthetic)
+        !case (gsto_photosynthetic)
             call Calc_Gsto_Pn()
 
-        end select
+        !end select
     end subroutine SB_Calc_Gsto
 
     subroutine SB_Calc_fO3()

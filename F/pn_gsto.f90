@@ -29,6 +29,9 @@ module Pn_Gsto
     real :: S_V_jmax = 495                   !entropy terms                      [J/(mol*K)
     real :: d = 0.02                         !characteristic size of the leaf    [m]
 
+    ! debug outputs
+    real, public, save :: pngsto
+
 contains
 
     subroutine Calc_Gsto_Pn()
@@ -152,7 +155,8 @@ contains
 
         end do
 
-
+        pngsto = g_sto / 1000.0
+        pngsto = max(0.0, pngsto)
 
         !write (unit = 7, fmt=*) iterations,",",c_i,",",A_n,",",g_sto
         !print *,i,"iterations=",iterations,"c_i=",c_i,"A_n =",A_n,"g_sto =",g_sto
