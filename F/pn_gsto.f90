@@ -1,5 +1,7 @@
 module Pn_Gsto
 
+    implicit none
+
     public :: Calc_Gsto_Pn
 
     ! parameters considered (or defined) to be constant for all species
@@ -30,13 +32,15 @@ module Pn_Gsto
     real :: d = 0.02                         !characteristic size of the leaf    [m]
 
     ! debug outputs
-    real, public, save :: pngsto
+    real, public, save :: gsto_final, pngsto_l, pngsto, pngsto_c, pngsto_PEt
 
 contains
 
     subroutine Calc_Gsto_Pn()
         use Constants, only: Ts_K
         use Inputs, only: c_a => CO2, Q => PAR, u => uh, h_a => RH, Ts_C
+        use Parameters, only: fmin, gmorph
+        use Variables, only: LAI, fphen, fO3, fXWP, leaf_fphen
 
         real :: T_air, T_leaf
 
@@ -49,12 +53,14 @@ contains
         real :: K_C                             !Michaelis constant CO2             [micro mol/mol]
         real :: K_O                             !Michaelis constant O2              [micro mol/mol]
         real :: J                               !Rate of electron transport         [micro mol/(m^2*s)]
+        real :: ratio                           !TODO: ???
         real :: Gamma                           !CO2 compensation point             [micro mol/mol]
         real :: J_max                           !Max rate of electron transport     [micro mol/(m^2*s)]
         real :: V_cmax                          !Max catalytic rate of Rubisco      [micro mol/(m^2*s)]
         real :: e_sat_i                         !internal saturation vapour pressure[Pa]
         real :: g_bl                            !two sided bound.l. conduct., vapour[micro mol/(m^2s)]
         real :: g_sto                           !two sided stomatal conduct.,vapour [micro mol/(m^2s)]
+        real :: g_tot                           !TODO: ???
         real :: h_s                             !relative humidity at leaf surface  [decimal fraction]
         real :: c_s                             !CO2 concentration at leaf surface  [micromol/mol]
         real :: c_i                             !CO2 concentration inside stomata   [micromol/mol]
@@ -134,7 +140,7 @@ contains
 
             h_s        = (g_sto*e_sat_i+g_bl*e_a)/(e_sat_i*(g_sto+g_bl))
 
-            g_sto      = g_0 + ( m * A_n *(h_s/(c_s - Gamma)))*1e6
+            g_sto      = g_sto_0 + ( m * A_n *(h_s/(c_s - Gamma)))*1e6
 
             g_tot      = 1/(1.6/g_sto+1.3/g_bl)
 
@@ -155,8 +161,14 @@ contains
 
         end do
 
-        pngsto = g_sto / 1000.0
-        pngsto = max(0.0, pngsto)
+        ! Calculate final stomatal conductances
+        gsto_final = max(0.0, g_sto / 1000.0)
+
+        pngsto_l = gsto_final * min(leaf_fphen, fO3) * max(fmin, fXWP)
+        pngsto = gsto_final * gmorph * fphen * max(fmin, fXWP)
+        pngsto_c = pngsto * LAI
+        pngsto_PEt = gsto_final * fphen * LAI
+
 
         !write (unit = 7, fmt=*) iterations,",",c_i,",",A_n,",",g_sto
         !print *,i,"iterations=",iterations,"c_i=",c_i,"A_n =",A_n,"g_sto =",g_sto
