@@ -24,7 +24,7 @@ Hourly inputs are:
 
 Parameter inputs (vegetation-specific) are:
 
-  + d: characteristic size of leaf (is this the same as Lm?)
+  + d: characteristic size of leaf - equivalent to Lm in DO3SE
   + alpha: Efficiency of light energy conversion
   + g_0: Conductance with closed stomata
   + m: "Sensitivity factor of conductance to assimilation" (fudge factor)
