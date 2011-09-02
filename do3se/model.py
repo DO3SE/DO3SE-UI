@@ -254,6 +254,12 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('vegchar', 'fmin', FloatSpinField, (0.01, 0.99, 0.13, 0.01, 2), 'fmin (fraction)', ''),
     ('vegchar', 'rext', SpinField, (0, 20000, 2500), 'External plant cuticle resistance (Rext, s/m)', ''),
     ('vegchar', 'y', FloatSpinField, (0.1, 100, 1.6, 0.1, 1), u'Threshold Y for PODy (nmol/m\u00b2/s)', ''),
+    ('vegchar', 'g_sto_0', SpinField, (1, 100000, 50000), u'Closed stomata conductance (umol/m\u00b2/s)', ''),
+    ('vegchar', 'm', FloatSpinField, (0.01, 30.0, 7.65, 0.1, 2), u'Species-specific sensitivity to An', ''),
+    ('vegchar', 'v_cmax_25', FloatSpinField, (0.01, 500.0, 70.03, 0.1, 2),
+        u'Maximum catalytic rate at 25\u00b0C (umol/m\u00b2/s)', ''),
+    ('vegchar', 'j_max_25', FloatSpinField, (0.01, 1000.0, 163.05, 0.1, 2),
+        u'Maximum rate of electron transport at 25\u00b0C (umol/m\u00b2/s)', ''),
 
     ('vegenv', 'f_lightfac', FloatSpinField, (0.001, 0.999, 0.006, 0.001, 3), 'light_a', ''),
     ('vegenv', 't_min', SpinField, (-10, 100, 0), u'Minimum temperature (T_min, \u00b0C)', ''),

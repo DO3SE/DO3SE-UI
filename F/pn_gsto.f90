@@ -16,12 +16,8 @@ module Pn_Gsto
     real, parameter :: R_d_20 = 0.32         !R_d at reference temperature 20    [micro mol/(m^2*s)]Leuning1995
     real, parameter :: Gamma_star_25 = 42.75 !CO2 compensation point at T= 25    [micro mol/mol]    Medlyn2002
 
-    ! species spedific model parameters (birch)
-    real :: g_sto_0 = 30000                  !Conductance with closed stomata    [micro mol/(m^2*s)]
-    real :: m = 13.5                         !fudge factor                       []
-    real :: V_cmax_25 = 35.03                !value of Vcmax at 25 degrees C     [micro mol/(m^2*s)]
-    real :: J_max_25 = 70.05                 !values of Jmax at 25 degrees C     [micro mol/(m^2*s)]
-
+    ! species spedific model parameters (that don't tend to have species specific
+    ! values, others are in parameters.f90)
     real :: alpha = 0.3                      !efficiency light energy conversion [mol electrons/mol photons]
     real :: Teta = 0.95                      !shape of J~Q determining factor    []
     real :: H_a_jmax = 50300                 !activation energy for J_max        [J/mol]
@@ -40,7 +36,7 @@ contains
     subroutine Calc_Gsto_Pn()
         use Constants, only: Ts_K
         use Inputs, only: c_a => CO2, Q => PAR, u => uh, h_a => RH, Ts_C
-        use Parameters, only: fmin, gmorph, d => Lm
+        use Parameters, only: fmin, gmorph, d => Lm, g_sto_0, m, V_cmax_25, J_max_25
         use Variables, only: LAI, fphen, fO3, fXWP, leaf_fphen
 
         real :: T_air, T_leaf
