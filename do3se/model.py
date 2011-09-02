@@ -96,6 +96,7 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (pn_gsto,       'pngsto',   float,  'Pn Gsto',          '[DEBUG] Photosynthetic Gsto (mean)'),
         (pn_gsto,       'pngsto_c', float,  'Pn Gsto_c',        '[DEBUG] Photosynthetic Gsto (canopy)'),
         (pn_gsto,       'pngsto_pet',float, 'Pn Gsto_PEt',      '[DEBUG] Photosynthetic Gsto (PEt)'),
+        (pn_gsto,       'pngsto_an',float,  'Pn_Gsto_An',       '[DEBUG] Net assimilation'),
         #(variables,     'flight',   float,  'flight',           '[DEBUG] flight'),
         #(variables,     'leaf_flight',float,'leaf_flight',      '[DEBUG] leaf_flight'),
         (variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
