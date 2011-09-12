@@ -35,7 +35,7 @@ contains
 
     subroutine Calc_Gsto_Pn()
         use Constants, only: Ts_K
-        use Inputs, only: c_a => CO2, Q => PAR, u => uh, h_a => RH, Ts_C
+        use Inputs, only: c_a => CO2, Q => PAR, u => uh, h_a => RH, Ts_C, Tleaf_C => Tleaf
         use Parameters, only: fmin, gmorph, d => Lm, g_sto_0, m, V_cmax_25, J_max_25
         use Variables, only: LAI, fphen, fO3, fXWP, leaf_fphen
 
@@ -71,7 +71,7 @@ contains
         integer :: i,k                          !loop parameters
 
         T_air = Ts_C + Ts_K
-        T_leaf = T_air  ! TODO: need a real leaf temperature!
+        T_leaf = Tleaf_C + Ts_K
 
         ! Calculation of the model variables which are only
         ! dependend on environmental conditions:

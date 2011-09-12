@@ -6,6 +6,7 @@ module Inputs
     real, public, save :: dd            ! Day of Year
     real, public, save :: hr            ! Hour
     real, public, save :: Ts_C          ! Surface air temperature (degrees C)
+    real, public, save :: Tleaf         ! Leaf temperature (degrees C)
     real, public, save :: VPD           ! Vapour pressure deficit (kPa)
     real, public, save :: uh_zR         ! Wind speed at measurement height uzR (m/s)
     real, public, save :: precip        ! Precipitation (mm)
@@ -176,6 +177,11 @@ contains
         ! Calculate Rn in W/m2
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
+
+    subroutine Derive_Tleaf()
+        ! TODO: proper derivation for Tleaf
+        Tleaf = Ts_C
+    end subroutine Derive_Tleaf
 
     ! Calculated saturation/actual vapour pressure and relative humidity
     subroutine Calc_humidity()
