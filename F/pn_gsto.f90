@@ -35,11 +35,11 @@ contains
 
     subroutine Calc_Gsto_Pn()
         use Constants, only: Ts_K
-        use Inputs, only: c_a => CO2, Q => PAR, u => uh, h_a => RH, Ts_C, Tleaf_C => Tleaf
+        use Inputs, only: c_a => CO2, Q => PAR, uh, h_a => RH, Ts_C, Tleaf_C => Tleaf
         use Parameters, only: fmin, gmorph, d => Lm, g_sto_0, m, V_cmax_25, J_max_25
         use Variables, only: LAI, fphen, fO3, fXWP, leaf_fphen
 
-        real :: T_air, T_leaf
+        real :: T_air, T_leaf, u
 
         ! state variables
         real :: A_n                             !netto assimilation rate            [micro mol/(m^2*s)]
@@ -72,6 +72,7 @@ contains
 
         T_air = Ts_C + Ts_K
         T_leaf = Tleaf_C + Ts_K
+        u = max(0.01, uh)
 
         ! Calculation of the model variables which are only
         ! dependend on environmental conditions:
