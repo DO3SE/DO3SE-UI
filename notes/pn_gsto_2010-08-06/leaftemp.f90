@@ -6,7 +6,6 @@ module LeafTemp
     real, parameter :: M_A = 29.0       ! Molecular weight of air, g mol-1
     real, parameter :: c_p = 1.010      ! Specific heat capacity of dry air at 
                                         !   standard pressure and 20 C, J g-1 K-1
-    real, parameter :: K = 273.15       ! Offset between Kelvin and Celcius
 
 contains
 
@@ -20,7 +19,7 @@ contains
 
         real :: rho, VDD, e_s, s, lambda, psychro, phi, g_w
         ! Density of dry air, kg m-3
-        rho = (P * M_A) / (R * (Tair + K))
+        rho = (P * M_A) / (R * (Tair + 273.15))
         ! Vapour density deficit, kg m-3
         VDD = rho * 0.622 * VPD / P
         ! Saturation vapour pressure, kPa
@@ -37,13 +36,14 @@ contains
         g_w = 1.0 / ((1.0 / g_a) + (1.0 / g_c))
         ! Leaf temperature, degrees C
         Tleaf = Tair + ((phi - lambda * g_w * VDD) / (lambda * (s * g_w + psychro * g_a)))
-        print *, rho, lambda, VDD, psychro, s, g_w
     end function Tleaf
 
 end module LeafTemp
 
 
 program TestLeafTemp
+
+    !implicit none
 
     use LeafTemp, only: Tleaf
 
@@ -68,12 +68,13 @@ program TestLeafTemp
         Ra = (1 / (ustar * k)) * log((zR - d) / (h - d))
         g_a = 1.0 / Ra
 
+        ! Replace g_a and g_c with some "normal" constants
         g_a = 0.05
         g_c = 0.025
 
         ! Output results
-        Tl = Tleaf(Tair, P, Rn, VPD, g_a, g_c)
-        !write (*, *) ustar, Ra, g_a, Tl, Tl - Tair
+        Tl = Tleaf(Tair - 273.15, P, Rn, VPD, g_a, g_c)
+        write (*, *) Tair - 273.15, Tl, Tl - (Tair - 273.15)
 
         ! Stop if we reached the end of the file
         if (ios /= 0) exit

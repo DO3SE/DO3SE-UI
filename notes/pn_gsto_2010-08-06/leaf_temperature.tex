@@ -5,19 +5,59 @@
 \usepackage{tabularx}
 \usepackage[colorlinks=true,citecolor=black,filecolor=black,linkcolor=black,urlcolor=black]{hyperref}
 \usepackage{natbib}
+\usepackage{siunitx}
 
-\title{Leaf temperature derivation}
+\title{Estimating leaf temperature}
 \date{}
 
 \begin{document}
 
-%\maketitle
+\maketitle
 
 % p_to_d(e_s(T) + delta(T), 18.01528, T+1) - p_to_d(e_s(T), 18.01528, T)
 
 %\section{The Equation}
 
-\section{Derivation}
+\section{``Simple'' method --- based on \citet{nobel83}}
+
+\subsection{Derivation}
+
+This method rearranges the equation for heat conduction from \citet[p.~361]{nobel83} to instead give 
+the leaf temperature difference ($T_l - T_a$).  We assume that the rate of heat conduction ($J_C^H$) 
+    is equivalent to net radiation ($R_N$).
+
+\begin{eqnarray}
+J_C^H & = & 2 K^\text{air} \frac{(T_l - T_a)}{\delta^\text{bl}} \\
+T_l - T_a & = & \frac{\delta^\text{bl}J_C^H}{2 K^\text{air}}
+\end{eqnarray}
+
+The boundary layer thickness, $\delta^\text{bl}$, can be calculated (in metres) as
+
+\begin{equation}
+\delta^\text{bl} = \frac{c}{1000} \sqrt{\frac{l}{u}}
+\end{equation}
+
+where $c=4.0$ for flat leaves and $c=5.8$ for needles.
+
+\subsection{Symbols}
+\begin{tabularx}{\textwidth}{l | l | X}
+Term & Units & Description \\
+\hline
+$J_C^H$ & \si{\watt\per\metre\squared} & Rate of heat conduction \\
+$K^\text{air}$ & \si{\watt\per\metre\per\degreeCelsius} & Thermal conductivity of air, 0.0264 at 
+30$^\circ$C \\
+$T_l$ & \si{\degreeCelsius} & Leaf temperature \\
+$T_a$ & \si{\degreeCelsius} & Air temperature \\
+$\delta^\text{bl}$ & \si{\metre} & Boundary layer thickness \\
+$l$ & \si{\metre} & Mean leaf length in downwind direction \\
+$u$ & \si{\metre\per\second} & Wind speed \\
+\end{tabularx}
+
+
+\section{``Complex'' method --- based on \citet{thornley90}}
+
+
+\subsection{Derivation}
 
 \citet[p.~418]{thornley90} gives an equation for canopy/leaf temperature ($T_l$):
 \begin{equation}
@@ -100,9 +140,7 @@ the net radiation ($R_N$) already calculated in the DO3SE model.\footnote{This a
     incorrect.}
 
 
-
-
-\section{Symbols}
+\subsection{Symbols}
 \begin{tabularx}{\textwidth}{l | l | X}
 Term & Units & Description \\
 \hline
@@ -130,6 +168,10 @@ $R_a$ & s m$^{-1}$ & Atmospheric resistance \\
 \end{tabularx}
 
 \begin{thebibliography}{}
+\bibitem[Nobel(1983)]{nobel83}
+    Nobel, P.S.,
+    \emph{Biophysical Plant Physiology and Ecology}.
+    WH Freeman and Company, New York, NY, 1983.
 \bibitem[Thornley(1990)]{thornley90}
     Thornley, J.H.M. and Johnson, I.R.,
     \emph{Plant and Crop Modelling}.
