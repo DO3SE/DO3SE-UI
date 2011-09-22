@@ -73,8 +73,8 @@ program TestLeafTemp
         g_c = 0.025
 
         ! Output results
-        Tl = Tleaf(Tair - 273.15, P, Rn, VPD, g_a, g_c)
-        write (*, *) Tair - 273.15, Tl, Tl - (Tair - 273.15)
+        Tl = Tleaf(Tair, P, Rn, VPD, g_a, g_c)
+        write (*, *) u, Rn, Tair, Tl, Tl - Tair
 
         ! Stop if we reached the end of the file
         if (ios /= 0) exit

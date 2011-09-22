@@ -30,7 +30,6 @@ program Test_LeafTemp_Nobel
 
     use LeafTemp_Nobel, only: Tleaf
 
-    real, parameter :: K = 273.15       ! Offset between Kelvin and Celcius
     real, parameter :: c = 4.0, Lm = 0.004
     
     real :: Tair, P, Rn, VPD, u, g_c
@@ -41,9 +40,9 @@ program Test_LeafTemp_Nobel
     do
         read (*, *, iostat=ios) Tair, P, Rn, VPD, u, g_c
         
-        leafT = Tleaf(Tair - K, u, c, Lm, Rn)
+        leafT = Tleaf(Tair, u, c, Lm, Rn)
         
-        write (*, *) u, Rn, Tair - K, leafT, Rn
+        write (*, *) u, Rn, Tair, leafT, leafT - Tair
 
         if (ios /= 0) exit
     end do
