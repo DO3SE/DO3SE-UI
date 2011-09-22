@@ -4,8 +4,8 @@ module LeafTemp
 
     real, parameter :: R = 8.3144621    ! Universal gas constant, J mol-1 K-1
     real, parameter :: M_A = 29.0       ! Molecular weight of air, g mol-1
-    real, parameter :: c_p = 1.010      ! Specific heat capacity of dry air at 
-                                        !   standard pressure and 20 C, J g-1 K-1
+    real, parameter :: c_p = 1010.0     ! Specific heat capacity of dry air at
+                                        !   standard pressure and 20 C, J kg-1 K-1
 
 contains
 
@@ -26,8 +26,8 @@ contains
         e_s = 0.611 * exp(17.27 * Tair / (Tair + 237.3))
         ! Slope of saturation VDD curve, kg m-3 K-1
         s = (4098.0 * rho * 0.622 * e_s) / (P * (Tair + 237.3)**2)
-        ! Latent heat vapourisation of water, J g-1
-        lambda = -0.0000614342*Tair**3 + 0.00158927*Tair**2 - 2.36418*Tair + 2500.79
+        ! Latent heat vapourisation of water, J kg-1
+        lambda = (-0.0000614342*Tair**3 + 0.00158927*Tair**2 - 2.36418*Tair + 2500.79) * 1000
         ! Psychrometric parameter, kg m-3 K-1
         psychro = rho * c_p / lambda
         ! Energy balance, W m-2

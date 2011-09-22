@@ -68,7 +68,7 @@ T_l =  T_a + \frac{\phi_N - \lambda g_w \Delta \rho_{va}}{\lambda \left(s g_w + 
 The latent heat of vapourisation of water ($\lambda$) can be estimated from the air temperature 
 ($T_a$) with the following (from \url{http://en.wikipedia.org/wiki/Latent_heat}):
 \begin{equation}
-\lambda = -0.0000614342 T_a^3 + 0.00158927 T_a^2 - 2.36418 T_a + 2500.79
+\lambda = (-0.0000614342 T_a^3 + 0.00158927 T_a^2 - 2.36418 T_a + 2500.79) \times 1000
 \end{equation}
 
 Equation \eqref{e:main} depends on the vapour \emph{density} deficit ($\Delta \rho_{va}$), however 
@@ -144,27 +144,27 @@ the net radiation ($R_N$) already calculated in the DO3SE model.\footnote{This a
 \begin{tabularx}{\textwidth}{l | l | X}
 Term & Units & Description \\
 \hline
-$T_l$ & $^{\circ}$C & Leaf temperature \\
-$T_a$ & $^{\circ}$C & Air temperature \\
-$\phi_N$ & W m$^{-2}$ & Energy balance \\
-$\lambda$ & J g$^{-1}$ & Latent heat vapourisation of water \\
-$g_w$ & m s$^{-1}$ & Conductance for water vapour \\
-$g_a$ & m s$^{-1}$ & Boundary layer conductance of water vapour \\
-$g_c$ & m s$^{-1}$ & Canopy conductance of water vapour \\
-$\Delta \rho_{va}$ & kg m$^{-3}$ & Atmospheric vapour density deficit \\
-$\rho$ & kg m$^{-3}$ & Density of dry air \\
+$T_l$ & \si{\degreeCelsius} & Leaf temperature \\
+$T_a$ & \si{\degreeCelsius} & Air temperature \\
+$\phi_N$ & \si{\watt\per\metre\squared} & Energy balance \\
+$\lambda$ & \si{\joule\per\kilo\gram} & Latent heat vapourisation of water \\
+$g_w$ & \si{\metre\per\second} & Conductance for water vapour \\
+$g_a$ & \si{\metre\per\second} & Boundary layer conductance of water vapour \\
+$g_c$ & \si{\metre\per\second} & Canopy conductance of water vapour \\
+$\Delta \rho_{va}$ & \si{\kilo\gram\per\metre\cubed} & Atmospheric vapour density deficit \\
+$\rho$ & \si{\kilo\gram\per\metre\cubed} & Density of dry air \\
 $\varepsilon$ & --- & Ratio of molecular mass of water and air, 0.622 \\
-$e_s$ & kPa & Saturation vapour pressure at $T_a$\\
-$e$ & kPa & Actual vapour pressure \\
-$\Delta p_v$ & kPa & Vapour pressure deficit, $e_s - e$ \\
-$P$ & kPa & Atmospheric pressure \\
-$s$ & kg m$^{-3}$ K$^{-1}$ & Slope of saturation vapour density curve $\delta \rho'_v / \delta T (T 
-= T_a)$ \\
-$M_A$ & g mol$^{-1}$ & Molecular weight of air, 29 \\
-$R$ & J mol$^{-1}$ K$^{-1}$ & Universal gas constant, 8.3144621 \\
-$\gamma$ & kg m$^{-3}$ K$^{-1}$ & Psychrometric parameter \\
-$c_p$ & J g$^{-1}$ K$^{-1}$ & Specific heat capacity of dry air, 1.010 \\
-$R_a$ & s m$^{-1}$ & Atmospheric resistance \\
+$e_s$ & \si{\kilo\pascal} & Saturation vapour pressure at $T_a$\\
+$e$ & \si{\kilo\pascal} & Actual vapour pressure \\
+$\Delta p_v$ & \si{\kilo\pascal} & Vapour pressure deficit, $e_s - e$ \\
+$P$ & \si{\kilo\pascal} & Atmospheric pressure \\
+$s$ & \si{\kilo\gram\per\metre\cubed\per\kelvin} & Slope of saturation vapour density curve $\delta 
+\rho'_v / \delta T (T = T_a)$ \\
+$M_A$ & \si{\gram\per\mole} & Molecular weight of air, 29 \\
+$R$ & \si{\joule\per\mole\per\kelvin} & Universal gas constant, 8.3144621 \\
+$\gamma$ & \si{\kilo\gram\per\metre\cubed\per\kelvin} & Psychrometric parameter \\
+$c_p$ & \si{\joule\per\kilo\gram\per\kelvin} & Specific heat capacity of dry air, 1010 \\
+$R_a$ & \si{\second\per\metre} & Atmospheric resistance \\
 \end{tabularx}
 
 \begin{thebibliography}{}
