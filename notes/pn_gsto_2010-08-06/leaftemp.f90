@@ -69,8 +69,8 @@ program TestLeafTemp
         g_a = 1.0 / Ra
 
         ! Replace g_a and g_c with some "normal" constants
-        g_a = 0.05
-        g_c = 0.025
+        !g_a = 0.05
+        !g_c = 0.025
 
         ! Output results
         Tl = Tleaf(Tair, P, Rn, VPD, g_a, g_c)
