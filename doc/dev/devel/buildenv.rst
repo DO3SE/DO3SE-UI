@@ -77,25 +77,24 @@ bundle still includes all the tools required to build the F model.
     * When prompted :guilabel:`Set PATH = ...` click :guilabel:`Cancel`.
       
 3.  Download and run the latest MinGW_ automated installer (e.g.  
-    :file:`mingw-get-inst-20100909.exe`), installing to :file:`C:\\DO3SE_buildenv_GUI\\MinGW`.  At 
+    :file:`mingw-get-inst-20110802.exe`), installing to :file:`C:\\DO3SE_buildenv_GUI\\MinGW`.  At 
     the :guilabel:`Select Components` screen, select :guilabel:`Fortran Compiler` and 
-    :guilabel:`MSYS Basic System`.
+    :guilabel:`MinGW Developer ToolKit`.
 
     * Once MinGW is installed, delete the :file:`C:\\DO3SE_buildenv_GUI\\MinGW\\var` directory; it 
       contains a lot of big files required only during installation.
 
-4.  Download the latest release of Python_ 2.6 (as of writing, there is no NumPy build for 2.7 and 
-    the DO3SE GUI is not compatible with Python 3).  Install to 
-    :file:`C:\\DO3SE_buildenv_GUI\\Python26`.  **It is essential that you select "Install just for 
-    me" otherwise the bundle will not work on another computer.** [#novcredist]_
-5.  Download the latest Python 2.6 release of NumPy_.  Run the installer; it should autodetect where 
+4.  Download the latest release of Python_ 2.7 (DO3SE GUI is not yet compatible with Python 3).  
+    Install to :file:`C:\\DO3SE_buildenv_GUI\\Python27`.  **It is essential that you select "Install 
+    just for me" otherwise the bundle will not work on another computer.** [#novcredist]_
+5.  Download the latest Python 2.7 release of NumPy_.  Run the installer; it should autodetect where 
     to install if you only have one installation of Python on your system, but make sure the one it 
     has detected is in your :file:`DO3SE_buildenv_GUI` directory.
-6.  Download the latest :guilabel:`win32-unicode` Python 2.6 release of wxPython_.  Run the 
+6.  Download the latest :guilabel:`win32-unicode` Python 2.7 release of wxPython_.  Run the 
     installer; it should automatically detect where to install, which will be a path like 
-    :file:`C:\\DO3SE_buildenv_GUI\\Python26\\Lib\\site-packages`.  If it is incorrect, change the 
-    part before :file:`Python26` to be your :file:`DO3SE_buildenv_GUI` directory.
-7.  Download the latest version of py2exe_ which ends in :file:`.win32-py2.6.exe`.  Run the 
+    :file:`C:\\DO3SE_buildenv_GUI\\Python27\\Lib\\site-packages`.  If it is incorrect, change the 
+    part before :file:`Python27` to be your :file:`DO3SE_buildenv_GUI` directory.
+7.  Download the latest version of py2exe_ which ends in :file:`.win32-py2.7.exe`.  Run the 
     installer; the process should be identical to that for NumPy.
     
     * If the installer fails to run, you may need to install the "Microsoft Visual C++ 2008 
@@ -107,7 +106,7 @@ bundle still includes all the tools required to build the F model.
 9.  Copy :file:`resources/buildenv.bat` from the DO3SE source directory to 
     :file:`C:\\DO3SE_buildenv_GUI`.
 10. Copy the :file:`resources/Microsoft.VC90.CRT` directory from the DO3SE source directory to 
-    :file:`C:\\DO3SE_buildenv_GUI\\Python26\\Lib\\site-packages\\wx-2.8-msw-unicode\wx` and to 
+    :file:`C:\\DO3SE_buildenv_GUI\\Python26\\Lib\\site-packages\\wx-2.8-msw-unicode\\wx` and to 
     :file:`site-packages\\py2exe`.  [#novcredist]_
 11. Bundle up the :file:`DO3SE_buildenv_GUI` directory in the same way as :file:`DO3SE_buildenv_F`.
 
