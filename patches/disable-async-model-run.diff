@@ -1,0 +1,32 @@
+diff --git a/do3se/ui.py b/do3se/ui.py
+index 16caa53..8f8b562 100644
+--- a/do3se/ui.py
++++ b/do3se/ui.py
+@@ -262,15 +262,18 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
+             return
+ 
+         # Function to return to when the model has been run
+-        def f(dr):
+-            self.Enable(True)
+-            self.MakeModal(False)
+-            w = ResultsWindow(self.app, self, dr.get(), os.path.basename(filename))
+-            w.Show()
+-
+-        self.MakeModal(True)
+-        self.Enable(False)
+-        wx.lib.delayedresult.startWorker(f, d.run, wargs=[self.prg_progress])
++#        def f(dr):
++#            self.Enable(True)
++#            self.MakeModal(False)
++#            w = ResultsWindow(self.app, self, dr.get(), os.path.basename(filename))
++#            w.Show()
++#
++#        self.MakeModal(True)
++#        self.Enable(False)
++#        wx.lib.delayedresult.startWorker(f, d.run, wargs=[self.prg_progress])
++        r = d.run(self.prg_progress)
++        w = ResultsWindow(self.app, self, r, os.path.basename(filename))
++        w.Show()
+ 
+     def OnMenu_wxID_NEW(self, evt):
+         w = ProjectWindow(self.app, None)
