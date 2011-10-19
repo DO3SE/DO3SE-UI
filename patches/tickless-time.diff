@@ -1,0 +1,22 @@
+diff --git a/do3se/model.py b/do3se/model.py
+index 1bf6d51..7ede34c 100644
+--- a/do3se/model.py
++++ b/do3se/model.py
+@@ -9,7 +9,7 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required',
+         (inputs,    'mm',       int,    False,  'Month',        'Month'),
+         (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
+         (inputs,    'dd',       int,    True,   'Day',          'Day of year'),
+-        (inputs,    'hr',       int,    True,   'Hour',         'Hour of day (0 to 23)'),
++        (inputs,    'hr',       float,  True,   'Hour',         'Hour of day (0 to 23)'),
+         (inputs,    'ts_c',     float,  True,   'Ts_C (C)',     'Temperature (Ts_C, Celcius)'),
+         (inputs,    'vpd',      float,  True,   'VPD (kPa)',    'Vapour Pressure Deficit (VPD, kPa)'),
+         (inputs,    'uh_zr',    float,  True,   'uh_zR (m/s)',  'Measured wind speed (uh_zR, m/s)'),
+@@ -31,7 +31,7 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
+         (inputs,        'mm',       int,    'Month',            'Month'),
+         (inputs,        'mdd',      int,    'Month day',        'Day of month'),
+         (inputs,        'dd',       int,    'Day',              'Day of year'),
+-        (inputs,        'hr',       int,    'Hour',             'Hour of day (0 to 23)'),
++        (inputs,        'hr',       float,  'Hour',             'Hour of day (0 to 23)'),
+         (inputs,        'ts_c',     float,  'Ts_C (C)',         'Temperature (Ts_C, Celcius)'),
+         (inputs,        'vpd',      float,  'VPD (kPa)',        'Vapour Pressure Deficit (VPD, kPa)'),
+         (inputs,        'uh_zr',    float,  'uh_zR (m/s)',      'Measured wind speed (uh_zR, m/s)'),
