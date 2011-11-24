@@ -90,6 +90,8 @@ class Dataset:
         self.switchboard['sgs_egs_method'] = SGS_EGS['func']
         gsto = model.gsto_calcs[self.params.pop('gsto', model.default_gsto_calc)]
         self.switchboard['gsto_method'] = gsto['func']
+        tleaf = model.tleaf_calcs[self.params.pop('tleaf', model.default_tleaf_calc)]
+        self.switchboard['tleaf_method'] = tleaf['func']
 
         # Soil parameters from soil type
         soil = model.soil_classes[self.params.pop('soil_tex', model.default_soil_class)]

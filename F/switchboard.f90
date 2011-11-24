@@ -22,6 +22,11 @@ module Switchboard
     integer, public, save :: ra_method = ra_simple
     public :: SB_Calc_Ra
 
+    integer, public, parameter :: tleaf_use_input   = 1
+    integer, public, parameter :: tleaf_calculate   = 2
+    integer, public, save :: tleaf_method = tleaf_use_input
+    public :: SB_Calc_Tleaf
+
     integer, public, parameter :: gsto_multiplicative = 1
     integer, public, parameter :: gsto_photosynthetic = 2
     integer, public, save :: gsto_method = gsto_multiplicative
@@ -134,6 +139,20 @@ contains
 
         end select
     end subroutine SB_Calc_Ra
+
+    subroutine SB_Calc_Tleaf()
+        use Inputs, only: Derive_Tleaf
+
+        select case (tleaf_method)
+
+        !case (tleaf_use_input)
+        ! do nothing
+
+        case (tleaf_calculate)
+            call Derive_Tleaf()
+
+        end select
+    end subroutine SB_Calc_Tleaf
 
     subroutine SB_Calc_gsto()
         use R, only: Calc_Rsto

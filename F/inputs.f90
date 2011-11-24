@@ -178,9 +178,47 @@ contains
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
 
+    real function Calc_Tleaf (Tair, P, VPD, Rn, ra, rc)
+        implicit none
+
+        real, intent(in) :: Tair    ! Ambient temperature (C)
+        real, intent(in) :: P       ! Air pressure (Pa)
+        real, intent(in) :: VPD     ! Vapour pressure deficit (Pa)
+        real, intent(in) :: Rn      ! Net radiation (W m-2)
+        real, intent(in) :: ra      ! Aerodynamic resistance (s m-1)
+        real, intent(in) :: rc      ! Canopy resistance (s m-1)
+
+        real, parameter :: c_p = 1010.0     ! Specific heat capacity of dry air at 
+                                            !   standard pressure and 20C, J kg-1 C-1
+
+        real :: esat, eact, Tvir, rho, delta, lambda, psychro, Tdiff_1, Tdiff
+
+        ! Saturation vapour pressure at Tair (Pa)
+        esat = 611 * exp(17.27 * Tair / (Tair + 237.3))
+        ! Actual vapour pressure (Pa)
+        eact = esat - VPD
+        ! Virtual temperature for density calcualation (K)
+        Tvir = (Tair + 273.15) / (1 - (0.378 * (eact / P)))
+        ! Density of air (kg m-3)
+        rho = P / (287.058 * Tvir)
+        ! Slope of saturation vapour pressure curve (Pa C-1)
+        delta = (4098 * esat) / ((Tair + 237.3)**2)
+        ! Latent heat vapourisation of water (J kg-1)
+        lambda = (-0.0000614342*Tair**3 + 0.00158927*Tair**2 - 2.36418*Tair + 2500.79) * 1000
+        ! Psychrometric parameter (Pa C-1)
+        psychro = 1628.6 * P / lambda
+
+        ! Leaf - air temperature difference (C)
+        Tdiff_1 = psychro * (1 + (rc / ra))
+        Tdiff = ((ra * Rn) / (rho * c_p)) * (Tdiff_1 / (delta + Tdiff_1)) - (VPD / (delta + Tdiff_1))
+        ! Leaf temperature (C)
+        Calc_Tleaf = Tair + Tdiff
+    end function Calc_Tleaf
+
     subroutine Derive_Tleaf()
-        ! TODO: proper derivation for Tleaf
-        Tleaf = Ts_C
+        use Variables, only: Ra, Rsto_c
+
+        Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
     end subroutine Derive_Tleaf
 
     ! Calculated saturation/actual vapour pressure and relative humidity

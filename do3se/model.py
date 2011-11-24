@@ -222,6 +222,14 @@ gsto_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 
 default_gsto_calc = 'multiplicative'
 
+# Leaf temperature calculation
+tleaf_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('input',           switchboard.tleaf_use_input,    'Use input'),
+    ('derive_jackson',  switchboard.tleaf_calculate,    'Derive'),
+)), 'id', OrderedDict)
+
+default_tleaf_calc = 'derive_jackson'
+
 #: Parameter definitions
 paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 'contexthelp'), (
     ('input', 'input_fields', None, None, 'Input data fields', ''),
@@ -259,9 +267,9 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('vegchar', 'g_sto_0', SpinField, (1, 100000, 50000), u'Closed stomata conductance (umol/m\u00b2/s)', ''),
     ('vegchar', 'm', FloatSpinField, (0.01, 30.0, 7.65, 0.1, 2), u'Species-specific sensitivity to An', ''),
     ('vegchar', 'v_cmax_25', FloatSpinField, (0.01, 500.0, 70.03, 0.1, 2),
-        u'Maximum catalytic rate at 25\u00b0C (umol/m\u00b2/s)', ''),
+        u'Maximum catalytic rate at 25\u00b0C (Vcmax, umol/m\u00b2/s)', ''),
     ('vegchar', 'j_max_25', FloatSpinField, (0.01, 1000.0, 163.05, 0.1, 2),
-        u'Maximum rate of electron transport at 25\u00b0C (umol/m\u00b2/s)', ''),
+        u'Maximum rate of electron transport at 25\u00b0C (Jmax, umol/m\u00b2/s)', ''),
 
     ('vegenv', 'f_lightfac', FloatSpinField, (0.001, 0.999, 0.006, 0.001, 3), 'light_a', ''),
     ('vegenv', 't_min', SpinField, (-10, 100, 0), u'Minimum temperature (T_min, \u00b0C)', ''),
@@ -274,6 +282,7 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('vegenv', 'swp_max', FloatSpinField, (-6, 0, -0.05, 0.01, 2), 'SWP for max. g (SWP_max, MPa)', ''),
 
     ('modelopts', 'gsto', ChoiceField, (gsto_calcs, default_gsto_calc), 'Stomatal conductance model', ''),
+    ('modelopts', 'tleaf', ChoiceField, (tleaf_calcs, default_tleaf_calc), 'Leaf temperature calculation', ''),
     ('modelopts', 'fo3', ChoiceField, (fO3_calcs, default_fO3_calc), 'fO3 calculation', ''),
     ('modelopts', 'fxwp', ChoiceField, (fXWP_calcs, default_fXWP_calc), 'Soil water influence on Gsto', ''),
     ('modelopts', 'lwp', ChoiceField, (LWP_calcs, default_LWP_calc), 'LWP calculation', ''),

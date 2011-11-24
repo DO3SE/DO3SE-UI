@@ -30,6 +30,7 @@ contains
         AFstY = 0
         AOT0 = 0
         AOT40 = 0
+        Rsto_c = 100000
 
         ! Put calls to initialisation functions here
         call SB_Calc_SGS_EGS()
@@ -71,6 +72,7 @@ contains
         call Calc_Rb()
         call Calc_Rgs()
         call Calc_Rinc()
+        call SB_Calc_Tleaf()
         call SB_Calc_gsto()
         call Calc_Rsur()
 

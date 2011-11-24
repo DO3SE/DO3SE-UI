@@ -174,6 +174,16 @@ class ModelOptionsParams(ParameterGroup):
         self.Layout()
 
 
+    def validate(self):
+        errors = []
+
+        validate(errors, not self['tleaf'].get_value() == 'input' or
+                         'tleaf' in self.fc['format']['input_fields'].get_value(),
+                 'Leaf temperature input field required by "Use input" method')
+
+        return errors
+
+
 class SeasonParams(ParameterGroupWithPreview):
     """Season parameters group.
 
