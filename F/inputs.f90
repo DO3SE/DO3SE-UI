@@ -34,6 +34,9 @@ module Inputs
     public :: Calc_sinB
     public :: Calc_Rn
 
+    public :: estimate_velocity
+    public :: estimate_ustar
+
     ! These are intermediate variables not used outside of this module
     real, private :: precip_dd  ! Accumulated precip for today so far
     real, private :: h          ! "Hour angle" of the sun
@@ -49,19 +52,48 @@ contains
         precip_acc = 0
     end subroutine Init_Inputs
 
+    function estimate_velocity(ustar, z, z0) result (u)
+        real, intent(in) :: ustar   ! Friction velocity (m/s)
+        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+
+        real :: u                   ! Output: velocity (m/s)
+
+        real, parameter :: K = 0.41 ! von Karman's constant
+
+        u = (ustar / K) * log(z / z0)
+    end function estimate_velocity
+
+    function estimate_ustar(u, z, z0) result (ustar)
+        real, intent(in) :: u       ! Velocity at height above boundary (m/s)
+        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+
+        real :: ustar               ! Output: friction velocity, ustar (m/s)
+
+        real, parameter :: K = 0.41 ! von Karman's constant
+
+        ustar = (u * K) / log(z / z0)
+    end function estimate_ustar
+
     !
     ! Derive ustar for the flux canopy and the windspeed at the canopy
     !
     subroutine Calc_ustar_uh()
-        use Constants, only: k, izR
+        use Constants, only: izR
         use Parameters, only: h, d, zo, u_d, u_zo, uzR
 
-        real :: ustar_w     ! ustar for where windspeed is measured
+        real :: ustar_ref   ! ustar for where windspeed is measured
 
-        ustar_w = (uh_zR * k) / log((uzR - u_d) / u_zo)
-        uh_i = uh_zR + (ustar_w / k) * log((izR - u_d)/(uzR - u_d))
-        ustar = (uh_i * k) / log((izR - d) / zo)
-        uh = uh_i + (ustar / k) * log((h - d) / (izR - d))
+        ! Find ustar over reference canopy
+        ustar_ref = estimate_ustar(uh_zR, uzR - u_d, u_zo)
+        ! Find windspeed at izR, over reference canopy
+        uh_i = estimate_velocity(ustar_ref, izR - u_d, u_zo)
+        ! Find ustar over target canopy, assuming that at izR windspeed will be
+        ! equal over both vegetations
+        ustar = estimate_ustar(uh_i, izR - d, zo)
+        ! Find windspeed at top of target canopy
+        uh = estimate_velocity(ustar, h - d, zo)
 
         ! Stop values from being 0
         ustar = max(0.0001, ustar)
