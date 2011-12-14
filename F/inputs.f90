@@ -210,6 +210,10 @@ contains
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
 
+    ! Calculate leaf temperature
+    !
+    ! Based on: Jackson, R.D. (1982). "Canopy temperature and crop water stress."
+    !           Advances in irrigation, vol. 1, pp.43-85.  Specifically p.66 eq.9.
     real function Calc_Tleaf (Tair, P, VPD, Rn, ra, rc)
         implicit none
 
