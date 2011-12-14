@@ -4,10 +4,27 @@ module R
                 Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur, &
                 Calc_Ra_With_Heat_Flux
 
+    public :: ra_simple, rb
+
     ! VPD sum for the day (kPa)
     real, private, save :: VPD_dd = 0
 
 contains
+
+    function ra_simple(ustar, z1, z2, d) result (ra)
+        use Inputs, only: estimate_velocity
+
+        real, intent(in) :: ustar   ! Friction velocity (m/s)
+        real, intent(in) :: z1      ! Lower height (m)
+        real, intent(in) :: z2      ! Upper height (m)
+        real, intent(in) :: d       ! Zero displacement height (m)
+
+        real :: ra                  ! Output: aerodynamic resistance (s/m)
+
+        real, parameter :: K = 0.41 ! von Karman's constant
+
+        ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
+    end function ra_simple
 
     !==========================================================================
     ! Calculate Ra, Atmospheric resistance
@@ -18,7 +35,7 @@ contains
         use Parameters, only: h, d
         use Variables, only: Ra
 
-        Ra = (1 / (ustar * k)) * log((izR - d) / (h - d))
+        Ra = ra_simple(ustar, h, izR, d)
     end subroutine Calc_Ra_Simple
 
     !==========================================================================
@@ -68,16 +85,29 @@ contains
         Ra = (1 / (k * ustar)) * (log((z - d) / zo) - Psi_h_zd + Psi_h_zo)
     end subroutine Calc_Ra_With_Heat_Flux
 
+    function rb(ustar, d) result (rb_out)
+        real, intent(in) :: ustar   ! Friction velocity (m/s)
+        real, intent(in) :: d       ! Molecular diffusivity of substance in air (m2/s)
+
+        real, parameter :: PR = 0.72    ! Prandtl number
+        real, parameter :: K = 0.41     ! von Karman's constant
+        real, parameter :: V = 0.000015 ! Kinematic viscosity of air at 20 C (m2/s)
+
+        real :: rb_out              ! Output: Rb (s/m)
+
+        rb_out = (2.0 / (K * ustar)) * (((V/d)/PR)**(2.0/3.0))
+    end function rb
+
     !==========================================================================
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
     !==========================================================================
     subroutine Calc_Rb()
-        use Constants, only: k, v, DO3, DH2O, Pr
+        use Constants, only: DO3, DH2O
         use Inputs, only: ustar
-        use Variables, only: Rb, Rb_H2O
+        use Variables, only: Rb_out => Rb, Rb_H2O
 
-        Rb = (2.0/(k*ustar)) * (((v/DO3)/Pr)**(2.0/3.0))
-        Rb_H2O = (2.0/(k*ustar)) * (((v/DH2O)/Pr)**(2.0/3.0))
+        Rb_out = rb(ustar, DO3)
+        Rb_H2O = rb(ustar, DH2O)
     end subroutine Calc_Rb
 
     !==========================================================================

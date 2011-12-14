@@ -15,35 +15,42 @@ contains
     !==========================================================================
     subroutine Calc_O3_Concentration()
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
-        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P
-        use Variables, only: O3_ppb_i, O3_ppb, O3_nmol_m3, Ra, Rb, Rsur, Ra_i, Vd
-        use Parameters, only: O3zR, O3_d, O3_zo
+        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar
+        use Inputs, only: estimate_ustar
+        use Variables, only: Ra, Rb, Rsur
+        use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
+                             Ra_ref, Ra_O3zR_i, Ra_tar_i
+        use Parameters, only: O3zR, O3_d, O3_zo, h, d, zo
+        use R, only: ra_simple, rb_func => rb
 
-        real, parameter :: R = 8.314510     ! Universal gas constant (J/K/mol)
         real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
 
-        real :: ustar_o, Rb_i, Vd_i, Vn
+        real :: ustar_ref, Rb_ref, Vn
 
-        ! Deposition velocity over target veg
-        ! (we assume that this is "close enough" for over the measurement veg.)
-        Vd = 1 / (Ra + Rb + Rsur)
-
-        ! ustar over O3 measurement vegetation
-        ustar_o = (uh_i * k) / log((izR - O3_d) / O3_zo)
-        ! Ra over O3 measurement veg.
-        Ra_i = (1 / (ustar_o * k)) * log((izR - O3_d) / (O3zR - O3_d))
-        ! Rb over O3 measurement veg.
-        Rb_i = (2.0/(k*ustar_o)) * (((v/DO3)/Pr)**(2.0/3.0))
-        ! Estimated deposition velocity over O3 measurement veg.
-        Vd_i = 1 / (Ra_i + Rb_i + Rsur)
-
-        ! O3 concentration at intermediate height
-        O3_ppb_i = O3_ppb_zR / (1 - (Ra_i * Vd_i))
-
-        O3_ppb = O3_ppb_i * (1 - (Ra * Vd))
+        ! ustar over reference canopy
+        ustar_ref = estimate_ustar(uh_i, izR - O3_d, O3_zo)
+        ! Ra between reference canopy and izR
+        Ra_ref_i = ra_simple(ustar_ref, O3_zo + O3_d, izR, O3_d)
+        ! Rb for reference canopy
+        Rb_ref = rb_func(ustar_ref, DO3)
+        ! Deposition velocity at izR over reference canopy
+        ! (assuming that Rsur_ref = Rsur)
+        Vd_i = 1.0 / (Ra_ref_i + Rb_ref + Rsur)
+        ! Ra between measurement height and izR
+        Ra_O3zR_i = ra_simple(ustar_ref, O3zR, izR, O3_d)
+        ! O3 concentration at izR
+        O3_ppb_i = O3_ppb_zR / (1.0 - (Ra_O3zR_i * Vd_i))
+        ! Ra between target canopy and izR
+        ! (ustar already calculated for target canopy)
+        Ra_tar_i = ra_simple(ustar, zo + d, izR, d)
+        ! Deposition velocity at izR over target canopy
+        Vd = 1.0 / (Ra_tar_i + Rb + Rsur)
+        ! O3 concentration at target canopy
+        ! (Ra already calculated between canopy height and izR)
+        O3_ppb = O3_ppb_i * (1.0 - (Ra * Vd))
 
         ! Specific molar volume of an ideal gas at current temp + pressure
-        Vn = R * ((Ts_C + Ts_K) / P)
+        Vn = 8.314510 * ((Ts_C + Ts_K) / P)
         ! Convert to nmol/m^3
         O3_nmol_m3 = (1.0/Vn) * O3_ppb * M_O3 * 20.833  ! 1 microgram O3 = 20.833 nmol/m^3
     end subroutine Calc_O3_Concentration
