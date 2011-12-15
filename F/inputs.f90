@@ -91,20 +91,20 @@ contains
 
         real :: ustar_ref   ! ustar for where windspeed is measured
 
+        real, parameter :: MIN_WINDSPEED = 0.1
+
         ! Find ustar over reference canopy
-        ustar_ref = estimate_ustar(uh_zR, uzR - u_d, u_zo)
+        ustar_ref = estimate_ustar(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_zo)
         ! Find windspeed at izR, over reference canopy
-        uh_i = estimate_velocity(ustar_ref, izR - u_d, u_zo)
+        uh_i = max(MIN_WINDSPEED, estimate_velocity(ustar_ref, izR - u_d, u_zo))
         ! Find ustar over target canopy, assuming that at izR windspeed will be
         ! equal over both vegetations
-        ustar = estimate_ustar(uh_i, izR - d, zo)
+        ustar = estimate_ustar(max(MIN_WINDSPEED, uh_i), izR - d, zo)
         ! Find windspeed at top of target canopy
-        uh = estimate_velocity(ustar, h - d, zo)
+        uh = max(MIN_WINDSPEED, estimate_velocity(ustar, h - d, zo))
 
-        ! Stop values from being 0
+        ! Stop ustar being 0
         ustar = max(0.0001, ustar)
-        uh = max(0.0001, uh)
-        uh_i = max(0.0001, uh_i)
     end subroutine Calc_ustar_uh
 
     !
