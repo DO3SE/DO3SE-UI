@@ -226,6 +226,7 @@ contains
 
         real, parameter :: c_p = 1010.0     ! Specific heat capacity of dry air at 
                                             !   standard pressure and 20C, J kg-1 C-1
+        real, parameter :: MAX_TDIFF = 5.0  ! Maximum allowed temperature difference
 
         real :: esat, eact, Tvir, rho, delta, lambda, psychro, Tdiff_1, Tdiff
 
@@ -247,6 +248,8 @@ contains
         ! Leaf - air temperature difference (C)
         Tdiff_1 = psychro * (1 + (rc / ra))
         Tdiff = ((ra * Rn) / (rho * c_p)) * (Tdiff_1 / (delta + Tdiff_1)) - (VPD / (delta + Tdiff_1))
+        ! Stop Tdiff being too large
+        Tdiff = max(-MAX_TDIFF, min(MAX_TDIFF, Tdiff))
         ! Leaf temperature (C)
         Calc_Tleaf = Tair + Tdiff
     end function Calc_Tleaf
