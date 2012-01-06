@@ -1,8 +1,8 @@
 objects = constants.o \
 		  functions.o \
 		  parameters.o \
-		  inputs.o \
 		  variables.o \
+		  inputs.o \
 		  environmental.o \
 		  phenology.o \
 		  soilwater.o \
