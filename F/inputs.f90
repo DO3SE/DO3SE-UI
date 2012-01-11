@@ -254,11 +254,11 @@ contains
         Calc_Tleaf = Tair + Tdiff
     end function Calc_Tleaf
 
-    subroutine Derive_Tleaf()
+    subroutine Tleaf_Estimate_Jackson()
         use Variables, only: Ra, Rsto_c
 
         Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
-    end subroutine Derive_Tleaf
+    end subroutine Tleaf_Estimate_Jackson
 
     ! Calculated saturation/actual vapour pressure and relative humidity
     subroutine Calc_humidity()

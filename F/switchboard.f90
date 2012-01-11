@@ -22,8 +22,8 @@ module Switchboard
     integer, public, save :: ra_method = ra_simple
     public :: SB_Calc_Ra
 
-    integer, public, parameter :: tleaf_use_input   = 1
-    integer, public, parameter :: tleaf_calculate   = 2
+    integer, public, parameter :: tleaf_use_input        = 1
+    integer, public, parameter :: tleaf_estimate_jackson = 2
     integer, public, save :: tleaf_method = tleaf_use_input
     public :: SB_Calc_Tleaf
 
@@ -141,15 +141,15 @@ contains
     end subroutine SB_Calc_Ra
 
     subroutine SB_Calc_Tleaf()
-        use Inputs, only: Derive_Tleaf
+        use Inputs, only: Tleaf_Estimate_J => Tleaf_Estimate_Jackson
 
         select case (tleaf_method)
 
         !case (tleaf_use_input)
         ! do nothing
 
-        case (tleaf_calculate)
-            call Derive_Tleaf()
+        case (tleaf_estimate_jackson)
+            call Tleaf_Estimate_J()
 
         end select
     end subroutine SB_Calc_Tleaf

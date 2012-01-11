@@ -224,11 +224,11 @@ default_gsto_calc = 'multiplicative'
 
 # Leaf temperature calculation
 tleaf_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('input',           switchboard.tleaf_use_input,    'Use input'),
-    ('derive_jackson',  switchboard.tleaf_calculate,    'Derive'),
+    ('input',    switchboard.tleaf_use_input,        'Use input'),
+    ('estimate', switchboard.tleaf_estimate_jackson, 'Estimate'),
 )), 'id', OrderedDict)
 
-default_tleaf_calc = 'derive_jackson'
+default_tleaf_calc = 'estimate'
 
 #: Parameter definitions
 paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 'contexthelp'), (
