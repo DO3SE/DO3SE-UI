@@ -155,18 +155,30 @@ contains
     end subroutine SB_Calc_Tleaf
 
     subroutine SB_Calc_gsto()
-        use R, only: Calc_Rsto
-        use Pn_Gsto, only: Calc_Gsto_Pn
+        use R, only: Calc_Gsto_Multiplicative
+        use Pn_Gsto, only: Calc_Gsto_Pn, pngsto_l, pngsto, pngsto_c, pngsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
 
-        !select case (gsto_method)
+        ! Calculate both, because currently they don't overlap
+        call Calc_Gsto_Multiplicative()
+        call Calc_Gsto_Pn()
 
-        !case (gsto_multiplicative)
-            call Calc_Rsto()
+        select case (gsto_method)
 
-        !case (gsto_photosynthetic)
+        case (gsto_multiplicative)
+            call Calc_Gsto_Multiplicative()
+            ! TODO: Remove this, only here for debug when comparing methods
             call Calc_Gsto_Pn()
 
-        !end select
+        case (gsto_photosynthetic)
+            call Calc_Gsto_Pn()
+            ! Copy Calc_Gsto_Pn() results to correct places
+            Gsto_l = pngsto_l
+            Gsto = pngsto
+            Gsto_c = pngsto_c
+            Gsto_PEt = pngsto_PEt
+
+        end select
     end subroutine SB_Calc_Gsto
 
     subroutine SB_Calc_fO3()

@@ -1,13 +1,15 @@
 module R
 
     public :: Calc_Rext, Calc_Rsoil, Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
-                Calc_Rinc, Calc_Gsto, Calc_Rsto, Calc_Rsur, &
-                Calc_Ra_With_Heat_Flux
+                Calc_Rinc, Calc_Rsur, Calc_Ra_With_Heat_Flux
 
-    public :: ra_simple, rb
+    public :: ra_simple, rb, rsto_from_gsto
+
+    public :: Calc_Gsto_Multiplicative, Calc_Rsto, VPDcrit_prepare, VPDcrit_apply
 
     ! VPD sum for the day (kPa)
     real, private, save :: VPD_dd = 0
+    real, private, save :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev
 
 contains
 
@@ -25,6 +27,20 @@ contains
 
         ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
     end function ra_simple
+
+    function rsto_from_gsto(gsto) result (rsto)
+        real, intent(in) :: gsto    ! Stomatal conductance (mmol m-2 s-1)
+        real :: rsto                ! Output: stomatal resistance (
+        real, parameter :: MAX_RSTO = 100000
+
+        if (gsto <= 0) then
+            rsto = MAX_RSTO
+        else
+            ! (gsto in m s-1) = 41000 * (gsto in mmol m-2 s-1)
+            ! (rsto in s m-1) = 1 / (gsto in m s-1)
+            rsto = 41000.0 / gsto
+        end if
+    end function rsto_from_gsto
 
     !==========================================================================
     ! Calculate Ra, Atmospheric resistance
@@ -85,6 +101,7 @@ contains
         Ra = (1 / (k * ustar)) * (log((z - d) / zo) - Psi_h_zd + Psi_h_zo)
     end subroutine Calc_Ra_With_Heat_Flux
 
+
     function rb(ustar, d) result (rb_out)
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: d       ! Molecular diffusivity of substance in air (m2/s)
@@ -131,34 +148,52 @@ contains
         Rinc = Rinc_b * SAI * h/ustar
     end subroutine Calc_Rinc
 
+
+    ! Store previous hour's Gsto values, calculate accumulated VPD
+    subroutine VPDcrit_prepare()
+        use Inputs, only: VPD, dd
+        use Variables, only: dd_prev, Flight, Gsto_l, Gsto, Gsto_c, Gsto_PEt
+
+        ! Copy old Gsto values
+        Gsto_l_prev = Gsto_l
+        Gsto_prev = Gsto
+        Gsto_c_prev = Gsto_c
+        Gsto_PEt_prev = Gsto_PEt
+
+        ! Reset accumulated VPD at start of new day
+        if (dd /= dd_prev) then
+            VPD_dd = 0
+        end if
+        ! Accumulate VPD during daylight hours
+        if (Flight > 0) then
+            VPD_dd = VPD_dd + VPD
+        end if
+    end subroutine VPDcrit_prepare
+
+    ! Limit Gsto values if accumulated VPD exceeds VPD_crit
+    subroutine VPDcrit_apply()
+        use Parameters, only: VPD_crit
+        use Variables, only: dd_prev, Flight, Gsto_l, Gsto, Gsto_c, Gsto_PEt
+
+        if (VPD_dd >= VPD_crit) then
+            ! Limit values to previous hour's Gsto
+            Gsto_l = min(Gsto_l, Gsto_l_prev)
+            Gsto = min(Gsto, Gsto_prev)
+            Gsto_c = min(Gsto_c, Gsto_c_prev)
+            Gsto_PEt = min(Gsto_PEt, Gsto_PEt_prev)
+        end if
+    end subroutine VPDcrit_apply
+
     !==========================================================================
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
-    subroutine Calc_Rsto()
+    subroutine Calc_Gsto_Multiplicative()
         use Parameters, only: gmax, gmorph, fmin, VPD_crit
         use Inputs, only: VPD, dd
         use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, dd_prev
         use Variables, only: leaf_fphen, leaf_flight, LAI
         use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
                              Gsto_PEt, Rsto_PEt
-
-        real :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev
-
-        ! Preparation for VPD_crit limiting
-        !   Copy old Gsto values
-        Gsto_l_prev = Gsto_l
-        Gsto_prev = Gsto
-        Gsto_c_prev = Gsto_c
-        Gsto_PEt_prev = Gsto_PEt
-        !   Reset accumulated VPD?
-        if (dd /= dd_prev) then
-            VPD_dd = 0
-        end if
-        !   Accumulate VPD during daylight hours
-        if (Flight > 0) then
-            VPD_dd = VPD_dd + VPD
-        end if
-
         ! Leaf Gsto
         Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
         ! Mean Gsto
@@ -167,42 +202,19 @@ contains
         Gsto_c = Gsto * LAI
         ! Potential canopy Gsto for PEt calculation (non-limiting SWP)
         Gsto_PEt = gmax * fphen * flight * ftemp * fVPD * LAI
+    end subroutine Calc_Gsto_Multiplicative
 
-        ! Check the VPD_crit condition
-        if (VPD_dd >= VPD_crit) then
-            Gsto_l = min(Gsto_l, Gsto_l_prev)
-            Gsto = min(Gsto, Gsto_prev)
-            Gsto_c = min(Gsto_c, Gsto_c_prev)
-            Gsto_PEt = min(Gsto_PEt, Gsto_PEt_prev)
-        end if
+    subroutine Calc_Rsto()
+        use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, Gsto_PEt, Rsto_PEt
 
         ! Leaf Rsto
-        if (Gsto_l <= 0) then
-            Rsto_l = 100000
-        else
-            Rsto_l = 41000 / Gsto_l
-        end if
-
+        Rsto_l = rsto_from_gsto(Gsto_l)
         ! Mean Rsto
-        if (Gsto <= 0) then
-            Rsto = 100000
-        else
-            Rsto = 41000 / Gsto  ! Gsto in s/m = Gsto * 41000, Rsto = 1 / Gsto
-        end if
-
+        Rsto = rsto_from_gsto(Gsto)
         ! Canopy Rsto
-        if (Gsto_c <= 0) then
-            Rsto_c = 100000
-        else
-            Rsto_c = 41000 / Gsto_c
-        end if
-
+        Rsto_c = rsto_from_gsto(Gsto_c)
         ! Potential canopy Rsto for PEt calculation
-        if (Gsto_PEt <= 0) then
-            Rsto_PEt = 100000
-        else
-            Rsto_PEt = 41000 / Gsto_PEt
-        end if
+        Rsto_PEt = rsto_from_gsto(Gsto_PEt)
     end subroutine Calc_Rsto
 
     !==========================================================================
