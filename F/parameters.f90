@@ -50,9 +50,7 @@ module Parameters
     real, public, save :: elev = 0      ! Elevation (m)
 
     public :: Derive_Windspeed_d_zo
-    public :: Copy_Windspeed_h_d_zo
     public :: Derive_O3_d_zo
-    public :: Copy_O3_h_d_zo
 
 
     !==========================================================================

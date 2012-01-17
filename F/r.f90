@@ -1,6 +1,6 @@
 module R
 
-    public :: Calc_Rext, Calc_Rsoil, Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
+    public :: Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
                 Calc_Rinc, Calc_Rsur, Calc_Ra_With_Heat_Flux
 
     public :: ra_simple, rb, rsto_from_gsto

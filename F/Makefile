@@ -1,4 +1,4 @@
-F = g95 -std=F
+F = gfortran -std=f95 -fimplicit-none -Wall
 
 # Default target
 all: dose
