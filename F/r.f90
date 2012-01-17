@@ -14,8 +14,6 @@ module R
 contains
 
     function ra_simple(ustar, z1, z2, d) result (ra)
-        use Inputs, only: estimate_velocity
-
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: z1      ! Lower height (m)
         real, intent(in) :: z2      ! Upper height (m)
