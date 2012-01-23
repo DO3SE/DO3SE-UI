@@ -6,7 +6,7 @@ import wx
 import wx.lib.plot
 
 
-def lai_preview(fc, colour='green', label='LAI'):
+def lai_preview(fc, colour='blue', label='LAI'):
     """Create LAI preview graph."""
     sgs = fc['season']['sgs'].get_value()
     egs = fc['season']['egs'].get_value()
@@ -31,7 +31,7 @@ def lai_preview(fc, colour='green', label='LAI'):
                                 legend=label)
 
 
-def fphen_preview(fc, colour='green', label='Fphen'):
+def fphen_preview(fc, colour='blue', label='Fphen'):
     """Create Fphen preview graph."""
     sgs = fc['season']['sgs'].get_value()
     egs = fc['season']['egs'].get_value()
@@ -63,7 +63,7 @@ def fphen_preview(fc, colour='green', label='Fphen'):
                                 legend=label)
 
 
-def leaf_fphen_preview(fc, colour='green', label='leaf_fphen'):
+def leaf_fphen_preview(fc, colour='blue', label='leaf_fphen'):
     """Create leaf_fphen preview graph.
 
     Creates a preview graph for the leaf_fphen fixed-day method.
