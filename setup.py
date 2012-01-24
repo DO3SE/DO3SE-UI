@@ -112,7 +112,7 @@ if __name__ == "__main__":
             description     = description,
             version         = version,
             author          = 'Alan Briolat',
-            author_email    = 'sei@alanbriolat.co.uk',
+            author_email    = 'alan.briolat@sei-international.org',
             packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
             data_files      = [
                 ('Microsoft.VC90.CRT',
