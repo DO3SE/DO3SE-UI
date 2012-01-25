@@ -77,6 +77,12 @@ class InputFormatParams(fields.FieldGroup):
 
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
 
+        self.GetSizer().Add(wxext.AutowrapStaticText(self, label='Hourly input '
+            'data must match the format described in "Selected fields".  Ensure '
+            'both field order and units are correct for the data file.',
+            style=wx.ST_NO_AUTORESIZE),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+
         self['input_fields'] = fields.ColumnsSelectField(self, model.input_fields)
         self.GetSizer().Add(self['input_fields'].field, 1, wx.EXPAND|wx.ALL, 5)
 
