@@ -11,16 +11,18 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
         (inputs,    'dd',       int,    True,   'Day',          'Day of year'),
         (inputs,    'hr',       int,    True,   'Hour',         'Hour of day (0 to 23)'),
         (inputs,    'ts_c',     float,  True,   'Ts_C (C)',     'Temperature (Ts_C, Celcius)'),
+        (inputs,    'tleaf',    float,  False,  'Tleaf (C)',    'Leaf temperature (Tleaf, Celcius)'),
         (inputs,    'vpd',      float,  True,   'VPD (kPa)',    'Vapour Pressure Deficit (VPD, kPa)'),
         (inputs,    'uh_zr',    float,  True,   'uh_zR (m/s)',  'Measured wind speed (uh_zR, m/s)'),
         (inputs,    'precip',   float,  True,   'precip (mm)',  'Precipitation (precip, mm)'),
         (inputs,    'p',        float,  True,   'P (kPa)',      'Pressure (P, kPa)'),
         (inputs,    'o3_ppb_zr',float,  True,   'O3_zR (ppb)',  'Measured O3 density (O3_zR, ppb)'),
+        (inputs,    'co2',      float,  False,  'CO2 (ppm)',    u'Ambient CO2 concentration (CO2, ppm)'),
         (inputs,    'hd',       float,  False,  'Hd (Wh/m^2)',  u'Sensible heat flux (Hd, Wh/m\u00b2)'),
         (inputs,    'r',        float,  False,  'R (Wh/m^2)',   u'Global radiation (R, Wh/m\u00b2)'),
         (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', u'Photosynthetically active radiation (PAR, umol/m\u00b2/s)'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  u'Net radiation (Rn, MJ/m\u00b2)'),
-        (inputs,    'leaf_fphen_input', float, False, 'Leaf fphen', 'Leaf fphen'),
+        (inputs,    'leaf_fphen_input', float, False, 'Leaf fphen', 'Leaf fphen (fraction)'),
 )), 'variable', OrderedDict)
 
 #: Available output fields
@@ -32,12 +34,14 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (inputs,        'dd',       int,    'Day',              'Day of year'),
         (inputs,        'hr',       int,    'Hour',             'Hour of day (0 to 23)'),
         (inputs,        'ts_c',     float,  'Ts_C (C)',         'Temperature (Ts_C, Celcius)'),
+        (inputs,        'tleaf',    float,  'Tleaf (C)',        'Leaf temperature (Tleaf, Celcius)'),
         (inputs,        'vpd',      float,  'VPD (kPa)',        'Vapour Pressure Deficit (VPD, kPa)'),
         (inputs,        'uh_zr',    float,  'uh_zR (m/s)',      'Measured wind speed (uh_zR, m/s)'),
         (inputs,        'precip',   float,  'precip (mm)',      'Precipitation (precip, mm)'),
         (inputs,        'precip_acc',float, 'precip_acc',       'Accumulated precipitation (precip_acc, m)'),
         (inputs,        'p',        float,  'P (kPa)',          'Pressure (P, kPa)'),
         (inputs,        'o3_ppb_zr',float,  'O3_zR (ppb)',      'Measured O3 density (O3_zR, ppb)'),
+        (inputs,        'co2',      float,  'CO2 (ppm)',        u'Ambient CO2 concentration (CO2, ppm)'),
         (inputs,        'hd',       float,  'Hd (Wh/m^2)',      u'Sensible heat flux (Hd, Wh/m\u00b2)'),
         (inputs,        'r',        float,  'R (Wh/m^2)',       u'Global radiation (R, Wh/m\u00b2)'),
         (inputs,        'par',      float,  'PAR (umol/m^2/s)', u'Photosynthetically active radiation (PAR, umol/m\u00b2/s)'),
@@ -89,9 +93,15 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (variables,     'smd_meas', float,  'SMD_meas (m)',     'Soil moisture deficit at measurement depth (SMD_meas, m)'),
 
         # Debug variables
+        (pn_gsto,       'gsto_final',float, 'gsto_final',       '[DEBUG] Photosynthetic Gsto (base)'),
+        (pn_gsto,       'pngsto_l', float,  'Pn Gsto_l',        '[DEBUG] Photosynthetic Gsto (leaf)'),
+        (pn_gsto,       'pngsto',   float,  'Pn Gsto',          '[DEBUG] Photosynthetic Gsto (mean)'),
+        (pn_gsto,       'pngsto_c', float,  'Pn Gsto_c',        '[DEBUG] Photosynthetic Gsto (canopy)'),
+        (pn_gsto,       'pngsto_pet',float, 'Pn Gsto_PEt',      '[DEBUG] Photosynthetic Gsto (PEt)'),
+        (pn_gsto,       'pngsto_an',float,  'Pn_Gsto_An',       '[DEBUG] Net assimilation'),
         #(variables,     'flight',   float,  'flight',           '[DEBUG] flight'),
         #(variables,     'leaf_flight',float,'leaf_flight',      '[DEBUG] leaf_flight'),
-        #(variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
+        (variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
         #(variables,     'leaf_fphen',float, 'leaf_fphen',       '[DEBUG] leaf_fphen'),
         #(variables,     'ftemp',    float,  'ftemp',            '[DEBUG] ftemp'),
         #(variables,     'fvpd',     float,  'fVPD',             '[DEBUG] fVPD'),
@@ -147,7 +157,7 @@ default_soil_class = 'loam'
 leaf_fphen_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('copy',    switchboard.leaf_fphen_equals_fphen,    'Same as Fphen'),
     ('fixedday', switchboard.leaf_fphen_fixed_day,      'Fixed day'),
-    ('input',   switchboard.leaf_fphen_use_input,       'Use input'),
+    ('input',   switchboard.leaf_fphen_use_input,       'Use hourly input data'),
 )), 'id', OrderedDict)
 
 default_leaf_fphen_calc = 'copy'
@@ -204,6 +214,22 @@ SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 
 default_SGS_EGS_calc = 'inputs'
 
+# Stomatal conductance calculations (multiplicative, photosynthetic)
+gsto_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('multiplicative', switchboard.gsto_multiplicative, 'Multiplicative'),
+    ('photosynthetic', switchboard.gsto_photosynthetic, 'Photosynthetic'),
+)), 'id', OrderedDict)
+
+default_gsto_calc = 'multiplicative'
+
+# Leaf temperature calculation
+tleaf_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('input',    switchboard.tleaf_use_input,        'Use hourly input data'),
+    ('estimate', switchboard.tleaf_estimate_jackson, 'Estimate'),
+)), 'id', OrderedDict)
+
+default_tleaf_calc = 'estimate'
+
 #: Parameter definitions
 paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', 'contexthelp'), (
     ('input', 'input_fields', None, None, 'Input data fields', ''),
@@ -212,6 +238,8 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('siteloc', 'lat', FloatSpinField, (-90, 90, 50, 0.1, 3), 'Latitude (decimal degrees North)', ''),
     ('siteloc', 'lon', FloatSpinField, (-180, 180, 0, 0.1, 3), 'Longitude (decimal degrees East)', ''),
     ('siteloc', 'elev', SpinField, (-100, 5000, 0), 'Elevation (m.a.s.l.)', ''),
+    ('siteloc', 'co2_constant', disableable(FloatSpinField, 'Use hourly input data'), (0.0, 10000.0, 391.0, 1.0, 1),
+        u'CO2 concentration (ppm)', 'Overridden if CO2 is supplied by input data'),
     ('siteloc', 'soil_tex', ChoiceField, (soil_classes, default_soil_class), 'Soil texture', ''),
     ('siteloc', 'rsoil', SpinField, (1, 1000, 100), 'Rsoil (s/m)', ''),
 
@@ -235,7 +263,13 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('vegchar', 'gmorph', FloatSpinField, (0.01, 1, 1, 0.01, 2), 'Sun/shade factor (fraction)', ''),
     ('vegchar', 'fmin', FloatSpinField, (0.01, 0.99, 0.13, 0.01, 2), 'fmin (fraction)', ''),
     ('vegchar', 'rext', SpinField, (0, 20000, 2500), 'External plant cuticle resistance (Rext, s/m)', ''),
-    ('vegchar', 'y', FloatSpinField, (0.1, 100, 1.6, 0.1, 1), u'Threshold Y for PODy (nmol/m\u00b2/s)', ''),
+    ('vegchar', 'y', FloatSpinField, (0.1, 100, 1.0, 0.1, 1), u'Threshold Y for PODy (nmol/m\u00b2/s)', ''),
+    ('vegchar', 'g_sto_0', SpinField, (1, 100000, 30000), u'Closed stomata conductance (gsto0, umol/m\u00b2/s)', ''),
+    ('vegchar', 'm', FloatSpinField, (0.01, 30.0, 16.83, 0.1, 2), u'Species-specific sensitivity to An (m, dimensionless)', ''),
+    ('vegchar', 'v_cmax_25', FloatSpinField, (0.01, 500.0, 30.0, 0.1, 2),
+        u'Maximum catalytic rate at 25\u00b0C (Vcmax, umol/m\u00b2/s)', ''),
+    ('vegchar', 'j_max_25', FloatSpinField, (0.01, 1000.0, 60.0, 0.1, 2),
+        u'Maximum rate of electron transport at 25\u00b0C (Jmax, umol/m\u00b2/s)', ''),
 
     ('vegenv', 'f_lightfac', FloatSpinField, (0.001, 0.999, 0.006, 0.001, 3), 'light_a', ''),
     ('vegenv', 't_min', SpinField, (-10, 100, 0), u'Minimum temperature (T_min, \u00b0C)', ''),
@@ -247,6 +281,8 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('vegenv', 'swp_min', FloatSpinField, (-6, 0, -1.25, 0.01, 2), 'SWP for min. g (SWP_min, MPa)', ''),
     ('vegenv', 'swp_max', FloatSpinField, (-6, 0, -0.05, 0.01, 2), 'SWP for max. g (SWP_max, MPa)', ''),
 
+    ('modelopts', 'gsto', ChoiceField, (gsto_calcs, default_gsto_calc), 'Stomatal conductance model', ''),
+    ('modelopts', 'tleaf', ChoiceField, (tleaf_calcs, default_tleaf_calc), 'Leaf temperature calculation', ''),
     ('modelopts', 'fo3', ChoiceField, (fO3_calcs, default_fO3_calc), 'fO3 calculation', ''),
     ('modelopts', 'fxwp', ChoiceField, (fXWP_calcs, default_fXWP_calc), 'Soil water influence on Gsto', ''),
     ('modelopts', 'lwp', ChoiceField, (LWP_calcs, default_LWP_calc), 'LWP calculation', ''),

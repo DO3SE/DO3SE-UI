@@ -1,3 +1,0 @@
-Parameterisations needed: LWP, fXWP, latitude GS
-
-No parametrisation available for Rc and Rp in LWP?

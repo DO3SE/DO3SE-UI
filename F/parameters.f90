@@ -50,9 +50,7 @@ module Parameters
     real, public, save :: elev = 0      ! Elevation (m)
 
     public :: Derive_Windspeed_d_zo
-    public :: Copy_Windspeed_h_d_zo
     public :: Derive_O3_d_zo
-    public :: Copy_O3_h_d_zo
 
 
     !==========================================================================
@@ -128,6 +126,12 @@ module Parameters
 
     real, public, save :: Lm = 0.05         ! Leaf dimension (m)
     real, public, save :: Y = 1.6           ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
+
+    ! Photosynthesis estimation parameters
+    real, public, save :: g_sto_0 = 50000   ! Conductance with closed stomata (umol m-2 s-1)
+    real, public, save :: m = 7.65          ! Species-specific sensitivity/fudge-factor
+    real, public, save :: V_cmax_25 = 70.03 ! Maximum catalytic rate at 25C (umol m-2 s-1)
+    real, public, save :: J_max_25 = 163.05 ! Maximum rate of electron transport at 25C (umol m-2 s-1)
     
     public :: Derive_d_zo
 

@@ -88,6 +88,10 @@ class Dataset:
         self.switchboard['lwp_method'] = LWP['func']
         SGS_EGS = model.SGS_EGS_calcs[self.params.pop('sgs_egs_calc', model.default_SGS_EGS_calc)]
         self.switchboard['sgs_egs_method'] = SGS_EGS['func']
+        gsto = model.gsto_calcs[self.params.pop('gsto', model.default_gsto_calc)]
+        self.switchboard['gsto_method'] = gsto['func']
+        tleaf = model.tleaf_calcs[self.params.pop('tleaf', model.default_tleaf_calc)]
+        self.switchboard['tleaf_method'] = tleaf['func']
 
         # Soil parameters from soil type
         soil = model.soil_classes[self.params.pop('soil_tex', model.default_soil_class)]
@@ -113,6 +117,9 @@ class Dataset:
         """
         skippedrows = 0
 
+        # These parameters need special handling
+        co2_const = self.params.pop('co2_constant')
+
         # Initialise function switchboard
         util.setattrs(model.switchboard, self.switchboard)
         # Load parameters
@@ -121,6 +128,11 @@ class Dataset:
         # Initialise the model
         _log.info("Initialising DOSE Fortran model")
         model.run.initialise()
+
+        # Handle special parameters
+        if not co2_const['disabled']:
+            _log.debug('Using constant CO2 concentration: %s ppm' % co2_const['value'])
+            util.setattrs(model.inputs, {'co2': co2_const['value']})
 
         # Initialise progress bar
         if progressbar is not None:

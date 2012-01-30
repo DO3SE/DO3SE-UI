@@ -77,6 +77,12 @@ class InputFormatParams(fields.FieldGroup):
 
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
 
+        self.GetSizer().Add(wxext.AutowrapStaticText(self, label='Hourly input '
+            'data must match the format described in "Selected fields".  Ensure '
+            'both field order and units are correct for the data file.',
+            style=wx.ST_NO_AUTORESIZE),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+
         self['input_fields'] = fields.ColumnsSelectField(self, model.input_fields)
         self.GetSizer().Add(self['input_fields'].field, 1, wx.EXPAND|wx.ALL, 5)
 
@@ -109,6 +115,16 @@ class InputFormatParams(fields.FieldGroup):
 class SiteLocationParams(ParameterGroup):
     """Site location parameters group."""
     PARAMETERS = model.parameters_by_group('siteloc')
+
+    def validate(self):
+        errors = []
+
+        validate(errors, not self['co2_constant'].get_value()['disabled']
+                         or 'co2' in self.fc['format']['input_fields'].get_value(),
+                 '"Ambient CO2" input field required when "Use input" selected ' + \
+                 'for CO2 concentration')
+
+        return errors
 
 
 class MeasurementParams(ParameterGroup):
@@ -162,6 +178,16 @@ class ModelOptionsParams(ParameterGroup):
             flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
         # The first draw of the label is incorrect if this isn't done on win32
         self.Layout()
+
+
+    def validate(self):
+        errors = []
+
+        validate(errors, not self['tleaf'].get_value() == 'input' or
+                         'tleaf' in self.fc['format']['input_fields'].get_value(),
+                 'Leaf temperature input field required by "Use input" method')
+
+        return errors
 
 
 class SeasonParams(ParameterGroupWithPreview):

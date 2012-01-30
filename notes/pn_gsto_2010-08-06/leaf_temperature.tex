@@ -1,0 +1,185 @@
+\documentclass[a4paper]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage[colorlinks=true,citecolor=black,filecolor=black,linkcolor=black,urlcolor=black]{hyperref}
+\usepackage{natbib}
+\usepackage{siunitx}
+
+\title{Estimating leaf temperature}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+% p_to_d(e_s(T) + delta(T), 18.01528, T+1) - p_to_d(e_s(T), 18.01528, T)
+
+%\section{The Equation}
+
+\section{``Simple'' method --- based on \citet{nobel83}}
+
+\subsection{Derivation}
+
+This method rearranges the equation for heat conduction from \citet[p.~361]{nobel83} to instead give 
+the leaf temperature difference ($T_l - T_a$).  We assume that the rate of heat conduction ($J_C^H$) 
+    is equivalent to net radiation ($R_N$).
+
+\begin{eqnarray}
+J_C^H & = & 2 K^\text{air} \frac{(T_l - T_a)}{\delta^\text{bl}} \\
+T_l - T_a & = & \frac{\delta^\text{bl}J_C^H}{2 K^\text{air}}
+\end{eqnarray}
+
+The boundary layer thickness, $\delta^\text{bl}$, can be calculated (in metres) as
+
+\begin{equation}
+\delta^\text{bl} = \frac{c}{1000} \sqrt{\frac{l}{u}}
+\end{equation}
+
+where $c=4.0$ for flat leaves and $c=5.8$ for needles.
+
+\subsection{Symbols}
+\begin{tabularx}{\textwidth}{l | l | X}
+Term & Units & Description \\
+\hline
+$J_C^H$ & \si{\watt\per\metre\squared} & Rate of heat conduction \\
+$K^\text{air}$ & \si{\watt\per\metre\per\degreeCelsius} & Thermal conductivity of air, 0.0264 at 
+30$^\circ$C \\
+$T_l$ & \si{\degreeCelsius} & Leaf temperature \\
+$T_a$ & \si{\degreeCelsius} & Air temperature \\
+$\delta^\text{bl}$ & \si{\metre} & Boundary layer thickness \\
+$l$ & \si{\metre} & Mean leaf length in downwind direction \\
+$u$ & \si{\metre\per\second} & Wind speed \\
+\end{tabularx}
+
+
+\section{``Complex'' method --- based on \citet{thornley90}}
+
+
+\subsection{Derivation}
+
+\citet[p.~418]{thornley90} gives an equation for canopy/leaf temperature ($T_l$):
+\begin{equation}
+\label{e:main}
+T_l =  T_a + \frac{\phi_N - \lambda g_w \Delta \rho_{va}}{\lambda \left(s g_w + \gamma g_a\right)}
+\end{equation}
+
+The latent heat of vapourisation of water ($\lambda$) can be estimated from the air temperature 
+($T_a$) with the following (from \url{http://en.wikipedia.org/wiki/Latent_heat}):
+\begin{equation}
+\lambda = (-0.0000614342 T_a^3 + 0.00158927 T_a^2 - 2.36418 T_a + 2500.79) \times 1000
+\end{equation}
+
+Equation \eqref{e:main} depends on the vapour \emph{density} deficit ($\Delta \rho_{va}$), however 
+usually vapour \emph{pressure} deficit is the measured quantity.  \citet[p.~409]{thornley90} gives 
+an equation to convert vapour pressure to vapour density:
+\begin{equation}
+\label{e:ptod}
+\rho_v = \frac{\rho \varepsilon p_v}{P}
+\end{equation}
+
+We can now find the vapour density deficit by calculating the saturation ($e_s$) and actual ($e$) 
+    vapour pressures.  From \citet[p.~10]{monteith90}:
+\begin{eqnarray}
+\label{e:es}
+e_s & = & 0.611 \times \text{exp}\left(\frac{17.27 T_a}{T_a + 237.3}\right) \\
+e & = & e_s - \Delta p_v
+\end{eqnarray}
+
+Combining \eqref{e:ptod}, \eqref{e:es} and \eqref{e:e}:
+\begin{equation}
+\label{e:e}
+\Delta \rho_{va} = \frac{\rho \varepsilon e_s}{P} - \frac{\rho \varepsilon e}{P} = \frac{\rho 
+    \varepsilon (e_s - e)}{P} = \frac{\rho \varepsilon \Delta p_v}{P}
+\end{equation}
+
+The slope of the saturation vapour \emph{pressure} curve ($\Delta$) is obtained by differentiating 
+the equation for $e_s$ (from \url{http://www.fao.org/docrep/X0490E/x0490e0k.htm}):
+\begin{equation}
+\label{e:deltavp}
+\Delta = \frac{4098 e_s}{(T_a + 237.3)^2}
+\end{equation}
+
+Assuming this equation is correct\footnote{I have not checked this myself, there are many variations 
+on the calculation for $e_s$ with different constants.}, the value can simply be converted to 
+density in the same manner as for the vapour pressure itself\footnote{This method gives values 
+    higher than those quoted by \citet[p.~408]{thornley90}, apparently by some scaling factor.}:
+\begin{equation}
+s = \frac{4098 \rho \varepsilon e_s}{P(T_a + 237.3)^2}
+\end{equation}
+
+The above equations depend on $\rho$, the density of dry air.  From \citet[p.~12]{monteith90}:
+\begin{equation}
+\rho = \frac{P M_A}{R (T_a + 273.15)}
+\end{equation}
+
+The psychrometric parameter ($\gamma$) is calculated as \citet[p.~407]{thornley90}:
+\begin{equation}
+\gamma = \frac{\rho c_p}{\lambda}
+\end{equation}
+
+The conductance for water vapour ($g_w$) is the result of the air ($g_a$) and canopy ($g_c$) 
+    conductances in series \citet[p.~407]{thornley90}:
+\begin{equation}
+\frac{1}{g_w} = \frac{1}{g_a} + \frac{1}{g_c}
+\end{equation}
+
+We calculate $R_a$ in the DO3SE model, and the equation for $g_a$ given by 
+\citet[p.~415]{thornley90} corresponds to the DO3SE calculation for $R_a$, therefore we can simply 
+use:
+\begin{equation}
+g_a = \frac{1}{R_a}
+\end{equation}
+
+The $g_c$ term refers to the canopy stomatal conductance.  This is a core component of the DO3SE 
+model, and we already have this in the form $G_{\text{sto,c}}$.
+
+The only remaining component is $\phi_N$, the available energy balance.  This can be estimated as 
+the net radiation ($R_N$) already calculated in the DO3SE model.\footnote{This assumption may be 
+    incorrect.}
+
+
+\subsection{Symbols}
+\begin{tabularx}{\textwidth}{l | l | X}
+Term & Units & Description \\
+\hline
+$T_l$ & \si{\degreeCelsius} & Leaf temperature \\
+$T_a$ & \si{\degreeCelsius} & Air temperature \\
+$\phi_N$ & \si{\watt\per\metre\squared} & Energy balance \\
+$\lambda$ & \si{\joule\per\kilo\gram} & Latent heat vapourisation of water \\
+$g_w$ & \si{\metre\per\second} & Conductance for water vapour \\
+$g_a$ & \si{\metre\per\second} & Boundary layer conductance of water vapour \\
+$g_c$ & \si{\metre\per\second} & Canopy conductance of water vapour \\
+$\Delta \rho_{va}$ & \si{\kilo\gram\per\metre\cubed} & Atmospheric vapour density deficit \\
+$\rho$ & \si{\kilo\gram\per\metre\cubed} & Density of dry air \\
+$\varepsilon$ & --- & Ratio of molecular mass of water and air, 0.622 \\
+$e_s$ & \si{\kilo\pascal} & Saturation vapour pressure at $T_a$\\
+$e$ & \si{\kilo\pascal} & Actual vapour pressure \\
+$\Delta p_v$ & \si{\kilo\pascal} & Vapour pressure deficit, $e_s - e$ \\
+$P$ & \si{\kilo\pascal} & Atmospheric pressure \\
+$s$ & \si{\kilo\gram\per\metre\cubed\per\kelvin} & Slope of saturation vapour density curve $\delta 
+\rho'_v / \delta T (T = T_a)$ \\
+$M_A$ & \si{\gram\per\mole} & Molecular weight of air, 29 \\
+$R$ & \si{\joule\per\mole\per\kelvin} & Universal gas constant, 8.3144621 \\
+$\gamma$ & \si{\kilo\gram\per\metre\cubed\per\kelvin} & Psychrometric parameter \\
+$c_p$ & \si{\joule\per\kilo\gram\per\kelvin} & Specific heat capacity of dry air, 1010 \\
+$R_a$ & \si{\second\per\metre} & Atmospheric resistance \\
+\end{tabularx}
+
+\begin{thebibliography}{}
+\bibitem[Nobel(1983)]{nobel83}
+    Nobel, P.S.,
+    \emph{Biophysical Plant Physiology and Ecology}.
+    WH Freeman and Company, New York, NY, 1983.
+\bibitem[Thornley(1990)]{thornley90}
+    Thornley, J.H.M. and Johnson, I.R.,
+    \emph{Plant and Crop Modelling}.
+    The Blackburn Press, Caldwell, NJ, 1990.
+\bibitem[Monteith(1990)]{monteith90}
+    Monteith, J.L. and Unsworth, M.,
+    \emph{Principles of Environmental Physics}.
+    St. Martin's Press, New York, NY, 2nd Edition, 1990.
+\end{thebibliography}
+
+\end{document}

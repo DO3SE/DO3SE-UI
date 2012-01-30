@@ -55,8 +55,11 @@ module Variables
     real, public, save  :: Rsur
     real, public, save  :: Rinc
     real, public, save  :: Rgs
-    ! Intermediate R variables
-    real, public, save  :: Ra_i
+    ! Resistances used in "transfer functions"
+    real, public, save  :: Ra_ref_i
+    real, public, save  :: Ra_ref
+    real, public, save  :: Ra_O3zR_i
+    real, public, save  :: Ra_tar_i
 
     ! Stomatal conductance/resistance
     real, public, save  :: Gsto     ! Mean O3 conductance
@@ -72,7 +75,8 @@ module Variables
     real, public, save :: O3_ppb_i      ! O3 concentration at izR (ppb)
     real, public, save :: O3_ppb        ! O3 concentration at canopy (ppb)
     real, public, save :: O3_nmol_m3    ! O3 concentration at canopy (nmol/m^3)
-    real, public, save :: Vd            ! Deposition velocity (m/s)
+    real, public, save :: Vd            ! Deposition velocity at canopy (m/s)
+    real, public, save :: Vd_i          ! Deposition velocity at izR (m/s)
     real, public, save :: Ftot          ! Total O3 flux
     real, public, save :: Fst           ! Upper leaf stomatal flux
     real, public, save :: AFst0         ! Accumulated Fst

@@ -30,6 +30,7 @@ contains
         AFstY = 0
         AOT0 = 0
         AOT40 = 0
+        Rsto_c = 100000
 
         ! Put calls to initialisation functions here
         call SB_Calc_SGS_EGS()
@@ -42,10 +43,11 @@ contains
 
     subroutine Hourly()
         use Environmental, only: Calc_ftemp, Calc_fVPD, Calc_Flight
-        use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsto, Calc_Rsur
+        use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsur
+        use R, only: VPDcrit_prepare, VPDcrit_apply, Calc_Rsto
         use SoilWater
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
-        use Inputs, only: dd, Calc_ustar_uh, Accumulate_precip, Calc_sinB
+        use Inputs, only: dd, Calc_ustar_uh, Accumulate_precip, Calc_sinB, Calc_humidity
         use Variables, only: dd_prev
 
         use Switchboard
@@ -57,6 +59,7 @@ contains
         call SB_Calc_R_PAR()
         call Calc_sinB()
         call SB_Calc_Rn()
+        call Calc_humidity()
 
         call Calc_Flight()
 
@@ -70,6 +73,10 @@ contains
         call Calc_Rb()
         call Calc_Rgs()
         call Calc_Rinc()
+        call SB_Calc_Tleaf()
+        call VPDcrit_prepare()
+        call SB_Calc_gsto()
+        call VPDcrit_apply()
         call Calc_Rsto()
         call Calc_Rsur()
 

@@ -22,6 +22,16 @@ module Switchboard
     integer, public, save :: ra_method = ra_simple
     public :: SB_Calc_Ra
 
+    integer, public, parameter :: tleaf_use_input        = 1
+    integer, public, parameter :: tleaf_estimate_jackson = 2
+    integer, public, save :: tleaf_method = tleaf_use_input
+    public :: SB_Calc_Tleaf
+
+    integer, public, parameter :: gsto_multiplicative = 1
+    integer, public, parameter :: gsto_photosynthetic = 2
+    integer, public, save :: gsto_method = gsto_multiplicative
+    public :: SB_Calc_Gsto
+
     integer, public, parameter :: fo3_disabled = 1
     integer, public, parameter :: fo3_wheat    = 2
     integer, public, parameter :: fo3_potato   = 3
@@ -129,6 +139,47 @@ contains
 
         end select
     end subroutine SB_Calc_Ra
+
+    subroutine SB_Calc_Tleaf()
+        use Inputs, only: Tleaf_Estimate_J => Tleaf_Estimate_Jackson
+
+        select case (tleaf_method)
+
+        !case (tleaf_use_input)
+        ! do nothing
+
+        case (tleaf_estimate_jackson)
+            call Tleaf_Estimate_J()
+
+        end select
+    end subroutine SB_Calc_Tleaf
+
+    subroutine SB_Calc_gsto()
+        use R, only: Calc_Gsto_Multiplicative
+        use Pn_Gsto, only: Calc_Gsto_Pn, pngsto_l, pngsto, pngsto_c, pngsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
+
+        ! Calculate both, because currently they don't overlap
+        call Calc_Gsto_Multiplicative()
+        call Calc_Gsto_Pn()
+
+        select case (gsto_method)
+
+        case (gsto_multiplicative)
+            call Calc_Gsto_Multiplicative()
+            ! TODO: Remove this, only here for debug when comparing methods
+            call Calc_Gsto_Pn()
+
+        case (gsto_photosynthetic)
+            call Calc_Gsto_Pn()
+            ! Copy Calc_Gsto_Pn() results to correct places
+            Gsto_l = pngsto_l
+            Gsto = pngsto
+            Gsto_c = pngsto_c
+            Gsto_PEt = pngsto_PEt
+
+        end select
+    end subroutine SB_Calc_Gsto
 
     subroutine SB_Calc_fO3()
         use O3, only: Calc_fO3_Wheat, Calc_fO3_Potato

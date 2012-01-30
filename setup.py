@@ -16,7 +16,7 @@ except ImportError:
 
 # Force use of gfortran
 import sys
-sys.argv[1:] = ['config_fc', '--fcompiler=gnu95'] + sys.argv[1:]
+sys.argv[1:] = ['config_fc', '--fcompiler=gnu95', '--f90flags="-fimplicit-none -Wall"'] + sys.argv[1:]
 
 application = do3se.application.app_name
 description = do3se.application.app_description
@@ -112,7 +112,7 @@ if __name__ == "__main__":
             description     = description,
             version         = version,
             author          = 'Alan Briolat',
-            author_email    = 'sei@alanbriolat.co.uk',
+            author_email    = 'alan.briolat@sei-international.org',
             packages        = ['do3se', 'do3se.util', 'do3se.wxext'],
             data_files      = [
                 ('Microsoft.VC90.CRT',

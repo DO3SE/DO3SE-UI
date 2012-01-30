@@ -7,7 +7,7 @@ Base classes / Mixins
 ---------------------
 .. autoclass:: ParameterGroup
     :members:
-.. autoclass:: PreviewCanvasMixin
+.. autoclass:: ParameterGroupWithPreview
     :members:
 
 Simple parameter groups

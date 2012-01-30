@@ -225,15 +225,24 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
         self.paramlist_dummy.Destroy()
         self.paramlist.GetContainingSizer().Layout()
 
+        # Add some explanatory text
+        self.paramlist.GetContainingSizer().Insert(0, wxext.AutowrapStaticText(self,
+            label='Presets are collections of parameter values.  Applying a preset '
+            'will update the current project\'s parameters.  Uncheck parameters to '
+            'skip them, preserving their current values.',
+            style=wx.ST_NO_AUTORESIZE),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+        self.paramlist.GetContainingSizer().Layout()
+
         # Initialise presets list
         plroot = self.presetlist.AddRoot('')
         # (application-default presets)
-        self.default_presets_root = self.presetlist.AppendItem(plroot, 'Default presets')
+        self.default_presets_root = self.presetlist.AppendItem(plroot, 'Built-in presets')
         for k in self.default_presets.iterkeys():
             self.presetlist.AppendItem(self.default_presets_root, k)
         self.presetlist.Expand(self.default_presets_root)
         # (user-defined presets)
-        self.user_presets_root = self.presetlist.InsertItemBefore(plroot, 0, 'User presets')
+        self.user_presets_root = self.presetlist.InsertItemBefore(plroot, 0, 'Custom presets')
         for k in self.user_presets.iterkeys():
             self.presetlist.AppendItem(self.user_presets_root, k)
         self.presetlist.Expand(self.user_presets_root)

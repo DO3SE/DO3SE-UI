@@ -6,11 +6,13 @@ module Inputs
     real, public, save :: dd            ! Day of Year
     real, public, save :: hr            ! Hour
     real, public, save :: Ts_C          ! Surface air temperature (degrees C)
+    real, public, save :: Tleaf         ! Leaf temperature (degrees C)
     real, public, save :: VPD           ! Vapour pressure deficit (kPa)
     real, public, save :: uh_zR         ! Wind speed at measurement height uzR (m/s)
     real, public, save :: precip        ! Precipitation (mm)
     real, public, save :: P             ! Atmospheric pressure (kPa)
     real, public, save :: O3_ppb_zR     ! O3 concentration at height czR (parts per billion)
+    real, public, save :: CO2           ! Ambient CO2 concentration (ppm)
     real, public, save :: Hd            ! Sensible heat flux (W/m^2)
     real, public, save :: R             ! Global radiation (Wh/m^2)
     real, public, save :: PAR           ! PAR (umol/m^2/s)
@@ -26,6 +28,9 @@ module Inputs
     real, public, save :: uh_i          ! Windspeed at intermediate height
     real, public, save :: uh            ! Windspeed at canopy
     real, public, save :: precip_acc    ! Previous day's accumulated precip (m)
+    real, public, save :: esat          ! Saturated vapour pressure (kPa)
+    real, public, save :: eact          ! Actual vapour pressure (kPa)
+    real, public, save :: RH            ! Relative humidity (fraction)
 
     public :: Init_Inputs
     public :: Calc_ustar_uh
@@ -33,6 +38,10 @@ module Inputs
     public :: Calc_precip_acc
     public :: Calc_sinB
     public :: Calc_Rn
+    public :: Calc_humidity
+
+    public :: estimate_velocity
+    public :: estimate_ustar
 
     ! These are intermediate variables not used outside of this module
     real, private :: precip_dd  ! Accumulated precip for today so far
@@ -49,24 +58,53 @@ contains
         precip_acc = 0
     end subroutine Init_Inputs
 
+    function estimate_velocity(ustar, z, z0) result (u)
+        real, intent(in) :: ustar   ! Friction velocity (m/s)
+        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+
+        real :: u                   ! Output: velocity (m/s)
+
+        real, parameter :: K = 0.41 ! von Karman's constant
+
+        u = (ustar / K) * log(z / z0)
+    end function estimate_velocity
+
+    function estimate_ustar(u, z, z0) result (ustar)
+        real, intent(in) :: u       ! Velocity at height above boundary (m/s)
+        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+
+        real :: ustar               ! Output: friction velocity, ustar (m/s)
+
+        real, parameter :: K = 0.41 ! von Karman's constant
+
+        ustar = (u * K) / log(z / z0)
+    end function estimate_ustar
+
     !
     ! Derive ustar for the flux canopy and the windspeed at the canopy
     !
     subroutine Calc_ustar_uh()
-        use Constants, only: k, izR
+        use Constants, only: izR
         use Parameters, only: h, d, zo, u_d, u_zo, uzR
 
-        real :: ustar_w     ! ustar for where windspeed is measured
+        real :: ustar_ref   ! ustar for where windspeed is measured
 
-        ustar_w = (uh_zR * k) / log((uzR - u_d) / u_zo)
-        uh_i = uh_zR + (ustar_w / k) * log((izR - u_d)/(uzR - u_d))
-        ustar = (uh_i * k) / log((izR - d) / zo)
-        uh = uh_i + (ustar / k) * log((h - d) / (izR - d))
+        real, parameter :: MIN_WINDSPEED = 0.1
 
-        ! Stop values from being 0
+        ! Find ustar over reference canopy
+        ustar_ref = estimate_ustar(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_zo)
+        ! Find windspeed at izR, over reference canopy
+        uh_i = max(MIN_WINDSPEED, estimate_velocity(ustar_ref, izR - u_d, u_zo))
+        ! Find ustar over target canopy, assuming that at izR windspeed will be
+        ! equal over both vegetations
+        ustar = estimate_ustar(max(MIN_WINDSPEED, uh_i), izR - d, zo)
+        ! Find windspeed at top of target canopy
+        uh = max(MIN_WINDSPEED, estimate_velocity(ustar, h - d, zo))
+
+        ! Stop ustar being 0
         ustar = max(0.0001, ustar)
-        uh = max(0.0001, uh)
-        uh_i = max(0.0001, uh_i)
     end subroutine Calc_ustar_uh
 
     !
@@ -171,5 +209,62 @@ contains
         ! Calculate Rn in W/m2
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
+
+    ! Calculate leaf temperature
+    !
+    ! Based on: Jackson, R.D. (1982). "Canopy temperature and crop water stress."
+    !           Advances in irrigation, vol. 1, pp.43-85.  Specifically p.66 eq.9.
+    real function Calc_Tleaf (Tair, P, VPD, Rn, ra, rc)
+        implicit none
+
+        real, intent(in) :: Tair    ! Ambient temperature (C)
+        real, intent(in) :: P       ! Air pressure (Pa)
+        real, intent(in) :: VPD     ! Vapour pressure deficit (Pa)
+        real, intent(in) :: Rn      ! Net radiation (W m-2)
+        real, intent(in) :: ra      ! Aerodynamic resistance (s m-1)
+        real, intent(in) :: rc      ! Canopy resistance (s m-1)
+
+        real, parameter :: c_p = 1010.0     ! Specific heat capacity of dry air at 
+                                            !   standard pressure and 20C, J kg-1 C-1
+        real, parameter :: MAX_TDIFF = 5.0  ! Maximum allowed temperature difference
+
+        real :: esat, eact, Tvir, rho, delta, lambda, psychro, Tdiff_1, Tdiff
+
+        ! Saturation vapour pressure at Tair (Pa)
+        esat = 611 * exp(17.27 * Tair / (Tair + 237.3))
+        ! Actual vapour pressure (Pa)
+        eact = esat - VPD
+        ! Virtual temperature for density calcualation (K)
+        Tvir = (Tair + 273.15) / (1 - (0.378 * (eact / P)))
+        ! Density of air (kg m-3)
+        rho = P / (287.058 * Tvir)
+        ! Slope of saturation vapour pressure curve (Pa C-1)
+        delta = (4098 * esat) / ((Tair + 237.3)**2)
+        ! Latent heat vapourisation of water (J kg-1)
+        lambda = (-0.0000614342*Tair**3 + 0.00158927*Tair**2 - 2.36418*Tair + 2500.79) * 1000
+        ! Psychrometric parameter (Pa C-1)
+        psychro = 1628.6 * P / lambda
+
+        ! Leaf - air temperature difference (C)
+        Tdiff_1 = psychro * (1 + (rc / ra))
+        Tdiff = ((ra * Rn) / (rho * c_p)) * (Tdiff_1 / (delta + Tdiff_1)) - (VPD / (delta + Tdiff_1))
+        ! Stop Tdiff being too large
+        Tdiff = max(-MAX_TDIFF, min(MAX_TDIFF, Tdiff))
+        ! Leaf temperature (C)
+        Calc_Tleaf = Tair + Tdiff
+    end function Calc_Tleaf
+
+    subroutine Tleaf_Estimate_Jackson()
+        use Variables, only: Ra, Rsto_c
+
+        Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
+    end subroutine Tleaf_Estimate_Jackson
+
+    ! Calculated saturation/actual vapour pressure and relative humidity
+    subroutine Calc_humidity()
+        esat = 0.611 * exp(17.27 * Ts_C / (Ts_C + 237.3))
+        eact = esat - VPD
+        RH = eact / esat
+    end subroutine Calc_humidity
 
 end module Inputs
