@@ -85,6 +85,8 @@ def buildpyf(filelist, target):
             {
                 'signsfile': target + '.pyf',
                 'module': target,
+                'coutput': None,
+                'f2py_wrapper_output': None,
                 'debug': False,
                 'verbose': False,
                 'include_paths': list(),

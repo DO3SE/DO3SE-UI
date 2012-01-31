@@ -70,45 +70,47 @@ bundle still includes all the tools required to build the F model.
 
 1.  Create a :file:`DO3SE_buildenv_GUI` directory somewhere (the rest of the instructions will 
     assume :file:`C:\\DO3SE_buildenv_GUI`).
-2.  Download and run the latest stable "Self-extracting Windows x86" installer for G95_, installing 
-    to :file:`C:\\DO3SE_buildenv_GUI\\g95`.
-
-    * When prompted :guilabel:`Install MinGW utilities and libs?` click :guilabel:`Cancel`.
-    * When prompted :guilabel:`Set PATH = ...` click :guilabel:`Cancel`.
       
-3.  Download and run the latest MinGW_ automated installer (e.g.  
-    :file:`mingw-get-inst-20110802.exe`), installing to :file:`C:\\DO3SE_buildenv_GUI\\MinGW`.  At 
+2.  Download and run the latest MinGW_ automated installer (e.g.  
+    :file:`mingw-get-inst-20111118.exe`), installing to :file:`C:\\DO3SE_buildenv_GUI\\MinGW`.  At 
     the :guilabel:`Select Components` screen, select :guilabel:`Fortran Compiler` and 
     :guilabel:`MinGW Developer ToolKit`.
 
     * Once MinGW is installed, delete the :file:`C:\\DO3SE_buildenv_GUI\\MinGW\\var` directory; it 
       contains a lot of big files required only during installation.
 
-4.  Download the latest release of Python_ 2.7 (DO3SE GUI is not yet compatible with Python 3).  
-    Install to :file:`C:\\DO3SE_buildenv_GUI\\Python27`.  **It is essential that you select "Install 
-    just for me" otherwise the bundle will not work on another computer.** [#novcredist]_
-5.  Download the latest Python 2.7 release of NumPy_.  Run the installer; it should autodetect where 
+3.  Download the latest release of Python_ 2.7 (DO3SE GUI is not yet compatible with Python 3).  Run 
+    the installer, selecting "Install for all users" and setting the destination to 
+    :file:`C:\\DO3SE_buildenv_GUI\\Python27`.  Unselect the :guilabel:`Tcl/Tk`, 
+    :guilabel:`Documentation` and :guilabel:`Test suite` components.
+4.  Download the latest Python 2.7 release of NumPy_.  Run the installer; it should autodetect where 
     to install if you only have one installation of Python on your system, but make sure the one it 
     has detected is in your :file:`DO3SE_buildenv_GUI` directory.
-6.  Download the latest :guilabel:`win32-unicode` Python 2.7 release of wxPython_.  Run the 
+5.  Download the latest :guilabel:`win32-unicode` Python 2.7 release of wxPython_.  Run the 
     installer; it should automatically detect where to install, which will be a path like 
     :file:`C:\\DO3SE_buildenv_GUI\\Python27\\Lib\\site-packages`.  If it is incorrect, change the 
     part before :file:`Python27` to be your :file:`DO3SE_buildenv_GUI` directory.
-7.  Download the latest version of py2exe_ which ends in :file:`.win32-py2.7.exe`.  Run the 
+6.  Download the latest version of py2exe_ which ends in :file:`.win32-py2.7.exe`.  Run the 
     installer; the process should be identical to that for NumPy.
     
     * If the installer fails to run, you may need to install the "Microsoft Visual C++ 2008 
       Redistributable" which can be `downloaded here 
       <http://www.microsoft.com/downloads/details.aspx?FamilyID=9b2da534-3e03-4391-8a4d-074b9f2bc1bf&displaylang=en>`_.
 
-8.  Download the `7-Zip Command Line Version`_ and unzip it somewhere.  Copy the :file:`7za.exe` 
+7.  Download the `7-Zip Command Line Version`_ and unzip it somewhere.  Copy the :file:`7za.exe` 
     into your :file:`DO3SE_buildenv_GUI` directory.
-9.  Copy :file:`resources/buildenv.bat` from the DO3SE source directory to 
+8.  Copy :file:`resources/buildenv.bat` from the DO3SE source directory to 
     :file:`C:\\DO3SE_buildenv_GUI`.
-10. Copy the :file:`resources/Microsoft.VC90.CRT` directory from the DO3SE source directory to 
-    :file:`C:\\DO3SE_buildenv_GUI\\Python26\\Lib\\site-packages\\wx-2.8-msw-unicode\\wx` and to 
-    :file:`site-packages\\py2exe`.  [#novcredist]_
-11. Bundle up the :file:`DO3SE_buildenv_GUI` directory in the same way as :file:`DO3SE_buildenv_F`.
+9.  Copy the :file:`resources/Microsoft.VC90.CRT` directory from the DO3SE source directory to 
+    :file:`C:\\DO3SE_buildenv_GUI\\Python27` and 
+    :file:`C:\\DO3SE_buildenv_GUI\\Python27\\Lib\\site-packages\\py2exe`.  [#novcredist]_
+10. Copy :file:`C:\\WINDOWS\system32\python27.dll` to :file:`C:\\DO3SE_buildenv_GUI\\Python27`.
+11. As of writing, there is a bug in Numpy 1.6.1 that will cause a failure to build any 
+    Fortran/Python extensions.  This can be rectified by applying the patch 
+    :file:`patches/numpy-fix-mingw-version-check.patch` in 
+    :file:`C:\\DO3SE_buildenv_GUI\\Python27\\Lib\\site-packages`, using ``patch -p1 -i patchfile`` 
+    from within a ``buildenv.bat`` session.
+12. Bundle up the :file:`DO3SE_buildenv_GUI` directory in the same way as :file:`DO3SE_buildenv_F`.
 
 
 Using a build environment
@@ -169,7 +171,7 @@ list above.)
 
 .. _G95: http://www.g95.org/downloads.shtml
 .. _MSYS: http://sourceforge.net/downloads/mingw/MSYS/BaseSystem/
-.. _MinGW: http://sourceforge.net/downloads/mingw/Automated%20MinGW%20Installer/mingw-get-inst/
+.. _MinGW: http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/
 .. _Python: http://python.org/download/releases/
 .. _NumPy: http://sourceforge.net/projects/numpy/files/NumPy/
 .. _wxPython: http://www.wxpython.org/download.php#binaries
