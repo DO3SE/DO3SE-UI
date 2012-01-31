@@ -11,17 +11,16 @@ set basepath=%~dp0
 set PATH=%basepath%msys\1.0\bin;%PATH%
 set PATH=%basepath%MinGW\msys\1.0\bin;%PATH%
 set PATH=%basepath%MinGW\bin;%PATH%
-::set PATH=%basepath%g95\lib\gcc-lib\i686-pc-mingw32\4.1.2;%PATH%
-::set PATH=%basepath%g95\bin;%PATH%
 set PATH=%basepath%Python27;%basepath%Python27\Scripts;%PATH%
 set PATH=%basepath%;%PATH%
 :: Modify LIBRARY_PATH variable so tool libraries can be found
-::set LIBRARY_PATH=%basepath%g95\lib\gcc-lib\i686-pc-mingw32\4.1.2;%PATH%
-::set LIBRARY_PATH=%basepath%g95\lib;%basepath%MinGW\lib;%LIBRARY_PATH%
 set LIBRARY_PATH=%basepath%MinGW\lib;%LIBRARY_PATH%
 
 :: Create an alias for F
-::doskey F=g95 -std=F $*
+doskey F=gfortran -std=f95 $*
+:: Create aliases for PyInstaller
+doskey pyinstaller-makespec=python %basepath%\pyinstaller\Makespec.py $*
+doskey pyinstaller-build=python %basepath%\pyinstaller\Build.py $*
 
 :: Drop to a normal shell in the normal location
 cd %USERPROFILE%
