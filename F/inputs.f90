@@ -150,7 +150,7 @@ contains
         h = deg2rad(15 * (hr - t0))
 
         ! Declination (radians)
-        dec = deg2rad(-23.4 * cos(deg2rad(360 * ((dd + 10) / 365))))
+        dec = deg2rad(-23.4 * cos(deg2rad(360 * ((dd + 10) / 365.0))))
 
         sinB = sin(deg2rad(lat))*sin(dec) + cos(deg2rad(lat))*cos(dec)*cos(h)
         sinB = max(0.0, sinB)
