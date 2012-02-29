@@ -102,12 +102,14 @@ the time of writing, the bundle contains the following:
 10. Copy the :file:`resources/Microsoft.VC90.CRT` directory from the DO3SE source directory to 
     :file:`C:\\DO3SE_buildenv_GUI\\Python27`. [#novcredist]_
 11. Copy :file:`C:\\WINDOWS\system32\python27.dll` to :file:`C:\\DO3SE_buildenv_GUI\\Python27`.
-12. As of writing, there is a bug in Numpy 1.6.1 that will cause a failure to build any 
+12. Prepare PyInstaller for use by running the :file:`buildenv.bat`, going to the PyInstaller 
+    directory with ``cd %basepath%\pyinstaller`` and running ``python Configure.py``.
+13. As of writing, there is a bug in Numpy 1.6.1 that will cause a failure to build any 
     Fortran/Python extensions.  This can be rectified by applying the patch 
     :file:`patches/numpy-fix-mingw-version-check.patch` in 
     :file:`C:\\DO3SE_buildenv_GUI\\Python27\\Lib\\site-packages`, using ``patch -p1 -i patchfile`` 
     from within a ``buildenv.bat`` session.
-13. Bundle up the :file:`DO3SE_buildenv_GUI` directory in the same way as :file:`DO3SE_buildenv_F`.
+14. Bundle up the :file:`DO3SE_buildenv_GUI` directory in the same way as :file:`DO3SE_buildenv_F`.
 
 
 Using a build environment
