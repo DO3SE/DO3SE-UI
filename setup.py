@@ -16,7 +16,7 @@ except ImportError:
 
 # Force use of gfortran
 import sys
-sys.argv[1:] = ['config_fc', '--fcompiler=gnu95', '--f90flags="-fimplicit-none -Wall"'] + sys.argv[1:]
+sys.argv[1:] = ['config_fc', '--fcompiler=gnu95', '--f90flags="-fimplicit-none -Wall"', '--noopt'] + sys.argv[1:]
 
 application = do3se.application.app_name
 description = do3se.application.app_description

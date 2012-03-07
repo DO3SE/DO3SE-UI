@@ -53,7 +53,7 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (inputs,        'rn',       float,  'Rn (MJ/m^2)',      u'Net radiation (Rn, MJ/m\u00b2)'),
         (inputs,        'rn_w',     float,  'Rn_W (Wh/m^2)',    u'Net radiation (Rn, Wh/m\u00b2)'),
         (variables,     'ra',       float,  'Ra (s/m)',         'Aerodynamic resistance (Ra, s/m)'),
-        (variables,     'rb',       float,  'Rb (s/m)',         'Boundary layer resistance (Rinc, s/m)'),
+        (variables,     'rb',       float,  'Rb (s/m)',         'Boundary layer resistance (Rb, s/m)'),
         (variables,     'rsur',     float,  'Rsur (s/m)',       'Surface resistance (Rsur, s/m)'),
         (variables,     'rinc',     float,  'Rinc (s/m)',       'In-canopy resistance (Rinc, s/m)'),
         (variables,     'rsto',     float,  'Rsto (s/m)',       'Mean stomatal resistance (Rsto, s/m)'),
