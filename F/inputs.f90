@@ -1,10 +1,12 @@
 module Inputs
 
-    real, public, save :: yr            ! Year
-    real, public, save :: mm            ! Month
-    real, public, save :: mdd           ! Day of Month
-    real, public, save :: dd            ! Day of Year
-    real, public, save :: hr            ! Hour
+    use Functions
+
+    integer, public, save :: yr            ! Year
+    integer, public, save :: mm            ! Month
+    integer, public, save :: mdd           ! Day of Month
+    integer, public, save :: dd            ! Day of Year
+    integer, public, save :: hr            ! Hour
     real, public, save :: Ts_C          ! Surface air temperature (degrees C)
     real, public, save :: Tleaf         ! Leaf temperature (degrees C)
     real, public, save :: VPD           ! Vapour pressure deficit (kPa)
@@ -45,8 +47,6 @@ module Inputs
 
     ! These are intermediate variables not used outside of this module
     real, private :: precip_dd  ! Accumulated precip for today so far
-    real, private :: h          ! "Hour angle" of the sun
-    real, private :: dec        ! Declination (radians)
 
 contains
 
@@ -122,17 +122,18 @@ contains
         precip_dd = 0
     end subroutine Calc_precip_acc
 
-    !
-    ! Calculate the solar elevation angle, using the geographical location of 
-    ! the site and the time of day and day of year.  Also calculates h and dec
-    ! which are required for Rn calculation.
-    !
-    subroutine Calc_sinB()
-        ! TODO: document variables
-        use Parameters, only: lat, lon
-        use Functions, only: deg2rad, rad2deg
+    ! =======================================================================
+    ! Calculate sin(B), where B is the solar elevation angle.  Values less
+    ! than 0 (below the horizon) are returned as 0.
+    ! =======================================================================
+    pure function do3se_sinB(lat, lon, dd, hr) result (sinB)
+        real, intent(in)    :: lat      ! Latitude
+        real, intent(in)    :: lon      ! Longitude
+        integer, intent(in) :: dd       ! Day of year (1--365)
+        integer, intent(in) :: hr       ! Hour of day (0--23)
+        real                :: sinB     ! Output: sin() of solar elevation angle
 
-        real :: f, e, t0, LC, lonm
+        real :: f, e, t0, LC, lonm, h, dec
 
         ! Calculate the longitudinal meridian
         lonm = nint(lon / 15.0) * 15.0
@@ -152,61 +153,104 @@ contains
         ! Declination (radians)
         dec = deg2rad(-23.4 * cos(deg2rad(360 * ((dd + 10) / 365.0))))
 
+        ! sin() of solar elevation angle, between 0 and 1
         sinB = sin(deg2rad(lat))*sin(dec) + cos(deg2rad(lat))*cos(dec)*cos(h)
         sinB = max(0.0, sinB)
+    end function do3se_sinB
+
+    subroutine Calc_sinB()
+        use Parameters, only: lat, lon
+        sinB = do3se_sinB(lat, lon, dd, hr)
     end subroutine Calc_sinB
 
-    !
+    ! =======================================================================
     ! Calculate net radiation
-    !
-    subroutine Calc_Rn()
-        ! TODO: document variables
-        use Parameters, only: elev, lat
-        use Parameters, only: albedo
-        use Constants, only: pi
-        use Functions, only: deg2rad, rad2deg
+    ! =======================================================================
+    pure function do3se_net_radiation(lat, lon, elev, albedo, dd, hr, R, &
+                                      Ts_C, VPD, sinB) result (Rn)
+        real, intent(in)    :: lat      ! Latitude
+        real, intent(in)    :: lon      ! Longitude
+        real, intent(in)    :: elev     ! Elevation (m)
+        real, intent(in)    :: albedo   ! Surface albedo (fraction)
+        integer, intent(in) :: dd       ! Day of year
+        integer, intent(in) :: hr       ! Hour of day (0-23)
+        real, intent(in)    :: R        ! Global radiation (W m-2)
+        real, intent(in)    :: Ts_C     ! Temperature (degrees C)
+        real, intent(in)    :: VPD      ! Vapour pressure deficit (kPa)
+        real, intent(in)    :: sinB     ! sin(B), B = solar elevation angle
+        real                :: Rn       ! Output: net radiation (MJ)
 
-        real :: R_MJ, Ts_K, dr, Re, pR, esat, eact, Rnl, Rns, lat_rad, h1, h2
+        real, parameter     :: Gsc = 0.082          ! Solar constant (MJ/m^2/min)
+        real, parameter     :: SBC = 4.903e-9 / 24  ! Stephan Boltzman constant
+        real, parameter     :: PI = 3.141592653589793238
 
-        ! Constants
-        real, parameter :: Gsc = 0.082            ! Solar constant (MJ/m^2/min)
-        real, parameter :: SBC = 4.903e-9 / 24    ! Stephan Boltzman constant
+        real :: R_MJ, Ts_K, esat, eact, lat_rad, lonm, f, e, LC, t0, h, h1, h2, &
+                dec, dr, Re, pR, Rnl, Rns
 
-        lat_rad = deg2rad(lat)
-
-        esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
-        eact = esat - VPD
-
+        ! Only calculate net radiation if sun is above the horizon
         if (sinB > 0) then
             ! Unit conversions
             R_MJ = R * 0.0036
             Ts_K = Ts_C + 273.16
 
-            ! Hour angle stuff
-            h1 = h - (pi/24)
-            h2 = h + (pi/24)
+            ! Saturation and actual vapour pressure (kPa)
+            esat = 0.611 * exp((17.27 * Ts_C) / (Ts_C + 237.3))
+            eact = esat - VPD
 
-            dr = 1 + (0.033 * cos(((2 * pi) / 365) * dd))
+            ! Latitude in radians
+            lat_rad = deg2rad(lat)
+
+            ! Calculate the longitudinal meridian
+            lonm = nint(lon / 15.0) * 15.0
+
+            ! Solar noon correction for day of year
+            f = deg2rad(279.575 + (0.9856 * dd))
+            e = (-104.7*sin(f) + 596.2*sin(2*f) + 4.3*sin(3*f) - 12.7*sin(4*f) &
+                - 429.3*cos(f) - 2.0*cos(2*f) + 19.3*cos(3*f)) / 3600
+
+            ! Solar noon, with day of year and longitudinal correction
+            LC = (lon - lonm) / 15
+            t0 = 12 - LC - e
+
+            ! Hour-angle of the sun
+            h = deg2rad(15 * (hr - t0))
+            h1 = h - (PI/24)
+            h2 = h + (PI/24)
+
+            ! Declination (radians)
+            dec = deg2rad(-23.4 * cos(deg2rad(360 * ((dd + 10) / 365.0))))
+
+            dr = 1 + (0.033 * cos(((2 * PI) / 365) * dd))
             ! External radiation (with fix to stop div by zero)
             ! TODO: fix this to be less hackish
             Re = max(0.00000000001, &
-                    ((12 * 60) / pi) * Gsc * dr &
+                    ((12 * 60) / PI) * Gsc * dr &
                         * ((h2 - h1) * sin(lat_rad) * sin(dec) &
                             + cos(lat_rad) * cos(dec) * (sin(h2) - sin(h1))))
-            !Re = max(0.0, ((12*60)/pi)*Gsc*dr*sinB)
+            !Re = max(0.0, ((12*60)/PI)*Gsc*dr*sinB)
 
             ! Calculate net longwave radiation
             pR = (0.75 + (2e-5 * elev)) * Re
 
-            Rnl = max(0.0, (SBC*(Ts_K**4)) * (0.34-(0.14*sqrt(eact))) * ((1.35*(min(1.0, R_MJ/pR)))-0.35))
+            Rnl = max(0.0, (SBC*(Ts_K**4)) * (0.34-(0.14*sqrt(eact))) &
+                           * ((1.35*(min(1.0, R_MJ/pR)))-0.35))
             Rns = (1 - albedo) * R_MJ
 
             Rn = max(0.0, Rns - Rnl)
         else
             Rn = 0
         end if
+    end function do3se_net_radiation
 
-        ! Calculate Rn in W/m2
+    !
+    ! Calculate net radiation
+    !
+    subroutine Calc_Rn()
+        use Parameters, only: elev, lat, lon
+        use Parameters, only: albedo
+
+        Rn = do3se_net_radiation(lat, lon, elev, albedo, dd, hr, R, Ts_C, VPD, sinB)
+        ! Convert Rn to W/m2
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
 

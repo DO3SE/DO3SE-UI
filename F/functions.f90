@@ -76,10 +76,10 @@ contains
     !==========================================================================
     ! Conversions between degrees and radians
     !==========================================================================
-    function deg2rad(x) result(retval)
-        use Constants, only: D2R => DEG2RAD
+    pure function deg2rad(x) result(retval)
         real, intent(in) :: x
         real :: retval
+        real, parameter :: D2R = 0.017453292519943295
 
         retval = x * D2R
     end function deg2rad
