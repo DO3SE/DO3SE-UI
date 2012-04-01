@@ -4,19 +4,31 @@ module Environmental
 
 contains
 
+    ! =======================================================================
+    ! Calculate temperature effect on gsto, ftemp
+    ! =======================================================================
+    pure function do3se_ftemp(Ts_C, T_min, T_opt, T_max, fmin) result (ftemp)
+        real, intent(in)    :: Ts_C     ! Air temperature (degrees C)
+        real, intent(in)    :: T_min    ! Minimum temperature (degrees C)
+        real, intent(in)    :: T_opt    ! Temperature for maximum g (degrees C)
+        real, intent(in)    :: T_max    ! Maximum temperature (degrees C)
+        real, intent(in)    :: fmin     ! Minimum ftemp
+        real                :: ftemp    ! Output: temperature effect on gsto
+
+        real :: bt
+
+        bt = (T_max-T_opt)/(T_opt-T_min)
+        ftemp = max(((Ts_C-T_min)/(T_opt-T_min))*((T_max-Ts_C)/(T_max-T_opt))**bt, fmin)
+    end function do3se_ftemp
+
     !***************************************************************************
     ! Calculate ftemp
     !***************************************************************************
     subroutine Calc_ftemp()
         use Variables, only: ftemp
-
         use Inputs, only: Ts_c
         use Parameters, only: T_max, T_min, T_opt, fmin
-
-        real :: bt 
-        
-        bt = (T_max - T_opt) / (T_opt - T_min)
-        ftemp = max(((Ts_c-T_min)/(T_opt-T_min))*((T_max-Ts_c)/(T_max-T_opt))**bt, fmin)
+        ftemp = do3se_ftemp(Ts_C, T_min, T_opt, T_max, fmin)
     end subroutine Calc_ftemp
 
     !***************************************************************************
