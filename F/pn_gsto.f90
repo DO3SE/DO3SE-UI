@@ -4,41 +4,57 @@ module Pn_Gsto
 
     public :: Calc_Gsto_Pn
 
-    ! parameters considered (or defined) to be constant for all species
-    real, parameter :: R = 8.314472          !universal gas constant             [J/(K*mol)]
-    real, parameter :: p_O2 = 210.0          !O2 partial pressure                [mmol/mol]
-    real, parameter :: E_K_C = 79430.0       !activation energy of K_C           [J/mol]            Medlyn2002
-    real, parameter :: E_K_O = 36380.0       !activation energy of K_O           [J/mol]            Medlyn2002
-    real, parameter :: E_R_d = 53000.0       !activation energy of R_d           [J/mol]            Leuning1995
-    real, parameter :: E_Gamma_star = 37830.0 !activation energy for C-comp-point [J/mol]            Medlyn2002
-    real, parameter :: K_C_25 = 404.9        !K.C at reference temperature 25    [micro mol/mol]    Medlyn2002
-    real, parameter :: K_O_25 = 278.4        !K.O at reference temperature 25    [mmol/mol]         Medlyn2002
-    real, parameter :: R_d_20 = 0.32         !R_d at reference temperature 20    [micro mol/(m^2*s)]Leuning1995
-    real, parameter :: Gamma_star_25 = 42.75 !CO2 compensation point at T= 25    [micro mol/mol]    Medlyn2002
-
-    ! species spedific model parameters (that don't tend to have species specific
-    ! values, others are in parameters.f90)
-    real :: alpha = 0.3                      !efficiency light energy conversion [mol electrons/mol photons]
-    real :: Teta = 0.95                      !shape of J~Q determining factor    []
-    real :: H_a_jmax = 50300                 !activation energy for J_max        [J/mol]
-    real :: H_d_jmax = 152044                !deactivation energy for J_max      [J/mol]
-    real :: H_a_vcmax = 73637                !activation energy for V_cmax       [J/mol]
-    real :: H_d_vcmax = 149252               !deactivation energy for V_cmax     [J/mol]
-    real :: S_V_vcmax = 486                  !entropy terms                      [J/(mol*K)]
-    real :: S_V_jmax = 495                   !entropy terms                      [J/(mol*K)
-
     ! debug outputs
     real, public, save :: gsto_final, pngsto_l, pngsto, pngsto_c, pngsto_PEt
     real, public, save :: pngsto_An
 
 contains
 
-    subroutine Calc_Gsto_Pn()
-        use Constants, only: Ts_K
-        use Inputs, only: c_a => CO2, Q => PAR, uh, h_a => RH, Ts_C, Tleaf_C => Tleaf
-        use Parameters, only: fmin, gmorph, d => Lm, g_sto_0, m, V_cmax_25, J_max_25
-        use Variables, only: LAI, fphen, fO3, fXWP, leaf_fphen
+    pure subroutine do3se_gsto_pn(Tair_C, Tleaf_C, uh, c_a, h_a, Q, &
+                                  d, g_sto_0, m, V_cmax_25, J_max_25, &
+                                  gsto_final, pngsto_An)
+        real, intent(in)    :: Tair_C       ! Air temperature (degrees C)
+        real, intent(in)    :: Tleaf_C      ! Leaf temperature (degrees C)
+        real, intent(in)    :: uh           ! Wind speed (m/s)
+        real, intent(in)    :: c_a          ! CO2 concentration (ppm)
+        real, intent(in)    :: h_a          ! Relative humidity (fraction)
+        real, intent(in)    :: Q            ! PPFD (umol/m^2/s)
+        real, intent(in)    :: d            ! Leaf dimension (m)
+        real, intent(in)    :: g_sto_0      ! Closed stomata conductance (umol/m^2/s)
+        real, intent(in)    :: m            ! Species-specific sensitivity to An (dimensionless)
+        real, intent(in)    :: V_cmax_25    ! Maximum catalytic rate at 25 degrees (umol/m^2/s)
+        real, intent(in)    :: J_max_25     ! Maximum rate of electron transport at 25 degrees (umol/m^2/s)
 
+        real, intent(out)   :: gsto_final   ! Output: Raw photosynthesis-based stomatal conductance (???)
+        real, intent(out)   :: pngsto_An    ! Output: net CO2 assimilation (???)
+
+        ! Constants
+        real, parameter :: Ts_K = 273.16    ! Offset between Celcius and Kelvin
+
+        ! parameters considered (or defined) to be constant for all species
+        real, parameter :: R = 8.314472          !universal gas constant             [J/(K*mol)]
+        real, parameter :: p_O2 = 210.0          !O2 partial pressure                [mmol/mol]
+        real, parameter :: E_K_C = 79430.0       !activation energy of K_C           [J/mol]            Medlyn2002
+        real, parameter :: E_K_O = 36380.0       !activation energy of K_O           [J/mol]            Medlyn2002
+        real, parameter :: E_R_d = 53000.0       !activation energy of R_d           [J/mol]            Leuning1995
+        real, parameter :: E_Gamma_star = 37830.0 !activation energy for C-comp-point [J/mol]            Medlyn2002
+        real, parameter :: K_C_25 = 404.9        !K.C at reference temperature 25    [micro mol/mol]    Medlyn2002
+        real, parameter :: K_O_25 = 278.4        !K.O at reference temperature 25    [mmol/mol]         Medlyn2002
+        real, parameter :: R_d_20 = 0.32         !R_d at reference temperature 20    [micro mol/(m^2*s)]Leuning1995
+        real, parameter :: Gamma_star_25 = 42.75 !CO2 compensation point at T= 25    [micro mol/mol]    Medlyn2002
+
+        ! species spedific model parameters (that don't tend to have species specific
+        ! values, others are supplied as arguments)
+        real, parameter :: alpha = 0.3           !efficiency light energy conversion [mol electrons/mol photons]
+        real, parameter :: Teta = 0.95           !shape of J~Q determining factor    []
+        real, parameter :: H_a_jmax = 50300      !activation energy for J_max        [J/mol]
+        real, parameter :: H_d_jmax = 152044     !deactivation energy for J_max      [J/mol]
+        real, parameter :: H_a_vcmax = 73637     !activation energy for V_cmax       [J/mol]
+        real, parameter :: H_d_vcmax = 149252    !deactivation energy for V_cmax     [J/mol]
+        real, parameter :: S_V_vcmax = 486       !entropy terms                      [J/(mol*K)]
+        real, parameter :: S_V_jmax = 495        !entropy terms                      [J/(mol*K)
+
+        ! Converted inputs
         real :: T_air, T_leaf, u
 
         ! state variables
@@ -65,12 +81,11 @@ contains
 
 
         ! iteration parameters
-
         integer :: iterations                   !number of the iterations bofore convergence
         real :: c_i_sup                         !CO2 concentration inside stomata possible through supply
-        integer :: i,k                          !loop parameters
+        integer :: k                            !loop parameters
 
-        T_air = Ts_C + Ts_K
+        T_air = Tair_C + Ts_K
         T_leaf = Tleaf_C + Ts_K
         u = max(0.01, uh)
 
@@ -161,17 +176,42 @@ contains
 
         ! Calculate final stomatal conductances
         gsto_final = max(0.0, g_sto / 1000.0)
-
-        pngsto_l = gsto_final * min(leaf_fphen, fO3) * max(fmin, fXWP)
-        pngsto = gsto_final * gmorph * fphen * max(fmin, fXWP)
-        pngsto_c = pngsto * LAI
-        pngsto_PEt = gsto_final * fphen * LAI
-
         pngsto_An = A_n
+    end subroutine do3se_gsto_pn
 
 
-        !write (unit = 7, fmt=*) iterations,",",c_i,",",A_n,",",g_sto
-        !print *,i,"iterations=",iterations,"c_i=",c_i,"A_n =",A_n,"g_sto =",g_sto
+    pure subroutine do3se_gsto_pn_all_gstos(gsto_base, fphen, leaf_fphen, fO3, fXWP, LAI, fmin, gmorph, &
+                                            gsto_l, gsto, gsto_c, gsto_PEt)
+        real, intent(in)    :: gsto_base    ! Raw photosynthesis-based stomatal conductance (???)
+        real, intent(in)    :: fphen        ! Phenology influence on gsto (fraction)
+        real, intent(in)    :: leaf_fphen   ! Phenology influence on leaf gsto (fraction)
+        real, intent(in)    :: fO3          ! O3 influence on gsto (fraction)
+        real, intent(in)    :: fXWP         ! Soil-water influence on gsto (fraction)
+        real, intent(in)    :: LAI          ! Leaf area index (m^2/m^2)
+        real, intent(in)    :: fmin         ! Minimum gsto fraction (fraction)
+        real, intent(in)    :: gmorph       ! Sun/shade leaf morphology factor (fraction)
+
+        real, intent(out)   :: gsto_l       ! Output: Leaf stomatal conductance (???)
+        real, intent(out)   :: gsto         ! Output: Mean stomatal conductance (???)
+        real, intent(out)   :: gsto_c       ! Output: Canopy stomatal conductance (???)
+        real, intent(out)   :: gsto_PEt     ! Output: Potential gsto without soil-water influence (???)
+
+        gsto_l = gsto_base * min(leaf_fphen, fO3) * max(fmin, fXWP)
+        gsto = gsto_base * gmorph * fphen * max(fmin, fXWP)
+        gsto_c = gsto * LAI
+        gsto_PEt = gsto_base * fphen * LAI
+    end subroutine do3se_gsto_pn_all_gstos
+
+
+    subroutine Calc_Gsto_Pn()
+        use Inputs, only: CO2, PAR, uh, RH, Ts_C, Tleaf
+        use Parameters, only: fmin, gmorph, Lm, g_sto_0, m, V_cmax_25, J_max_25
+        use Variables, only: LAI, fphen, fO3, fXWP, leaf_fphen
+
+        call do3se_gsto_pn(Ts_C, Tleaf, uh, CO2, RH, PAR, Lm, g_sto_0, m, V_cmax_25, J_max_25, &
+                           gsto_final, pngsto_An)
+        call do3se_gsto_pn_all_gstos(gsto_final, fphen, leaf_fphen, fO3, fXWP, LAI, fmin, gmorph, &
+                                     pngsto_l, pngsto, pngsto_c, pngsto_PEt)
     end subroutine Calc_Gsto_Pn
 
 end module Pn_Gsto
