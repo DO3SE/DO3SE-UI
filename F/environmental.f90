@@ -31,23 +31,35 @@ contains
         ftemp = do3se_ftemp(Ts_C, T_min, T_opt, T_max, fmin)
     end subroutine Calc_ftemp
 
+
+    ! =======================================================================
+    ! Calculate VPD effect on gsto, fVPD.
+    !
+    ! Note that VPD_min and VPD_max refer to the value for min. and max.
+    ! gsto, therefore VPD_min should be greater than VPD_max.
+    ! =======================================================================
+    pure function do3se_fVPD(VPD, VPD_min, VPD_max, fmin) result (fVPD)
+        real, intent(in)    :: VPD      ! Vapour pressure deficit (kPa)
+        real, intent(in)    :: VPD_min  ! VPD for minimum gsto (kPa)
+        real, intent(in)    :: VPD_max  ! VPD for maximum gsto (kPa)
+        real, intent(in)    :: fmin     ! Minimum fVPD
+        real                :: fVPD     ! Output: VPD effect on gsto
+
+        fVPD = ((1 - fmin) * (VPD_min - VPD)/(VPD_min - VPD_max)) + fmin
+        fVPD = max(fmin, min(1.0, fVPD))
+    end function do3se_fVPD
+
     !***************************************************************************
     ! Calculate fVPD (vapour pressure deficit related g)
     !***************************************************************************
     subroutine Calc_fVPD()
         use Variables, only: fVPD
-
         use Inputs, only: VPD
         use Parameters, only: fmin, VPD_min, VPD_max
 
-        fVPD = ((1 - fmin)*(VPD_min - VPD)/(VPD_min - VPD_max)) + fmin
-        fVPD = max(fVPD, fmin)
-
-        if ( fVPD > 1 ) then
-            fVPD = 1
-        end if
+        fVPD = do3se_fVPD(VPD, VPD_min, VPD_max, fmin)
     end subroutine Calc_fVPD
-    
+
     !==========================================================================
     ! Calculate Flight and flight
     !==========================================================================
