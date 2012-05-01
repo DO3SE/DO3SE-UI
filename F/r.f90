@@ -13,7 +13,7 @@ module R
 
 contains
 
-    function ra_simple(ustar, z1, z2, d) result (ra)
+    pure function ra_simple(ustar, z1, z2, d) result (ra)
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: z1      ! Lower height (m)
         real, intent(in) :: z2      ! Upper height (m)
@@ -26,7 +26,7 @@ contains
         ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
     end function ra_simple
 
-    function rsto_from_gsto(gsto) result (rsto)
+    pure function rsto_from_gsto(gsto) result (rsto)
         real, intent(in) :: gsto    ! Stomatal conductance (mmol m-2 s-1)
         real :: rsto                ! Output: stomatal resistance (
         real, parameter :: MAX_RSTO = 100000
@@ -100,15 +100,14 @@ contains
     end subroutine Calc_Ra_With_Heat_Flux
 
 
-    function rb(ustar, d) result (rb_out)
-        real, intent(in) :: ustar   ! Friction velocity (m/s)
-        real, intent(in) :: d       ! Molecular diffusivity of substance in air (m2/s)
+    pure function rb(ustar, d) result (rb_out)
+        real, intent(in)    :: ustar    ! Friction velocity (m/s)
+        real, intent(in)    :: d        ! Molecular diffusivity of substance in air (m2/s)
+        real                :: rb_out   ! Output: Rb (s/m)
 
-        real, parameter :: PR = 0.72    ! Prandtl number
-        real, parameter :: K = 0.41     ! von Karman's constant
-        real, parameter :: V = 0.000015 ! Kinematic viscosity of air at 20 C (m2/s)
-
-        real :: rb_out              ! Output: Rb (s/m)
+        real, parameter     :: PR = 0.72    ! Prandtl number
+        real, parameter     :: K = 0.41     ! von Karman's constant
+        real, parameter     :: V = 0.000015 ! Kinematic viscosity of air at 20 C (m2/s)
 
         rb_out = (2.0 / (K * ustar)) * (((V/d)/PR)**(2.0/3.0))
     end function rb
