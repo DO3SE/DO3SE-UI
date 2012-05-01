@@ -141,6 +141,9 @@ contains
 
         c_i         = 0.0
 
+        ! gsto needs a starting point, so let's set it to g_sto_0
+        g_sto = g_sto_0
+
         do k=1,50
 
             A_c        = V_cmax *((c_i-Gamma_star)/(c_i + K_C*(1+(p_O2/K_O))))
