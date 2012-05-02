@@ -58,7 +58,7 @@ contains
         precip_acc = 0
     end subroutine Init_Inputs
 
-    function estimate_velocity(ustar, z, z0) result (u)
+    pure function estimate_velocity(ustar, z, z0) result (u)
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
         real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
@@ -70,7 +70,7 @@ contains
         u = (ustar / K) * log(z / z0)
     end function estimate_velocity
 
-    function estimate_ustar(u, z, z0) result (ustar)
+    pure function estimate_ustar(u, z, z0) result (ustar)
         real, intent(in) :: u       ! Velocity at height above boundary (m/s)
         real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
         real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
