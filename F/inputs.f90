@@ -304,11 +304,33 @@ contains
         Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
     end subroutine Tleaf_Estimate_Jackson
 
-    ! Calculated saturation/actual vapour pressure and relative humidity
-    subroutine Calc_humidity()
+    pure subroutine do3se_humidity_from_VPD(Ts_C, VPD, esat, eact, RH)
+        real, intent(in)    :: Ts_C     ! Ambient temperature (degrees C)
+        real, intent(in)    :: VPD      ! Vapour pressure deficit (kPa)
+        real, intent(out)   :: esat     ! Output: Saturation vapour pressure (kPa)
+        real, intent(out)   :: eact     ! Output: Actual vapour pressure (kPa)
+        real, intent(out)   :: RH       ! Output: Relative humidity (fraction)
+
         esat = 0.611 * exp(17.27 * Ts_C / (Ts_C + 237.3))
         eact = esat - VPD
         RH = eact / esat
+    end subroutine do3se_humidity_from_VPD
+
+    pure subroutine do3se_VPD_from_humidity(Ts_C, RH, esat, eact, VPD)
+        real, intent(in)    :: Ts_C     ! Ambient temperature (degrees C)
+        real, intent(in)    :: RH       ! Relative humidity (fraction)
+        real, intent(out)   :: esat     ! Output: Saturation vapour pressure (kPa)
+        real, intent(out)   :: eact     ! Output: Actual vapour pressure (kPa)
+        real, intent(out)   :: VPD      ! Output: Vapour pressure deficit (kPa)
+
+        esat = 0.611 * exp(17.27 * Ts_C / (Ts_C + 237.3))
+        eact = esat * RH
+        VPD = esat - eact
+    end subroutine do3se_VPD_from_humidity
+
+    ! Calculated saturation/actual vapour pressure and relative humidity
+    subroutine Calc_humidity()
+        call do3se_humidity_from_VPD(Ts_C, VPD, esat, eact, RH)
     end subroutine Calc_humidity
 
 end module Inputs
