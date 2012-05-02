@@ -254,30 +254,29 @@ contains
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
 
+    ! =======================================================================
     ! Calculate leaf temperature
     !
     ! Based on: Jackson, R.D. (1982). "Canopy temperature and crop water stress."
     !           Advances in irrigation, vol. 1, pp.43-85.  Specifically p.66 eq.9.
-    real function Calc_Tleaf (Tair, P, VPD, Rn, ra, rc)
-        implicit none
-
-        real, intent(in) :: Tair    ! Ambient temperature (C)
-        real, intent(in) :: P       ! Air pressure (Pa)
-        real, intent(in) :: VPD     ! Vapour pressure deficit (Pa)
-        real, intent(in) :: Rn      ! Net radiation (W m-2)
-        real, intent(in) :: ra      ! Aerodynamic resistance (s m-1)
-        real, intent(in) :: rc      ! Canopy resistance (s m-1)
+    ! =======================================================================
+    pure function do3se_leaf_temperature (Tair, P, VPD, esat, eact, Rn, ra, rc) result (Tleaf)
+        real, intent(in)    :: Tair     ! Ambient temperature (degrees C)
+        real, intent(in)    :: P        ! Air pressure (Pa)
+        real, intent(in)    :: VPD      ! Vapour pressure deficit (Pa)
+        real, intent(in)    :: esat     ! Saturation vapour pressure (Pa)
+        real, intent(in)    :: eact     ! Actual vapour pressure (Pa)
+        real, intent(in)    :: Rn       ! Net radiation (W m-2)
+        real, intent(in)    :: ra       ! Aerodynamic resistance (s m-1)
+        real, intent(in)    :: rc       ! Canopy resistance (s m-1)
+        real                :: Tleaf    ! Output: leaf temperature (degrees C)
 
         real, parameter :: c_p = 1010.0     ! Specific heat capacity of dry air at 
                                             !   standard pressure and 20C, J kg-1 C-1
         real, parameter :: MAX_TDIFF = 5.0  ! Maximum allowed temperature difference
 
-        real :: esat, eact, Tvir, rho, delta, lambda, psychro, Tdiff_1, Tdiff
+        real :: Tvir, rho, delta, lambda, psychro, Tdiff_1, Tdiff
 
-        ! Saturation vapour pressure at Tair (Pa)
-        esat = 611 * exp(17.27 * Tair / (Tair + 237.3))
-        ! Actual vapour pressure (Pa)
-        eact = esat - VPD
         ! Virtual temperature for density calcualation (K)
         Tvir = (Tair + 273.15) / (1 - (0.378 * (eact / P)))
         ! Density of air (kg m-3)
@@ -295,13 +294,13 @@ contains
         ! Stop Tdiff being too large
         Tdiff = max(-MAX_TDIFF, min(MAX_TDIFF, Tdiff))
         ! Leaf temperature (C)
-        Calc_Tleaf = Tair + Tdiff
-    end function Calc_Tleaf
+        Tleaf = Tair + Tdiff
+    end function do3se_leaf_temperature
 
     subroutine Tleaf_Estimate_Jackson()
         use Variables, only: Ra, Rsto_c
 
-        Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
+        Tleaf = do3se_leaf_temperature(Ts_C, P*1000, VPD*1000, esat*1000, eact*1000, Rn_W, Ra, Rsto_c)
     end subroutine Tleaf_Estimate_Jackson
 
     pure subroutine do3se_humidity_from_VPD(Ts_C, VPD, esat, eact, RH)
