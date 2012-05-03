@@ -60,6 +60,37 @@ contains
         fVPD = do3se_fVPD(VPD, VPD_min, VPD_max, fmin)
     end subroutine Calc_fVPD
 
+
+    pure subroutine do3se_PAR_components(P, PARtotal, sinB, Idrctt, Idfuse)
+        real, intent(in)    :: P            ! Atmospheric pressure (kPa)
+        real, intent(in)    :: PARtotal     ! PAR irradiance (W m-2)
+        real, intent(in)    :: sinB         ! sin(B), B = solar elevation angle
+        real, intent(out)   :: Idrctt       ! Output: direct PAR irradiance (W m-2)
+        real, intent(out)   :: Idfuse       ! Output: diffuse PAR irradiance (W m-2)
+
+        real, parameter :: seaP = 101.325   ! Pressure at sea level (kPa)
+
+        real :: m, pPARdir, pPARdif, pPARtotal, ST, fPARdir, fPARdif
+
+        ! TODO: this was previously 1.0/sinB, which is correct?
+        m = (P / seaP) / sinB
+
+        pPARdir = 600 * exp(-0.185 * (P / seaP) * m) * sinB ! Potential direct PAR
+        pPARdif = 0.4 * (600 - pPARdir) * sinB              ! Potential diffuse PAR
+        pPARtotal = pPARdir + pPARdif                       ! Potential total PAR
+
+        ST = max(0.21, min(0.9, PARtotal / pPARtotal))      ! Sky transmissivity
+
+        ! Direct and diffuse fractions
+        fPARdir = (pPARdir / pPARtotal ) * (1.0 - ((0.9 - ST) / 0.7)**(2.0/3.0))
+        fPARdif = 1 - fPARdir
+
+        ! Apply calculated direct and diffuse fractions to PARtotal
+        Idrctt = fPARdir * PARtotal
+        Idfuse = fPARdif * PARtotal
+    end subroutine do3se_PAR_components
+
+
     !==========================================================================
     ! Calculate Flight and flight
     !==========================================================================
@@ -69,28 +100,14 @@ contains
         use Parameters, only: f_lightfac, cosA
         use Inputs, only: P, PAR, sinB
         use Variables, only: LAI, Flight, leaf_flight
-        use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
-                LAIsun, LAIshade, PARsun, PARshade
+        use Variables, only: LAIsun, LAIshade, PARsun, PARshade
 
-        real :: m, pPARtotal, ST, PARdir, PARdif, Flightsun, &
-                Flightshade
+        real :: PARdir, PARdif, Flightsun, Flightshade
 
         if (sinB > 0 .and. LAI > 0) then
-            m = 1.0 / sinB
-
-            ! Potential direct and diffuse PAR
-            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
-            pPARdif = 0.4 * (600 - pPARdir) * sinB
-            pPARtotal = pPARdir + pPARdif
-
-            ! Sky transmissivity (with PAR converted to W/m^2)
-            ST = min(0.9, max(0.21, (PAR/4.57)/pPARtotal))
-
-            fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
-            fPARdif = 1 - fPARdir
-
-            PARdir = fPARdir * PAR
-            PARdif = fPARdif * PAR
+            call do3se_PAR_components(P, PAR/4.57, sinB, PARdir, PARdif)
+            PARdir = PARdir * 4.57
+            PARdif = PARdif * 4.57
 
             LAIsun = (1 - exp(-0.5 * LAI / sinB)) * (2 * sinB)
             LAIshade = LAI - LAIsun

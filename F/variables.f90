@@ -88,10 +88,6 @@ module Variables
     real, public, save :: fO3
 
     ! More variables, for testing
-    real, public, save :: pPARdir
-    real, public, save :: pPARdif
-    real, public, save :: fPARdir
-    real, public, save :: fPARdif
     real, public, save :: LAIsun
     real, public, save :: LAIshade
     real, public, save :: PARsun
