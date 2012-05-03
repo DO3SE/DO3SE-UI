@@ -87,11 +87,5 @@ module Variables
     real, public, save :: AOT0          ! Accumulated OT0 (upper leaf)
     real, public, save :: fO3
 
-    ! More variables, for testing
-    real, public, save :: LAIsun
-    real, public, save :: LAIshade
-    real, public, save :: PARsun
-    real, public, save :: PARshade
-
 end module Variables
 
