@@ -16,7 +16,7 @@ contains
     subroutine Calc_O3_Concentration()
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
         use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar
-        use Inputs, only: estimate_ustar
+        use Inputs, only: do3se_ustar_from_velocity
         use Variables, only: Ra, Rb, Rsur
         use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
                              Ra_ref, Ra_O3zR_i, Ra_tar_i
@@ -28,7 +28,7 @@ contains
         real :: ustar_ref, Rb_ref, Vn
 
         ! ustar over reference canopy
-        ustar_ref = estimate_ustar(uh_i, izR - O3_d, O3_zo)
+        ustar_ref = do3se_ustar_from_velocity(uh_i, izR - O3_d, O3_zo)
         ! Ra between reference canopy and izR
         Ra_ref_i = ra_simple(ustar_ref, O3_zo + O3_d, izR, O3_d)
         ! Rb for reference canopy

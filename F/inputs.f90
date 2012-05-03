@@ -42,8 +42,8 @@ module Inputs
     public :: Calc_Rn
     public :: Calc_humidity
 
-    public :: estimate_velocity
-    public :: estimate_ustar
+    public :: do3se_velocity_from_ustar
+    public :: do3se_ustar_from_velocity
 
     ! These are intermediate variables not used outside of this module
     real, private :: precip_dd  ! Accumulated precip for today so far
@@ -58,53 +58,81 @@ contains
         precip_acc = 0
     end subroutine Init_Inputs
 
-    pure function estimate_velocity(ustar, z, z0) result (u)
-        real, intent(in) :: ustar   ! Friction velocity (m/s)
-        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
-        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
 
-        real :: u                   ! Output: velocity (m/s)
+    pure function do3se_velocity_from_ustar(ustar, z, z0) result (u)
+        real, intent(in)    :: ustar    ! Friction velocity (m/s)
+        real, intent(in)    :: z        ! Height above boundary, e.g. z - d (m)
+        real, intent(in)    :: z0       ! Roughness length, height at which u=0 (m)
+        real                :: u        ! Output: velocity (m/s)
 
-        real, parameter :: K = 0.41 ! von Karman's constant
+        real, parameter :: K = 0.41     ! von Karman's constant
 
         u = (ustar / K) * log(z / z0)
-    end function estimate_velocity
+    end function do3se_velocity_from_ustar
 
-    pure function estimate_ustar(u, z, z0) result (ustar)
-        real, intent(in) :: u       ! Velocity at height above boundary (m/s)
-        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
-        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
 
-        real :: ustar               ! Output: friction velocity, ustar (m/s)
+    pure function do3se_ustar_from_velocity(u, z, z0) result (ustar)
+        real, intent(in)    :: u        ! Velocity at height above boundary (m/s)
+        real, intent(in)    :: z        ! Height above boundary, e.g. z - d (m)
+        real, intent(in)    :: z0       ! Roughness length, height at which u=0 (m)
+        real                :: ustar    ! Output: friction velocity, ustar (m/s)
 
         real, parameter :: K = 0.41 ! von Karman's constant
 
         ustar = (u * K) / log(z / z0)
-    end function estimate_ustar
+    end function do3se_ustar_from_velocity
+
+
+    pure subroutine do3se_vegetation_d_and_z0(h, d, z0)
+        real, intent(in)    :: h    ! Vegetation height (m)
+        real, intent(out)   :: d    ! Displacement height (m)
+        real, intent(out)   :: z0   ! Roughness length (m)
+
+        d = 0.7 * h
+        z0 = 0.1 * h
+    end subroutine do3se_vegetation_d_and_z0
+
+
+    pure subroutine do3se_windspeed_transfer(uh_zR, h, u_h, uzR, uh_i, uh, ustar)
+        real, intent(in)    :: uh_zR    ! Windspeed at measurement location (m/s)
+        real, intent(in)    :: h        ! Target canopy height (m)
+        real, intent(in)    :: u_h      ! Windspeed measurement canopy height (m)
+        real, intent(in)    :: uzR      ! Windspeed measurement height (m)
+        real, intent(out)   :: uh_i     ! Output: windspeed at "decoupled" height (m/s)
+        real, intent(out)   :: uh       ! Output: windspeed at top of target canopy (m/s)
+        real, intent(out)   :: ustar    ! Output: friction velocity over target canopy (m/s)
+
+        real, parameter :: izR = 50     ! "Decoupled" height
+        real, parameter :: MIN_WINDSPEED = 0.1
+        real, parameter :: MIN_USTAR = 0.0001
+
+        real :: ustar_ref   ! Friction velocity over windspeed measurement canopy
+        real :: d, z0, u_d, u_z0
+
+        call do3se_vegetation_d_and_z0(h, d, z0)
+        call do3se_vegetation_d_and_z0(u_h, u_d, u_z0)
+
+        ! Find ustar over reference canopy
+        ustar_ref = do3se_ustar_from_velocity(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_z0)
+        ! Find windspeed at izR, over reference canopy
+        uh_i = max(MIN_WINDSPEED, do3se_velocity_from_ustar(ustar_ref, izR - u_d, u_z0))
+        ! Find ustar over target canopy, assuming that at izR windspeed will be
+        ! equal over both vegetations
+        ustar = do3se_ustar_from_velocity(max(MIN_WINDSPEED, uh_i), izR - d, z0)
+        ! Find windspeed at top of target canopy
+        uh = max(MIN_WINDSPEED, do3se_velocity_from_ustar(ustar, h - d, z0))
+        ! Stop ustar being 0
+        ustar = max(MIN_USTAR, ustar)
+    end subroutine do3se_windspeed_transfer
+
 
     !
     ! Derive ustar for the flux canopy and the windspeed at the canopy
     !
     subroutine Calc_ustar_uh()
-        use Constants, only: izR
-        use Parameters, only: h, d, zo, u_d, u_zo, uzR
+        use Parameters, only: h, u_h, uzR
 
-        real :: ustar_ref   ! ustar for where windspeed is measured
-
-        real, parameter :: MIN_WINDSPEED = 0.1
-
-        ! Find ustar over reference canopy
-        ustar_ref = estimate_ustar(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_zo)
-        ! Find windspeed at izR, over reference canopy
-        uh_i = max(MIN_WINDSPEED, estimate_velocity(ustar_ref, izR - u_d, u_zo))
-        ! Find ustar over target canopy, assuming that at izR windspeed will be
-        ! equal over both vegetations
-        ustar = estimate_ustar(max(MIN_WINDSPEED, uh_i), izR - d, zo)
-        ! Find windspeed at top of target canopy
-        uh = max(MIN_WINDSPEED, estimate_velocity(ustar, h - d, zo))
-
-        ! Stop ustar being 0
-        ustar = max(0.0001, ustar)
+        call do3se_windspeed_transfer(uh_zR, h, u_h, uzR, uh_i, uh, ustar)
     end subroutine Calc_ustar_uh
 
     !
