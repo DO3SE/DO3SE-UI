@@ -350,14 +350,32 @@ contains
 
         SMD_meas = (Fc_m - Sn_meas) * D_meas
     end subroutine Calc_SWP_meas
+
+
+    ! =======================================================================
+    ! Calculate fPAW based on available soil water
+    !
+    ! Marked as elemental, most useful for calculating fPAW based on more
+    ! than one fmin.
+    ! =======================================================================
+    pure elemental function do3se_fPAW(ASW, ASW_FC, fmin) result (fPAW)
+        real, intent(in) :: ASW         ! Available soil water (m)
+        real, intent(in) :: ASW_FC      ! Available soil water when at field capacity (m)
+        real, intent(in) :: fmin        ! Minimum gsto fraction (fraction)
+        real :: fPAW                    ! Output: fPAW
+
+        real, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
+        real, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
+
+        fPAW = fmin + (1.0 - fmin) * ((100 * (ASW/ASW_FC)) - ASW_min) / (ASW_max - ASW_min)
+        fPAW = max(fmin, min(1.0, fPAW))
+    end function do3se_fPAW
     
     subroutine Calc_fPAW()
         use Variables, only: ASW, fPAW
-        use Parameters, only: root, fmin
-        use Parameters, only: Fc_m
+        use Parameters, only: fmin
 
-        fPAW = fmin + (1.0-fmin) * ((100 * (ASW/ASW_FC)) - ASW_min) / (ASW_max - ASW_min)
-        fPAW = min(1.0, max(fmin, fPAW))
+        fPAW = do3se_fPAW(ASW, ASW_FC, fmin)
     end subroutine Calc_fPAW
 
     function fSWP_exp_curve(SWP, fmin) result(fSWP)
