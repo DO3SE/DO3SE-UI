@@ -3,7 +3,7 @@ module R
     public :: Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
                 Calc_Rinc, Calc_Rsur, Calc_Ra_With_Heat_Flux
 
-    public :: rsto_from_gsto
+    public :: do3se_rsto_from_gsto
 
     public :: do3se_ra_simple
     public :: do3se_rb
@@ -28,9 +28,9 @@ contains
         ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
     end function do3se_ra_simple
 
-    pure function rsto_from_gsto(gsto) result (rsto)
-        real, intent(in) :: gsto    ! Stomatal conductance (mmol m-2 s-1)
-        real :: rsto                ! Output: stomatal resistance (
+    pure function do3se_rsto_from_gsto(gsto) result (rsto)
+        real, intent(in)    :: gsto     ! Stomatal conductance (mmol m-2 s-1)
+        real                :: rsto     ! Output: stomatal resistance (s m-1)
         real, parameter :: MAX_RSTO = 100000
 
         if (gsto <= 0) then
@@ -40,7 +40,7 @@ contains
             ! (rsto in s m-1) = 1 / (gsto in m s-1)
             rsto = 41000.0 / gsto
         end if
-    end function rsto_from_gsto
+    end function do3se_rsto_from_gsto
 
     !==========================================================================
     ! Calculate Ra, Atmospheric resistance
@@ -230,13 +230,13 @@ contains
         use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, Gsto_PEt, Rsto_PEt
 
         ! Leaf Rsto
-        Rsto_l = rsto_from_gsto(Gsto_l)
+        Rsto_l = do3se_rsto_from_gsto(Gsto_l)
         ! Mean Rsto
-        Rsto = rsto_from_gsto(Gsto)
+        Rsto = do3se_rsto_from_gsto(Gsto)
         ! Canopy Rsto
-        Rsto_c = rsto_from_gsto(Gsto_c)
+        Rsto_c = do3se_rsto_from_gsto(Gsto_c)
         ! Potential canopy Rsto for PEt calculation
-        Rsto_PEt = rsto_from_gsto(Gsto_PEt)
+        Rsto_PEt = do3se_rsto_from_gsto(Gsto_PEt)
     end subroutine Calc_Rsto
 
     !==========================================================================
