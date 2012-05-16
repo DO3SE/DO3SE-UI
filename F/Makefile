@@ -1,7 +1,12 @@
 F = gfortran -std=f95 -fimplicit-none -Wall
 
+DO3SE_EXEC = dose
+DO3SE_STATICLIB = do3se.a
+
 # Default target
-all: dose
+all: $(DO3SE_EXEC)
+
+staticlib: $(DO3SE_STATICLIB)
 
 # Objects
 include objects.mk
@@ -10,8 +15,14 @@ include objects.mk
 %.o %.mod: %.f90
 	$(F) -c $<
 
-dose: $(objects) dose.o
-	$(F) -o $@ $^
+$(DO3SE_EXEC): $(DO3SE_STATICLIB) dose.o
+	$(F) -o $@ dose.o $(DO3SE_STATICLIB)
+
+$(DO3SE_STATICLIB): $(objects)
+	rm -f $@
+	ar cq $@ $^
 
 clean:
-	rm -f *.o *.mod dose dose.exe
+	rm -f *.o *.mod
+	rm -f $(DO3SE_EXEC) $(DO3SE_EXEC).exe
+	rm -f $(DO3SE_STATICLIB)
