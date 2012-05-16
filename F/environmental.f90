@@ -2,12 +2,21 @@ module Environmental
 
     public :: Calc_ftemp, Calc_fVPD, Calc_Flight
 
+    public :: do3se_ftemp
+    public :: do3se_fVPD
+    public :: do3se_PAR_components
+
+    private
+
 contains
 
     ! =======================================================================
     ! Calculate temperature effect on gsto, ftemp
+    !
+    ! Marked as elemental so ftemp can be calculated for multiple
+    ! parametrisations simultaneously.
     ! =======================================================================
-    pure function do3se_ftemp(Ts_C, T_min, T_opt, T_max, fmin) result (ftemp)
+    pure elemental function do3se_ftemp(Ts_C, T_min, T_opt, T_max, fmin) result (ftemp)
         real, intent(in)    :: Ts_C     ! Air temperature (degrees C)
         real, intent(in)    :: T_min    ! Minimum temperature (degrees C)
         real, intent(in)    :: T_opt    ! Temperature for maximum g (degrees C)
@@ -17,8 +26,9 @@ contains
 
         real :: bt
 
-        bt = (T_max-T_opt)/(T_opt-T_min)
-        ftemp = max(((Ts_C-T_min)/(T_opt-T_min))*((T_max-Ts_C)/(T_max-T_opt))**bt, fmin)
+        bt = (T_max - T_opt) / (T_opt - T_min)
+        ftemp = ((Ts_C - T_min) / (T_opt - T_min)) * ((T_max - Ts_C) / (T_max - T_opt))**bt
+        ftemp = max(fmin, min(1.0, ftemp))
     end function do3se_ftemp
 
     !***************************************************************************
