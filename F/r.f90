@@ -3,7 +3,10 @@ module R
     public :: Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
                 Calc_Rinc, Calc_Rsur, Calc_Ra_With_Heat_Flux
 
-    public :: ra_simple, rb, rsto_from_gsto
+    public :: rsto_from_gsto
+
+    public :: do3se_ra_simple
+    public :: do3se_rb
 
     public :: Calc_Gsto_Multiplicative, Calc_Rsto, VPDcrit_prepare, VPDcrit_apply
 
@@ -13,18 +16,17 @@ module R
 
 contains
 
-    pure function ra_simple(ustar, z1, z2, d) result (ra)
+    pure function do3se_ra_simple(ustar, z1, z2, d) result (ra)
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: z1      ! Lower height (m)
         real, intent(in) :: z2      ! Upper height (m)
         real, intent(in) :: d       ! Zero displacement height (m)
-
         real :: ra                  ! Output: aerodynamic resistance (s/m)
 
         real, parameter :: K = 0.41 ! von Karman's constant
 
         ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
-    end function ra_simple
+    end function do3se_ra_simple
 
     pure function rsto_from_gsto(gsto) result (rsto)
         real, intent(in) :: gsto    ! Stomatal conductance (mmol m-2 s-1)
@@ -49,7 +51,7 @@ contains
         use Parameters, only: h, d
         use Variables, only: Ra
 
-        Ra = ra_simple(ustar, h, izR, d)
+        Ra = do3se_ra_simple(ustar, h, izR, d)
     end subroutine Calc_Ra_Simple
 
     !==========================================================================
@@ -100,17 +102,17 @@ contains
     end subroutine Calc_Ra_With_Heat_Flux
 
 
-    pure function rb(ustar, d) result (rb_out)
+    pure function do3se_rb(ustar, d) result (rb)
         real, intent(in)    :: ustar    ! Friction velocity (m/s)
         real, intent(in)    :: d        ! Molecular diffusivity of substance in air (m2/s)
-        real                :: rb_out   ! Output: Rb (s/m)
+        real                :: rb       ! Output: Rb (s/m)
 
         real, parameter     :: PR = 0.72    ! Prandtl number
         real, parameter     :: K = 0.41     ! von Karman's constant
         real, parameter     :: V = 0.000015 ! Kinematic viscosity of air at 20 C (m2/s)
 
-        rb_out = (2.0 / (K * ustar)) * (((V/d)/PR)**(2.0/3.0))
-    end function rb
+        rb = (2.0 / (K * ustar)) * (((V/d)/PR)**(2.0/3.0))
+    end function do3se_rb
 
     !==========================================================================
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
@@ -120,8 +122,8 @@ contains
         use Inputs, only: ustar
         use Variables, only: Rb_out => Rb, Rb_H2O
 
-        Rb_out = rb(ustar, DO3)
-        Rb_H2O = rb(ustar, DH2O)
+        Rb_out = do3se_rb(ustar, DO3)
+        Rb_H2O = do3se_rb(ustar, DH2O)
     end subroutine Calc_Rb
 
     !==========================================================================

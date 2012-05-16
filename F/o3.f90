@@ -21,7 +21,7 @@ contains
         use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
                              Ra_ref, Ra_O3zR_i, Ra_tar_i
         use Parameters, only: O3zR, O3_d, O3_zo, h, d, zo
-        use R, only: ra_simple, rb_func => rb
+        use R, only: do3se_ra_simple, do3se_rb
 
         real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
 
@@ -30,19 +30,19 @@ contains
         ! ustar over reference canopy
         ustar_ref = do3se_ustar_from_velocity(uh_i, izR - O3_d, O3_zo)
         ! Ra between reference canopy and izR
-        Ra_ref_i = ra_simple(ustar_ref, O3_zo + O3_d, izR, O3_d)
+        Ra_ref_i = do3se_ra_simple(ustar_ref, O3_zo + O3_d, izR, O3_d)
         ! Rb for reference canopy
-        Rb_ref = rb_func(ustar_ref, DO3)
+        Rb_ref = do3se_rb(ustar_ref, DO3)
         ! Deposition velocity at izR over reference canopy
         ! (assuming that Rsur_ref = Rsur)
         Vd_i = 1.0 / (Ra_ref_i + Rb_ref + Rsur)
         ! Ra between measurement height and izR
-        Ra_O3zR_i = ra_simple(ustar_ref, O3zR, izR, O3_d)
+        Ra_O3zR_i = do3se_ra_simple(ustar_ref, O3zR, izR, O3_d)
         ! O3 concentration at izR
         O3_ppb_i = O3_ppb_zR / (1.0 - (Ra_O3zR_i * Vd_i))
         ! Ra between target canopy and izR
         ! (ustar already calculated for target canopy)
-        Ra_tar_i = ra_simple(ustar, zo + d, izR, d)
+        Ra_tar_i = do3se_ra_simple(ustar, zo + d, izR, d)
         ! Deposition velocity at izR over target canopy
         Vd = 1.0 / (Ra_tar_i + Rb + Rsur)
         ! O3 concentration at target canopy
