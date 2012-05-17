@@ -115,7 +115,7 @@ contains
     end function do3se_LAI_sunlit_fraction
 
 
-    pure subroutine do3se_flight(Idrctt, Idfuse, sinB, LAI, LAIsunfrac, f_lightfac, cosA, &
+    pure elemental subroutine do3se_flight(Idrctt, Idfuse, sinB, LAI, LAIsunfrac, f_lightfac, cosA, &
                                  Flight, leaf_flight)
         real, intent(in)    :: Idrctt       ! Direct PAR irradiance (W m-2)
         real, intent(in)    :: Idfuse       ! Diffuse PAR irradiance (W m-2)
@@ -146,7 +146,8 @@ contains
             Flightsun = (1.0 - exp(-f_lightfac * PPFDsun))
             Flightshade = (1.0 - exp(-f_lightfac * PPFDshade))
 
-            ! TODO: multilayer model uses leaf_flight = Flightsun
+            ! TODO: "grassland multilayer" model used leaf_flight = Flightsun - 
+            !       which version is right?
             leaf_flight = 1.0 - exp(-f_lightfac * ((Idrctt + Idfuse) * Wm2_uE))
             Flight = LAIsunfrac * Flightsun + (1.0 - LAIsunfrac) * Flightshade
         else
