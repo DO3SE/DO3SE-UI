@@ -5,6 +5,8 @@ module Environmental
     public :: do3se_ftemp
     public :: do3se_fVPD
     public :: do3se_PAR_components
+    public :: do3se_LAI_sunlit_fraction
+    public :: do3se_flight
 
     private
 
