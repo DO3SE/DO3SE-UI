@@ -47,8 +47,11 @@ contains
     !
     ! Note that VPD_min and VPD_max refer to the value for min. and max.
     ! gsto, therefore VPD_min should be greater than VPD_max.
+    !
+    ! Marked elemental so fVPD can be calculated for multiple
+    ! parametrisations simultaneously.
     ! =======================================================================
-    pure function do3se_fVPD(VPD, VPD_min, VPD_max, fmin) result (fVPD)
+    pure elemental function do3se_fVPD(VPD, VPD_min, VPD_max, fmin) result (fVPD)
         real, intent(in)    :: VPD      ! Vapour pressure deficit (kPa)
         real, intent(in)    :: VPD_min  ! VPD for minimum gsto (kPa)
         real, intent(in)    :: VPD_max  ! VPD for maximum gsto (kPa)
