@@ -35,7 +35,6 @@ module Variables
     real, public, save :: SMD        ! soil moisture deficit in m
     real, public, save :: SWP        ! Soil water potential in MPa
     real, public, save :: fSWP
-    real, public, save :: P_input
     real, public, save :: Sn_diff
     real, public, save :: fXWP
     real, public, save :: LWP           ! Leaf water potential (MPa)

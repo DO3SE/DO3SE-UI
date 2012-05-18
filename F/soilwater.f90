@@ -30,6 +30,7 @@ module SoilWater
     public :: fSWP_exp_curve
 
     ! Constants
+    ! TODO: remove these
     real, public, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
     real, public, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
 
@@ -54,6 +55,35 @@ module SoilWater
     real, private :: r_meas
 
 contains
+
+    ! =======================================================================
+    ! Calculate the change in volumetric water content due to precipitation
+    ! and evapotranspiration.
+    ! =======================================================================
+    pure function do3se_Sn_diff(precip, LAI, Ei, AEt, root) result(Sn_diff)
+        real, intent(in)    :: precip   ! Day's precipitation (m)
+        real, intent(in)    :: LAI      ! Leaf area index (m^2/m^2)
+        real, intent(in)    :: Ei       ! Day's evaporation of intercepted precipitation
+        real, intent(in)    :: AEt      ! Day's evapotranspiration from plant and soil (m)
+        real, intent(in)    :: root     ! Root depth (m)
+        real                :: Sn_diff  ! Output: change in volumetric water content (m^3/m^3)
+
+        real :: P_input
+
+        ! Estimate precipitation that recharges the soil water
+        ! The first (0.0001*LAI) of precipitation is assumed to be intercepted, and then
+        ! the evaporation (Ei) is applied to this amount.  Soil water cannot be lost through Ei.
+        if (precip > 0) then
+            P_input = (precip - (0.0001*LAI)) + max(0.0, (0.0001*LAI) - Ei)
+            P_input = max(0.0, P_input)
+        else
+            P_input = 0
+        end if
+
+        ! Total water change = incoming not evaporated - evapotranspiration from plant and soil
+        ! Converted to volumetric change using root depth
+        Sn_diff = (P_input - AEt) / root
+    end function do3se_Sn_diff
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
@@ -219,16 +249,9 @@ contains
         use Inputs, only: dd, precip_acc
         use Variables, only: AEt, Es, Ei, LAI
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
-        use Variables, only: Sn_diff, P_input
+        use Variables, only: Sn_diff
 
-        if (precip_acc > 0) then
-            P_input = (precip_acc - (0.0001*LAI)) + ((0.0001*LAI) - min(Ei, 0.0001*LAI))
-        else
-            P_input = 0
-        end if
-        ! Can't lose water through Ei
-        P_input = max(0.0, P_input)
-        Sn_diff = (P_input - AEt) / root
+        Sn_diff = do3se_Sn_diff(precip_acc, LAI, Ei, AEt, root)
 
         ! Calculate new Sn, with field capacity as a maximum
         Sn = min(Fc_m, Sn + Sn_diff)
@@ -325,23 +348,16 @@ contains
     end subroutine Calc_fLWP
 
     subroutine Calc_SWP_meas()
+        use Inputs, only: precip_acc
         use Constants, only: SWC_sat
-        use Variables, only: AEt, P_input, Sn_meas, Sn_diff_meas, SWP_meas, &
+        use Variables, only: AEt, Ei, LAI, Sn_meas, Sn_diff_meas, SWP_meas, &
                              SMD_meas
         use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas
 
-        real :: P_input_meas, Et_meas, trans_diff_meas
-
-        P_input_meas = P_input
+        real :: Et_meas
 
         Et_meas = AEt * r_meas
-        if (Et_meas > ((Sn_meas-PWP_vol) * D_meas)) then
-            Et_meas = (Sn_meas-PWP_vol) * D_meas
-        end if
-        
-        trans_diff_meas = P_input_meas - Et_meas
-        
-        Sn_diff_meas = trans_diff_meas / D_meas
+        Sn_diff_meas = do3se_Sn_diff(precip_acc, LAI, Ei, Et_meas, D_meas)
         
         Sn_meas = min(Fc_m, Sn_meas + Sn_diff_meas)
         Sn_meas = max(PWP_vol, Sn_meas)
