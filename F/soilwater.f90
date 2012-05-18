@@ -84,6 +84,45 @@ contains
         ! Converted to volumetric change using root depth
         Sn_diff = (P_input - AEt) / root
     end function do3se_Sn_diff
+
+    pure subroutine do3se_SMD(Sn_diff, Sn_old, root, Fc_m, SWP_AE, soil_b, SWP_min, &
+                              Sn, per_vol, ASW, SWP, SMD)
+        real, intent(in) :: Sn_diff     ! Change in volumetric water content (m^3/m^3)
+        real, intent(in) :: Sn_old      ! Previous day's volumetric water content (m3/m3)
+        real, intent(in) :: root        ! Root depth (m)
+        real, intent(in) :: Fc_m        ! Volumetric field capacity (m3/m3)
+        real, intent(in) :: SWP_AE      ! Soil water potential at air entry (MPa)
+        real, intent(in) :: soil_b      ! SWC constant b
+        real, intent(in) :: SWP_min     ! SWP for min g (MPa)
+        real, intent(out) :: Sn         ! Output: new volumetric water content (m3/m3)
+        real, intent(out) :: per_vol    ! Output: Sn as percentage
+        real, intent(out) :: ASW        ! Output: Available soil water (m)
+        real, intent(out) :: SWP        ! Output: Soil water potential (MPa)
+        real, intent(out) :: SMD        ! Output: Soil moisture deficit (m)
+
+        real, parameter :: SWC_sat = 0.4 ! Saturated soil water content for soil water release curve
+
+        real :: PWP, PWP_vol
+
+        ! "Permanent wilting point", a minimum level for SWP.  Either -4.0 MPa or SWP_min,
+        ! whichever is lower.
+        PWP = min(-4.0, SWP_min)
+        ! Convert to volumetric content to use for available soil water
+        PWP_vol = 1.0 / (((PWP/SWP_AE)**(1.0/soil_b)) / SWC_sat)
+
+        ! Calculate new volumetric water content, Sn (m3/m3), with field capacity as maximum,
+        ! and "permanent wilting point" as minimum.
+        Sn = max(PWP_vol, min(Fc_m, Sn_old + Sn_diff))
+        ! Water content as percentage
+        per_vol = Sn * 100
+
+        ! Calculate available soil water (ASW) and soil water potential (SWP)
+        ASW = (Sn - PWP_vol) * root
+        SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
+
+        ! Calculate SMD for new water content
+        SMD = (Fc_m - Sn) * root
+    end subroutine do3se_SMD
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
