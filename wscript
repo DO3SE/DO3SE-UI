@@ -10,3 +10,4 @@ def configure(ctx):
 
 def build(ctx):
     ctx.recurse('do3se_core')
+    ctx.recurse('do3se_model')
