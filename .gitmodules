@@ -1,0 +1,3 @@
+[submodule "do3se_core"]
+	path = do3se_core
+	url = /mnt/L/repos/do3se_core.git

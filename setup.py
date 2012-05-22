@@ -154,6 +154,10 @@ if __name__ == "__main__":
             },
             ext_package     = 'do3se',
             ext_modules     = [
-                Extension(ext_name, buildpyf(ext_files, ext_name))
+                Extension(ext_name,
+                          sources=buildpyf(ext_files, ext_name),
+                          include_dirs=['build'],
+                          library_dirs=['build/do3se_core'],
+                          libraries=['do3se'])
             ],
     )

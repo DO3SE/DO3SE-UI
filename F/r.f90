@@ -3,11 +3,6 @@ module R
     public :: Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
                 Calc_Rinc, Calc_Rsur, Calc_Ra_With_Heat_Flux
 
-    public :: do3se_rsto_from_gsto
-
-    public :: do3se_ra_simple
-    public :: do3se_rb
-
     public :: Calc_Gsto_Multiplicative, Calc_Rsto, VPDcrit_prepare, VPDcrit_apply
 
     ! VPD sum for the day (kPa)
@@ -15,32 +10,6 @@ module R
     real, private, save :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev
 
 contains
-
-    pure function do3se_ra_simple(ustar, z1, z2, d) result (ra)
-        real, intent(in) :: ustar   ! Friction velocity (m/s)
-        real, intent(in) :: z1      ! Lower height (m)
-        real, intent(in) :: z2      ! Upper height (m)
-        real, intent(in) :: d       ! Zero displacement height (m)
-        real :: ra                  ! Output: aerodynamic resistance (s/m)
-
-        real, parameter :: K = 0.41 ! von Karman's constant
-
-        ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
-    end function do3se_ra_simple
-
-    pure function do3se_rsto_from_gsto(gsto) result (rsto)
-        real, intent(in)    :: gsto     ! Stomatal conductance (mmol m-2 s-1)
-        real                :: rsto     ! Output: stomatal resistance (s m-1)
-        real, parameter :: MAX_RSTO = 100000
-
-        if (gsto <= 0) then
-            rsto = MAX_RSTO
-        else
-            ! (gsto in m s-1) = 41000 * (gsto in mmol m-2 s-1)
-            ! (rsto in s m-1) = 1 / (gsto in m s-1)
-            rsto = 41000.0 / gsto
-        end if
-    end function do3se_rsto_from_gsto
 
     !==========================================================================
     ! Calculate Ra, Atmospheric resistance
@@ -51,7 +20,9 @@ contains
         use Parameters, only: h, d
         use Variables, only: Ra
 
-        Ra = do3se_ra_simple(ustar, h, izR, d)
+        use do3se_resistance, only: do3se_Ra_simple
+
+        Ra = do3se_Ra_simple(ustar, h, izR, d)
     end subroutine Calc_Ra_Simple
 
     !==========================================================================
@@ -101,19 +72,6 @@ contains
         Ra = (1 / (k * ustar)) * (log((z - d) / zo) - Psi_h_zd + Psi_h_zo)
     end subroutine Calc_Ra_With_Heat_Flux
 
-
-    pure function do3se_rb(ustar, d) result (rb)
-        real, intent(in)    :: ustar    ! Friction velocity (m/s)
-        real, intent(in)    :: d        ! Molecular diffusivity of substance in air (m2/s)
-        real                :: rb       ! Output: Rb (s/m)
-
-        real, parameter     :: PR = 0.72    ! Prandtl number
-        real, parameter     :: K = 0.41     ! von Karman's constant
-        real, parameter     :: V = 0.000015 ! Kinematic viscosity of air at 20 C (m2/s)
-
-        rb = (2.0 / (K * ustar)) * (((V/d)/PR)**(2.0/3.0))
-    end function do3se_rb
-
     !==========================================================================
     ! Calculate Rb, quasi-laminar boundary layer resistance, s/m
     !==========================================================================
@@ -122,8 +80,10 @@ contains
         use Inputs, only: ustar
         use Variables, only: Rb_out => Rb, Rb_H2O
 
-        Rb_out = do3se_rb(ustar, DO3)
-        Rb_H2O = do3se_rb(ustar, DH2O)
+        use do3se_resistance, only: do3se_Rb
+
+        Rb_out = do3se_Rb(ustar, DO3)
+        Rb_H2O = do3se_Rb(ustar, DH2O)
     end subroutine Calc_Rb
 
     !==========================================================================
@@ -228,6 +188,8 @@ contains
 
     subroutine Calc_Rsto()
         use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, Gsto_PEt, Rsto_PEt
+
+        use do3se_utils, only: do3se_rsto_from_gsto
 
         ! Leaf Rsto
         Rsto_l = do3se_rsto_from_gsto(Gsto_l)
