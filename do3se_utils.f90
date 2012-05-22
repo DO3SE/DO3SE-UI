@@ -3,6 +3,7 @@ module DO3SE_utils
     public :: deg2rad
     public :: do3se_vegetation_d_and_z0
     public :: do3se_LAI_sunlit_fraction
+    public :: do3se_rsto_from_gsto
 
     private
 
@@ -46,5 +47,27 @@ contains
 
         LAIsunfrac = ((1 - exp(-0.5 * LAI / sinB)) * (2 * sinB)) / LAI
     end function do3se_LAI_sunlit_fraction
+
+
+    ! =========================================================================
+    ! Convert stomatal conductance to stomatal resistance, including all the
+    ! unit conversions from mmol m-2 s-1 to s m-1.
+    !
+    ! The maximum stomatal resistance is capped to prevent infinite values when
+    ! the conductance is 0.
+    ! =========================================================================
+    pure function do3se_rsto_from_gsto(gsto) result (rsto)
+        real, intent(in)    :: gsto     ! Stomatal conductance (mmol m-2 s-1)
+        real                :: rsto     ! Output: stomatal resistance (s m-1)
+        real, parameter :: MAX_RSTO = 100000
+
+        if (gsto <= 0) then
+            rsto = MAX_RSTO
+        else
+            ! (gsto in m s-1) = 41000 * (gsto in mmol m-2 s-1)
+            ! (rsto in s m-1) = 1 / (gsto in m s-1)
+            rsto = 41000.0 / gsto
+        end if
+    end function do3se_rsto_from_gsto
 
 end module DO3SE_utils
