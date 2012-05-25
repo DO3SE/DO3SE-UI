@@ -222,21 +222,11 @@ contains
         use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
         use Variables, only: Sn_diff
 
-        use do3se_soilwater, only: do3se_Sn_diff
+        use do3se_soilwater, only: do3se_Sn_diff, do3se_SMD
 
         Sn_diff = do3se_Sn_diff(precip_acc, LAI, Ei, AEt, root)
-
-        ! Calculate new Sn, with field capacity as a maximum
-        Sn = min(Fc_m, Sn + Sn_diff)
-        Sn = max(PWP_vol, Sn)
-        per_vol = Sn * 100
-
-        ! Calculate ASW and SWP for new water content
-        ASW = (Sn - PWP_vol) * root
-        SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
-
-        ! Calculate SMD for new water content
-        SMD = (Fc_m - Sn) * root
+        call do3se_SMD(Sn_diff, Sn, root, Fc_m, SWP_AE, soil_b, SWP_min, &
+                       Sn, per_vol, ASW, SWP, SMD)
     end subroutine Calc_SWP
 
     subroutine Calc_fSWP_exponential()
@@ -325,21 +315,17 @@ contains
         use Constants, only: SWC_sat
         use Variables, only: AEt, Ei, LAI, Sn_meas, Sn_diff_meas, SWP_meas, &
                              SMD_meas
-        use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas
+        use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas, SWP_min
 
-        use do3se_soilwater, only: do3se_Sn_diff
+        use do3se_soilwater, only: do3se_Sn_diff, do3se_SMD
 
-        real :: Et_meas
+        real :: Et_meas, ASW, per_vol
 
         Et_meas = AEt * r_meas
         Sn_diff_meas = do3se_Sn_diff(precip_acc, LAI, Ei, Et_meas, D_meas)
-        
-        Sn_meas = min(Fc_m, Sn_meas + Sn_diff_meas)
-        Sn_meas = max(PWP_vol, Sn_meas)
-        
-        SWP_meas = SWP_AE * ((SWC_sat / Sn_meas)**soil_b)
 
-        SMD_meas = (Fc_m - Sn_meas) * D_meas
+        call do3se_SMD(Sn_diff_meas, Sn_meas, D_meas, Fc_m, SWP_AE, soil_b, SWP_min, &
+                       Sn_meas, per_vol, ASW, SWP_meas, SMD_meas)
     end subroutine Calc_SWP_meas
 
     subroutine Calc_fPAW()
