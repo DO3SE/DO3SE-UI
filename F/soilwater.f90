@@ -105,85 +105,21 @@ contains
         SWP_meas = SWP_AE*((SWC_sat/Sn_meas)**soil_b)
     end subroutine Init_SoilWater
 
-    !
-    ! Calculate the evaporation of intercepted precipitation (Ei), potential
-    ! plant transpiration (PEt), actual plant transpiration (Et), actual
-    ! evapotranspiration (AEt) and soil evaporation (Es) using the
-    ! Penman-Monteith method.
-    !
     subroutine Calc_Penman_Monteith()
-        use Constants, only: seaP, Ts_K, Dratio
-        use Inputs, only: VPD, Ts_C, P, dd, Rn_MJ => Rn, esat_kPa => esat, eact_kPa => eact
-        use Variables, only: Ei, Et, PEt, AEt, Es, Rb_H2O, LAI, Rsto_c, &
-                             Rsto_PEt, Sn, Ra, Rinc, Es_blocked
-        use Parameters, only: Fc_m, Rsoil
+        use Inputs, only: VPD, Ts_C, P, Rn_MJ => Rn
+        use Variables, only: Ra, Rb_H2O, Rsto_c, Rsto_PEt, Rinc, LAI, Es_blocked
+        use Parameters, only: Rsoil
 
-        real        :: VPD_Pa       ! VPD in Pa, not kPa
-        real        :: P_Pa         ! Pressure in Pa, not kPa
-        real        :: esat, eact   ! esat and eact in Pa
-        real        :: Tvir, delta, lambda, psychro, Pair, Cair, G
-        
-        real        :: Et_1, Et_2, Ei_3 !, PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr
-        real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3 !, Es_hr
-        real :: SW_a, SW_s, SW_c, C_canopy, C_soil
+        use do3se_soilwater, only: do3se_penman_monteith_hourly
 
-        ! Convert Rn to J from MJ
-        real :: Rn
-        Rn = Rn_MJ * 1000000.0
-
-        VPD_Pa = VPD * 1000
-        P_Pa = P * 1000
-
-        esat = 1000 * esat_kPa
-        eact = 1000 * eact_kPa
-
-        Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P_Pa)))
-        delta= ((4098*esat)/((Ts_c+237.3)**2)) 
-        lambda = (2501000-(2361*Ts_c))
-        psychro = 1628.6 * (P_Pa/lambda)
-        Pair = (0.003486*(P_Pa/Tvir))
-        Cair = (0.622*((lambda*psychro)/P_Pa))
-
-        G = 0.1 * Rn
-        
-        Et_1 = (delta * (Rn - G)) / lambda
-        Et_2 = 3600 * Pair * Cair * VPD_Pa / Rb_H2O / lambda
-
-        Ei_3 = delta + psychro
-        Ei_hr = (Et_1 + Et_2) / Ei_3 / 1000
-
-        PEt_3 = delta + psychro * (1 + (Rsto_PEt * Dratio) / Rb_H2O)
-        PEt_hr = (Et_1 + Et_2) / PEt_3 / 1000
-
-        Et_3 = delta + psychro * (1 + (Rsto_c * Dratio) / Rb_H2O)
+        ! Keep previous hour's Et_hr for LWP calculation
         Et_hr_prev = Et_hr
-        Et_hr = (Et_1 + Et_2) / Et_3 / 1000
 
-        if (Es_blocked) then
-            Es_hr = 0
-        else
-            t = exp(-0.5 * LAI)
-            Es_Rn = Rn * t
-            Es_G = 0.1 * Es_Rn
-            Es_1 = (delta * (Rn - G)) / lambda
-            Es_2 = ((3600 * Pair * Cair * VPD_Pa) - (delta * Rinc * ((Rn - G) - (Es_Rn - Es_G)))) / (Rinc + Rb_H2O) / lambda
-            Es_3 = delta + (psychro * (1.0 + (Rsoil / (Rb_H2O + Rinc))))
-            Es_hr = (Es_1 + Es_2) / Es_3 / 1000
-        endif
+        call do3se_penman_monteith_hourly(Rn_MJ*1000000.0, VPD*1000.0, P*1000.0, Ts_C, LAI, &
+                                          Rsto_c, Rsto_PEt, Ra, Rb_H2O, Rinc, Rsoil, Es_blocked, &
+                                          Ei_hr, PEt_hr, Et_hr, Es_hr, AEt_hr)
 
-        ! Calculate AEt from Et and Es (after Shuttleworth and Wallace, 1985)
-        SW_a = (delta + psychro) * (Ra + Rb_H2O)
-        SW_s = (delta + psychro) * Rinc + (psychro * Rsoil)
-        SW_c = (delta + psychro) * 0 + (psychro + Rsto_c) ! Boundary layer 
-                                                          ! resistance = 0
-        C_canopy = 1 / (1 + ((SW_c * SW_a) / (SW_s * (SW_c + SW_a))))
-        C_soil = 1 / (1 + ((SW_s * SW_a) / (SW_c * (SW_s + SW_a))))
-        if (Es_hr <= 0) then
-            AEt_hr = Et_hr
-        else
-            AEt_hr = (C_canopy * Et_hr) + (C_soil * Es_hr)
-        end if
-
+        ! Accumulate daily changes for eventual Sn_diff calculation when the day is done
         Ei_dd = Ei_dd + Ei_hr
         PEt_dd = PEt_dd + PEt_hr
         Et_dd = Et_dd + Et_hr
