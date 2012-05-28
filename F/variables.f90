@@ -28,7 +28,6 @@ module Variables
     real, public, save  :: Es   ! Evaporation of soil water
     real, public, save  :: AEt  ! Actual evapotranspiration (combining plant
                                 ! transpiration and soil evaporation)
-    real, public, save :: Sn_star    ! Calculated Sn* in m3/m3
     real, public, save :: ASW        ! Calculated ASW in m
     real, public, save :: Sn         ! Soil water in m3/m3
     real, public, save :: per_vol    ! % volumetric water content

@@ -3,7 +3,6 @@
 !
 ! Terminology:
 !   Fc_m    = Volumetric field capacity
-!   Sn_star = Initial volumetric water content, <= Fc_m
 !   Sn      = Current volumetric water content, <= Fc_m
 !   P_input = Preciptation input (after evaporation of intercepted)
 !   Sn_diff = Today's volumetric water content change (+ve = gain)
@@ -50,19 +49,19 @@ module SoilWater
     ! Daily accumulation variables
     real, private :: Ei_dd, PEt_dd, Et_dd, Es_dd, AEt_dd
 
-    real, private :: PWP, PWP_vol
-
-    real, private :: r_meas
-
 contains
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
         use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas
         use Parameters, only: SWP_min, SWP_max, fmin, root
-        use Variables, only: Sn_star, Sn, per_vol, ASW, SWP, &
+        use Variables, only: Sn, per_vol, ASW, SWP, &
                              fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP, &
                              Sn_meas, SWP_meas, SMD_meas
+
+        use do3se_soilwater, only: do3se_SMD
+
+
 
         Ei_dd = 0
         PEt_dd = 0
@@ -75,34 +74,24 @@ contains
         Es = 0
         AEt = 0
 
-        ! PWP can't be any higher than SWP_min
-        PWP = min(-4.0, SWP_min)
-        ! Convert PWP to volumetric (MPa -> m^3/m^3)
-        PWP_vol = 1.0 / (((PWP/SWP_AE)**(1.0/soil_b)) / SWC_sat)
+        ! Calculate SMD variables as if soil water content is at its maximum
+        ! (implicitly sets Sn = Fc_m)
+        call do3se_SMD(0.0, Fc_m, root, Fc_m, SWP_AE, soil_b, SWP_min, &
+                       Sn, per_vol, ASW, SWP, SMD)
+        ! Need to store ASW at maximum soil water content
+        ASW_FC = ASW
 
-        ! Volumetric water content, initially at field capacity
-        Sn_star = Fc_m
-        Sn = Sn_star
-
-        ! As a percentage
-        per_vol = Sn * 100
-
-        ! ASW and SWP for initial volumetric water content
-        ASW = (Sn - PWP_vol) * root
-        ASW_FC = (Fc_m - PWP_vol) * root
-        SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
+        ! TODO: allow initial soil water content to be set.  This will probably
+        ! involve setting a new Sn and calling do3se_SMD() again.
 
         ! Calculate fSWP and SMD for initial water content
         fSWP = fSWP_exp_curve(SWP, fmin)
-        SMD = (Fc_m - Sn) * root
-
         ! Initial fLWP = 1
         fLWP = 1
 
-        ! Initialised SWP_meas
-        r_meas = (1-(0.97**(D_meas*100)))
-        Sn_meas = Sn_star
-        SWP_meas = SWP_AE*((SWC_sat/Sn_meas)**soil_b)
+        ! Initialise SWP_meas
+        Sn_meas = Fc_m
+        call Calc_SWP_meas()
     end subroutine Init_SoilWater
 
     subroutine Calc_Penman_Monteith()
@@ -255,8 +244,9 @@ contains
 
         use do3se_soilwater, only: do3se_Sn_diff, do3se_SMD
 
-        real :: Et_meas, ASW, per_vol
+        real :: r_meas, Et_meas, ASW, per_vol
 
+        r_meas = (1-(0.97**(D_meas*100)))
         Et_meas = AEt * r_meas
         Sn_diff_meas = do3se_Sn_diff(precip_acc, LAI, Ei, Et_meas, D_meas)
 
