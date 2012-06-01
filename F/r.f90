@@ -143,35 +143,6 @@ contains
         end if
     end subroutine VPDcrit_apply
 
-
-    pure subroutine do3se_gsto_mult(fphen, leaf_fphen, flight, leaf_flight, ftemp, &
-                                    fVPD, fSWP, fO3, LAI, gmax, gmorph, fmin, &
-                                    Gsto_l, Gsto, Gsto_c, Gsto_PEt)
-        real, intent(in)    :: fphen        ! Phenology-related effect on gsto (fraction)
-        real, intent(in)    :: leaf_fphen   ! Phenology-related effect on leaf gsto (fraction)
-        real, intent(in)    :: flight       ! Irradiance effect on gsto (fraction)
-        real, intent(in)    :: leaf_flight  ! Irradiance effect on leaf gsto (fraction)
-        real, intent(in)    :: ftemp        ! Temperature effect on gsto (fraction)
-        real, intent(in)    :: fVPD         ! VPD effect on gsto (fraction)
-        real, intent(in)    :: fSWP         ! Soil water effect on gsto (fraction)
-        real, intent(in)    :: fO3          ! O3 effect on gsto (fraction)
-        real, intent(in)    :: LAI          ! Leaf area index, for bulk gsto (m^2/m^2)
-        real, intent(in)    :: gmax         ! Maximum gsto (mmol O3 m-2 PLA s-1)
-        real, intent(in)    :: gmorph       ! Sun/shade morphology factor (fraction)
-        real, intent(in)    :: fmin         ! Minimum gsto fraction (fraction)
-
-        real, intent(out)   :: Gsto_l       ! Output: leaf gsto (mmol O3 m-2 PLA s-1)
-        real, intent(out)   :: Gsto         ! Output: mean canopy gsto (mmol O3 m-2 PLA s-1)
-        real, intent(out)   :: Gsto_c       ! Output: bulk canopy gsto (mmol O3 m-2 PLA s-1)
-        real, intent(out)   :: Gsto_PEt     ! Output: bulk canopy gsto assuming no soil water
-                                            !         influence (mmol O3 m-2 PLA s-1)
-
-        Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fSWP)
-        Gsto = (gmax * gmorph) * fphen * flight * max(fmin, ftemp * fVPD * fSWP)
-        Gsto_c = Gsto * LAI
-        Gsto_PEt = gmax * fphen * flight * ftemp * fVPD * LAI
-    end subroutine do3se_gsto_mult
-
     !==========================================================================
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
@@ -181,9 +152,18 @@ contains
         use Variables, only: leaf_fphen, leaf_flight, LAI
         use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
 
-        call do3se_gsto_mult(fphen, leaf_fphen, flight, leaf_flight, ftemp, &
-                             fVPD, fXWP, fO3, LAI, gmax, gmorph, fmin, &
-                             Gsto_l, Gsto, Gsto_c, Gsto_PEt)
+        use do3se_resistance
+
+        type(GstoType) :: gsto_
+
+        gsto_ = do3se_multiplicative_gsto(gmax, fmin, gmorph, LAI, &
+                                          fphen, leaf_fphen, flight, &
+                                          leaf_flight, ftemp, fVPD, fXWP, fO3)
+
+        Gsto_l = gsto_%leaf
+        Gsto = gsto_%mean
+        Gsto_c = gsto_%canopy
+        Gsto_PEt = gsto_%canopy_noSMD
     end subroutine Calc_Gsto_Multiplicative
 
     subroutine Calc_Rsto()
