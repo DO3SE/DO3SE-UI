@@ -67,6 +67,8 @@ contains
 
     !==========================================================================
     ! Calculate the upper leaf stomatal ozone flux
+    !
+    ! FIXME: see issue #99
     !==========================================================================
     subroutine Calc_Fst()
         use Parameters, only: Lm, Rext
