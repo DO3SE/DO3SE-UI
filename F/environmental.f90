@@ -45,13 +45,13 @@ contains
 
         use do3se_met, only: do3se_PAR_components
         use do3se_env, only: do3se_f_light
-        use do3se_utils, only: do3se_LAI_sunlit_fraction
+        use do3se_utils, only: do3se_sunlit_LAI
 
-        real :: Idrctt, Idfuse, LAIsunfrac
+        real :: Idrctt, Idfuse, sunLAI
 
         call do3se_PAR_components(P, PAR/4.57, sinB, Idrctt, Idfuse)
-        LAIsunfrac = do3se_LAI_sunlit_fraction(LAI, sinB)
-        call do3se_f_light(Idrctt, Idfuse, sinB, LAI, LAIsunfrac, f_lightfac, cosA, &
+        sunLAI = do3se_sunlit_LAI(LAI, sinB)
+        call do3se_f_light(Idrctt, Idfuse, sinB, LAI, sunLAI, f_lightfac, cosA, &
                            Flight, leaf_flight)
     end subroutine Calc_Flight
 
