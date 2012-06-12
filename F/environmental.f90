@@ -51,7 +51,7 @@ contains
 
         call do3se_PAR_components(P, PAR/4.57, sinB, Idrctt, Idfuse)
         sunLAI = do3se_sunlit_LAI(LAI, sinB)
-        call do3se_f_light(Idrctt, Idfuse, sinB, LAI, sunLAI, f_lightfac, cosA, &
+        call do3se_f_light(Idrctt, Idfuse, sinB, LAI, sunLAI/LAI, f_lightfac, cosA, &
                            Flight, leaf_flight)
     end subroutine Calc_Flight
 
