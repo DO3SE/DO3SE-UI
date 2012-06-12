@@ -55,6 +55,9 @@ contains
     !
     ! The maximum stomatal resistance is capped to prevent infinite values when
     ! the conductance is 0.
+    !
+    ! TODO: make this elemental
+    ! TODO: make max rsto an optional argument
     ! =========================================================================
     pure function do3se_rsto_from_gsto(gsto) result (rsto)
         real, intent(in)    :: gsto     ! Stomatal conductance (mmol m-2 s-1)
