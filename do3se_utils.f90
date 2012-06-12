@@ -2,7 +2,7 @@ module DO3SE_utils
 
     public :: deg2rad
     public :: do3se_vegetation_d_and_z0
-    public :: do3se_LAI_sunlit_fraction
+    public :: do3se_sunlit_LAI
     public :: do3se_rsto_from_gsto
 
     private
@@ -38,15 +38,15 @@ contains
 
     ! =========================================================================
     ! For a given solar elevation angle and leaf area index, calculate the
-    ! fraction of the LAI which is sunlit.
+    ! the sunlit LAI from the total LAI.
     ! =========================================================================
-    pure function do3se_LAI_sunlit_fraction(LAI, sinB) result (LAIsunfrac)
+    pure elemental function do3se_sunlit_LAI(LAI, sinB) result (sunLAI)
         real, intent(in)    :: LAI          ! Leaf area index (m^2/m^2)
         real, intent(in)    :: sinB         ! sin(B), B = solar elevation angle
-        real                :: LAIsunfrac   ! Output: fraction of LAI that is sunlit
+        real                :: sunLAI       ! Output: sunlit LAI (m^2/m^2)
 
-        LAIsunfrac = ((1 - exp(-0.5 * LAI / sinB)) * (2 * sinB)) / LAI
-    end function do3se_LAI_sunlit_fraction
+        sunLAI = ((1 - exp(-0.5 * LAI / sinB)) * (2 * sinB))
+    end function do3se_sunlit_LAI
 
 
     ! =========================================================================

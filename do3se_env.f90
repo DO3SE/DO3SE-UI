@@ -7,7 +7,7 @@ module DO3SE_env
     private
 
 contains
-    
+
     ! =========================================================================
     ! Calculate VPD effect on gsto, fVPD.
     !
@@ -57,13 +57,13 @@ contains
     ! Marked as elemental so flight can be calculated for multiple
     ! parametrisations simultaneously.
     ! =========================================================================
-    pure elemental subroutine do3se_f_light(Idrctt, Idfuse, sinB, LAI, LAIsunfrac, f_lightfac, cosA, &
+    pure elemental subroutine do3se_f_light(Idrctt, Idfuse, sinB, LAI, sunLAI, f_lightfac, cosA, &
                                             Flight, leaf_flight)
         real, intent(in)    :: Idrctt       ! Direct PAR irradiance (W m-2)
         real, intent(in)    :: Idfuse       ! Diffuse PAR irradiance (W m-2)
         real, intent(in)    :: sinB         ! sin(B), B = solar elevation angle
         real, intent(in)    :: LAI          ! Leaf area index (m^2/m^2)
-        real, intent(in)    :: LAIsunfrac   ! Fraction of LAI that is sunlit
+        real, intent(in)    :: sunLAI       ! Sunlit LAI (m^2/m^2)
         real, intent(in)    :: f_lightfac   ! Single leaf Flight coefficient
         real, intent(in)    :: cosA         ! cos(A), A = mean leaf inclination
         real, intent(out)   :: Flight       ! Output: irradiance effect on whole-canopy gsto
@@ -71,7 +71,9 @@ contains
 
         real, parameter :: Wm2_uE = 4.57    ! Conversion from W m-2 to umol m-2 s-1
 
-        real :: PARshade, PARsun, PPFDshade, PPFDsun, Flightsun, Flightshade
+        real :: PARshade, PARsun, PPFDshade, PPFDsun, Flightsun, Flightshade, LAIsunfrac
+
+        LAIsunfrac = sunLAI / LAI
 
         if (sinB > 0 .and. LAI > 0) then
             ! PAR flux densities evaluated using method of Norman (1982, p.79):
