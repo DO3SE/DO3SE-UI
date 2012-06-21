@@ -44,11 +44,15 @@ module Main
 
 contains
 
-    subroutine stderr(message)
+    ! Print a message to stderr and exit with a particular status code.
+    ! (exitstatus=0 for success)
+    subroutine die(exitstatus, message)
         use ISO_FORTRAN_ENV, only: ERROR_UNIT
+        integer, intent(in) :: exitstatus
         character(len=*), intent(in) :: message
         WRITE (ERROR_UNIT, '(a)') message
-    end subroutine stderr
+        call EXIT(exitstatus)
+    end subroutine die
 
 end module Main
 
@@ -76,26 +80,21 @@ program DO3SE
     ! Load configuration file
     call GET_COMMAND_ARGUMENT(1, argbuffer, arglen, errstat)
     if (arglen == 0 .or. errstat > 0) then
-        call stderr("No configuration file specified")
-        call stderr(usage)
-        call EXIT(1)
+        call die(1, 'No configuration file specified' // NEW_LINE(' ') // usage)
     else if (errstat < 0) then
-        call stderr("Configuration file path too long")
-        call EXIT(1)
+        call die(1, "Configuration file path too long")
     end if
     OPEN (newunit=configunit, file=argbuffer, status="old", action="read", position="rewind")
     READ (unit=configunit, nml=do3se_config, iostat=errstat)
     if (errstat /= 0) then
-        call stderr("Error reading configuration file")
-        call EXIT(1)
+        call die(1, "Error reading configuration file")
     end if
     CLOSE (configunit)
 
     ! Open input file, if specified
     call GET_COMMAND_ARGUMENT(2, argbuffer, arglen, errstat)
     if (errstat < 0) then
-        call stderr("Input file path too long")
-        call EXIT(1)
+        call die(1, "Input file path too long")
     else if (arglen > 0 .and. errstat == 0) then
         OPEN (newunit=inunit, file=argbuffer, status="old", action="read", position="rewind")
     end if
@@ -103,8 +102,7 @@ program DO3SE
     ! Open output file, if specified
     call GET_COMMAND_ARGUMENT(3, argbuffer, arglen, errstat)
     if (errstat < 0) then
-        call stderr("Output file path too long")
-        call EXIT(1)
+        call die(1, "Output file path too long")
     else if (arglen > 0 .and. errstat == 0) then
         OPEN (newunit=outunit, file=argbuffer, status="replace", action="write", position="rewind")
     end if
@@ -114,15 +112,13 @@ program DO3SE
         ! Force line-at-a-time reads
         READ (unit=inunit, fmt='(a)', iostat=errstat) linebuffer
         if (errstat == IOSTAT_END) then
-            call stderr("Reached end of input file")
-            exit
+            call die(0, "Reached end of input file")
         end if
 
         ! Read row data from the input
         READ (unit=linebuffer, fmt=*, iostat=errstat) inrow
         if (errstat == IOSTAT_END) then
-            call stderr("Incomplete input row")
-            call EXIT(1)
+            call die(1, "Incomplete input row")
         end if
 
         WRITE (unit=outunit, fmt=*) inrow
