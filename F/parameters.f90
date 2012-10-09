@@ -167,4 +167,28 @@ contains
         zo = h * 0.1
     end subroutine Derive_d_zo
 
+    !==========================================================================
+    ! Read parameters from an open file, using a "parameters" namelist.
+    !==========================================================================
+    subroutine load_parameters(paramunit)
+        integer, intent(in) :: paramunit
+        namelist /parameters/ Rsoil, soil_b, Fc_m, SWP_AE, Ksat, &
+                            & uzR, O3zR, xzR, D_meas, u_h, O3_h, &
+                            & lat, lon, elev, &
+                            & T_min, T_opt, T_max, &
+                            & VPD_min, VPD_max, VPD_crit, &
+                            & SWP_min, SWP_max, &
+                            & gmax, gmorph, fmin, albedo, root, h, SGS, EGS, &
+                            & LAI_a, LAI_b, LAI_c, LAI_d, LAI_1, LAI_2, &
+                            & fphen_limA, fphen_limB, &
+                            & fphen_a, fphen_b, fphen_c, fphen_d, fphen_e, &
+                            & fphen_1, fphen_2, fphen_3, fphen_4, &
+                            & Astart, Aend, leaf_fphen_a, leaf_fphen_b, &
+                            & leaf_fphen_c, leaf_fphen_1, leaf_fphen_2, &
+                            & cosA, f_lightfac, Rext, Rinc_b, Lm, Y, &
+                            & g_sto_0, m, V_cmax_25, J_max_25, &
+                            & ttime_sowing, ttime_emergence
+        read(unit=paramunit, nml=parameters)
+    end subroutine load_parameters
+
 end module Parameters

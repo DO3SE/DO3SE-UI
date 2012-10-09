@@ -287,4 +287,21 @@ contains
         end select
     end subroutine SB_Calc_SGS_EGS
 
+    subroutine load_switchboard_settings(paramunit)
+        integer, intent(in) :: paramunit
+        namelist /switchboard/ sai_method, &
+                             & rn_method, &
+                             & leaf_fphen_method, &
+                             & ra_method, &
+                             & tleaf_method, &
+                             & gsto_method, &
+                             & fo3_method, &
+                             & fswp_method, &
+                             & lwp_method, &
+                             & fxwp_method, &
+                             & r_par_method, &
+                             & sgs_egs_method
+        read(unit=paramunit, nml=switchboard)
+    end subroutine load_switchboard_settings
+
 end module Switchboard

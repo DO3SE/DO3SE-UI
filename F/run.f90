@@ -2,6 +2,7 @@ module Run
 
     public :: Run_With_Callbacks
     public :: Run_With_Files
+    public :: Run_With_Units
 
     public :: Initialise
     public :: Hourly
@@ -227,5 +228,14 @@ contains
         call Run_With_Callbacks(Read_Row_From_File, Write_Row_To_File)
         call Close_Files()
     end subroutine Run_With_Files
+
+    subroutine Run_With_Units(inunit_, outunit_)
+        integer, intent(in) :: inunit_
+        integer, intent(in) :: outunit_
+
+        inunit = inunit_
+        outunit = outunit_
+        call Run_With_Callbacks(Read_Row_From_File, Write_Row_To_File)
+    end subroutine Run_With_Units
 
 end module Run
