@@ -132,6 +132,9 @@ module Parameters
     real, public, save :: m = 7.65          ! Species-specific sensitivity/fudge-factor
     real, public, save :: V_cmax_25 = 70.03 ! Maximum catalytic rate at 25C (umol m-2 s-1)
     real, public, save :: J_max_25 = 163.05 ! Maximum rate of electron transport at 25C (umol m-2 s-1)
+
+    integer, public, save :: ttime_sowing = 0      ! Day of year to start counting thermal time
+    real, public, save :: ttime_emergence = 0   ! Thermal time before emergence (degree days till SGS)
     
     public :: Derive_d_zo
 

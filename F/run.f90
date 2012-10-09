@@ -23,6 +23,7 @@ contains
         use SoilWater
         use Parameters, only: Derive_d_zo, Derive_Windspeed_d_zo, Derive_O3_d_zo
         use Inputs, only: Init_Inputs
+        use thermal_time, only: init_thermal_time
 
         dd_prev = -1
         
@@ -39,6 +40,7 @@ contains
         call Derive_O3_d_zo()
         call Init_Inputs()
         call Init_SoilWater()
+        call init_thermal_time()
     end subroutine Initialise
 
     subroutine Hourly()
@@ -49,6 +51,7 @@ contains
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
         use Inputs, only: dd, Calc_ustar_uh, Accumulate_precip, Calc_sinB, Calc_humidity
         use Variables, only: dd_prev
+        use thermal_time, only: accumulate_tmean
 
         use Switchboard
 
@@ -60,6 +63,7 @@ contains
         call Calc_sinB()
         call SB_Calc_Rn()
         call Calc_humidity()
+        call accumulate_tmean()
 
         call Calc_Flight()
 
@@ -100,7 +104,9 @@ contains
         use Switchboard
         use Phenology, only: Calc_LAI, Calc_fphen
         use Inputs, only: Calc_precip_acc
+        use thermal_time, only: accumulate_ttime
 
+        call accumulate_ttime()
         call Calc_LAI()
         call SB_Calc_SAI()
         call Calc_fphen()

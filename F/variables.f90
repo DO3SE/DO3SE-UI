@@ -85,5 +85,8 @@ module Variables
     real, public, save :: AOT0          ! Accumulated OT0 (upper leaf)
     real, public, save :: fO3
 
+    real, public, save :: tmean         ! Previous day's mean temperature (degrees C)
+    real, public, save :: ttime         ! Accumulated thermal time (degree C days)
+
 end module Variables
 

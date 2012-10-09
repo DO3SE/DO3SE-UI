@@ -9,5 +9,6 @@ objects = constants.o \
 		  r.o \
 		  o3.o \
 		  pn_gsto.o \
+		  thermal_time.o \
 		  switchboard.o \
 		  run.o
