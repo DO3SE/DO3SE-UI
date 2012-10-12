@@ -4,7 +4,7 @@ program Run_DOSE
     use Switchboard
     use Run
 
-    character(len=*), parameter :: usage = "usage: run_do3se config.nml [inputfile [outputfile]]"
+    character(len=*), parameter :: usage = "usage: run_do3se config.nml grid.nml [inputfile [outputfile]]"
 
     integer :: inunit = INPUT_UNIT
     integer :: outunit = OUTPUT_UNIT
@@ -13,6 +13,10 @@ program Run_DOSE
     integer :: errstat
     integer :: arglen
     character(len=1024) :: argbuffer
+
+    if (command_argument_count() < 2) then
+        call die(1, usage)
+    end if
 
     ! Get confiuration file
     call get_command_argument(1, argbuffer, arglen, errstat)
@@ -28,8 +32,21 @@ program Run_DOSE
     call load_switchboard_settings(configunit)
     close(configunit)
 
+    ! Get grid square confiuration file
+    call get_command_argument(2, argbuffer, arglen, errstat)
+    if (arglen == 0 .or. errstat > 0) then
+        call die(1, 'No grid square configuration file specified' // new_line(' ') // usage)
+    else if (errstat < 0) then
+        call die(1, "Configuration file path too long")
+    end if
+
+    ! Load grid square configuration
+    open(newunit=configunit, file=argbuffer, status="old", action="read", position="rewind")
+    call load_parameters(configunit)
+    close(configunit)
+
     ! Open input file, if specified
-    call GET_COMMAND_ARGUMENT(2, argbuffer, arglen, errstat)
+    call GET_COMMAND_ARGUMENT(3, argbuffer, arglen, errstat)
     if (errstat < 0) then
         call die(1, "Input file path too long")
     else if (arglen > 0 .and. errstat == 0) then
@@ -37,7 +54,7 @@ program Run_DOSE
     end if
 
     ! Open output file, if specified
-    call GET_COMMAND_ARGUMENT(3, argbuffer, arglen, errstat)
+    call GET_COMMAND_ARGUMENT(4, argbuffer, arglen, errstat)
     if (errstat < 0) then
         call die(1, "Output file path too long")
     else if (arglen > 0 .and. errstat == 0) then
@@ -70,8 +87,10 @@ contains
     subroutine dump_year_stats()
         use thermal_time
         use variables, only: AFstY
+        use parameters, only: lat, lon, emep_x, emep_y
 
-        print *, ttime_season%SGS, ttime_season%double_ridge, &
+        print *, emep_x, emep_y, lat, lon, &
+                 ttime_season%SGS, ttime_season%double_ridge, &
                  ttime_season%Astart, ttime_season%mid_anthesis, &
                  ttime_season%Aend, AFstY
     end subroutine dump_year_stats

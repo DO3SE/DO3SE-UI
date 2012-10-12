@@ -48,6 +48,8 @@ module Parameters
     real, public, save :: lat = 50      ! Latitude (degrees)
     real, public, save :: lon = 0       ! Longitude (degrees)
     real, public, save :: elev = 0      ! Elevation (m)
+    integer, public, save :: emep_x = 25
+    integer, public, save :: emep_y = 49
 
     public :: Derive_Windspeed_d_zo
     public :: Derive_O3_d_zo
@@ -174,7 +176,7 @@ contains
         integer, intent(in) :: paramunit
         namelist /parameters/ Rsoil, soil_b, Fc_m, SWP_AE, Ksat, &
                             & uzR, O3zR, xzR, D_meas, u_h, O3_h, &
-                            & lat, lon, elev, &
+                            & lat, lon, elev, emep_x, emep_y, &
                             & T_min, T_opt, T_max, &
                             & VPD_min, VPD_max, VPD_crit, &
                             & SWP_min, SWP_max, &
