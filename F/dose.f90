@@ -53,6 +53,8 @@ program Run_DOSE
         close(outunit)
     end if
 
+    call dump_year_stats()
+
 contains
 
     ! Print a message to stderr and exit with a particular status code.
@@ -64,5 +66,14 @@ contains
         WRITE (ERROR_UNIT, '(a)') message
         call EXIT(exitstatus)
     end subroutine die
+
+    subroutine dump_year_stats()
+        use thermal_time
+        use variables, only: AFstY
+
+        print *, ttime_season%SGS, ttime_season%double_ridge, &
+                 ttime_season%Astart, ttime_season%mid_anthesis, &
+                 ttime_season%Aend, AFstY
+    end subroutine dump_year_stats
 
 end program Run_DOSE

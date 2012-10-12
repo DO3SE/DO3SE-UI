@@ -1,13 +1,14 @@
 module thermal_time
 
-    use do3se_thermal_time, only: ThermalTimeModelType
+    use do3se_thermal_time, only: ThermalTimeModelType, ThermalTimeSeasonType
 
     public :: init_thermal_time
     public :: accumulate_tmean
     public :: accumulate_ttime
     public :: calc_ttime_phenology
 
-    type(ThermalTimeModelType), private, save :: ttime_model
+    type(ThermalTimeModelType), public, save :: ttime_model
+    type(ThermalTimeSeasonType), public, save :: ttime_season
     real, private, save :: tsum
 
 contains
@@ -17,9 +18,12 @@ contains
         use parameters, only: ttime_sowing, ttime_emergence
         use variables, only: ttime
 
+        type(ThermalTimeSeasonType) :: new_season
+
         ttime_model = do3se_create_thermal_time_model(ttime_sowing, ttime_emergence)
         ttime = 0.0
         tsum = 0.0
+        ttime_season = new_season
     end subroutine init_thermal_time
 
     subroutine accumulate_tmean()
@@ -35,6 +39,7 @@ contains
         tmean = tsum / 24.0
         tsum = 0.0
         call do3se_accumulate_thermal_time(ttime_model, dd, tmean, ttime)
+        call do3se_update_thermal_season(ttime_model, dd, ttime, ttime_season)
     end subroutine accumulate_ttime
 
     subroutine calc_ttime_phenology()
