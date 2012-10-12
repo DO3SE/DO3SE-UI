@@ -162,8 +162,8 @@ contains
 
         read(unit=inunit, fmt=*, iostat=ios) &
             dd, hr, dummy_, dummy_, dummy_, dummy_, Idfuse, Idrctt, uh_zR, &
-            Hd, dummy_, dummy_, P, precip, dummy_, dummy_, Ts_C, RH, dummy_, &
-            O3_ppb_zR
+            Hd, dummy_, dummy_, P, precip, dummy_, dummy_, Ts_C, dummy_, RH, &
+            dummy_, O3_ppb_zR
 
         ! Pressure read in Pa, we expect kPa
         P = P / 1000.0
