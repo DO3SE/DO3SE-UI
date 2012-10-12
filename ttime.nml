@@ -158,7 +158,7 @@ gsto_method = 1
 ! fo3_disabled = 1
 ! fo3_wheat    = 2
 ! fo3_potato   = 3
-fo3_method = 1
+fo3_method = 2
 
 ! fswp_exponential = 1
 ! fswp_linear      = 2
