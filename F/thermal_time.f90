@@ -5,6 +5,7 @@ module thermal_time
     public :: init_thermal_time
     public :: accumulate_tmean
     public :: accumulate_ttime
+    public :: calc_ttime_phenology
 
     type(ThermalTimeModelType), private, save :: ttime_model
     real, private, save :: tsum
@@ -35,5 +36,15 @@ contains
         tsum = 0.0
         call do3se_accumulate_thermal_time(ttime_model, dd, tmean, ttime)
     end subroutine accumulate_ttime
+
+    subroutine calc_ttime_phenology()
+        use do3se_thermal_time
+        use variables, only: ttime, LAI, SAI, fphen, leaf_fphen
+
+        LAI = thermal_time_wheat_LAI(ttime_model, ttime)
+        SAI = thermal_time_wheat_SAI(ttime_model, ttime, LAI)
+        fphen = thermal_time_canopy_f_phen(ttime_model, ttime)
+        leaf_fphen = thermal_time_leaf_f_phen(ttime_model, ttime)
+    end subroutine calc_ttime_phenology
 
 end module thermal_time

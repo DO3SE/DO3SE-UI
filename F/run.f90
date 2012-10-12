@@ -105,13 +105,14 @@ contains
         use Switchboard
         use Phenology, only: Calc_LAI, Calc_fphen
         use Inputs, only: Calc_precip_acc
-        use thermal_time, only: accumulate_ttime
+        use thermal_time, only: accumulate_ttime, calc_ttime_phenology
 
         call accumulate_ttime()
-        call Calc_LAI()
-        call SB_Calc_SAI()
-        call Calc_fphen()
-        call SB_Calc_leaf_fphen()
+        call calc_ttime_phenology()
+        !call Calc_LAI()
+        !call SB_Calc_SAI()
+        !call Calc_fphen()
+        !call SB_Calc_leaf_fphen()
 
         call Calc_precip_acc()
         call Calc_Penman_Monteith_daily()
