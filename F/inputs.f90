@@ -22,6 +22,8 @@ module Inputs
 
     ! These input variables usually aren't available, but have derivations
     real, public, save :: Rn            ! Net radiation (MJ/m^2/h)
+    real, public, save :: Idrctt        ! Direct PAR (W m-2)
+    real, public, save :: Idfuse        ! Diffuse PAR (W m-2)
     real, public, save :: leaf_fphen_input
 
     ! These input variables are always calculated from others
@@ -110,7 +112,8 @@ contains
 
     ! Calculated saturation/actual vapour pressure and relative humidity
     subroutine Calc_humidity()
-        call do3se_humidity_from_VPD(Ts_C, VPD, esat, eact, RH)
+        !call do3se_humidity_from_VPD(Ts_C, VPD, esat, eact, RH)
+        call do3se_VPD_from_humidity(Ts_C, RH, esat, eact, VPD)
     end subroutine Calc_humidity
 
 end module Inputs

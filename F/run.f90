@@ -157,9 +157,19 @@ contains
 
         logical, intent(out) :: done
         integer :: ios
+        real :: dummy_
 
         read(unit=inunit, fmt=*, iostat=ios) &
-            mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, Hd, R, PAR
+            dd, hr, dummy_, dummy_, dummy_, dummy_, Idfuse, Idrctt, uh_zR, &
+            Hd, dummy_, dummy_, P, precip, dummy_, dummy_, Ts_C, RH, dummy_, &
+            O3_ppb_zR
+
+        ! Pressure read in Pa, we expect kPa
+        P = P / 1000.0
+        ! Rn not present, but not needed since we're not running SMD code
+        ! PAR expected in umol m-2 s-1, derive from sum of Idrctt and Idfuse (W m-2) and convert
+        PAR = (Idrctt + Idfuse) * 4.57
+        ! R needs to be derived from PAR - switch it on in the switchboard!
 
         if (ios /= 0) then
             done = .TRUE.
