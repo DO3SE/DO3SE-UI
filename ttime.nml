@@ -1,6 +1,6 @@
 &parameters
 
-Rsoil = 100      ! Soil resistance in (s/m)
+Rsoil = 200      ! Soil resistance in (s/m)
 
 ! Soil properties all set based on "Soil texture"
 soil_b = 4.38        ! SWC constant b
@@ -31,10 +31,10 @@ xzR = 50      ! "Other" measurement height (m)
 D_meas = 0.5  ! Soil water measurement depth (m)
 
 ! Properties of vegetation over which windspeed is measured
-u_h = 25      ! Canopy height (m)
+u_h = 1      ! Canopy height (m)
 
 ! Properties of vegetation over which O3 concentration is measured
-O3_h = 25     ! Canopy height (m)
+O3_h = 1     ! Canopy height (m)
 
 ! Geographical location
 lat = 50      ! Latitude (degrees)
@@ -46,33 +46,33 @@ elev = 0      ! Elevation (m)
 ! Vegetation-specific parameters
 !==========================================================================
 
-T_min = 0    ! oC min temp for g
-T_opt = 21   ! oC opt temp for g
-T_max = 35   ! oC max temp for g
+T_min = 12   ! oC min temp for g
+T_opt = 26   ! oC opt temp for g
+T_max = 40   ! oC max temp for g
 
-VPD_min = 3.25    ! VPD for min g
-VPD_max = 1.0     ! VPD for max g
-VPD_crit = 1000   ! Critical daily VPD sum (kPa)
+VPD_min = 3.2    ! VPD for min g
+VPD_max = 1.2     ! VPD for max g
+VPD_crit = 8   ! Critical daily VPD sum (kPa)
 
-SWP_min = -1.25   ! SWP for min g
-SWP_max = -0.05   ! SWP for max g
+SWP_min = -1.1   ! SWP for min g
+SWP_max = -0.3   ! SWP for max g
 
 ! Boundary gs values
-gmax = 148        ! mmol O3 m^-2 PLA s^-1
+gmax = 450        ! mmol O3 m^-2 PLA s^-1
 gmorph = 1.0      ! sun/shade leaf morphology modifier
-fmin = 0.13       ! minimum gs
+fmin = 0.01       ! minimum gs
 
-albedo = 0.12     ! 0.2 for crops
+albedo = 0.2      ! 0.2 for crops
                   ! 0.12 for needle leaf trees
                   ! 0.14 for moorland
                   ! 0.16 for broad leaf trees
 
-root = 1.2        ! root depth (m)
-h = 25            ! Canopy height (m)
+root = 0.75       ! root depth (m)
+h = 1             ! Canopy height (m)
 
 ! Growing season
-SGS = 121      ! Start of bulk canopy growth period
-EGS = 273      ! End of bulk canopy growth period
+SGS = 118      ! Start of bulk canopy growth period
+EGS = 220      ! End of bulk canopy growth period
 
 ! Leaf area index
 LAI_a = 0.0       ! First LAI point (at SGS)
@@ -97,8 +97,8 @@ fphen_4 = 20      ! Period from fphen_d to fphen_e
 
 
 ! leaf fphen polygon
-Astart = 121      ! Start of upper leaf growth period
-Aend = 273        ! End of upper leaf growth period
+Astart = 153      ! Start of upper leaf growth period
+Aend = 208        ! End of upper leaf growth period
 leaf_fphen_a = 0.0 ! First fphen point (at Astart)
 leaf_fphen_b = 1.0 ! Second fphen point (plateau)
 leaf_fphen_c = 0.0 ! Last fphen point (at Aend)
@@ -106,12 +106,12 @@ leaf_fphen_1 = 15 ! Time from leaf_fphen_a to leaf_fphen_b
 leaf_fphen_2 = 30 ! Time from leaf_fphen_b to leaf_fphen_c
 
 cosA = 0.5        ! A = mean leaf inclination (60 degs)
-f_lightfac = 0.006 ! single leaf flight coefficient
+f_lightfac = 0.0105 ! single leaf flight coefficient
                                         
 Rext = 2500       ! external plant cuticle resistance in s/m
 Rinc_b = 14       ! Rinc co-efficient
 
-Lm = 0.05         ! Leaf dimension (m)
+Lm = 0.02         ! Leaf dimension (m)
 Y = 6.0           ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
 
 ! Photosynthesis estimation parameters
