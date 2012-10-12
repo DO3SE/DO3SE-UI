@@ -22,8 +22,18 @@ module DO3SE_thermal_time
         real :: LAI_after
     end type ThermalTimeModelType
 
+    type ThermalTimeSeasonType
+        integer :: SGS          = -1
+        integer :: double_ridge = -1
+        integer :: Astart       = -1
+        integer :: mid_anthesis = -1
+        integer :: Aend         = -1
+        integer :: EGS          = -1
+    end type ThermalTimeSeasonType
+
     public :: do3se_create_thermal_time_model
     public :: do3se_accumulate_thermal_time
+    public :: do3se_update_thermal_season
     public :: thermal_time_canopy_f_phen
     public :: thermal_time_leaf_f_phen
     public :: thermal_time_wheat_LAI
@@ -104,6 +114,38 @@ contains
             thermal_time = thermal_time + max(0.0, tmean)
         end if
     end subroutine do3se_accumulate_thermal_time
+
+    ! =========================================================================
+    ! Update a ThermalTimeSeasonType with the current day of the year for any
+    ! season marker points that have been crossed.
+    ! =========================================================================
+    pure subroutine do3se_update_thermal_season(model, day, ttime, season)
+        ! Inputs
+        type(ThermalTimeModelType), intent(in) :: model     ! Thermal time model
+        integer, intent(in) :: day  ! Day of year
+        real, intent(in) :: ttime   ! Accumulated thermal time (degree C days)
+        ! Input/output
+        type(ThermalTimeSeasonType), intent(inout) :: season
+
+        if (season%SGS == -1 .and. model%SGS <= ttime) then
+            season%SGS = day
+        end if
+        if (season%double_ridge == -1 .and. model%double_ridge <= ttime) then
+            season%double_ridge = day
+        end if
+        if (season%Astart == -1 .and. model%Astart <= ttime) then
+            season%Astart = day
+        end if
+        if (season%mid_anthesis == -1 .and. model%mid_anthesis <= ttime) then
+            season%mid_anthesis = day
+        end if
+        if (season%Aend == -1 .and. model%Aend <= ttime) then
+            season%Aend = day
+        end if
+        if (season%EGS == -1 .and. model%EGS <= ttime) then
+            season%EGS = day
+        end if
+    end subroutine do3se_update_thermal_season
 
     pure function thermal_time_canopy_f_phen(model, thermal_time) result (f_phen)
         use do3se_utils, only: polygonal_chain
