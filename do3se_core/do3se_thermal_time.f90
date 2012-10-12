@@ -23,6 +23,11 @@ module DO3SE_thermal_time
     end type ThermalTimeModelType
 
     public :: do3se_create_thermal_time_model
+    public :: do3se_accumulate_thermal_time
+    public :: thermal_time_canopy_f_phen
+    public :: thermal_time_leaf_f_phen
+    public :: thermal_time_wheat_LAI
+    public :: thermal_time_wheat_SAI
 
 contains
 
@@ -130,7 +135,7 @@ contains
                                 & thermal_time )
     end function thermal_time_leaf_f_phen
 
-    pure function thermal_time_LAI(model, thermal_time) result (LAI)
+    pure function thermal_time_wheat_LAI(model, thermal_time) result (LAI)
         use do3se_utils, only: polygonal_chain
 
         ! Inputs
@@ -143,6 +148,25 @@ contains
                              & model%LAI_before, &
                              & model%LAI_after, &
                              & thermal_time )
-    end function thermal_time_LAI
+    end function thermal_time_wheat_LAI
+
+    pure function thermal_time_wheat_SAI(model, thermal_time, LAI) result (SAI)
+        ! Inputs
+        type(ThermalTimeModelType), intent(in) :: model
+        real, intent(in) :: thermal_time
+        real, intent(in) :: LAI
+        ! Output
+        real :: SAI
+
+        if (thermal_time < model%SGS .or. thermal_time > model%EGS) then
+            SAI = LAI
+        else if (thermal_time < (model%mid_anthesis + 100.0)) then
+            ! (the same thermal time threshold as the start of the decline in
+            ! leaf_fphen)
+            SAI = (5.0/3.5) * LAI
+        else
+            SAI = LAI + 1.5
+        end if
+    end function thermal_time_wheat_SAI
 
 end module DO3SE_thermal_time
