@@ -1,0 +1,186 @@
+&parameters
+
+Rsoil = 200      ! Soil resistance in (s/m)
+
+! Soil properties all set based on "Soil texture"
+soil_b = 4.38        ! SWC constant b
+                     !  - sandy loam = 3.31
+                     !  - silt loam  = 4.38
+                     !  - loam       = 6.58
+                     !  - clay loam  = 7.00
+Fc_m = 0.26          ! Field capacity (m^3/m^3)
+                     !  - sandy loam = 0.16
+                     !  - silt loam  = 0.26
+                     !  - loam       = 0.29
+                     !  - clay loam  = 0.37
+SWP_AE = -0.00158    ! Water potential at air entry (MPa)
+                     !  - sandy loam = -0.00091
+                     !  - silt loam  = -0.00158
+                     !  - loam       = -0.00188
+                     !  - clay loam  = -0.00588
+Ksat = 0.0002178     ! Saturated soil conductance (s-2 MPa-1 mm-1)
+                     !  - sandy loam = 0.0009576
+                     !  - silt loam  = 0.0002178
+                     !  - loam       = 0.0002286
+                     !  - clay loam  = 0.00016 (estimated)
+
+! Measurement heights
+uzR = 50      ! Windspeed measurement height (m)
+O3zR = 50     ! Ozone concentration measurement height (m)
+xzR = 50      ! "Other" measurement height (m)
+D_meas = 0.5  ! Soil water measurement depth (m)
+
+! Properties of vegetation over which windspeed is measured
+u_h = 1      ! Canopy height (m)
+
+! Properties of vegetation over which O3 concentration is measured
+O3_h = 1     ! Canopy height (m)
+
+! Geographical location
+lat = 50      ! Latitude (degrees)
+lon = 0       ! Longitude (degrees)
+elev = 0      ! Elevation (m)
+
+
+!==========================================================================
+! Vegetation-specific parameters
+!==========================================================================
+
+T_min = 12   ! oC min temp for g
+T_opt = 26   ! oC opt temp for g
+T_max = 40   ! oC max temp for g
+
+VPD_min = 3.2    ! VPD for min g
+VPD_max = 1.2     ! VPD for max g
+VPD_crit = 8   ! Critical daily VPD sum (kPa)
+
+SWP_min = -1.1   ! SWP for min g
+SWP_max = -0.3   ! SWP for max g
+
+! Boundary gs values
+gmax = 450        ! mmol O3 m^-2 PLA s^-1
+gmorph = 1.0      ! sun/shade leaf morphology modifier
+fmin = 0.01       ! minimum gs
+
+albedo = 0.2      ! 0.2 for crops
+                  ! 0.12 for needle leaf trees
+                  ! 0.14 for moorland
+                  ! 0.16 for broad leaf trees
+
+root = 0.75       ! root depth (m)
+h = 1             ! Canopy height (m)
+
+! Growing season
+SGS = 118      ! Start of bulk canopy growth period
+EGS = 220      ! End of bulk canopy growth period
+
+! Leaf area index
+LAI_a = 0.0       ! First LAI point (at SGS)
+LAI_b = 4.0       ! Second LAI point
+LAI_c = 4.0       ! Third LAI point
+LAI_d = 0.0       ! Last LAI point (at EGS)
+LAI_1 = 30        ! Period from LAI_a to LAI_b
+LAI_2 = 30        ! Period from LAI_c to LAI_d
+
+! fphen polygon (see Calc_fphen in phenology.f90)
+fphen_limA = 0    ! Start of soil water limitation
+fphen_limB = 0    ! End of soil water limitation
+fphen_a = 0.0     ! First fphen point (at SGS)
+fphen_b = 1.0
+fphen_c = 1.0     ! fphen during soil water limitation
+fphen_d = 1.0
+fphen_e = 0.0     ! Last fphen point (at EGS)
+fphen_1 = 15      ! Period from fphen_a to fphen_b
+fphen_2 = 0       ! Period from fphen_b to fphen_c
+fphen_3 = 0       ! Period from fphen_c to fphen_d
+fphen_4 = 20      ! Period from fphen_d to fphen_e
+
+
+! leaf fphen polygon
+Astart = 153      ! Start of upper leaf growth period
+Aend = 208        ! End of upper leaf growth period
+leaf_fphen_a = 0.0 ! First fphen point (at Astart)
+leaf_fphen_b = 1.0 ! Second fphen point (plateau)
+leaf_fphen_c = 0.0 ! Last fphen point (at Aend)
+leaf_fphen_1 = 15 ! Time from leaf_fphen_a to leaf_fphen_b
+leaf_fphen_2 = 30 ! Time from leaf_fphen_b to leaf_fphen_c
+
+cosA = 0.5        ! A = mean leaf inclination (60 degs)
+f_lightfac = 0.0105 ! single leaf flight coefficient
+                                        
+Rext = 2500       ! external plant cuticle resistance in s/m
+Rinc_b = 14       ! Rinc co-efficient
+
+Lm = 0.02         ! Leaf dimension (m)
+Y = 6.0           ! Threshold (Y) in AFstY, nmol O3 m-2 s-1
+
+! Photosynthesis estimation parameters
+g_sto_0 = 50000   ! Conductance with closed stomata (umol m-2 s-1)
+m = 7.65          ! Species-specific sensitivity/fudge-factor
+V_cmax_25 = 70.03 ! Maximum catalytic rate at 25C (umol m-2 s-1)
+J_max_25 = 163.05 ! Maximum rate of electron transport at 25C (umol m-2 s-1)
+
+ttime_sowing = 41      ! Day of year to start counting thermal time
+ttime_emergence = 70   ! Thermal time before emergence (degree days till SGS)
+
+/
+
+
+
+&switchboard
+
+! sai_equals_lai = 1
+! sai_forest     = 2
+! sai_wheat      = 3
+sai_method = 1
+
+! rn_use_input  = 1
+! rn_calculate  = 2
+rn_method = 1
+
+! leaf_fphen_equals_fphen = 1
+! leaf_fphen_fixed_day    = 2
+! leaf_fphen_use_input    = 3
+leaf_fphen_method = 1
+
+! ra_simple         = 1
+! ra_with_heat_flux = 2
+ra_method = 1
+
+! tleaf_use_input        = 1
+! tleaf_estimate_jackson = 2
+tleaf_method = 1
+
+! gsto_multiplicative = 1
+! gsto_photosynthetic = 2
+gsto_method = 1
+
+! fo3_disabled = 1
+! fo3_wheat    = 2
+! fo3_potato   = 3
+fo3_method = 2
+
+! fswp_exponential = 1
+! fswp_linear      = 2
+fswp_method = 1
+
+! lwp_non_steady_state = 1
+! lwp_steady_state     = 2
+lwp_method = 1
+
+! fxwp_disabled = 1
+! fxwp_use_fswp = 2
+! fxwp_use_flwp = 3
+! fxwp_use_fpaw = 4
+fxwp_method = 1
+
+! r_par_use_inputs = 1
+! r_par_derive_r   = 2
+! r_par_derive_par = 3
+r_par_method = 2
+
+! sgs_egs_use_inputs = 1
+! sgs_egs_latitude   = 2
+sgs_egs_method = 1
+
+/
