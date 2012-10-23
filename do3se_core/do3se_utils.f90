@@ -1,6 +1,7 @@
 module DO3SE_utils
 
     public :: deg2rad
+    public :: polygonal_chain
     public :: do3se_vegetation_d_and_z0
     public :: do3se_sunlit_LAI
     public :: do3se_rsto_from_gsto
@@ -20,6 +21,45 @@ contains
 
         retval = x * D2R
     end function deg2rad
+
+    ! =========================================================================
+    ! Calculate a value according to a monotone polygonal chain - a continuous
+    ! piecewise linear function where every X value has only one Y value.
+    !
+    ! The piecewise linear function of N segments is defined as a sequence of
+    ! N+1 points, in an array of shape (2,N+1).  Outside of the domain of the
+    ! function, the *before* or *after* value is returned depending on which
+    ! side of the function the X value falls.
+    ! =========================================================================
+    pure function polygonal_chain(points, before, after, x) result (y)
+        real, intent(in)    :: points(:, :)
+        real, intent(in)    :: before
+        real, intent(in)    :: after
+        real, intent(in)    :: x
+        real                :: y
+
+        integer :: n, i
+        real :: ax, ay, bx, by
+
+        n = ubound(points, 2)
+
+        if (x < points(1, 1)) then
+            y = before
+        else if (x > points(1, n)) then
+            y = after
+        else
+            do i = 1, n-1
+                ax = points(1, i)
+                ay = points(2, i)
+                bx = points(1, i + 1)
+                by = points(2, i + 1)
+                if (x <= bx) then
+                    y = ay + (by - ay) * ((x - ax) / (bx - ax))
+                    exit
+                end if
+            end do
+        end if
+    end function polygonal_chain
 
 
     ! =========================================================================
