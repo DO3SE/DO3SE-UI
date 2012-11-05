@@ -1,5 +1,53 @@
 module Parameters
 
+    ! SMD soil texture parameters
+    type SoilType
+        ! SWC constant b
+        real :: soil_b
+        ! Field capacity (m3/m3)
+        real :: Fc_m
+        ! Water potential at air entry (MPa)
+        real :: SWP_AE
+        ! Saturated soil conductance (s-2 MPa-1 mm-1)
+        real :: Ksat
+    end type SoilType
+
+    ! Commonly used soil textures
+    ! ---------------------------
+    ! Sandy loam
+    type(SoilType), parameter :: SOIL_SANDY_LOAM = SoilType(soil_b = 3.31, &
+                                                            Fc_m = 0.16, &
+                                                            SWP_AE = -0.00091, &
+                                                            Ksat = 0.0009576)
+    ! Silt loam
+    type(SoilType), parameter :: SOIL_SILT_LOAM  = SoilType(soil_b = 4.38, &
+                                                            Fc_m = 0.26, &
+                                                            SWP_AE = -0.00158, &
+                                                            Ksat = 0.0002178)
+    ! Loam
+    type(SoilType), parameter :: SOIL_LOAM       = SoilType(soil_b = 6.58, &
+                                                            Fc_m = 0.29, &
+                                                            SWP_AE = -0.00188, &
+                                                            Ksat = 0.0002286)
+    ! Clay loam (Ksat estimated)
+    type(SoilType), parameter :: SOIL_CLAY_LOAM  = SoilType(soil_b = 7.00, &
+                                                            Fc_m = 0.37, &
+                                                            SWP_AE = -0.00588, &
+                                                            Ksat = 0.00016)
+
+    type OptionsType
+        ! Method for calculating SMD/SWP/SWC:
+        !   "disabled", "P-M", "input SWP", "input SWC"
+        character(len=16) :: SMD_method = "disabled"
+        ! Method for incorporating SMD effect into stomatal conductance:
+        !   "disabled", "fSWP exp", "fSWP linear", "fLWP SS", "fLWP non-SS",
+        !   "fPAW"
+        character(len=16) :: SWP_method = "disabled"
+        ! Soil texture for SMD
+        !   "sandy loam", "silt loam", "loam", "clay loam", "custom"
+        character(len=16) :: soil_texture = "silt loam"
+    end type OptionsType
+
     !==========================================================================
     ! Site-specific parameters
     !==========================================================================
@@ -27,6 +75,8 @@ module Parameters
                                                 !  - silt loam  = 0.0002178
                                                 !  - loam       = 0.0002286
                                                 !  - clay loam  = 0.00016 (estimated)
+    ! New-style soil parameters, defaulting to "silt loam"
+    type(SoilType) :: soil = SOIL_SILT_LOAM
 
     ! Measurement heights
     real, public, save :: uzR = 25      ! Windspeed measurement height (m)
@@ -135,7 +185,10 @@ module Parameters
 
     integer, public, save :: ttime_sowing = 0      ! Day of year to start counting thermal time
     real, public, save :: ttime_emergence = 0   ! Thermal time before emergence (degree days till SGS)
-    
+
+    ! Starting point for new options handling
+    type(OptionsType), public, save :: options
+
     public :: Derive_d_zo
 
 contains
@@ -171,8 +224,9 @@ contains
     ! Read parameters from an open file, using a "parameters" namelist.
     !==========================================================================
     subroutine load_parameters(paramunit)
+        use do3se_utils, only: die
         integer, intent(in) :: paramunit
-        namelist /parameters/ Rsoil, soil_b, Fc_m, SWP_AE, Ksat, &
+        namelist /parameters/ Rsoil, &
                             & uzR, O3zR, xzR, D_meas, u_h, O3_h, &
                             & lat, lon, elev, &
                             & T_min, T_opt, T_max, &
@@ -187,8 +241,36 @@ contains
                             & leaf_fphen_c, leaf_fphen_1, leaf_fphen_2, &
                             & cosA, f_lightfac, Rext, Rinc_b, Lm, Y, &
                             & g_sto_0, m, V_cmax_25, J_max_25, &
-                            & ttime_sowing, ttime_emergence
+                            & ttime_sowing, ttime_emergence, &
+                            & options, soil
         read(unit=paramunit, nml=parameters)
+
+        !
+        ! Process options
+        !
+
+        select case (options%soil_texture)
+            case ("sandy loam")
+                soil = SOIL_SANDY_LOAM
+            case ("silt loam")
+                soil = SOIL_SILT_LOAM
+            case ("loam")
+                soil = SOIL_LOAM
+            case ("clay loam")
+                soil = SOIL_CLAY_LOAM
+            case ("custom")
+                ! Do nothing; soil%* should have been set manually
+            case default
+                call die("unrecognised options%soil_texture: " // options%soil_texture)
+        end select
+
+        ! TODO: replace all instances of these variables
+        soil_b = soil%soil_b
+        Fc_m = soil%Fc_m
+        SWP_AE = soil%SWP_AE
+        Ksat = soil%Ksat
+
+        print *, soil_b, Fc_m, SWP_AE, Ksat
     end subroutine load_parameters
 
 end module Parameters

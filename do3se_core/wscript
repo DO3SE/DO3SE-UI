@@ -18,4 +18,4 @@ def build(ctx):
     ctx(features='fc fcstlib',
         source=ctx.path.ant_glob('*.f90'),
         target=APPNAME,
-        fcflags=['-std=f95', '-fimplicit-none', '-fPIC', '-Wall'])
+        fcflags=['-std=f2003', '-fall-intrinsics', '-fimplicit-none', '-fPIC', '-Wall'])

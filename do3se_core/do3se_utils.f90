@@ -6,6 +6,8 @@ module DO3SE_utils
     public :: do3se_sunlit_LAI
     public :: do3se_rsto_from_gsto
 
+    public :: die
+
     private
 
 contains
@@ -112,5 +114,22 @@ contains
             rsto = 41000.0 / gsto
         end if
     end function do3se_rsto_from_gsto
+
+    subroutine die(message, exitstatus)
+        use ISO_FORTRAN_ENV, only: ERROR_UNIT
+
+        character(len=*), intent(in) :: message
+        integer, intent(in), optional :: exitstatus
+
+        integer, parameter :: DEFAULT_EXIT_STATUS = 1
+
+        write (ERROR_UNIT, *) message
+
+        if (present(exitstatus)) then
+            call exit(exitstatus)
+        else
+            call exit(DEFAULT_EXIT_STATUS)
+        end if
+    end subroutine die
 
 end module DO3SE_utils
