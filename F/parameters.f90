@@ -193,7 +193,7 @@ contains
     ! Read parameters from an open file, using a "parameters" namelist.
     !==========================================================================
     subroutine load_parameters(paramunit)
-        use do3se_utils, only: die
+        use DO3SE_IO, only: die
         integer, intent(in) :: paramunit
         namelist /parameters/ Rsoil, &
                             & uzR, O3zR, xzR, D_meas, u_h, O3_h, &
