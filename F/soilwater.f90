@@ -53,7 +53,7 @@ contains
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
-        use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas
+        use Parameters, only: soil, D_meas
         use Parameters, only: SWP_min, SWP_max, fmin, root
         use Variables, only: Sn, per_vol, ASW, SWP, &
                              fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP, &
@@ -76,7 +76,7 @@ contains
 
         ! Calculate SMD variables as if soil water content is at its maximum
         ! (implicitly sets Sn = Fc_m)
-        call do3se_SMD(0.0, Fc_m, root, Fc_m, SWP_AE, soil_b, SWP_min, &
+        call do3se_SMD(0.0, soil%Fc_m, root, soil, SWP_min, &
                        Sn, per_vol, ASW, SWP, SMD)
         ! Need to store ASW at maximum soil water content
         ASW_FC = ASW
@@ -90,7 +90,7 @@ contains
         fLWP = 1
 
         ! Initialise SWP_meas
-        Sn_meas = Fc_m
+        Sn_meas = soil%Fc_m
         call Calc_SWP_meas()
     end subroutine Init_SoilWater
 
@@ -140,7 +140,7 @@ contains
     !
     subroutine Calc_SWP()
         use Constants, only: SWC_sat
-        use Parameters, only: Fc_m, soil_b, SWP_AE
+        use Parameters, only: soil
         use Parameters, only: SWP_min, SWP_max, fmin, root
         use Inputs, only: dd, precip_acc
         use Variables, only: AEt, Es, Ei, LAI
@@ -150,7 +150,7 @@ contains
         use do3se_soilwater, only: do3se_Sn_diff, do3se_SMD
 
         Sn_diff = do3se_Sn_diff(precip_acc, LAI, Ei, AEt, root)
-        call do3se_SMD(Sn_diff, Sn, root, Fc_m, SWP_AE, soil_b, SWP_min, &
+        call do3se_SMD(Sn_diff, Sn, root, soil, SWP_min, &
                        Sn, per_vol, ASW, SWP, SMD)
     end subroutine Calc_SWP
 
@@ -170,7 +170,7 @@ contains
 
     subroutine Calc_LWP()
         use Parameters, only: root, fmin
-        use Parameters, only: SWP_AE, soil_b, Ksat
+        use Parameters, only: soil
         use Variables, only: SWP, delta_LWP, LWP, fLWP
         use Inputs, only: hr
 
@@ -189,7 +189,7 @@ contains
                             ! are NOT hourly?
         real :: delta_Et    ! Difference in hourly Et from last hour
 
-        Ks = Ksat * ((SWP_AE/SWP)**((3/soil_b)+2))
+        Ks = soil%Ksat * ((soil%SWP_AE/SWP)**((3/soil%soil_b)+2))
         Rsr = K1 / (root * Ks)
 
         delta_t = 1
@@ -206,7 +206,7 @@ contains
     end subroutine Calc_LWP
 
     subroutine Calc_LWP_steady_state()
-        use Parameters, only: SWP_AE, soil_b, Ksat
+        use Parameters, only: soil
         use Parameters, only: root
         use Variables, only: LWP, SWP
 
@@ -222,7 +222,7 @@ contains
         real :: Rsr         ! Soil-rot resistance
         real :: Ks          ! Bulk soil hydraulic conductivity
 
-        Ks = Ksat * ((SWP_AE/SWP)**((3/soil_b)+2))
+        Ks = soil%Ksat * ((soil%SWP_AE/SWP)**((3/soil%soil_b)+2))
         Rsr = K1 / (root * Ks)
 
         LWP = SWP - (Et_hr*1000 * (Rsr + Rp))
@@ -240,7 +240,7 @@ contains
         use Constants, only: SWC_sat
         use Variables, only: AEt, Ei, LAI, Sn_meas, Sn_diff_meas, SWP_meas, &
                              SMD_meas
-        use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas, SWP_min
+        use Parameters, only: soil, D_meas, SWP_min
 
         use do3se_soilwater, only: do3se_Sn_diff, do3se_SMD
 
@@ -250,7 +250,7 @@ contains
         Et_meas = AEt * r_meas
         Sn_diff_meas = do3se_Sn_diff(precip_acc, LAI, Ei, Et_meas, D_meas)
 
-        call do3se_SMD(Sn_diff_meas, Sn_meas, D_meas, Fc_m, SWP_AE, soil_b, SWP_min, &
+        call do3se_SMD(Sn_diff_meas, Sn_meas, D_meas, soil, SWP_min, &
                        Sn_meas, per_vol, ASW, SWP_meas, SMD_meas)
     end subroutine Calc_SWP_meas
 

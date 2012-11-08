@@ -1,9 +1,23 @@
 module DO3SE_soilwater
 
+    public :: SoilType
+
     public :: do3se_penman_monteith_hourly
     public :: do3se_Sn_diff
     public :: do3se_SMD
     public :: do3se_f_PAW
+
+    ! SMD soil texture parameters
+    type SoilType
+        ! SWC constant b
+        real :: soil_b
+        ! Field capacity (m3/m3)
+        real :: Fc_m
+        ! Water potential at air entry (MPa)
+        real :: SWP_AE
+        ! Saturated soil conductance (s-2 MPa-1 mm-1)
+        real :: Ksat
+    end type SoilType
 
     private
 
@@ -131,14 +145,12 @@ contains
     ! content, available soil water, soil water potential and soil moisture
     ! deficit.
     ! =======================================================================
-    pure subroutine do3se_SMD(Sn_diff, Sn_old, root, Fc_m, SWP_AE, soil_b, SWP_min, &
+    pure subroutine do3se_SMD(Sn_diff, Sn_old, root, soil, SWP_min, &
                               Sn, per_vol, ASW, SWP, SMD)
         real, intent(in) :: Sn_diff     ! Change in volumetric water content (m^3/m^3)
         real, intent(in) :: Sn_old      ! Previous day's volumetric water content (m3/m3)
         real, intent(in) :: root        ! Root depth (m)
-        real, intent(in) :: Fc_m        ! Volumetric field capacity (m3/m3)
-        real, intent(in) :: SWP_AE      ! Soil water potential at air entry (MPa)
-        real, intent(in) :: soil_b      ! SWC constant b
+        type(SoilType), intent(in) :: soil ! Soil texture parameters
         real, intent(in) :: SWP_min     ! SWP for min g (MPa)
         real, intent(out) :: Sn         ! Output: new volumetric water content (m3/m3)
         real, intent(out) :: per_vol    ! Output: Sn as percentage
@@ -154,20 +166,20 @@ contains
         ! whichever is lower.
         PWP = min(-4.0, SWP_min)
         ! Convert to volumetric content to use for available soil water
-        PWP_vol = 1.0 / (((PWP/SWP_AE)**(1.0/soil_b)) / SWC_sat)
+        PWP_vol = 1.0 / (((PWP/soil%SWP_AE)**(1.0/soil%soil_b)) / SWC_sat)
 
         ! Calculate new volumetric water content, Sn (m3/m3), with field capacity as maximum,
         ! and "permanent wilting point" as minimum.
-        Sn = max(PWP_vol, min(Fc_m, Sn_old + Sn_diff))
+        Sn = max(PWP_vol, min(soil%Fc_m, Sn_old + Sn_diff))
         ! Water content as percentage
         per_vol = Sn * 100
 
         ! Calculate available soil water (ASW) and soil water potential (SWP)
         ASW = (Sn - PWP_vol) * root
-        SWP = SWP_AE * ((SWC_sat / Sn)**soil_b)
+        SWP = soil%SWP_AE * ((SWC_sat / Sn)**soil%soil_b)
 
         ! Calculate SMD for new water content
-        SMD = (Fc_m - Sn) * root
+        SMD = (soil%Fc_m - Sn) * root
     end subroutine do3se_SMD
 
 
