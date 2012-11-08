@@ -97,7 +97,7 @@ contains
         use Parameters, only: fphen_limA, fphen_limB, fphen_1, fphen_2, fphen_3, fphen_4
         use Parameters, only: fphen_a, fphen_b, fphen_c, fphen_d, fphen_e
         use Inputs,     only: dd
-        use Variables,  only: fphen, leaf_fphen
+        use Variables,  only: fphen
 
         if (dd < SGS .or. dd > EGS) then
             fphen = 0.0

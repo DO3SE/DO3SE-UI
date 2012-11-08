@@ -53,11 +53,11 @@ contains
     
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
-        use Parameters, only: soil, D_meas
-        use Parameters, only: SWP_min, SWP_max, fmin, root
+        use Parameters, only: soil
+        use Parameters, only: SWP_min, fmin, root
         use Variables, only: Sn, per_vol, ASW, SWP, &
                              fSWP, SMD, AEt, Et, Es, PEt, Ei, fLWP, &
-                             Sn_meas, SWP_meas, SMD_meas
+                             Sn_meas
 
         use do3se_soilwater, only: do3se_SMD
 
@@ -141,16 +141,19 @@ contains
     subroutine Calc_SWP()
         use Constants, only: SWC_sat
         use Parameters, only: soil
-        use Parameters, only: SWP_min, SWP_max, fmin, root
-        use Inputs, only: dd, precip_acc
-        use Variables, only: AEt, Es, Ei, LAI
-        use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
+        use Parameters, only: SWP_min, root
+        use Inputs, only: precip_acc
+        use Variables, only: AEt, Ei, LAI
+        use Variables, only: Sn, per_vol, ASW, SWP, SMD
         use Variables, only: Sn_diff
 
         use do3se_soilwater, only: do3se_Sn_diff, do3se_SMD
 
+        real :: Sn_old
+
+        Sn_old = Sn
         Sn_diff = do3se_Sn_diff(precip_acc, LAI, Ei, AEt, root)
-        call do3se_SMD(Sn_diff, Sn, root, soil, SWP_min, &
+        call do3se_SMD(Sn_diff, Sn_old, root, soil, SWP_min, &
                        Sn, per_vol, ASW, SWP, SMD)
     end subroutine Calc_SWP
 
@@ -169,9 +172,8 @@ contains
     end subroutine Calc_fSWP_linear
 
     subroutine Calc_LWP()
-        use Parameters, only: root, fmin
-        use Parameters, only: soil
-        use Variables, only: SWP, delta_LWP, LWP, fLWP
+        use Parameters, only: root, soil
+        use Variables, only: SWP, delta_LWP, LWP
         use Inputs, only: hr
 
         ! Variables related to plant physiology
@@ -211,10 +213,11 @@ contains
         use Variables, only: LWP, SWP
 
         ! Variables related to plant physiology
-        ! TODO: These should probably be vegetation parameters
+        ! TODO: These should probably be vegetation parameters, and 2 of them 
+        !       aren't even used in this subroutine...
         real :: K1 = 0.0000000000035    ! constant related to root density
-        real :: C = 1                   ! plant capacitance (MPa mm-1)
-        real :: Rc = 0.43               ! storage/destorage hydraulic resistance
+        !real :: C = 1                   ! plant capacitance (MPa mm-1)
+        !real :: Rc = 0.43               ! storage/destorage hydraulic resistance
                                         ! (MPa h mm-1)
         real :: Rp = 5.3                ! plant hydraulic resistance (MPa h mm-1)
 
@@ -244,13 +247,15 @@ contains
 
         use do3se_soilwater, only: do3se_Sn_diff, do3se_SMD
 
-        real :: r_meas, Et_meas, ASW, per_vol
+        real :: r_meas, Et_meas, ASW, per_vol, Sn_meas_old
+
+        Sn_meas_old = Sn_meas
 
         r_meas = (1-(0.97**(D_meas*100)))
         Et_meas = AEt * r_meas
         Sn_diff_meas = do3se_Sn_diff(precip_acc, LAI, Ei, Et_meas, D_meas)
 
-        call do3se_SMD(Sn_diff_meas, Sn_meas, D_meas, soil, SWP_min, &
+        call do3se_SMD(Sn_diff_meas, Sn_meas_old, D_meas, soil, SWP_min, &
                        Sn_meas, per_vol, ASW, SWP_meas, SMD_meas)
     end subroutine Calc_SWP_meas
 

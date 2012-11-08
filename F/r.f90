@@ -132,7 +132,7 @@ contains
     ! Limit Gsto values if accumulated VPD exceeds VPD_crit
     subroutine VPDcrit_apply()
         use Parameters, only: VPD_crit
-        use Variables, only: dd_prev, Flight, Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
 
         if (VPD_dd >= VPD_crit) then
             ! Limit values to previous hour's Gsto

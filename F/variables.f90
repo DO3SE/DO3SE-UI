@@ -55,7 +55,6 @@ module Variables
     real, public, save  :: Rgs
     ! Resistances used in "transfer functions"
     real, public, save  :: Ra_ref_i
-    real, public, save  :: Ra_ref
     real, public, save  :: Ra_O3zR_i
     real, public, save  :: Ra_tar_i
 

@@ -28,7 +28,7 @@ contains
 
     subroutine accumulate_ttime()
         use do3se_thermal_time
-        use inputs, only: dd, ts_c
+        use inputs, only: dd
         use variables, only: tmean, ttime
 
         tmean = tsum / 24.0

@@ -50,8 +50,7 @@ contains
         use R, only: VPDcrit_prepare, VPDcrit_apply, Calc_Rsto
         use SoilWater
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
-        use Inputs, only: dd, Calc_ustar_uh, Accumulate_precip, Calc_sinB, Calc_humidity
-        use Variables, only: dd_prev
+        use Inputs, only: Calc_ustar_uh, Accumulate_precip, Calc_sinB, Calc_humidity
         use thermal_time, only: accumulate_tmean
 
         use Switchboard

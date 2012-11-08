@@ -19,8 +19,8 @@ contains
         use Inputs, only: do3se_ustar_from_velocity
         use Variables, only: Ra, Rb, Rsur
         use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
-                             Ra_ref, Ra_O3zR_i, Ra_tar_i
-        use Parameters, only: O3zR, O3_d, O3_zo, h, d, zo
+                             Ra_O3zR_i, Ra_tar_i
+        use Parameters, only: O3zR, O3_d, O3_zo, d, zo
 
         use do3se_resistance, only: do3se_ra_simple, do3se_rb
 
