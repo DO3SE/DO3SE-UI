@@ -39,6 +39,9 @@ module Parameters
         ! Growing season method
         !   "all year", "fixed day", "forest latitude", "wheat latitude"
         character(len=16) :: growing_season = "fixed day"
+        ! Accumulation period
+        !   "season", "fixed day", "wheat latitude"
+        character(len=16) :: accumulation_period = "season"
     end type OptionsType
 
     !==========================================================================
@@ -253,6 +256,21 @@ contains
                 EGS = nint((2.57 * lat + 40) + 42)
             case default
                 call die("unrecognised options%growing_season: " // options%growing_season)
+        end select
+
+        select case (options%accumulation_period)
+            case ("season")
+                ! Same as growing season
+                Astart = SGS
+                Aend = EGS
+            case ("fixed day")
+                ! Do nothing: Astart and Aend should have been set manually
+            case ("wheat latitude")
+                ! Wheat latitude method
+                Astart = nint((2.57 * lat + 40) - 15)
+                Aend   = nint((2.57 * lat + 40) + 40)
+            case default
+                call die("unrecognised options%accumulation_period: " // options%accumulation_period)
         end select
     end subroutine load_parameters
 
