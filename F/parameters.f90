@@ -36,6 +36,9 @@ module Parameters
         ! Soil texture for SMD
         !   "sandy loam", "silt loam", "loam", "clay loam", "custom"
         character(len=16) :: soil_texture = "silt loam"
+        ! Growing season method
+        !   "all year", "fixed day", "forest latitude", "wheat latitude"
+        character(len=16) :: growing_season = "fixed day"
     end type OptionsType
 
     !==========================================================================
@@ -228,9 +231,28 @@ contains
             case ("clay loam")
                 soil = SOIL_CLAY_LOAM
             case ("custom")
-                ! Do nothing; soil%* should have been set manually
+                ! Do nothing; soil should have been set manually
             case default
                 call die("unrecognised options%soil_texture: " // options%soil_texture)
+        end select
+
+        select case (options%growing_season)
+            case ("all year")
+                ! All year growing season
+                SGS = 1
+                EGS = 366
+            case ("fixed day")
+                ! Do nothing; SGS and EGS should have been set manually
+            case ("forest latitude")
+                ! EMEP forest latitude method
+                SGS = nint(105 + ((lat - 50) * 1.5) + ((elev / 1000) * 10))
+                EGS = nint(297 - ((lat - 50) * 2.0) - ((elev / 1000) * 10))
+            case ("wheat latitude")
+                ! Wheat latitude method
+                SGS = nint((2.57 * lat + 40) - 50)
+                EGS = nint((2.57 * lat + 40) + 42)
+            case default
+                call die("unrecognised options%growing_season: " // options%growing_season)
         end select
     end subroutine load_parameters
 
