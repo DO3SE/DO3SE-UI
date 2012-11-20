@@ -13,11 +13,19 @@ contains
     subroutine Calc_ftemp()
         use Variables, only: ftemp
         use Inputs, only: Ts_c
-        use Parameters, only: T_max, T_min, T_opt, fmin
+        use Parameters, only: options, T_max, T_min, T_opt, fmin
 
-        use do3se_env, only: do3se_f_temp
+        use do3se_env, only: do3se_f_temp, do3se_f_temp_no_drop
+        use do3se_io, only: die
 
-        ftemp = do3se_f_temp(Ts_C, T_min, T_opt, T_max, fmin)
+        select case (options%f_temp_method)
+        case ("default")
+            ftemp = do3se_f_temp(Ts_C, T_min, T_opt, T_max, fmin)
+        case ("no drop")
+            ftemp = do3se_f_temp_no_drop(Ts_C, T_min, T_opt, T_max, fmin)
+        case default
+            call die("unrecognised options%f_temp_method: " // options%f_temp_method)
+        end select
     end subroutine Calc_ftemp
 
 

@@ -3,6 +3,7 @@ module DO3SE_env
     public :: do3se_f_VPD_linear
     public :: do3se_f_VPD_simple_log
     public :: do3se_f_temp
+    public :: do3se_f_temp_no_drop
     public :: do3se_f_light
 
     private
@@ -62,6 +63,31 @@ contains
         ftemp = ((Ts_C - T_min) / (T_opt - T_min)) * ((T_max - Ts_C) / (T_max - T_opt))**bt
         ftemp = max(fmin, min(1.0, ftemp))
     end function do3se_f_temp
+
+
+    ! =========================================================================
+    ! Calculate temperature effect on gsto, ftemp, with modified model.
+    !
+    ! The ftemp is calculated the same as with do3se_f_temp only when Ts_C is
+    ! below T_opt.  The right half of the function is a constant 1 followed by
+    ! an instantaneous drop to 0.
+    ! =========================================================================
+    pure elemental function do3se_f_temp_no_drop(Ts_C, T_min, T_opt, T_max, fmin) result (ftemp)
+        real, intent(in)    :: Ts_C     ! Air temperature (degrees C)
+        real, intent(in)    :: T_min    ! Minimum temperature (degrees C)
+        real, intent(in)    :: T_opt    ! Temperature for maximum g (degrees C)
+        real, intent(in)    :: T_max    ! Maximum temperature (degrees C)
+        real, intent(in)    :: fmin     ! Minimum ftemp
+        real                :: ftemp    ! Output: temperature effect on gsto
+
+        if (Ts_C > T_max) then
+            ftemp = 0.0
+        else if (Ts_C > T_opt) then
+            ftemp = 1.0
+        else
+            ftemp = do3se_f_temp(Ts_C, T_min, T_opt, T_max, fmin)
+        end if
+    end function do3se_f_temp_no_drop
 
 
     ! =========================================================================
