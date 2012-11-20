@@ -32,7 +32,7 @@ module Parameters
         ! Method for incorporating SMD effect into stomatal conductance:
         !   "disabled", "fSWP exp", "fSWP linear", "fLWP SS", "fLWP non-SS",
         !   "fPAW"
-        character(len=16) :: SWP_method = "disabled"
+        character(len=16) :: f_SWP_method = "disabled"
         ! Soil texture for SMD
         !   "sandy loam", "silt loam", "loam", "clay loam", "custom"
         character(len=16) :: soil_texture = "silt loam"
@@ -57,7 +57,7 @@ module Parameters
     real, public, save  :: Rsoil = 100      ! Soil resistance in (s/m)
 
     ! New-style soil parameters, defaulting to "silt loam"
-    type(SoilType) :: soil = SOIL_SILT_LOAM
+    type(SoilType), public, save :: soil = SOIL_SILT_LOAM
 
     ! Measurement heights
     real, public, save :: uzR = 25      ! Windspeed measurement height (m)
