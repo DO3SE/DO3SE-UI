@@ -1,6 +1,7 @@
 module DO3SE_env
 
-    public :: do3se_f_VPD
+    public :: do3se_f_VPD_linear
+    public :: do3se_f_VPD_simple_log
     public :: do3se_f_temp
     public :: do3se_f_light
 
@@ -17,7 +18,7 @@ contains
     ! Marked elemental so fVPD can be calculated for multiple
     ! parametrisations simultaneously.
     ! =========================================================================
-    pure elemental function do3se_f_VPD(VPD, VPD_min, VPD_max, fmin) result (fVPD)
+    pure elemental function do3se_f_VPD_linear(VPD, VPD_min, VPD_max, fmin) result (fVPD)
         real, intent(in)    :: VPD      ! Vapour pressure deficit (kPa)
         real, intent(in)    :: VPD_min  ! VPD for minimum gsto (kPa)
         real, intent(in)    :: VPD_max  ! VPD for maximum gsto (kPa)
@@ -26,7 +27,19 @@ contains
 
         fVPD = ((1 - fmin) * (VPD_min - VPD)/(VPD_min - VPD_max)) + fmin
         fVPD = max(fmin, min(1.0, fVPD))
-    end function do3se_f_VPD
+    end function do3se_f_VPD_linear
+
+
+    ! =========================================================================
+    ! Calculate VPD effect on gsto, fVPD, using a simplified logarithmic
+    ! relationship.
+    ! =========================================================================
+    pure elemental function do3se_f_VPD_simple_log(VPD) result (fVPD)
+       real, intent(in)     :: VPD      ! Vapour pressure deficit (kPa)
+       real                 :: fVPD     ! Output: VPD effect on gsto
+
+       fVPD = 1.0 - 0.6 * log(min(VPD, 1.0))
+    end function do3se_f_VPD_simple_log
 
 
     ! =========================================================================

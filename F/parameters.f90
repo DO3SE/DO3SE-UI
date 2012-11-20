@@ -42,6 +42,9 @@ module Parameters
         ! Accumulation period
         !   "season", "fixed day", "wheat latitude"
         character(len=16) :: accumulation_period = "season"
+        ! f_VPD_method
+        !   "linear", "simple log"
+        character(len=16) :: f_VPD_method = "linear"
     end type OptionsType
 
     !==========================================================================

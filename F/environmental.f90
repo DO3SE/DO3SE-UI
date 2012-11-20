@@ -27,11 +27,19 @@ contains
     subroutine Calc_fVPD()
         use Variables, only: fVPD
         use Inputs, only: VPD
-        use Parameters, only: fmin, VPD_min, VPD_max
+        use Parameters, only: options, fmin, VPD_min, VPD_max
 
-        use do3se_env, only: do3se_f_VPD
+        use do3se_env, only: do3se_f_VPD_linear, do3se_f_VPD_simple_log
+        use do3se_io, only: die
 
-        fVPD = do3se_f_VPD(VPD, VPD_min, VPD_max, fmin)
+        select case (options%f_VPD_method)
+        case ("linear")
+            fVPD = do3se_f_VPD_linear(VPD, VPD_min, VPD_max, fmin)
+        case ("simple exp")
+            fVPD = do3se_f_VPD_simple_log(VPD)
+        case default
+            call die("unrecognised options%f_VPD_method: " // options%f_VPD_method)
+        end select
     end subroutine Calc_fVPD
 
 
