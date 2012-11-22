@@ -265,6 +265,9 @@ contains
     end subroutine SB_Calc_R_PAR
 
     subroutine load_switchboard_settings(paramunit)
+        use parameters, only: options
+        use do3se_io, only: die
+
         integer, intent(in) :: paramunit
         namelist /switchboard/ sai_method, &
                              & rn_method, &
@@ -273,11 +276,35 @@ contains
                              & tleaf_method, &
                              & gsto_method, &
                              & fo3_method, &
-                             & fswp_method, &
-                             & lwp_method, &
-                             & fxwp_method, &
                              & r_par_method
         read(unit=paramunit, nml=switchboard)
+
+        !
+        ! Apply anything that's been set in "options" instead
+        !
+
+        ! TODO: handle this properly by replacing switchboard subroutines with
+        !       a method that actually matches these options.
+        select case (options%f_SWP_method)
+        case ("disabled")
+            fxwp_method = fxwp_disabled
+        case ("fSWP exp")
+            fxwp_method = fxwp_use_fswp
+            fswp_method = fswp_linear
+        case ("fSWP linear")
+            fxwp_method = fxwp_use_fswp
+            fswp_method = fswp_exponential
+        case ("fLWP SS")
+            fxwp_method = fxwp_use_flwp
+            lwp_method = lwp_steady_state
+        case ("fLWP non-SS")
+            fxwp_method = fxwp_use_flwp
+            lwp_method = lwp_non_steady_state
+        case ("fPAW")
+            fxwp_method = fxwp_use_fpaw
+        case default
+            call die("unrecognised options%f_SWP_method: " // options%f_SWP_method)
+        end select
     end subroutine load_switchboard_settings
 
 end module Switchboard
