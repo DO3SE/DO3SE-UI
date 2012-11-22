@@ -3,6 +3,7 @@ module O3
     public :: Calc_O3_Concentration, Calc_Ftot
     public :: Calc_Fst, Calc_AFstY, Calc_AOT40
     public :: Calc_fO3_Ignore, Calc_fO3_Wheat, Calc_fO3_Potato
+    public :: do3se_Fst_Y
 
 contains
 
@@ -96,9 +97,23 @@ contains
 
         ! Fst == 0 if Gsto_l == 0 (and Gsto_l == 0 if leaf_fphen == 0), so no
         ! need to check leaf_fphen
-        AFst0 = AFst0 + ((Fst*60*60)/1000000)
-        AFstY = AFstY + ((max(0.0, Fst - Y)*60*60)/1000000)
+        AFst0 = AFst0 + do3se_Fst_Y(Fst, 0.0)
+        AFstY = AFstY + do3se_Fst_Y(Fst, Y)
     end subroutine Calc_AFstY
+
+    !==========================================================================
+    ! Calculate stomatal flux over specified threshold.  Declared elemental so
+    ! it can be applied to an array of Y values.
+    !
+    ! Units get converted nmol/s -> mmol/h.
+    !==========================================================================
+    pure elemental function do3se_Fst_Y(Fst, Y) result (FstY)
+        real, intent(in)    :: Fst      ! Stomatal O3 flux (nmol m-2 PLA s-1)
+        real, intent(in)    :: Y        ! Threshold (nmol m-2 PLA s-1)
+        real                :: FstY     ! Output: flux above threshold (mmol m-2 PLA h-1)
+
+        FstY = (max(0.0, Fst - Y) * 60 * 60) / 1000000
+    end function do3se_Fst_Y
 
     !==========================================================================
     ! Calculate the accumulated OT40
