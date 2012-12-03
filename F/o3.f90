@@ -92,13 +92,14 @@ contains
     ! Calculate the accumulated stomatal flux above threshold Y
     !==========================================================================
     subroutine Calc_AFstY()
-        use Variables, only: Fst, AFstY, AFst0
-        use Parameters, only: Y
+        use Variables, only: Fst, AFstY, AFst0, POD
+        use Parameters, only: Y, Ys
 
         ! Fst == 0 if Gsto_l == 0 (and Gsto_l == 0 if leaf_fphen == 0), so no
         ! need to check leaf_fphen
         AFst0 = AFst0 + do3se_Fst_Y(Fst, 0.0)
         AFstY = AFstY + do3se_Fst_Y(Fst, Y)
+        POD = POD + do3se_Fst_Y(Fst, Ys)
     end subroutine Calc_AFstY
 
     !==========================================================================

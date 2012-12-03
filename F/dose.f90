@@ -44,6 +44,9 @@ program Run_DOSE
         OPEN (newunit=outunit, file=argbuffer, status="replace", action="write", position="rewind")
     end if
 
+    ! Skip the headers line
+    read (unit=inunit, fmt="(a)") argbuffer
+
     call Run_With_Units(inunit, outunit)
 
     if (inunit /= INPUT_UNIT) then

@@ -5,6 +5,7 @@
 !*******************************************************************************
 
 module Variables
+    use parameters, only: Ys
     
     ! Day of year for previous row
     real, public, save :: dd_prev = -1
@@ -86,6 +87,8 @@ module Variables
 
     real, public, save :: tmean         ! Previous day's mean temperature (degrees C)
     real, public, save :: ttime         ! Accumulated thermal time (degree C days)
+
+    real, public, save :: POD(size(Ys)) ! Accumulated Fst over thresholds (Ys in variables.f90)
 
 end module Variables
 

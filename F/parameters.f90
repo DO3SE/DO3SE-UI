@@ -170,6 +170,9 @@ module Parameters
     ! Starting point for new options handling
     type(OptionsType), public, save :: options
 
+    integer, private :: i
+    real, parameter :: Ys(101) = (/ ( i*0.1, i=0,100 ) /)
+
     public :: Derive_d_zo
 
 contains

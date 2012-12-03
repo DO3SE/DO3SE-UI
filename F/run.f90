@@ -32,6 +32,7 @@ contains
         AFstY = 0
         AOT0 = 0
         AOT40 = 0
+        POD = 0
         Rsto_c = 100000
 
         ! Put calls to initialisation functions here
@@ -157,7 +158,7 @@ contains
         integer :: ios
 
         read(unit=inunit, fmt=*, iostat=ios) &
-            mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, Hd, R, PAR
+            mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR
 
         if (ios /= 0) then
             done = .TRUE.
@@ -171,6 +172,22 @@ contains
         use Variables
 
         write(unit=outunit, fmt=*) &
+            dd, &
+            hr, &
+            Ts_C, &
+            VPD, &
+            uh_zR, &
+            precip, &
+            P, &
+            O3_ppb_zR, &
+            O3_ppb, &
+            PAR, &
+            Rn, &
+            Ftot, &
+            OT40, &
+            AOT40, &
+            Fst, &
+            POD, &
         !rn, &
         !ra, &
         !rb, &
