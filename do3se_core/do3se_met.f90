@@ -5,6 +5,7 @@ module DO3SE_met
     public :: do3se_velocity_from_ustar
     public :: do3se_ustar_from_velocity
     public :: do3se_windspeed_transfer
+    public :: do3se_O3_transfer
     public :: do3se_PAR_components
     public :: do3se_sinB
     public :: do3se_net_radiation
@@ -111,6 +112,76 @@ contains
         ! Stop ustar being 0
         ustar = max(MIN_USTAR, ustar)
     end subroutine do3se_windspeed_transfer
+
+
+    pure subroutine do3se_O3_transfer( &
+            O3_ppb_zR, O3zR, O3_h, h, uh_i, ustar, Ra, Rb, Rsur, O3_ppb, &
+            ustar_ref_out, Ra_ref_i_out, Rb_ref_out, Vd_i_out, Ra_O3zR_i_out, &
+            O3_ppb_i_out, Ra_tar_i_out, Vd_out)
+        use do3se_utils, only: do3se_vegetation_d_and_z0
+        use do3se_resistance, only: do3se_ra_simple, do3se_rb
+
+        real, intent(in)    :: O3_ppb_zR    ! O3 concentration at measurement location (ppb)
+        real, intent(in)    :: O3zR         ! O3 measurement height (m)
+        real, intent(in)    :: O3_h         ! O3 measurement canopy height (m)
+        real, intent(in)    :: h            ! Target canopy height (m)
+        real, intent(in)    :: uh_i         ! Windspeed at "decoupled" height (m/s)
+        real, intent(in)    :: ustar        ! Friction velocity (u*) over target canopy (m/s)
+        real, intent(in)    :: Ra           ! Atmospheric resistance between decoupled height and target canopy (s/m)
+        real, intent(in)    :: Rb           ! Boundary layer resistance for target canopy (s/m)
+        real, intent(in)    :: Rsur         ! Surface resistance for target canopy (s/m)
+        real, intent(out)   :: O3_ppb       ! Output: O3 concentration at top of target canopy (ppb)
+
+        real, intent(out), optional :: ustar_ref_out
+        real, intent(out), optional :: Ra_ref_i_out
+        real, intent(out), optional :: Rb_ref_out
+        real, intent(out), optional :: Vd_i_out
+        real, intent(out), optional :: Ra_O3zR_i_out
+        real, intent(out), optional :: O3_ppb_i_out
+        real, intent(out), optional :: Ra_tar_i_out
+        real, intent(out), optional :: Vd_out
+
+        real, parameter :: izR = 50         ! "Decoupled" height
+        real, parameter :: DO3 = 0.000015   ! molecular diffusivity of O3 in air (m^2/s)
+
+        real :: d, z0, O3_d, O3_z0
+        real :: ustar_ref, Ra_ref_i, Rb_ref, Vd_i, Ra_O3zR_i, O3_ppb_i, Ra_tar_i, Vd
+
+        call do3se_vegetation_d_and_z0(h, d, z0)
+        call do3se_vegetation_d_and_z0(O3_h, O3_d, O3_z0)
+
+        ! ustar over reference canopy
+        ustar_ref = do3se_ustar_from_velocity(uh_i, izR - O3_d, O3_z0)
+        ! Ra between reference canopy and izR
+        Ra_ref_i = do3se_ra_simple(ustar_ref, O3_z0 + O3_d, izR, O3_d)
+        ! Rb for reference canopy
+        Rb_ref = do3se_rb(ustar_ref, DO3)
+        ! Deposition velocity at izR over reference canopy
+        ! (assuming that Rsur_ref = Rsur)
+        Vd_i = 1.0 / (Ra_ref_i + Rb_ref + Rsur)
+        ! Ra between measurement height and izR
+        Ra_O3zR_i = do3se_ra_simple(ustar_ref, O3zR, izR, O3_d)
+        ! O3 concentration at izR
+        O3_ppb_i = O3_ppb_zR / (1.0 - (Ra_O3zR_i * Vd_i))
+        ! Ra between target canopy and izR
+        ! (ustar already calculated for target canopy)
+        Ra_tar_i = do3se_ra_simple(ustar, z0 + d, izR, d)
+        ! Deposition velocity at izR over target canopy
+        Vd = 1.0 / (Ra_tar_i + Rb + Rsur)
+        ! O3 concentration at target canopy
+        ! (Ra already calculated between canopy height and izR)
+        O3_ppb = O3_ppb_i * (1.0 - (Ra * Vd))
+
+        ! Assign optional outputs if required
+        if (present(ustar_ref_out)) then ; ustar_ref_out = ustar_ref ; end if
+        if (present(Ra_ref_i_out)) then ; Ra_ref_i_out = Ra_ref_i ; end if
+        if (present(Rb_ref_out)) then ; Rb_ref_out = Rb_ref ; end if
+        if (present(Vd_i_out)) then ; Vd_i_out = Vd_i ; end if
+        if (present(Ra_O3zR_i_out)) then ; Ra_O3zR_i_out = Ra_O3zR_i ; end if
+        if (present(O3_ppb_i_out)) then ; O3_ppb_i_out = O3_ppb_i ; end if
+        if (present(Ra_tar_i_out)) then ; Ra_tar_i_out = Ra_tar_i ; end if
+        if (present(Vd_out)) then ; Vd_out = Vd ; end if
+    end subroutine do3se_O3_transfer
 
 
     ! =========================================================================
