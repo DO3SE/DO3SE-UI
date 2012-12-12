@@ -43,7 +43,7 @@ contains
         select case (options%f_VPD_method)
         case ("linear")
             fVPD = do3se_f_VPD_linear(VPD, VPD_min, VPD_max, fmin)
-        case ("simple exp")
+        case ("simple log")
             fVPD = do3se_f_VPD_simple_log(VPD)
         case default
             call die("unrecognised options%f_VPD_method: " // options%f_VPD_method)
