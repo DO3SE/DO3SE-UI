@@ -54,6 +54,7 @@ contains
         use thermal_time, only: accumulate_tmean
 
         use Switchboard
+        use parameters, only: options
 
 
         ! Derivation of inputs not supplied
@@ -71,6 +72,7 @@ contains
         call Calc_fVPD()
 
         call SB_Calc_fO3()
+        call SB_Calc_fSWP()
         call SB_Calc_fXWP()
     
         call SB_Calc_Ra()
@@ -85,7 +87,9 @@ contains
         call Calc_Rsur()
 
         call SB_Calc_Es_blocked()
-        call Calc_Penman_Monteith()
+        if (options%SMD_method /= "disabled") then
+            call Calc_Penman_Monteith()
+        end if
 
         call SB_Calc_LWP()  ! This *must* happen after calculating SWP - SWP is 
                             ! calculated as the day rolls over, and LWP should 
@@ -102,6 +106,7 @@ contains
     subroutine Daily()
         use SoilWater
         use Switchboard
+        use parameters, only: options
         use Phenology, only: Calc_LAI, Calc_fphen
         use Inputs, only: Calc_precip_acc
         use thermal_time, only: accumulate_ttime
@@ -114,8 +119,9 @@ contains
 
         call Calc_precip_acc()
         call Calc_Penman_Monteith_daily()
-        call Calc_SWP()
-        call SB_Calc_fSWP()
+        if (options%SMD_method /= "disabled") then
+            call Calc_SWP()
+        end if
         call Calc_SWP_meas()
         call Calc_fPAW()
     end subroutine Daily
@@ -153,12 +159,26 @@ contains
 
     subroutine Read_Row_From_File(done)
         use Inputs
+        use variables, only: SWP
+        use parameters, only: options
+        use do3se_io, only: die
 
         logical, intent(out) :: done
         integer :: ios
 
-        read(unit=inunit, fmt=*, iostat=ios) &
-            mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR
+        select case (options%f_SWP_method)
+        case ("disabled")
+            read(unit=inunit, fmt=*, iostat=ios) &
+                mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR
+        case ("fSWP exp")   ! SWP input + fSWP output
+            read(unit=inunit, fmt=*, iostat=ios) &
+                mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR, SWP
+        !case ("fPAW")       ! SWC input + fPAW output
+        !    read(unit=inunit, fmt=*, iostat=ios) &
+        !        mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR, SWC
+        case default
+            call die("unrecognised options%f_SWP_method: " // options%f_SWP_method)
+        end select
 
         if (ios /= 0) then
             done = .TRUE.
