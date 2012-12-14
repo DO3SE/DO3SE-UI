@@ -65,6 +65,8 @@ contains
         call SB_Calc_Rn()
         call Calc_humidity()
         call accumulate_tmean()
+        call Calc_SWP()
+        call Calc_fPAW()
 
         call Calc_Flight()
 
@@ -119,11 +121,7 @@ contains
 
         call Calc_precip_acc()
         call Calc_Penman_Monteith_daily()
-        if (options%SMD_method /= "disabled") then
-            call Calc_SWP()
-        end if
         call Calc_SWP_meas()
-        call Calc_fPAW()
     end subroutine Daily
 
     subroutine Calculate_Row()
@@ -159,8 +157,8 @@ contains
 
     subroutine Read_Row_From_File(done)
         use Inputs
-        use variables, only: SWP
-        use parameters, only: options
+        use variables, only: SWP, Sn
+        use parameters, only: options, soil
         use do3se_io, only: die
 
         logical, intent(out) :: done
@@ -173,9 +171,10 @@ contains
         case ("fSWP exp")   ! SWP input + fSWP output
             read(unit=inunit, fmt=*, iostat=ios) &
                 mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR, SWP
-        !case ("fPAW")       ! SWC input + fPAW output
-        !    read(unit=inunit, fmt=*, iostat=ios) &
-        !        mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR, SWC
+        case ("fPAW")       ! SWC input + fPAW output
+            read(unit=inunit, fmt=*, iostat=ios) &
+                mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR, Sn
+            Sn = min(Sn, soil%Fc_m)
         case default
             call die("unrecognised options%f_SWP_method: " // options%f_SWP_method)
         end select

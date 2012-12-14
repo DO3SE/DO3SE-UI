@@ -152,7 +152,8 @@ contains
         real :: Sn_old
 
         Sn_old = Sn
-        Sn_diff = do3se_Sn_diff(precip_acc, LAI, Ei, AEt, root)
+        !Sn_diff = do3se_Sn_diff(precip_acc, LAI, Ei, AEt, root)
+        Sn_diff = 0.0
         call do3se_SMD(Sn_diff, Sn_old, root, soil, SWP_min, &
                        Sn, per_vol, ASW, SWP, SMD)
     end subroutine Calc_SWP
