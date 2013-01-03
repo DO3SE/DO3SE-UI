@@ -44,7 +44,7 @@ contains
         case ("linear")
             fVPD = do3se_f_VPD_linear(VPD, VPD_min, VPD_max, fmin)
         case ("simple log")
-            fVPD = do3se_f_VPD_simple_log(VPD)
+            fVPD = do3se_f_VPD_simple_log(VPD, fmin)
         case default
             call die("unrecognised options%f_VPD_method: " // options%f_VPD_method)
         end select

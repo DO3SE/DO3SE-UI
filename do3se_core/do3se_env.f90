@@ -35,11 +35,13 @@ contains
     ! Calculate VPD effect on gsto, fVPD, using a simplified logarithmic
     ! relationship.
     ! =========================================================================
-    pure elemental function do3se_f_VPD_simple_log(VPD) result (fVPD)
-       real, intent(in)     :: VPD      ! Vapour pressure deficit (kPa)
-       real                 :: fVPD     ! Output: VPD effect on gsto
+    pure elemental function do3se_f_VPD_simple_log(VPD, fmin) result (fVPD)
+        real, intent(in)    :: VPD      ! Vapour pressure deficit (kPa)
+        real, intent(in)    :: fmin     ! Minimum fVPD
+        real                :: fVPD     ! Output: VPD effect on gsto
 
-       fVPD = 1.0 - 0.6 * log(min(VPD, 1.0))
+        fVPD = 1.0 - 0.6 * log(VPD)
+        fVPD = max(fmin, min(1.0, fVPD))
     end function do3se_f_VPD_simple_log
 
 
