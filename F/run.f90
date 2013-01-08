@@ -65,8 +65,10 @@ contains
         call SB_Calc_Rn()
         call Calc_humidity()
         call accumulate_tmean()
-        call Calc_SWP()
-        call Calc_fPAW()
+        if (options%f_SWP_method == "fPAW") then
+            call Calc_SWP()
+            call Calc_fPAW()
+        end if
 
         call Calc_Flight()
 
