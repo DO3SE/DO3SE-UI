@@ -18,39 +18,33 @@ building the environment, since it contains various files required to make the b
 work.
 
 
-:file:`DO3SE_buildenv_F` -- Minimal Fortran90/F build environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:file:`buildenv_fortran` -- Minimal Fortran build environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Building any F program requires the G95 Fortran compiler.  To build the DO3SE F model, GNU Make is 
-also required to use the Makefile which contains instructions for building the model from several 
-source files.  GNU Make and associated utilities are provided by MSYS.
+Building a Fortran program requires a Fortran compiler.  We're going to use MinGW + MSYS to provide 
+GFortran and GNU Make (and other useful command-line tools).
 
-1.  Create a :file:`DO3SE_buildenv_F` directory somewhere (the rest of the instructions will assume 
-    :file:`C:\\DO3SE_buildenv_F`).
-2.  Download the latest stable "Self-extracting Windows x86" installer for the G95_ Fortran 
-    compiler.
-3.  Run the G95 installer, and install to :file:`C:\\DO3SE_buildenv_F\\g95`.
+1.  Create a :file:`buildenv_fortran` directory somewhere (the rest of the instructions will assume 
+    :file:`C:\\buildenv_fortran`).
+2.  Download and run the latest MinGW_ automated installer (e.g.  
+    :file:`ming-get-inst-20120426.exe`).
 
-    * When prompted :guilabel:`Install MinGW utilities and libs?` click :guilabel:`OK`.
-    * When prompted :guilabel:`Set PATH = ...` click :guilabel:`Cancel`.
+    * At the :guilabel:`Repository Catalogues` screen select :guilabel:`Download latest repository 
+      catalogues`.
+    * At the :guilabel:`Select Destination Location` screen set the install path to 
+      :file:`C:\\buildenv_fortran\\MinGW`.
+    * At the :guilabel:`Select Start Menu Folder` screen select :guilabel:`"Don't create a Start 
+      Menu folder`.
+    * At the :guilabel:`Select Components` screen select :guilabel:`C Compiler`, :guilabel:`Fortran 
+      Compiler` and :guilabel:`MSYS Basic System`.
+    * Once the installer finishes, delete the :file:`C:\\buildenv_fortran\\MinGW\\var` directory.  
+      It contains a lot of big files that are no longer needed after installation.
 
-4.  Download the MSYS_ 1.0.11 installer (later versions do not have an installer).
-5.  Run the MSYS installer, and install to :file:`C:\\DO3SE_buildenv_F\\msys\\1.0`.
-    
-    * Answer :guilabel:`n` to all questions asked by the post-install process.
-
-6.  Copy :file:`resources/buildenv.bat` from the DO3SE source directory to
-    :file:`C:\\DO3SE_buildenv_F`.
-7.  Bundle up the :file:`DO3SE_buildenv_F` directory with your tool of choice and distribute it.  I 
-    recommend either making a ZIP file, or using 7-zip_ to create a self-extracting (SFX) 7z archive 
-    (which creates a much smaller file).
-
-.. note::
-
-    :file:`buildenv.bat` has a version-specific path hard-coded (``...\4.0.4\...``); this will need 
-    to be changed if G95 starts using a different version of GCC.  When attempting to compile an F 
-    file with ``F somefile.f90``, the error :guilabel:`g95: installation problem, cannot exec 
-    'f951': No such file or directory` will indicate that this has become a problem.
+3.  Copy :file:`resources/buildenv.bat` from the DO3SE source directory to 
+    :file:`C:\\buildenv_fortran`.
+4.  Bundle up the :file:`buildenv_fortran` directory with your tool of choice and distribute it.  
+    The best way is use 7-zip_ to create a self-extracting (SFX) 7z archive, for the smallest and 
+    most convenient file.
 
 
 :file:`DO3SE_buildenv_GUI` -- Full GUI build environment
