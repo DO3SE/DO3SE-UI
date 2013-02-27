@@ -14,7 +14,7 @@ all:
 	# 'make dose' for standalone model, or 'make py_ext' for Python extension for UI
 
 py_ext:
-	python setup.py build_ext
+	python2 setup.py build_ext
 	# Suppress errors, because there will be no .pyd on Linux or .so on Windows
 	cp build/lib.*/do3se/*.so build/lib.*/do3se/*.pyd do3se/ 2> /dev/null ; exit 0
 
