@@ -204,6 +204,8 @@ class SeasonParams(ParameterGroupWithPreview):
         self['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_sgs_egs)
         self.fc['siteloc']['lat'].field.Bind(EVT_VALUE_CHANGED,
                                              self.update_sgs_egs)
+        self.fc['siteloc']['elev'].field.Bind(EVT_VALUE_CHANGED,
+                                              self.update_sgs_egs)
 
         self.update_disabled(None)
         self.update_sgs_egs(None)
@@ -228,7 +230,8 @@ class SeasonParams(ParameterGroupWithPreview):
         """Keep SGS/EGS up to date when following latitude function."""
         if self['sgs_egs_calc'].get_value() == 'latitude':
             lat = self.fc['siteloc']['lat'].get_value()
-            sgs, egs = model.phenology.latitude_sgs_egs(lat)
+            elev = self.fc['siteloc']['elev'].get_value()
+            sgs, egs = model.phenology.latitude_sgs_egs(lat, elev)
             self['sgs'].set_value(sgs)
             self['egs'].set_value(egs)
             # Propagate changes, e.g. to preview graphs

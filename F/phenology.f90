@@ -11,12 +11,12 @@ contains
     !
     ! Latitude function for calculating start and end of growing season
     !
-    subroutine Latitude_SGS_EGS(lat, SGS, EGS)
-        real, intent(in) :: lat
+    pure subroutine Latitude_SGS_EGS(lat, elev, SGS, EGS)
+        real, intent(in) :: lat, elev
         integer, intent(out) :: SGS, EGS
 
-        SGS = nint(((lat - 50) * 1.5) + 105)
-        EGS = nint(297 - ((lat - 50) * 2))
+        SGS = nint(105.0 + ((lat - 50) * 1.5) + ((elev / 1000.0) * 10.0))
+        EGS = nint(297.0 - ((lat - 50) * 2.0) - ((elev / 1000.0) * 10.0))
     end subroutine Latitude_SGS_EGS
 
     !==========================================================================

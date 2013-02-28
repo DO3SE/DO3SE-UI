@@ -273,7 +273,7 @@ contains
     end subroutine SB_Calc_R_PAR
 
     subroutine SB_Calc_SGS_EGS()
-        use Parameters, only: lat, SGS, EGS
+        use Parameters, only: lat, elev, SGS, EGS
         use Phenology, only: Latitude_SGS_EGS
 
         select case (sgs_egs_method)
@@ -282,7 +282,7 @@ contains
         !case (sgs_egs_use_inputs)
         
         case (sgs_egs_latitude)
-            call Latitude_SGS_EGS(lat, SGS, EGS)
+            call Latitude_SGS_EGS(lat, elev, SGS, EGS)
 
         end select
     end subroutine SB_Calc_SGS_EGS
