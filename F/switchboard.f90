@@ -40,6 +40,7 @@ module Switchboard
 
     integer, public, parameter :: fswp_exponential = 1
     integer, public, parameter :: fswp_linear      = 2
+    integer, public, parameter :: fswp_exponential_med = 3
     integer, public, save :: fswp_method = fswp_exponential
     public :: SB_Calc_fSWP
 
@@ -197,6 +198,8 @@ contains
         select case (fswp_method)
         case (fswp_exponential)
             call Calc_fSWP_exponential()
+        case (fswp_exponential_med)
+            call Calc_fSWP_exponential_med()
         case (fswp_linear)
             call Calc_fSWP_linear()
         end select
@@ -291,6 +294,9 @@ contains
         case ("fSWP exp")
             fxwp_method = fxwp_use_fswp
             fswp_method = fswp_exponential
+        case ("fSWP exp med")
+            fxwp_method = fxwp_use_fswp
+            fswp_method = fswp_exponential_med
         case ("fSWP linear")
             fxwp_method = fxwp_use_fswp
             fswp_method = fswp_linear

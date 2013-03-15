@@ -165,6 +165,14 @@ contains
         fSWP = fSWP_exp_curve(SWP, fmin)
     end subroutine Calc_fSWP_exponential
 
+    subroutine Calc_fSWP_exponential_med()
+        use Parameters, only: fmin
+        use Variables, only: SWP, fSWP
+
+        fSWP = (((-1) * SWP)** (-1.024)) * 0.619
+        fSWP = min(max(fSWP, fmin), 1.0)
+    end subroutine Calc_fSWP_exponential_med
+
     subroutine Calc_fSWP_linear()
         use Parameters, only: fmin, SWP_min, SWP_max
         use Variables, only: fSWP, SWP

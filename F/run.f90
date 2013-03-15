@@ -170,7 +170,7 @@ contains
         case ("disabled")
             read(unit=inunit, fmt=*, iostat=ios) &
                 mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR
-        case ("fSWP exp")   ! SWP input + fSWP output
+        case ("fSWP exp", "fSWP exp med")   ! SWP input + fSWP output
             read(unit=inunit, fmt=*, iostat=ios) &
                 mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR, SWP
         case ("fPAW")       ! SWC input + fPAW output

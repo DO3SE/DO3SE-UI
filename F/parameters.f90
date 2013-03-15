@@ -31,7 +31,7 @@ module Parameters
         character(len=16) :: SMD_method = "disabled"
         ! Method for incorporating SMD effect into stomatal conductance:
         !   "disabled", "fSWP exp", "fSWP linear", "fLWP SS", "fLWP non-SS",
-        !   "fPAW"
+        !   "fPAW", "fSWP exp med"
         character(len=16) :: f_SWP_method = "disabled"
         ! Soil texture for SMD
         !   "sandy loam", "silt loam", "loam", "clay loam", "custom"
