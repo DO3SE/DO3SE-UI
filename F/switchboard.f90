@@ -290,10 +290,10 @@ contains
             fxwp_method = fxwp_disabled
         case ("fSWP exp")
             fxwp_method = fxwp_use_fswp
-            fswp_method = fswp_linear
+            fswp_method = fswp_exponential
         case ("fSWP linear")
             fxwp_method = fxwp_use_fswp
-            fswp_method = fswp_exponential
+            fswp_method = fswp_linear
         case ("fLWP SS")
             fxwp_method = fxwp_use_flwp
             lwp_method = lwp_steady_state
