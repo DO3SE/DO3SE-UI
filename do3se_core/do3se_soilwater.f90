@@ -52,7 +52,7 @@ contains
         real, intent(out) :: AEt_hr         ! Output: hourly evapotranspiration from plant and soil (m/hour)
 
         real, parameter :: Ts_K = 273.16    ! Conversion from degrees Celsius to Kelvin
-        real, parameter :: Dratio = 0.662   ! Ratio between molecular diffusivity of O3 and H2O
+        real, parameter :: Dratio = 0.663   ! Ratio between molecular diffusivity of O3 and H2O
 
         real :: esat, eact, Tvir, delta, lambda, psychro, Pair, Cair, G
 
