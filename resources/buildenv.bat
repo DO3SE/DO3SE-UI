@@ -18,9 +18,8 @@ set LIBRARY_PATH=%basepath%MinGW\lib;%PATH%
 :: Create an alias for F
 doskey F=gfortran $*
 
-:: Drop to a normal shell in the normal location
-cd %USERPROFILE%
-cmd
+:: Drop to a normal shell, passing arguments
+cmd %*
 :: Exit the batch script so the user doesn't get a prompt when exiting the
 :: cmd.exe shell
 exit /B 0
