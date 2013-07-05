@@ -15,9 +15,6 @@ set PATH=%basepath%;%PATH%
 :: Modify LIBRARY_PATH variable so tool libraries can be found
 set LIBRARY_PATH=%basepath%MinGW\lib;%PATH%
 
-:: Create an alias for F
-doskey F=gfortran $*
-
 :: Drop to a normal shell, passing arguments
 cmd %*
 :: Exit the batch script so the user doesn't get a prompt when exiting the
