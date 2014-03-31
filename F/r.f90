@@ -220,10 +220,10 @@ contains
     subroutine Calc_Rsur()
         use Parameters, only: Rext
         use Parameters, only: Rsoil
-        use Variables, only: LAI, SAI, Rsto, Rinc, Rsur
+        use Variables, only: LAI, SAI, Rsto_c, Rinc, Rsur
         
         if ( LAI > 0 ) then
-            Rsur = 1 / ((LAI / Rsto) + (SAI / Rext) + (1 / (Rinc + Rsoil)))
+            Rsur = 1 / ((1 / Rsto_c) + (SAI / Rext) + (1 / (Rinc + Rsoil)))
         else if ( SAI > 0 ) then
             Rsur = 1 / ((SAI / Rext) + (1 / (Rinc + Rsoil)))
         else if ( SAI == 0 ) then
