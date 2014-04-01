@@ -31,13 +31,9 @@ contains
         real :: rsto                ! Output: stomatal resistance (
         real, parameter :: MAX_RSTO = 100000
 
-        if (gsto <= 0) then
-            rsto = MAX_RSTO
-        else
-            ! (gsto in m s-1) = 41000 * (gsto in mmol m-2 s-1)
-            ! (rsto in s m-1) = 1 / (gsto in m s-1)
-            rsto = 41000.0 / gsto
-        end if
+        ! (gsto in m s-1) = 41000 * (gsto in mmol m-2 s-1)
+        ! (rsto in s m-1) = 1 / (gsto in m s-1)
+        rsto = min(MAX_RSTO, 41000.0 / gsto)
     end function rsto_from_gsto
 
     !==========================================================================
