@@ -264,7 +264,7 @@ contains
         !case (r_par_use_inputs)
 
         case (r_par_derive_r)
-            R = PAR / (0.45 * 4.57)
+            R = (PAR / 4.57) / 0.45
 
         case (r_par_derive_par)
             PAR = R * (0.45 * 4.57)
