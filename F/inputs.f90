@@ -180,7 +180,7 @@ contains
         if (sinB > 0) then
             ! Unit conversions
             R_MJ = R * 0.0036
-            Ts_K = Ts_C + 273.16
+            Ts_K = Ts_C + 273.15
 
             ! Hour angle stuff
             h1 = h - (pi/24)
