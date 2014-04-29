@@ -145,8 +145,8 @@ contains
 
     ! Store previous hour's Gsto values, calculate accumulated VPD
     subroutine VPDcrit_prepare()
-        use Inputs, only: VPD, dd
-        use Variables, only: dd_prev, Flight, Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        use Inputs, only: VPD, dd, R
+        use Variables, only: dd_prev, Gsto_l, Gsto, Gsto_c, Gsto_PEt
 
         ! Copy old Gsto values
         Gsto_l_prev = Gsto_l
@@ -159,7 +159,7 @@ contains
             VPD_dd = 0
         end if
         ! Accumulate VPD during daylight hours
-        if (Flight > 0) then
+        if (R > 50.0) then
             VPD_dd = VPD_dd + VPD
         end if
     end subroutine VPDcrit_prepare
