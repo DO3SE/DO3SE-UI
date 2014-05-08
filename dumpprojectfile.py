@@ -7,4 +7,4 @@ from do3se.project import Project
 
 if __name__ == '__main__':
     p = Project(sys.argv[1])
-    pprint.pprint(dict(p.data))
+    pprint.pprint(p.data.items())
