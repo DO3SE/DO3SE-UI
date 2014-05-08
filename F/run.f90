@@ -69,11 +69,11 @@ contains
         call SB_Calc_fO3()
         call SB_Calc_fXWP()
     
+        call SB_Calc_Tleaf()
         call SB_Calc_Ra()
         call Calc_Rb()
         call Calc_Rgs()
         call Calc_Rinc()
-        call SB_Calc_Tleaf()
         call VPDcrit_prepare()
         call SB_Calc_gsto()
         call VPDcrit_apply()
