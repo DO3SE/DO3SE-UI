@@ -92,6 +92,15 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (variables,     'swp_meas', float,  'SWP_meas (MPa)',   'Soil water potential at measurement depth (SWP_meas, MPa)'),
         (variables,     'smd_meas', float,  'SMD_meas (m)',     'Soil moisture deficit at measurement depth (SMD_meas, m)'),
 
+        (variables,     'fphen',    float,  'f_phen',           'Phenology effect on stomatal conductance (f_phen, fraction)'),
+        (variables,     'leaf_fphen', float, 'leaf_f_phen',     'Phenology effect on leaf stomatal conductance (leaf_f_phen, fraction)'),
+        (variables,     'flight',   float,  'f_light',          'Irradiance effect on stomatal conductance (f_light, fraction)'),
+        (variables,     'leaf_flight', float, 'leaf_f_light',   'Irradiance effect on leaf stomatal conductance (leaf_f_light, fraction)'),
+        (variables,     'ftemp',    float,  'f_temp',           'Temperature effect on stomatal conductance (f_temp, fraction)'),
+        (variables,     'fvpd',     float,  'f_VPD',            'VPD effect on stomatal conductance (f_VPD, fraction)'),
+        (variables,     'fxwp',     float,  'f_SW',             'Soil water effect on stomatal conductance (f_SW, fraction)'),
+        (variables,     'fo3',      float,  'f_O3',             'O3 effect on stomatal conductance (f_O3, fraction)'),
+
         # Debug variables
         (pn_gsto,       'gsto_final',float, 'gsto_final',       '[DEBUG] Photosynthetic Gsto (base)'),
         (pn_gsto,       'pngsto_l', float,  'Pn Gsto_l',        '[DEBUG] Photosynthetic Gsto (leaf)'),
@@ -99,12 +108,6 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (pn_gsto,       'pngsto_c', float,  'Pn Gsto_c',        '[DEBUG] Photosynthetic Gsto (canopy)'),
         (pn_gsto,       'pngsto_pet',float, 'Pn Gsto_PEt',      '[DEBUG] Photosynthetic Gsto (PEt)'),
         (pn_gsto,       'pngsto_an',float,  'Pn_Gsto_An',       '[DEBUG] Net assimilation'),
-        #(variables,     'flight',   float,  'flight',           '[DEBUG] flight'),
-        #(variables,     'leaf_flight',float,'leaf_flight',      '[DEBUG] leaf_flight'),
-        (variables,     'fphen',    float,  'fphen',            '[DEBUG] fphen'),
-        #(variables,     'leaf_fphen',float, 'leaf_fphen',       '[DEBUG] leaf_fphen'),
-        #(variables,     'ftemp',    float,  'ftemp',            '[DEBUG] ftemp'),
-        #(variables,     'fvpd',     float,  'fVPD',             '[DEBUG] fVPD'),
         #(variables,     'fswp',     float,  'fSWP',             '[DEBUG] fSWP'),
         #(inputs,        'sinb',     float,  'sinB',             '[DEBUG] sinB'),
         #(variables,     'ppardir',  float,  'pPARdir',          '[DEBUG] pPARdir'),

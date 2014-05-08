@@ -1,6 +1,6 @@
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '3.0.3'
+app_version = '3.0.4'
 
 import os.path
 import optparse
