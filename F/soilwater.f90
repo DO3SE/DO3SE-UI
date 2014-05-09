@@ -171,10 +171,9 @@ contains
         endif
 
         ! Calculate AEt from Et and Es (after Shuttleworth and Wallace, 1985)
-        SW_a = (delta + psychro) * (Ra + Rb_H2O)
+        SW_a = (delta + psychro) * Rb_H2O
         SW_s = (delta + psychro) * Rinc + (psychro * Rsoil)
-        SW_c = (delta + psychro) * 0 + (psychro + Rsto_c) ! Boundary layer 
-                                                          ! resistance = 0
+        SW_c = psychro * (Rsto_c * Dratio) ! Boundary layer resistance = 0
         C_canopy = 1 / (1 + ((SW_c * SW_a) / (SW_s * (SW_c + SW_a))))
         C_soil = 1 / (1 + ((SW_s * SW_a) / (SW_c * (SW_s + SW_a))))
         if (Es_hr <= 0) then
