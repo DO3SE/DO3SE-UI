@@ -92,12 +92,13 @@ class PickleFile:
         if filename is None:
             raise IOError('No filename set')
 
-        f = open(filename, 'rb')
-        try:
-            self.data = pickle.load(f)
-        except:
-            raise IOError('Invalid pickle file')
-        finally:
-            f.close()
+        with open(filename, 'rb') as f:
+            # Project files sometimes get mangled newlines when emailed around,
+            # so try and fix them...
+            contents = f.read().replace('\r', '')
+            try:
+                self.data = pickle.loads(contents)
+            except Exception as e:
+                raise IOError('Invalid pickle file', e)
 
         _log.debug('Loaded ' + filename)
