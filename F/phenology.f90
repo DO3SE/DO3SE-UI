@@ -90,7 +90,7 @@ contains
         if (dd < SGS .or. dd > EGS) then
             fphen = 0.0
         else if (dd < (SGS + fphen_1)) then
-            fphen = fphen_a + (fphen_b + fphen_a) * (dd - SGS) / fphen_1
+            fphen = fphen_a + (fphen_b - fphen_a) * (dd - SGS) / fphen_1
         else if (dd < fphen_limA) then
             fphen = fphen_b
         else if (dd < (fphen_limA + fphen_2)) then
