@@ -69,6 +69,55 @@ class ParameterGroupWithPreview(ParameterGroup):
         ParameterGroup.set_values(self, values)
         self.update_preview(None)
 
+class SeasonParameterGroupWithPreview(ParameterGroup):
+    """A parameter group with a preview canvas.
+
+    A canvas is added to the field group's top-level sizer, and made available
+    as the :attr:`preview` attribute.
+
+    By default, :data:`~do3se.fields.EVT_VALUE_CHANGED` is bound to
+    :meth:`update_preview` so that any changes in the group cause the preview
+    to be updated.  If a preview depends on any other events then those should
+    also be bound to :meth:`update_preview`.  :meth:`update_preview` is also
+    called after :meth:`set_values`.
+
+    .. attribute:: preview
+        
+        A :class:`wx.lib.plot.PlotCanvas` instance to use as a preview canvas.
+    """
+    def __init__(self, *args, **kwargs):
+        ParameterGroup.__init__(self, *args, **kwargs)
+
+        self.preview = wx.lib.plot.PlotCanvas(self)
+        self.preview.SetEnableTitle(False)
+        self.preview.SetEnableLegend(False)
+        self.preview.SetSizeHints(minW=400, minH=200, maxH=200)
+        self.GetSizer().Add(wxext.AutowrapStaticText(self, label='N.B. When selecting "Latitude Function", '
+            'for SGS/EGS method SGS and EGS will be calculated.  Selecting an effective temperaturesum preset (ETS; thermal time method) will allow you to provide '
+            'a SGS value and a mid-anthesis value.  It will then calculate the values for '
+            'various fphen and leaf_fphen values, which will be greyed out in the UI.'
+            ),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+        self.GetSizer().Add(wxext.AutowrapStaticText(self, label='N.B. '
+            'If your growing season extends one calendar year (e.g. wheat grown in India from November Year 1 to March Year 2), please assume that "day of '
+            'year" covers two consecutive years, making it in effect "day of two years", i.e. from day 1 to day 730 (end of second year). As an example, for an end of '
+            'growing season (EGS) on March 31st of the second year, you had to define EGS = 455.'
+            ),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+        self.GetSizer().AddStretchSpacer(1)
+        self.GetSizer().Add(self.preview, 0, wx.EXPAND|wx.ALL, 5)
+
+        self.Bind(EVT_VALUE_CHANGED, self.update_preview)
+
+    def update_preview(self, evt):
+        """Redraw the preview (should be overridden in subclass)."""
+        raise NotImplementedError
+
+    def set_values(self, values):
+        """Update the preview when values are set."""
+        ParameterGroup.set_values(self, values)
+        self.update_preview(None)
+
 
 class InputFormatParams(fields.FieldGroup):
     """Data file input format parameter group."""
@@ -79,7 +128,15 @@ class InputFormatParams(fields.FieldGroup):
 
         self.GetSizer().Add(wxext.AutowrapStaticText(self, label='Hourly input '
             'data must match the format described in "Selected fields".  Ensure '
-            'both field order and units are correct for the data file.',
+            'both field order and units are correct for the data file.'
+            ),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+
+        self.GetSizer().Add(wxext.AutowrapStaticText(self, label='* - required.',
+            style=wx.ST_NO_AUTORESIZE),
+            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+
+        self.GetSizer().Add(wxext.AutowrapStaticText(self, label='** - either PAR or R must be supplied.',
             style=wx.ST_NO_AUTORESIZE),
             flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
 
@@ -173,8 +230,8 @@ class ModelOptionsParams(ParameterGroup):
         self.GetSizer().Add(wxext.AutowrapStaticText(self, label='N.B. fLWP, '
             'fSWP and fPAW are always calculated.  "Soil water influence on '
             'Gsto" only controls which is used in the Gsto calculation.  fPAW '
-            'is calculated assuming an upper threshold of 50% of maximum PAW.',
-            style=wx.ST_NO_AUTORESIZE),
+            'is calculated assuming an upper threshold of 50% of maximum PAW.'
+            ),
             flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
         # The first draw of the label is incorrect if this isn't done on win32
         self.Layout()
@@ -190,7 +247,7 @@ class ModelOptionsParams(ParameterGroup):
         return errors
 
 
-class SeasonParams(ParameterGroupWithPreview):
+class SeasonParams(SeasonParameterGroupWithPreview):
     """Season parameters group.
 
     Has a graph previewing the LAI function.
@@ -198,8 +255,7 @@ class SeasonParams(ParameterGroupWithPreview):
     PARAMETERS = model.parameters_by_group('season')
 
     def __init__(self, *args, **kwargs):
-        ParameterGroupWithPreview.__init__(self, *args, **kwargs)
-
+        SeasonParameterGroupWithPreview.__init__(self, *args, **kwargs)
         self['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
         self['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_sgs_egs)
         self.fc['siteloc']['lat'].field.Bind(EVT_VALUE_CHANGED,
@@ -221,9 +277,28 @@ class SeasonParams(ParameterGroupWithPreview):
     @wxext.autoeventskip
     def update_disabled(self, evt):
         """Disable SGS/EGS inputs if they're not being used."""
-        enabled = self['sgs_egs_calc'].get_value() == 'inputs'
-        self['sgs'].field.Enable(enabled)
-        self['egs'].field.Enable(enabled)
+        if self['sgs_egs_calc'].get_value() == 'inputs':
+            self['sgs'].field.Enable(True)
+            self['egs'].field.Enable(True)
+            self['mid_anthesis'].field.Enable(False)
+            self.preview.Show(True)
+            self.preview.GetContainingSizer().Layout()
+
+        if self['sgs_egs_calc'].get_value() in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
+                                                'thermal_time_mb', 'thermal_time_md']:
+            self['sgs'].field.Enable(True)
+            self['egs'].field.Enable(False)
+            self['mid_anthesis'].field.Enable(True)
+            self.preview.Show(False)
+            self.preview.GetContainingSizer().Layout()
+
+        if self['sgs_egs_calc'].get_value() == 'latitude':
+            self['sgs'].field.Enable(False)
+            self['egs'].field.Enable(False)
+            self['mid_anthesis'].field.Enable(False)
+            self.preview.Show(True)
+            self.preview.GetContainingSizer().Layout()
+
 
     @wxext.autoeventskip
     def update_sgs_egs(self, evt):
@@ -240,18 +315,21 @@ class SeasonParams(ParameterGroupWithPreview):
 
     def set_values(self, values):
         """Ensure the enabled/disabled states and SGS/EGS are updated."""
-        ParameterGroupWithPreview.set_values(self, values)
+        SeasonParameterGroupWithPreview.set_values(self, values)
         self.update_disabled(None)
         self.update_sgs_egs(None)
 
     def validate(self):
         errors = []
 
-        sgs, egs, lai_1, lai_2 = self.extract('sgs', 'egs', 'lai_1', 'lai_2')
+        sgs, egs, lai_1, lai_2, sgs_egs_calc = self.extract('sgs', 'egs', 'lai_1', 'lai_2', 'sgs_egs_calc')
 
-        validate(errors, sgs < egs, 'SGS must be before EGS')
-        validate(errors, (sgs + lai_1) <= (egs - lai_2),
-                 'SGS + LAI_1 cannot be later than EGS - LAI_2')
+        if sgs_egs_calc not in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
+                                                'thermal_time_mb', 'thermal_time_md']:
+            validate(errors, sgs < egs, 'SGS must be before EGS')
+            validate(errors, (sgs + lai_1) <= (egs - lai_2),
+                    'SGS + LAI_1 cannot be later than EGS - LAI_2')
+
 
         return errors
 
@@ -271,6 +349,32 @@ class FphenParams(ParameterGroupWithPreview):
         # a different order...
         self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
         self.fc['season']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        self.fc['season']['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
+        #self['fphen'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
+        self.update_disabled(None)
+
+    def set_values(self, values):
+        """Ensure the enabled/disabled state gets updated when values are set."""
+        ParameterGroupWithPreview.set_values(self, values)
+        self.update_disabled(None)
+
+    @wxext.autoeventskip
+    def update_disabled(self, evt):
+        # update based on choice of thermal time
+        enabled = self.fc['season']['sgs_egs_calc'].get_value() not in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
+                                                'thermal_time_mb', 'thermal_time_md']
+        #self['fphen_a'].field.Enable(enabled)
+        #self['fphen_b'].field.Enable(enabled)
+        #self['fphen_c'].field.Enable(enabled)
+        #self['fphen_d'].field.Enable(enabled)
+        #self['fphen_e'].field.Enable(enabled)
+        self['fphen_1'].field.Enable(enabled)
+        self['fphen_2'].field.Enable(enabled)
+        self['fphen_3'].field.Enable(enabled)
+        self['fphen_4'].field.Enable(enabled)
+        self.preview.Show(enabled)
+        self.preview.GetContainingSizer().Layout()
+
 
     @wxext.autoeventskip
     def update_preview(self, evt):
@@ -283,15 +387,19 @@ class FphenParams(ParameterGroupWithPreview):
     def validate(self):
         errors = []
 
-        sgs, egs = self.fc['season'].extract('sgs', 'egs')
+        sgs, egs, sgs_egs_calc, mid_anthesis = self.fc['season'].extract('sgs', 'egs', 'sgs_egs_calc', 'mid_anthesis')
         fphen_1, fphen_2, fphen_3, fphen_4 = self.extract('fphen_1', 'fphen_2',
                                                           'fphen_3', 'fphen_4')
         fphen_a, fphen_b, fphen_c = self.extract('fphen_a', 'fphen_b', 'fphen_c')
         fphen_d, fphen_e = self.extract('fphen_d', 'fphen_e')
         fphen_lima, fphen_limb = self.extract('fphen_lima', 'fphen_limb')
 
-        validate(errors, (sgs + fphen_1) <= (egs - fphen_4),
-                'SGS + fphen_1 cannot be later than EGS - fphen_4')
+        if sgs_egs_calc not in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
+                                                'thermal_time_mb', 'thermal_time_md']:
+            validate(errors, (sgs + fphen_1) <= (egs - fphen_4),
+                     'SGS + fphen_1 cannot be later than EGS - fphen_4')
+        else:
+            validate(errors, mid_anthesis > sgs, 'mid-anthesis must be later than SGS.')
 
         if fphen_lima > 0 or fphen_limb > 0:
             validate(errors, fphen_lima > (sgs + fphen_1),
@@ -320,17 +428,18 @@ class LeafFphenParams(ParameterGroupWithPreview):
         # a different order...
         self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
         self.fc['season']['egs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
+        self.fc['season']['sgs_egs_calc'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
         # Might be following Fphen instead of leaf_fphen
         self.fc['fphen'].Bind(EVT_VALUE_CHANGED, self.update_preview)
 
         self['leaf_fphen'].field.Bind(EVT_VALUE_CHANGED, self.update_disabled)
-        self.update_disabled(None)
+        #self.update_disabled(None)
 
     def set_values(self, values):
         """Ensure the enabled/disabled state gets updated when values are set."""
         ParameterGroupWithPreview.set_values(self, values)
         self.update_disabled(None)
-        
+
     @wxext.autoeventskip
     def update_preview(self, evt):
         gfx = wx.lib.plot.PlotGraphics([graphs.leaf_fphen_preview(self.fc)],
@@ -342,13 +451,30 @@ class LeafFphenParams(ParameterGroupWithPreview):
     @wxext.autoeventskip
     def update_disabled(self, evt):
         """Disable input fields when following canopy Fphen."""
-        enabled = self['leaf_fphen'].get_value() == 'fixedday'
-        for field in self.itervalues():
-            if field is not self['leaf_fphen']:
-                field.field.Enable(enabled)
-        # Hide preview graph if not using a graphable method
-        self.preview.Show(enabled)
-        self.preview.GetContainingSizer().Layout()
+
+        if self.fc['season']['sgs_egs_calc'].get_value() in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
+                                                'thermal_time_mb', 'thermal_time_md']:
+            enabled = self.fc['season']['sgs_egs_calc'].get_value() not in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
+                                                'thermal_time_mb', 'thermal_time_md']
+            self['leaf_fphen'].field.Enable(enabled)
+            self['astart'].field.Enable(enabled)
+            self['aend'].field.Enable(enabled)
+            #self['leaf_fphen_a'].field.Enable(enabled)
+            #self['leaf_fphen_b'].field.Enable(enabled)
+            #self['leaf_fphen_c'].field.Enable(enabled)
+            self['leaf_fphen_1'].field.Enable(enabled)
+            self['leaf_fphen_2'].field.Enable(enabled)
+            self.preview.Show(enabled)
+            self.preview.GetContainingSizer().Layout()
+        else:
+            self['leaf_fphen'].field.Enable(True)
+            enabled = self['leaf_fphen'].get_value() == 'fixedday'
+            for field in self.itervalues():
+                if field is not self['leaf_fphen']:
+                    field.field.Enable(enabled)
+            self.preview.Show(enabled)
+            self.preview.GetContainingSizer().Layout()
+
 
     def validate(self):
         errors = []
