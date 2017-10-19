@@ -4,6 +4,7 @@ module Inputs
     real, public, save :: mm            ! Month
     real, public, save :: mdd           ! Day of Month
     real, public, save :: dd            ! Day of Year
+    real, public, save :: td            ! thermal time
     real, public, save :: hr            ! Hour
     real, public, save :: Ts_C          ! Surface air temperature (degrees C)
     real, public, save :: Tleaf         ! Leaf temperature (degrees C)
@@ -254,11 +255,11 @@ contains
         Calc_Tleaf = Tair + Tdiff
     end function Calc_Tleaf
 
-    subroutine Tleaf_Estimate_Jackson()
+    subroutine Tleaf_Estimate_db()
         use Variables, only: Ra, Rsto_c
 
-        Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
-    end subroutine Tleaf_Estimate_Jackson
+        !Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
+    end subroutine Tleaf_Estimate_db
 
     ! Calculated saturation/actual vapour pressure and relative humidity
     subroutine Calc_humidity()

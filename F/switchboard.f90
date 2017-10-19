@@ -14,6 +14,7 @@ module Switchboard
     integer, public, parameter :: leaf_fphen_equals_fphen = 1
     integer, public, parameter :: leaf_fphen_fixed_day    = 2
     integer, public, parameter :: leaf_fphen_use_input    = 3
+    integer, public, parameter :: leaf_fphen_thermal_time = 4
     integer, public, save :: leaf_fphen_method = leaf_fphen_equals_fphen
     public :: SB_Calc_leaf_fphen
 
@@ -23,7 +24,7 @@ module Switchboard
     public :: SB_Calc_Ra
 
     integer, public, parameter :: tleaf_use_input        = 1
-    integer, public, parameter :: tleaf_estimate_jackson = 2
+    integer, public, parameter :: tleaf_estimate = 2
     integer, public, save :: tleaf_method = tleaf_use_input
     public :: SB_Calc_Tleaf
 
@@ -69,6 +70,14 @@ module Switchboard
     integer, public, parameter :: sgs_egs_use_inputs = 1
     ! Use latitude function to calculate SGS/EGS
     integer, public, parameter :: sgs_egs_latitude   = 2
+    ! Use thermal time to calculate all seasonal factors for wheat
+    integer, public, parameter :: sgs_egs_tt         = 3
+    integer, public, parameter :: sgs_egs_tt_mb      = 4
+    integer, public, parameter :: sgs_egs_tt_md      = 5
+    ! Use thermal time to calculate all seasonal factors for potato
+    integer, public, parameter :: sgs_egs_tt_pot     = 6
+    ! Use thermal time to calculate all seasonal factors for tomato
+    integer, public, parameter :: sgs_egs_tt_tom     = 7
     integer, public, save :: sgs_egs_method = sgs_egs_use_inputs
     public :: SB_Calc_SGS_EGS
 
@@ -108,7 +117,7 @@ contains
     end subroutine SB_Calc_Rn
 
     subroutine SB_Calc_leaf_fphen()
-        use Phenology, only: Calc_leaf_fphen_fixed_day
+        use Phenology, only: Calc_leaf_fphen_fixed_day, Calc_tt_leaf_fphen
         use Inputs, only: leaf_fphen_input
         use Variables, only: fphen, leaf_fphen
 
@@ -122,6 +131,9 @@ contains
 
         case (leaf_fphen_use_input)
             leaf_fphen = leaf_fphen_input
+
+        case (leaf_fphen_thermal_time)
+            call Calc_tt_leaf_fphen()
         
         end select
     end subroutine SB_Calc_leaf_fphen
@@ -141,23 +153,34 @@ contains
     end subroutine SB_Calc_Ra
 
     subroutine SB_Calc_Tleaf()
-        use Inputs, only: Tleaf_Estimate_J => Tleaf_Estimate_Jackson
+        use Inputs, only: Tleaf_Estimate_db => Tleaf_Estimate_db
 
         select case (tleaf_method)
 
         !case (tleaf_use_input)
         ! do nothing
 
-        case (tleaf_estimate_jackson)
-            call Tleaf_Estimate_J()
+        case (tleaf_estimate)
+            call Tleaf_Estimate_db()
 
         end select
     end subroutine SB_Calc_Tleaf
 
     subroutine SB_Calc_gsto()
+        use Inputs, only: R_ => R, eact, P, Tleaf, Ts_C, uh
         use R, only: Calc_Gsto_Multiplicative
-        use Pn_Gsto, only: Calc_Gsto_Pn, pngsto_l, pngsto, pngsto_c, pngsto_PEt
+        use Pn_Gsto, only: Calc_Gsto_Pn, leaf_temp_de_Boeck, gsto_final, pngsto_l, &
+                pngsto, pngsto_c, pngsto_PEt
         use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        
+        use Parameters, only: Lm, albedo
+        real :: Tleaf_balance_threshold, Tleaf_adjustment_factor
+        integer :: Tleaf_max_iterations
+        integer :: i
+
+        Tleaf_balance_threshold = 0.0010000000474974513
+        Tleaf_adjustment_factor = 0.019999999552965164
+        Tleaf_max_iterations = 50
 
         ! Calculate both, because currently they don't overlap
         call Calc_Gsto_Multiplicative()
@@ -168,16 +191,59 @@ contains
         case (gsto_multiplicative)
             call Calc_Gsto_Multiplicative()
             ! TODO: Remove this, only here for debug when comparing methods
-            call Calc_Gsto_Pn()
+            ! call Calc_Gsto_Pn()
+
+            select case (tleaf_method)
+
+                case (tleaf_use_input)
+                call Calc_Gsto_Pn()
+
+                case (tleaf_estimate)
+                
+
+                
+                    Tleaf = Ts_C
+                    call Calc_Gsto_Pn()
+                    ! Copy Calc_Gsto_Pn() results to correct places
+                    do i= 1, 5
+                        Tleaf = leaf_temp_de_Boeck(R_, eact*1e3, Ts_C, Tleaf, P*1e3, &
+                                 uh, gsto_final*1e-6, .true., Lm, albedo, 1.0, &
+                                 Tleaf_balance_threshold, &
+                                 Tleaf_adjustment_factor, &
+                                 Tleaf_max_iterations)
+                        Tleaf = Ts_C + 0.2 * (Tleaf - Ts_C)
+                        call Calc_Gsto_Pn()
+                    end do
+            end select
+            
 
         case (gsto_photosynthetic)
-            call Calc_Gsto_Pn()
-            ! Copy Calc_Gsto_Pn() results to correct places
-            Gsto_l = pngsto_l
-            Gsto = pngsto
-            Gsto_c = pngsto_c
-            Gsto_PEt = pngsto_PEt
+            select case (tleaf_method)
 
+                case (tleaf_use_input)
+                call Calc_Gsto_Pn()
+
+                case (tleaf_estimate)
+                
+
+                
+                    Tleaf = Ts_C
+                    call Calc_Gsto_Pn()
+                    ! Copy Calc_Gsto_Pn() results to correct places
+                    do i= 1, 5
+                        Tleaf = leaf_temp_de_Boeck(R_, eact*1e3, Ts_C, Tleaf, P*1e3, &
+                                 uh, gsto_final*1e-6, .true., Lm, albedo, 1.0, &
+                                 Tleaf_balance_threshold, &
+                                 Tleaf_adjustment_factor, &
+                                 Tleaf_max_iterations)
+                        Tleaf = Ts_C + 0.2 * (Tleaf - Ts_C)
+                        call Calc_Gsto_Pn()
+                    end do
+                    Gsto_l = pngsto_l
+                    Gsto = pngsto
+                    Gsto_c = pngsto_c
+                    Gsto_PEt = pngsto_PEt
+            end select
         end select
     end subroutine SB_Calc_Gsto
 

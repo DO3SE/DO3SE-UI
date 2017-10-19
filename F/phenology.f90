@@ -102,7 +102,7 @@ contains
         if (dd < SGS .or. dd > EGS) then
             fphen = 0.0
         else if (dd < (SGS + fphen_1)) then
-            fphen = fphen_a + (fphen_b + fphen_a) * (dd - SGS) / fphen_1
+            fphen = fphen_a + (fphen_b - fphen_a) * (dd - SGS) / fphen_1
         else if (dd < fphen_limA) then
             fphen = fphen_b
         else if (dd < (fphen_limA + fphen_2)) then
@@ -137,5 +137,28 @@ contains
             leaf_fphen = leaf_fphen_c + (leaf_fphen_b - leaf_fphen_c) * (Aend - dd) / leaf_fphen_2
         end if
     end subroutine Calc_leaf_fphen_fixed_day
+
+    !==========================================================================
+    ! Calculate leaf_fphen using thermal time
+    !==========================================================================
+
+    subroutine Calc_tt_leaf_fphen()
+        use Parameters, only: leaf_fphen_a, leaf_fphen_b, leaf_fphen_c, &
+                              leaf_fphen_1, leaf_fphen_2, Astart, Aend
+        use Inputs,     only: dd
+        use Variables,  only: leaf_fphen
+
+        if (dd < Astart .or. dd > Aend) then
+            leaf_fphen = 0
+        else if (dd < (Astart + leaf_fphen_1)) then
+            leaf_fphen = leaf_fphen_a
+            ! leaf_fphen = leaf_fphen_a + (leaf_fphen_b - leaf_fphen_a) * (dd - Astart) / leaf_fphen_1
+        else if (dd < (Aend - leaf_fphen_2)) then
+            leaf_fphen = leaf_fphen_a - (leaf_fphen_a - leaf_fphen_b) * (dd - (Astart + leaf_fphen_1)) &
+             / ((Aend - leaf_fphen_2) - (Astart + leaf_fphen_1))
+        else if (dd <= Aend) then
+            leaf_fphen = leaf_fphen_c + (leaf_fphen_b - leaf_fphen_c) * (Aend - dd) / leaf_fphen_2
+        end if
+    end subroutine Calc_tt_leaf_fphen
 
 end module Phenology

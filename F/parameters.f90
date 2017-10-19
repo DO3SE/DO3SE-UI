@@ -86,6 +86,7 @@ module Parameters
     ! Growing season
     integer, public, save :: SGS = 121      ! Start of bulk canopy growth period
     integer, public, save :: EGS = 273      ! End of bulk canopy growth period
+    integer, public, save :: mid_anthesis = 160 ! mid_anthesis for wheat with thermal time only.
 
     ! Leaf area index
     real, public, save :: LAI_a = 0.0       ! First LAI point (at SGS)
