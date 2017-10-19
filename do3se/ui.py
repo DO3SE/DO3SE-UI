@@ -17,6 +17,7 @@ import fieldgroups
 from project import Project
 from dataset import Dataset, DatasetError
 from resultswindow import ResultsWindow
+from help_about import DO3SEAbout
 
 
 _intro_text = u"""
@@ -146,7 +147,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
     def __init__(self, app, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
-        self.SetSize((780,700))
+        self.SetSize((780,780))
         
         # Add context help button
         _s = self.btn_run.GetContainingSizer()
@@ -193,7 +194,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def UpdateErrors(self):
         errors = self.params.validate()
         self.list_errors.Clear()
-        self.list_errors.InsertItems(map(unicode, errors), 0)
+        if errors:
+            self.list_errors.InsertItems(map(unicode, errors), 0)
         if len(errors) == 0:
             self.btn_run.Enable(True)
             self.btn_errors.SetLabel('No errors')
@@ -253,7 +255,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             return
 
         try:
-            d = Dataset(open(filename, 'r'), self.params.get_values())
+            d = Dataset(open(filename, 'r'), self.params.get_values(), self)
         except DatasetError as e:
             wx.MessageBox('Error occurred while loading data file: ' + unicode(e),
                           'Error',
@@ -320,3 +322,15 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
         # Save the config, in case presets were deleted
         self.app.config.save()
+
+    def OnMenu_open_docs(self, evt):
+        import sys
+        help_path = sys.executable.split("\\")
+        help_path = '\\'.join(help_path[:-1])
+        import os
+        os.startfile(help_path + '\\DO3SE-UI Help.chm')
+
+    def OnMenu_open_about(self, evt):
+        dlg = DO3SEAbout(self)
+        dlg.ShowModal()
+        dlg.Destroy()

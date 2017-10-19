@@ -145,6 +145,21 @@
           </XRCED>
         </object>
       </object>
+      <object class="wxMenu">
+        <label>&amp;Help</label>
+        <object class="wxMenuItem" name="open_docs">
+          <label>&amp;Documentation</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="open_about">
+          <label>&amp;About...</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+      </object>
     </object>
     <object class="wxPanel">
       <object class="wxBoxSizer">

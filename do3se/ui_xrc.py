@@ -115,6 +115,8 @@ class xrcframe_projectwindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnMenu_wxID_EXIT, id=wx.ID_EXIT)
         self.Bind(wx.EVT_MENU, self.OnMenu_create_preset, id=xrc.XRCID('create_preset'))
         self.Bind(wx.EVT_MENU, self.OnMenu_manage_presets, id=xrc.XRCID('manage_presets'))
+        self.Bind(wx.EVT_MENU, self.OnMenu_open_docs, id=xrc.XRCID('open_docs'))
+        self.Bind(wx.EVT_MENU, self.OnMenu_open_about, id=xrc.XRCID('open_about'))
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_errors, self.btn_errors)
         self.Bind(wx.EVT_BUTTON, self.OnButton_btn_run, self.btn_run)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -165,7 +167,19 @@ class xrcframe_projectwindow(wx.Frame):
     def OnMenu_manage_presets(self, evt):
         # Replace with event handler code
         print "OnMenu_manage_presets()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_manage_presets        
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_manage_presets    
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_open_docs
+    def OnMenu_open_docs(self, evt):
+        # Replace with event handler code
+        print "OnMenu_open_docs()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_open_docs   
+
+#!XRCED:begin-block:xrcframe_projectwindow.OnMenu_open_about
+    def OnMenu_open_about(self, evt):
+        # Replace with event handler code
+        print "OnMenu_open_about()"
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_open_about       
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_errors
     def OnButton_btn_errors(self, evt):
@@ -372,6 +386,21 @@ def __init_resources():
         </object>
         <object class="wxMenuItem" name="manage_presets">
           <label>Manage/&amp;apply presets</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+      </object>
+      <object class="wxMenu">
+        <label>&amp;Help</label>
+        <object class="wxMenuItem" name="open_docs">
+          <label>&amp;Documentation</label>
+          <XRCED>
+            <events>EVT_MENU</events>
+          </XRCED>
+        </object>
+        <object class="wxMenuItem" name="open_about">
+          <label>&amp;About...</label>
           <XRCED>
             <events>EVT_MENU</events>
           </XRCED>
