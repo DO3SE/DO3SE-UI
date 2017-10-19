@@ -5,7 +5,7 @@ import functools
 
 import wx
 
-from listselectctrl import ListSelectCtrl
+from listselectctrl import ListSelectCtrl, SaveListSelectCtrl
 from presetchooser import PresetChooser
 
 # Andrea Gavana's FloatSpin control
@@ -37,9 +37,10 @@ class AutowrapStaticText(wx.StaticText):
     class catches resize events and wraps the text accordingly.
     """
     def __init__(self, parent, id=wx.ID_ANY, label='', pos=wx.DefaultPosition,
-                 size=wx.DefaultSize, style=0, name=wx.StaticTextNameStr):
+                 size=wx.DefaultSize, style=0, name=wx.StaticTextNameStr, bg=None):
         self._label = label
         wx.StaticText.__init__(self, parent, id, label, pos, size, style, name)
+        self.SetBackgroundColour(bg)
         self.Bind(wx.EVT_SIZE, self.OnResize)
 
     def SetLabel(self, label):

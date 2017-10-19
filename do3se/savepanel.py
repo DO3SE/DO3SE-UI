@@ -26,7 +26,7 @@ class SavePanel(wx.Panel):
         self.presets.post_update = f
 
         # List selector
-        self.slOutputs = wxext.ListSelectCtrl(self)
+        self.slOutputs = wxext.SaveListSelectCtrl(self)
         s.Add(self.slOutputs, 1, wx.EXPAND|wx.ALL, 5)
         self.slOutputs.SetAvailable([(x['long'], x['variable']) for x in model.output_fields.itervalues()])
         
