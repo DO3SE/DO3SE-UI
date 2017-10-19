@@ -8,19 +8,19 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
         (inputs,    'yr',       int,    False,  'Year',         'Year'),
         (inputs,    'mm',       int,    False,  'Month',        'Month'),
         (inputs,    'mdd',      int,    False,  'Month day',    'Day of month'),
-        (inputs,    'dd',       int,    True,   'Day',          'Day of year'),
-        (inputs,    'hr',       int,    True,   'Hour',         'Hour of day (0 to 23)'),
-        (inputs,    'ts_c',     float,  True,   'Ts_C (C)',     'Temperature (Ts_C, Celcius)'),
+        (inputs,    'dd',       int,    True,   'Day',          'Day of year *'),
+        (inputs,    'hr',       int,    True,   'Hour',         'Hour of day (0 to 23) *'),
+        (inputs,    'ts_c',     float,  True,   'Ts_C (C)',     'Temperature (Ts_C, Celcius) *'),
         (inputs,    'tleaf',    float,  False,  'Tleaf (C)',    'Leaf temperature (Tleaf, Celcius)'),
-        (inputs,    'vpd',      float,  True,   'VPD (kPa)',    'Vapour Pressure Deficit (VPD, kPa)'),
-        (inputs,    'uh_zr',    float,  True,   'uh_zR (m/s)',  'Measured wind speed (uh_zR, m/s)'),
-        (inputs,    'precip',   float,  True,   'precip (mm)',  'Precipitation (precip, mm)'),
-        (inputs,    'p',        float,  True,   'P (kPa)',      'Pressure (P, kPa)'),
-        (inputs,    'o3_ppb_zr',float,  True,   'O3_zR (ppb)',  'Measured O3 density (O3_zR, ppb)'),
+        (inputs,    'vpd',      float,  True,   'VPD (kPa)',    'Vapour Pressure Deficit (VPD, kPa) *'),
+        (inputs,    'uh_zr',    float,  True,   'uh_zR (m/s)',  'Measured wind speed (uh_zR, m/s) *'),
+        (inputs,    'precip',   float,  True,   'precip (mm)',  'Precipitation (precip, mm) *'),
+        (inputs,    'p',        float,  True,   'P (kPa)',      'Pressure (P, kPa) *'),
+        (inputs,    'o3_ppb_zr',float,  True,   'O3_zR (ppb)',  'Measured O3 density (O3_zR, ppb) *'),
         (inputs,    'co2',      float,  False,  'CO2 (ppm)',    u'Ambient CO2 concentration (CO2, ppm)'),
         (inputs,    'hd',       float,  False,  'Hd (Wh/m^2)',  u'Sensible heat flux (Hd, Wh/m\u00b2)'),
-        (inputs,    'r',        float,  False,  'R (Wh/m^2)',   u'Global radiation (R, Wh/m\u00b2)'),
-        (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', u'Photosynthetically active radiation (PAR, umol/m\u00b2/s)'),
+        (inputs,    'r',        float,  False,  'R (Wh/m^2)',   u'Global radiation (R, Wh/m\u00b2) **'),
+        (inputs,    'par',      float,  False,  'PAR (umol/m^2/s)', u'Photosynthetically active radiation (PAR, umol/m\u00b2/s) **'),
         (inputs,    'rn',       float,  False,  'Rn (MJ/m^2)',  u'Net radiation (Rn, MJ/m\u00b2)'),
         (inputs,    'leaf_fphen_input', float, False, 'Leaf fphen', 'Leaf fphen (fraction)'),
 )), 'variable', OrderedDict)
@@ -32,6 +32,7 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
         (inputs,        'mm',       int,    'Month',            'Month'),
         (inputs,        'mdd',      int,    'Month day',        'Day of month'),
         (inputs,        'dd',       int,    'Day',              'Day of year'),
+        (inputs,        'td',       float,  'Td (C)',           'Thermal Time'),
         (inputs,        'hr',       int,    'Hour',             'Hour of day (0 to 23)'),
         (inputs,        'ts_c',     float,  'Ts_C (C)',         'Temperature (Ts_C, Celcius)'),
         (inputs,        'tleaf',    float,  'Tleaf (C)',        'Leaf temperature (Tleaf, Celcius)'),
@@ -211,8 +212,14 @@ default_LWP_calc = 'nss'
 
 # SGS/EGS calculations (latitude function or inputs)
 SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('inputs',      switchboard.sgs_egs_use_inputs,     'Use inputs below'),
-    ('latitude',    switchboard.sgs_egs_latitude,       'Latitude function (forests)'),
+    ('inputs',       switchboard.sgs_egs_use_inputs,     'Use inputs below'),
+    ('latitude',     switchboard.sgs_egs_latitude,       'Latitude function'),
+    ('thermal_time', switchboard.sgs_egs_tt,             'ETS ((Bread) Wheat (atlantic, boreal, continental))'),
+    ('thermal_time_mb', switchboard.sgs_egs_tt_mb,           'ETS ((Bread) Wheat (Mediterranean))'),
+    ('thermal_time_md', switchboard.sgs_egs_tt_md,           'ETS ((Durum) Wheat (Mediterranean))'),
+    ('thermal_time_pot', switchboard.sgs_egs_tt_pot,      'ETS (Potato)'),
+    ('thermal_time_tom', switchboard.sgs_egs_tt_tom,      'ETS (Tomato)'),
+
 )), 'id', OrderedDict)
 
 default_SGS_EGS_calc = 'inputs'
@@ -228,7 +235,7 @@ default_gsto_calc = 'multiplicative'
 # Leaf temperature calculation
 tleaf_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('input',    switchboard.tleaf_use_input,        'Use hourly input data'),
-    ('estimate', switchboard.tleaf_estimate_jackson, 'Estimate'),
+    ('estimate', switchboard.tleaf_estimate, 'Estimate'),
 )), 'id', OrderedDict)
 
 default_tleaf_calc = 'estimate'
@@ -292,8 +299,9 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('modelopts', 'fswp', ChoiceField, (fSWP_calcs, default_fSWP_calc), 'fSWP calculation', ''),
 
     ('season', 'sgs_egs_calc', ChoiceField, (SGS_EGS_calcs, default_SGS_EGS_calc), 'SGS/EGS method', ''),
-    ('season', 'sgs', SpinField, (1, 365, 121), 'Start of growing season (SGS, day of year)', ''),
-    ('season', 'egs', SpinField, (1, 365, 273), 'End of growing season (EGS, day of year)', ''),
+    ('season', 'sgs', SpinField, (1, 730, 121), 'Start of growing season (SGS, day of year)', ''),
+    ('season', 'egs', SpinField, (1, 730, 273), 'End of growing season (EGS, day of year)', ''),
+    ('season', 'mid_anthesis', SpinField, (1, 730, 161), 'Mid-anthesis (day of year)', ''),
     ('season', 'lai_a', FloatSpinField, (0, 20, 0, 0.1, 1), u'LAI at SGS (LAI_a, m\u00b2/m\u00b2)', ''),
     ('season', 'lai_b', FloatSpinField, (0, 20, 4, 0.1, 1), u'First mid-season LAI (LAI_b, m\u00b2/m\u00b2)', ''),
     ('season', 'lai_c', FloatSpinField, (0, 20, 4, 0.1, 1), u'Second mid-season LAI (LAI_c, m\u00b2/m\u00b2)', ''),
@@ -308,18 +316,18 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('fphen', 'fphen_d', FloatSpinField, (0, 1, 1, 0.1, 1), 'Third mid-season Fphen (fphen_d)', ''),
     ('fphen', 'fphen_e', FloatSpinField, (0, 1, 0, 0.1, 1), 'Fphen at EGS (fphen_e)', ''),
     ('fphen', 'fphen_1', SpinField, (0, 200, 15), 'Period from fphen_a to fphen_b (fphen_1, days)', ''),
-    ('fphen', 'fphen_lima', SpinField, (0, 365, 0), 'Start of SWP limitation (fphen_limA, day of year)', ''),
+    ('fphen', 'fphen_lima', SpinField, (0, 730, 0), 'Start of SWP limitation (fphen_limA, day of year)', ''),
     ('fphen', 'fphen_2', SpinField, (0, 200, 1), 'Period from fphen_b to fphen_c (fphen_2, days)', ''),
     ('fphen', 'fphen_3', SpinField, (0, 200, 1), 'Period from fphen_c to fphen_d (fphen_3, days)', ''),
-    ('fphen', 'fphen_limb', SpinField, (0, 365, 0), 'End of SWP limitation (fphen_limB, day of year)', ''),
+    ('fphen', 'fphen_limb', SpinField, (0, 730, 0), 'End of SWP limitation (fphen_limB, day of year)', ''),
     ('fphen', 'fphen_4', SpinField, (0, 200, 20), 'Period from fphen_d to fphen_e (fphen_4, days)', ''),
 
     ('leaf_fphen', 'leaf_fphen', ChoiceField, (leaf_fphen_calcs, default_leaf_fphen_calc), 'Leaf fphen calculation', ''),
-    ('leaf_fphen', 'astart', SpinField, (1, 365, 153), 'Start of O3 accumulation (Astart, day of year)', ''),
-    ('leaf_fphen', 'aend', SpinField, (1, 365, 208), 'End of O3 accumulation (Aend, day of year)', ''),
+    ('leaf_fphen', 'astart', SpinField, (1, 730, 153), 'Start of O3 accumulation (Astart, day of year)', ''),
+    ('leaf_fphen', 'aend', SpinField, (1, 730, 208), 'End of O3 accumulation (Aend, day of year)', ''),
     ('leaf_fphen', 'leaf_fphen_a', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Astart (leaf_fphen_a)', ''),
-    ('leaf_fphen', 'leaf_fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'Leaf fphen mid-season (leaf_fphen_b)', ''),
-    ('leaf_fphen', 'leaf_fphen_c', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Aend (leaf_fphen_c)', ''),
+    ('leaf_fphen', 'leaf_fphen_b', FloatSpinField, (0, 1, 1, 0.1, 1), 'Leaf fphen mid-season (leaf_fphen_c)', ''),
+    ('leaf_fphen', 'leaf_fphen_c', FloatSpinField, (0, 1, 0, 0.1, 1), 'Leaf fphen at Aend (leaf_fphen_e)', ''),
     ('leaf_fphen', 'leaf_fphen_1', SpinField, (0, 300, 15), 'Period from leaf_fphen_a to leaf_fphen_b (days)', ''),
     ('leaf_fphen', 'leaf_fphen_2', SpinField, (0, 300, 30), 'Period from leaf_fphen_b to leaf_fphen_c (days)', ''),
 )), 'variable', OrderedDict)
