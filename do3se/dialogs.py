@@ -229,8 +229,8 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
         self.paramlist.GetContainingSizer().Insert(0, wxext.AutowrapStaticText(self,
             label='Presets are collections of parameter values.  Applying a preset '
             'will update the current project\'s parameters.  Uncheck parameters to '
-            'skip them, preserving their current values.',
-            style=wx.ST_NO_AUTORESIZE),
+            'skip them, preserving their current values.', bg=(255,255,255)
+            ),
             flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
         self.paramlist.GetContainingSizer().Layout()
 
