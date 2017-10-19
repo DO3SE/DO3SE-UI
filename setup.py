@@ -157,3 +157,5 @@ if __name__ == "__main__":
                 Extension(ext_name, buildpyf(ext_files, ext_name))
             ],
     )
+
+## To get it to run on WINE change to 'bundle_files': 3
