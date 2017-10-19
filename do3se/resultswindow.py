@@ -2,6 +2,9 @@ import wx
 
 from datapanel import DataPanel
 from savepanel import SavePanel
+from plotpanel import PlotPanel, PlotPanel2, PlotPanel3, PlotPanel4
+
+
 
 class ResultsWindow(wx.Frame):
     def __init__(self, app, parent, results, title):
@@ -35,6 +38,21 @@ class ResultsWindow(wx.Frame):
         ### Data panel ###
         pData = DataPanel(nbMain, self.results.data)
         nbMain.AddPage(pData, "Data")
+
+        ### Plot panel ###
+        pPlot3 = PlotPanel3(self.app, nbMain, self.results)
+        nbMain.AddPage(pPlot3, "Input Plots")
+
+        ### Plot panel ###
+        pPlot = PlotPanel(self.app, nbMain, self.results)
+        nbMain.AddPage(pPlot, "fPlots - Meteorology")
+
+        ### Plot panel ###
+        pPlot2 = PlotPanel2(self.app, nbMain, self.results)
+        nbMain.AddPage(pPlot2, "fPlots - Phenology")
+
+        pPlot4 = PlotPanel4(self.app, nbMain, self.results)
+        nbMain.AddPage(pPlot4, "Ouput Plots")
 
         ### Save to File panel ###
         pSave = SavePanel(self.app, nbMain, self.results)
