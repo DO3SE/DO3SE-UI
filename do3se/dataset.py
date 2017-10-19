@@ -104,6 +104,64 @@ class Dataset:
         self.params['o3_h'] = self.params['h'] if o3_h['disabled'] else o3_h['value']
 
         self.input = data_from_csv(infile, input_fields, input_trim)
+        self.input, mean_temps = calc_thermal_time(self.input)
+        print self.params['sgs']
+        print self.params['egs']
+        print self.params['astart']
+        print self.params['aend']
+        print self.params['fphen_1']
+        print self.params['fphen_4']
+        print self.params['leaf_fphen_1']
+        print self.params['leaf_fphen_2']
+
+
+        if SGS_EGS['func'] == 3:
+            # self.params['sgs']
+            # print mean_temps[self.params['mid_anthesis']]
+            sgs_set = False
+            egs_set = False
+            astart_set = False
+            fphen_1_set = False
+            leaf_f_phen_1_set = False
+            leaf_f_phen_2_set = False
+            mid_anthesis_acc_value = mean_temps[self.params['mid_anthesis']]
+            for i, value in enumerate(mean_temps):
+                if value > (mid_anthesis_acc_value - 1075) and not sgs_set and mid_anthesis_acc_value > 1075:
+                    self.params['sgs'] = i
+                    sgs_set = True
+                if value > (mid_anthesis_acc_value + 700) and not egs_set:
+                    self.params['egs'] = i
+                    egs_set = True
+                if value > (mid_anthesis_acc_value - 456) and not astart_set and mid_anthesis_acc_value > 456:
+                    self.params['astart'] = i
+                    astart_set = True
+                if value > (mid_anthesis_acc_value - 795) and not fphen_1_set and mid_anthesis_acc_value > 795:
+                    fphen_1_day = i
+                    fphen_1_set = True
+                if value > (mid_anthesis_acc_value + 100) and not leaf_f_phen_1_set:
+                    leaf_fphen_1_day = i
+                    leaf_f_phen_1_set = True
+                if value > (mid_anthesis_acc_value + 525) and not leaf_f_phen_2_set:
+                    leaf_fphen_2_day = i
+                    leaf_f_phen_2_set = True
+                i =  i + 1
+
+            self.params['fphen_1'] = fphen_1_day - self.params['sgs']
+            self.params['leaf_fphen_1'] = leaf_fphen_1_day - self.params['astart']
+            self.params['leaf_fphen_2'] = self.params['aend'] - leaf_fphen_2_day
+            self.params['fphen_4'] = self.params['egs'] - self.params['mid_anthesis']
+            self.params['aend'] = self.params['egs'] + 1
+
+        print "AFTER"
+        print self.params['sgs']
+        print self.params['egs']
+        print self.params['astart']
+        print self.params['aend']
+        print self.params['fphen_1']
+        print self.params['fphen_4']
+        print self.params['leaf_fphen_1']
+        print self.params['leaf_fphen_2']
+
         _log.info("Loaded %d data rows" % len(self.input))
 
     def run(self, progressbar=None, progress_interval=100):
@@ -312,3 +370,39 @@ def data_from_csv(infile, keys, trim):
         raise UnquotedStringError()
 
     return data
+
+def calc_mean(temp_list):
+    temp_list_sum = sum(temp_list)
+    temp_list_len = len(temp_list)
+    mean_value = float(temp_list_sum) / float(temp_list_len)
+    if mean_value > 0:
+        return mean_value
+    return 0
+
+def calc_thermal_time(data):
+    day_temps = []
+    mean_temps = [0]*367
+    set_day = None 
+    for r in data:
+        if set_day == None:
+            set_day = int(r['dd'])
+            day_temps = []
+            day_temps.append(r['ts_c'])
+            continue
+        if int(r['dd']) != set_day:
+            mean_temps[set_day] = calc_mean(day_temps)
+            if set_day > 1:
+                mean_temps[set_day] = mean_temps[set_day] + mean_temps[set_day - 1]
+            day_temps = []
+            set_day = int(r['dd'])
+            day_temps.append(r['ts_c'])
+        else:
+            day_temps.append(r['ts_c'])
+    else:
+        mean_temps[set_day] = calc_mean(day_temps)
+        if set_day > 1:
+            mean_temps[set_day] = mean_temps[set_day] + mean_temps[set_day - 1]
+    for r in data:
+        r['td'] = mean_temps[int(r['dd'])]
+
+    return data, mean_temps
