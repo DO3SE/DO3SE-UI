@@ -1,6 +1,19 @@
 DO3SE - UI
 
-The UI Repository seems to contain the official setup for creating the GUI DO3SE model.
+(THIS DOCUMENT IS WIP)
+
+For indepth (Possibly out of date setup refer to `/doc/developer/DO3SE_Developer_Guide.tex`)
+
+The UI Repository seems to contain the official setup for creating the GUI DO3SE model that is available on the SEI website.
+
+# Directory Structure
++ do3se - Contains the python GUI scripts
++ doc - contains documentation
++ F - Contains Fortran Model 
++ notes - Contains some general science notes and some test data
++ patches - ?
++ resources - contains resources for the GUI such as images
++ tests - contains some test data
 
 ---
 # Notes
