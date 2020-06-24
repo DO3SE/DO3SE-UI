@@ -121,18 +121,12 @@ Or no range
 [,]  => SetRange(min_val=None, max_val=None)
 
 """
-from __future__ import division
 
 
 #----------------------------------------------------------------------
 # Beginning Of FLOATSPIN wxPython Code
 #----------------------------------------------------------------------
 
-from past.builtins import cmp
-from builtins import str
-from builtins import range
-from builtins import object
-from past.utils import old_div
 import wx
 
 # Set The Styles For The Underline wx.TextCtrl
@@ -285,7 +279,7 @@ class FloatSpin(wx.PyControl):
         self.SetBestSize((width, height))
         
         self._validkeycode = [43, 45, 46, 69, 101, 127, 314]
-        self._validkeycode.extend(list(range(48, 58)))
+        self._validkeycode.extend(range(48, 58))
         self._validkeycode.extend([wx.WXK_RETURN, wx.WXK_TAB, wx.WXK_BACK,
                                    wx.WXK_LEFT, wx.WXK_RIGHT])
        
@@ -849,7 +843,7 @@ class FloatSpin(wx.PyControl):
         """ Tries To Determine If A Value Is Finite Or Infinite/NaN. """
 
         try:
-            snap_value = old_div((value - self._defaultvalue),self._increment)
+            snap_value = (value - self._defaultvalue)/self._increment
             finite = True
         except:
             finite = False
@@ -984,7 +978,7 @@ __version__ = 0, 0, 4
 # decimal point.  This only has effect at compile-time.
 DEFAULT_PRECISION = 2
 
-class FixedPoint(object):
+class FixedPoint:
 
     # the exact value is self.n / 10**self.p;
     # self.n is a long; self.p is an int
@@ -1006,7 +1000,7 @@ class FixedPoint(object):
             return
 
         if isinstance(value, type(42)) or isinstance(value, type(42)):
-            self.n = int(value) * _tento(p)
+            self.n = long(value) * _tento(p)
             return
 
         if isinstance(value, FixedPoint):
@@ -1067,7 +1061,7 @@ class FixedPoint(object):
         # similarly for long
         yes = 1
         try:
-            aslong = int(value)
+            aslong = long(value)
         except:
             yes = 0
         if yes:
@@ -1150,7 +1144,7 @@ class FixedPoint(object):
         # a float, their hashes may differ.  This is a teensy bit Bad.
         return hash(n) ^ hash(p)
 
-    def __bool__(self):
+    def __nonzero__(self):
         return self.n != 0
 
     def __neg__(self):
@@ -1195,14 +1189,14 @@ class FixedPoint(object):
 
     def __rdiv__(self, other):
         n1, n2, p = _norm(self, other)
-        return old_div(_mkFP(n2, p), self)
+        return _mkFP(n2, p) / self
 
     def __divmod__(self, other):
         n1, n2, p = _norm(self, other)
         if n2 == 0:
             raise ZeroDivisionError("FixedPoint modulo")
         # floor((n1/10**p)/(n2*10**p)) = floor(n1/n2)
-        q = old_div(n1, n2)
+        q = n1 / n2
         # n1/10**p - q * n2/10**p = (n1 - q * n2)/10**p
         return q, _mkFP(n1 - q * n2, p)
 
@@ -1227,7 +1221,7 @@ class FixedPoint(object):
     # XXX note that __int__ inherits whatever __long__ does,
     # XXX and .frac() is affected too
     def __long__(self):
-        answer = old_div(abs(self.n), _tento(self.p))
+        answer = abs(self.n) / _tento(self.p)
         if self.n < 0:
             answer = -answer
         return answer
@@ -1240,7 +1234,7 @@ class FixedPoint(object):
 
            x.frac() + long(x) == x
         """
-        return self - int(self)
+        return self - long(self)
 
     # return n, p s.t. self == n/10**p and n % 10 != 0
     def __reduce(self):
@@ -1249,7 +1243,7 @@ class FixedPoint(object):
             p = 0
         while p and n % 10 == 0:
             p = p - 1
-            n = old_div(n, 10)
+            n = n / 10
         return n, p
 
 # return 10L**n
@@ -1354,7 +1348,7 @@ def _string2exact(s):
     assert intpart
     assert fracpart
 
-    i, f = int(intpart), int(fracpart)
+    i, f = long(intpart), long(fracpart)
     nfrac = len(fracpart)
     i = i * _tento(nfrac) + f
     exp = exp - nfrac

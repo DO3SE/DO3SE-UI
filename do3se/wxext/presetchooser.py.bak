@@ -50,7 +50,7 @@ class PresetChooser(wx.Panel):
         self.presets = presets.copy()
         self.blacklist = blacklist
         self.choice.Clear()
-        self.choice.SetItems(list(self.presets.keys()))
+        self.choice.SetItems(self.presets.keys())
 
     
     def GetPresets(self):
@@ -60,7 +60,7 @@ class PresetChooser(wx.Panel):
     def Refresh(self):
         key = self.choice.GetStringSelection()
         self.choice.Clear()
-        self.choice.SetItems(list(self.presets.keys()))
+        self.choice.SetItems(self.presets.keys())
         if key and key in self.presets:
             self.choice.SetStringSelection(key)
             self.setvalues(self.presets[key])

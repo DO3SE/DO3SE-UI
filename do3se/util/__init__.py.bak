@@ -3,7 +3,6 @@ Generic utility functions.
 """
 from __future__ import absolute_import
 
-from builtins import zip
 import csv
 import itertools
 
@@ -18,7 +17,7 @@ def setattrs(obj, d):
     Using :obj:`d` as a mapping of attribute name to a new value, set the values
     of attributes on :obj:`obj`.
     """
-    for k,v in d.items():
+    for k,v in d.iteritems():
         setattr(obj, k, v)
 
 
@@ -44,7 +43,7 @@ def csv2dict(infile):
 
     for row in reader:
         key = row.pop(reader.fieldnames[0])
-        data[key] = dict((k, _attempt_float(v)) for k,v in row.items() if v)
+        data[key] = dict((k, _attempt_float(v)) for k,v in row.iteritems() if v)
 
     return data
 
@@ -76,7 +75,7 @@ def load_presets(infile):
     # float where possible
     for row in row_iter:
         key = row.pop(0)
-        data[key] = [(k, _attempt_float(v)) for k,v in zip(fieldnames, row) if v != '']
+        data[key] = [(k, _attempt_float(v)) for k,v in itertools.izip(fieldnames, row) if v != '']
 
     return data
 
@@ -94,7 +93,7 @@ def _attempt_float(v):
 
 def to_dicts(keys, tuples):
     """Given an n-tuple of keys and a list of n-tuples, make a list of dicts."""
-    return [dict(list(zip(keys, t))) for t in tuples]
+    return [dict(zip(keys, t)) for t in tuples]
 
 
 def dicts_to_map(dicts, key, cls=dict):
