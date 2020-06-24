@@ -28,7 +28,7 @@ class App(wx.App):
 
         # Only allow one instance of the application
         si_filename = '%s-%s.lock' % (self.GetAppName(), wx.GetUserId())
-        self.sichecker = wx.SingleInstanceChecker(si_filename, wx.StandardPaths_Get().GetTempDir())
+        self.sichecker = wx.SingleInstanceChecker(si_filename, wx.StandardPaths.Get().GetTempDir())
         if self.sichecker.IsAnotherRunning():
             _log.error("Another instance is already running - exiting!")
             wx.MessageDialog(None, "DO3SE is already running", style=wx.OK|wx.ICON_ERROR).ShowModal()
@@ -44,7 +44,7 @@ class App(wx.App):
         self.windows = set()
 
         # Set up context help provider
-        wx.HelpProvider_Set(wx.SimpleHelpProvider())
+        wx.HelpProvider.Set(wx.SimpleHelpProvider())
 
         return True
 
@@ -76,12 +76,12 @@ class App(wx.App):
 
 def open_config():
     """Open configuration file as a :class:`~do3se.config.Config` object.
-    
+
     Because this function uses :obj:`wx.StandardPaths`, an application object
     with a valid application name must be created first.
     """
     # Find path where the config file should be
-    filename = os.path.join(wx.StandardPaths_Get().GetUserDataDir(),
+    filename = os.path.join(wx.StandardPaths.Get().GetUserDataDir(),
                             'config.pickle')
     # Create config directory if it doesn't exist
     dirname = os.path.dirname(filename)
@@ -119,7 +119,7 @@ def main(args):
                       dest='loglevel',
                       const=logging.DEBUG)
     parser.set_defaults(loglevel=logging.CRITICAL)
-    
+
     (options, args) = parser.parse_args(args)
 
     logging_setup(level=options.loglevel)

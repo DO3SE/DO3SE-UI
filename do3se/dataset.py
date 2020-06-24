@@ -1,7 +1,7 @@
 import csv
 import logging
 _log = logging.getLogger('do3se.dataset')
-from itertools import ifilter
+# from itertools import ifilter
 
 import util
 import model
@@ -45,7 +45,7 @@ class Dataset:
         for f in required:
             if not f in input_fields:
                 raise RequiredFieldError([f])
-        
+
         # Handle PAR/Global radiation input/derivation
         if 'par' in input_fields and 'r' in input_fields:
             self.switchboard['r_par_method'] = model.switchboard.r_par_use_inputs
@@ -105,19 +105,19 @@ class Dataset:
 
         self.input = data_from_csv(infile, input_fields, input_trim)
         self.input, mean_temps = calc_thermal_time(self.input)
-        print self.params['sgs']
-        print self.params['egs']
-        print self.params['astart']
-        print self.params['aend']
-        print self.params['fphen_1']
-        print self.params['fphen_4']
-        print self.params['leaf_fphen_1']
-        print self.params['leaf_fphen_2']
+        print (self.params['sgs'])
+        print (self.params['egs'])
+        print (self.params['astart'])
+        print (self.params['aend'])
+        print (self.params['fphen_1'])
+        print (self.params['fphen_4'])
+        print (self.params['leaf_fphen_1'])
+        print (self.params['leaf_fphen_2'])
 
 
         if SGS_EGS['func'] == 3:
             # self.params['sgs']
-            # print mean_temps[self.params['mid_anthesis']]
+            # print (mean_temps[self.params['mid_anthesis']])
             sgs_set = False
             egs_set = False
             astart_set = False
@@ -152,15 +152,15 @@ class Dataset:
             self.params['fphen_4'] = self.params['egs'] - self.params['mid_anthesis']
             self.params['aend'] = self.params['egs'] + 1
 
-        print "AFTER"
-        print self.params['sgs']
-        print self.params['egs']
-        print self.params['astart']
-        print self.params['aend']
-        print self.params['fphen_1']
-        print self.params['fphen_4']
-        print self.params['leaf_fphen_1']
-        print self.params['leaf_fphen_2']
+        print ("AFTER")
+        print (self.params['sgs'])
+        print (self.params['egs'])
+        print (self.params['astart'])
+        print (self.params['aend'])
+        print (self.params['fphen_1'])
+        print (self.params['fphen_4'])
+        print (self.params['leaf_fphen_1'])
+        print (self.params['leaf_fphen_2'])
 
         _log.info("Loaded %d data rows" % len(self.input))
 
@@ -212,7 +212,7 @@ class Dataset:
             if '' in row.values():
                 skippedrows += 1
                 continue
-            # Catch TypeError - usually caused by some attributes being None 
+            # Catch TypeError - usually caused by some attributes being None
             # because there weren't enough fields in the input
             # TODO: Handle this differently?
             try:
@@ -260,13 +260,13 @@ class Resultset:
 
         if headers:
             w.writerow(dict( (f, model.output_fields[f]['short']) for f in fields ))
-        
+
         if period is None:
             w.writerows(self.data)
             _log.info('Wrote all %d rows' % (len(self.data),))
         else:
             start, end = period
-            w.writerows(ifilter(lambda r: r['dd'] >= start and r['dd'] <= end, self.data))
+            w.writerows(list(filter(lambda r: r['dd'] >= start and r['dd'] <= end, self.data)))
             _log.info('Wrote rows from dd=%d to dd=%d' % (start, end))
 
 
@@ -382,7 +382,7 @@ def calc_mean(temp_list):
 def calc_thermal_time(data):
     day_temps = []
     mean_temps = [0]*367
-    set_day = None 
+    set_day = None
     for r in data:
         if set_day == None:
             set_day = int(r['dd'])

@@ -335,7 +335,7 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
 
 def parameters_by_group(group):
     """Get a list of all parameter definitions from :data:`parameters` that are in in *group*."""
-    return [p for p in paramdefs.itervalues() if p['group'] == group]
+    return [p for p in paramdefs.values() if p['group'] == group]
 
 
 def extract_outputs():

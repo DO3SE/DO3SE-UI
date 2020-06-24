@@ -20,16 +20,17 @@ class xrcframe_mainwindow(wx.Frame):
 #!XRCED:begin-block:xrcframe_mainwindow.PreCreate
     def PreCreate(self, pre):
         """ This function is called during the class's initialization.
-        
+
         Override it for custom setup before the window is created usually to
         set additional window styles using SetWindowStyle() and SetExtraStyle().
         """
         pass
-        
+
 #!XRCED:end-block:xrcframe_mainwindow.PreCreate
 
     def __init__(self, parent):
         # Two stage creation (see http://wiki.wxpython.org/index.cgi/TwoStageCreation)
+        # TODO: Check this is correct as PreFrame is depreciated
         pre = wx.PreFrame()
         self.PreCreate(pre)
         get_resources().LoadOnFrame(pre, parent, "frame_mainwindow")
@@ -51,44 +52,44 @@ class xrcframe_mainwindow(wx.Frame):
 #!XRCED:begin-block:xrcframe_mainwindow.OnListbox_list_recent
     def OnListbox_list_recent(self, evt):
         # Replace with event handler code
-        print "OnListbox_list_recent()"
-#!XRCED:end-block:xrcframe_mainwindow.OnListbox_list_recent        
+        print ("OnListbox_list_recent()")
+#!XRCED:end-block:xrcframe_mainwindow.OnListbox_list_recent
 
 #!XRCED:begin-block:xrcframe_mainwindow.OnListbox_dclick_list_recent
     def OnListbox_dclick_list_recent(self, evt):
         # Replace with event handler code
-        print "OnListbox_dclick_list_recent()"
-#!XRCED:end-block:xrcframe_mainwindow.OnListbox_dclick_list_recent        
+        print ("OnListbox_dclick_list_recent()")
+#!XRCED:end-block:xrcframe_mainwindow.OnListbox_dclick_list_recent
 
 #!XRCED:begin-block:xrcframe_mainwindow.OnButton_btn_open_selected
     def OnButton_btn_open_selected(self, evt):
         # Replace with event handler code
-        print "OnButton_btn_open_selected()"
-#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_open_selected        
+        print ("OnButton_btn_open_selected()")
+#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_open_selected
 
 #!XRCED:begin-block:xrcframe_mainwindow.OnButton_btn_open_other
     def OnButton_btn_open_other(self, evt):
         # Replace with event handler code
-        print "OnButton_btn_open_other()"
-#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_open_other        
+        print ("OnButton_btn_open_other()")
+#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_open_other
 
 #!XRCED:begin-block:xrcframe_mainwindow.OnButton_btn_new
     def OnButton_btn_new(self, evt):
         # Replace with event handler code
-        print "OnButton_btn_new()"
-#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_new        
+        print ("OnButton_btn_new()")
+#!XRCED:end-block:xrcframe_mainwindow.OnButton_btn_new
 
 
 class xrcframe_projectwindow(wx.Frame):
 #!XRCED:begin-block:xrcframe_projectwindow.PreCreate
     def PreCreate(self, pre):
         """ This function is called during the class's initialization.
-        
+
         Override it for custom setup before the window is created usually to
         set additional window styles using SetWindowStyle() and SetExtraStyle().
         """
         pass
-        
+
 #!XRCED:end-block:xrcframe_projectwindow.PreCreate
 
     def __init__(self, parent):
@@ -124,92 +125,92 @@ class xrcframe_projectwindow(wx.Frame):
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_NEW
     def OnMenu_wxID_NEW(self, evt):
         # Replace with event handler code
-        print "OnMenu_wxID_NEW()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_NEW        
+        print ("OnMenu_wxID_NEW()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_NEW
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_OPEN
     def OnMenu_wxID_OPEN(self, evt):
         # Replace with event handler code
-        print "OnMenu_wxID_OPEN()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_OPEN        
+        print ("OnMenu_wxID_OPEN()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_OPEN
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_SAVE
     def OnMenu_wxID_SAVE(self, evt):
         # Replace with event handler code
-        print "OnMenu_wxID_SAVE()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_SAVE        
+        print ("OnMenu_wxID_SAVE()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_SAVE
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_SAVEAS
     def OnMenu_wxID_SAVEAS(self, evt):
         # Replace with event handler code
-        print "OnMenu_wxID_SAVEAS()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_SAVEAS        
+        print ("OnMenu_wxID_SAVEAS()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_SAVEAS
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_CLOSE
     def OnMenu_wxID_CLOSE(self, evt):
         # Replace with event handler code
-        print "OnMenu_wxID_CLOSE()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_CLOSE        
+        print ("OnMenu_wxID_CLOSE()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_CLOSE
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_wxID_EXIT
     def OnMenu_wxID_EXIT(self, evt):
         # Replace with event handler code
-        print "OnMenu_wxID_EXIT()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_EXIT        
+        print ("OnMenu_wxID_EXIT()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_wxID_EXIT
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_create_preset
     def OnMenu_create_preset(self, evt):
         # Replace with event handler code
-        print "OnMenu_create_preset()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_create_preset        
+        print ("OnMenu_create_preset()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_create_preset
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_manage_presets
     def OnMenu_manage_presets(self, evt):
         # Replace with event handler code
-        print "OnMenu_manage_presets()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_manage_presets    
+        print ("OnMenu_manage_presets()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_manage_presets
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_open_docs
     def OnMenu_open_docs(self, evt):
         # Replace with event handler code
-        print "OnMenu_open_docs()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_open_docs   
+        print ("OnMenu_open_docs()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_open_docs
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnMenu_open_about
     def OnMenu_open_about(self, evt):
         # Replace with event handler code
-        print "OnMenu_open_about()"
-#!XRCED:end-block:xrcframe_projectwindow.OnMenu_open_about       
+        print ("OnMenu_open_about()")
+#!XRCED:end-block:xrcframe_projectwindow.OnMenu_open_about
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_errors
     def OnButton_btn_errors(self, evt):
         # Replace with event handler code
-        print "OnButton_btn_errors()"
-#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_errors        
+        print ("OnButton_btn_errors()")
+#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_errors
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnButton_btn_run
     def OnButton_btn_run(self, evt):
         # Replace with event handler code
-        print "OnButton_btn_run()"
-#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_run        
+        print ("OnButton_btn_run()")
+#!XRCED:end-block:xrcframe_projectwindow.OnButton_btn_run
 
 #!XRCED:begin-block:xrcframe_projectwindow.OnClose
     def OnClose(self, evt):
         # Replace with event handler code
-        print "OnClose()"
-#!XRCED:end-block:xrcframe_projectwindow.OnClose        
+        print ("OnClose()")
+#!XRCED:end-block:xrcframe_projectwindow.OnClose
 
 
 class xrcdialog_presets(wx.Dialog):
 #!XRCED:begin-block:xrcdialog_presets.PreCreate
     def PreCreate(self, pre):
         """ This function is called during the class's initialization.
-        
+
         Override it for custom setup before the window is created usually to
         set additional window styles using SetWindowStyle() and SetExtraStyle().
         """
         pass
-        
+
 #!XRCED:end-block:xrcdialog_presets.PreCreate
 
     def __init__(self, parent):
@@ -230,8 +231,8 @@ class xrcdialog_presets(wx.Dialog):
 #!XRCED:begin-block:xrcdialog_presets.OnButton_wxID_DELETE
     def OnButton_wxID_DELETE(self, evt):
         # Replace with event handler code
-        print "OnButton_wxID_DELETE()"
-#!XRCED:end-block:xrcdialog_presets.OnButton_wxID_DELETE        
+        print ("OnButton_wxID_DELETE()")
+#!XRCED:end-block:xrcdialog_presets.OnButton_wxID_DELETE
 
 
 

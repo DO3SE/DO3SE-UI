@@ -9,11 +9,11 @@ class DataTable(wx.grid.PyGridTableBase):
 
     Implements virtual table interface to lookup cell values in *data*.
     """
-    #: Available column field keys, in the order they are defined in 
+    #: Available column field keys, in the order they are defined in
     #: :mod:`~do3se.model`, to display values in the correct columns
     COLUMNS = model.output_fields.keys()
     #: Column labels in the same order as :data:`COLUMNS`
-    COLUMN_LABELS = [x['short'] for x in model.output_fields.itervalues()]
+    COLUMN_LABELS = [x['short'] for x in model.output_fields.values()]
 
     def __init__(self, data):
         wx.grid.PyGridTableBase.__init__(self)
@@ -70,7 +70,7 @@ class DataGrid(wx.grid.Grid):
 
 class DataPanel(wx.Panel):
     """A panel containing nothing but a :class:`DataGrid`.
-    
+
     Create a panel containing a :class:`DataGrid` for displaying *data*.
     """
     def __init__(self, parent, data):

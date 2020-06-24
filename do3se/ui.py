@@ -17,13 +17,13 @@ import fieldgroups
 from project import Project
 from dataset import Dataset, DatasetError
 from resultswindow import ResultsWindow
-from help_about import DO3SEAbout
+# from help_about import DO3SEAbout TODO: This module is missing
 
 
 _intro_text = u"""
 <h2>DO<sub>3</sub>SE model user interface</h2>
 
-To start using the model, click the "New project" button at the bottom.  To 
+To start using the model, click the "New project" button at the bottom.  To
 use an existing project either click it in the "Recent projects" list and click
 "Open selected", or click "Open other..." and locate your project (.do3se) file.
 
@@ -148,15 +148,15 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def __init__(self, app, projectfile):
         ui_xrc.xrcframe_projectwindow.__init__(self, None)
         self.SetSize((780,780))
-        
+
         # Add context help button
         _s = self.btn_run.GetContainingSizer()
         _s.PrependSpacer(5)
         self.btn_help = wx.ContextHelpButton(_s.GetContainingWindow())
         _s.Prepend(self.btn_help, 0, wx.EXPAND)
-        
+
         self.app = app
-        
+
         self.params = fields.FieldCollection(self.tb_main, self.ui_specification)
 
         if projectfile is not None and self.app.IsProjectOpen(projectfile):
@@ -167,7 +167,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
                           wx.OK|wx.ICON_ERROR,
                           self)
         self.project = Project(projectfile, self)
-        
+
         self.params.set_values(self.project.data)
         self.app.windows.add(self)
 
@@ -312,7 +312,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         values = dialogs.apply_preset(self, self.app.config.data['presets'],
                                       self.app.default_presets)
         self.params.set_values(dict(values))
-            
+
         if len(values) > 0:
             self.OnFieldUpdate(None)
             # Update parts of the UI that depend on field values
@@ -331,6 +331,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         os.startfile(help_path + '\\DO3SE-UI Help.chm')
 
     def OnMenu_open_about(self, evt):
-        dlg = DO3SEAbout(self)
-        dlg.ShowModal()
-        dlg.Destroy()
+        pass
+        # TODO: lost DO3SEAbout!
+        # dlg = DO3SEAbout(self)
+        # dlg.ShowModal()
+        # dlg.Destroy()

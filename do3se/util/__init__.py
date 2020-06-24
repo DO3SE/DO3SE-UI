@@ -31,7 +31,7 @@ def csv2dict(infile):
       * The first row contains field names (excluding the first column),
       * The first column contains "row names" (excluding the first row),
       * All other cells represent the row's value for the column's field.
-    
+
     From a file-like object :obj:`infile`, a dictionary is created which maps
     from a row name to another dictionary, which in turn maps from field names
     to values.
@@ -70,7 +70,7 @@ def load_presets(infile):
 
     # Read the first row as field names
     row_iter = iter(reader)
-    fieldnames = row_iter.next()[1:]
+    fieldnames = next(row_iter)[1:]
 
     # Read the remaining rows, filtering out empty values and converting to
     # float where possible

@@ -25,7 +25,7 @@ class ValidationError:
 
 def validate(errors, assertion, msg):
     """Helper function for validation.
-    
+
     Adds a :class:`ValidationError` wrapped around *msg* to *errors* if
     *assertion* is False.
     """
@@ -153,7 +153,7 @@ class ColumnsSelectField(Field):
         Field.__init__(self, parent)
 
         self.choices = choices
-        
+
         self.field = wxext.ListSelectCtrl(parent)
         self.field.SetAvailable([(v['long'], k) for k,v in self.choices.iteritems()])
 
@@ -162,7 +162,7 @@ class ColumnsSelectField(Field):
         self.field.button_remove.Bind(wx.EVT_BUTTON, self.OnChanged)
         self.field.button_up.Bind(wx.EVT_BUTTON, self.OnChanged)
         self.field.button_down.Bind(wx.EVT_BUTTON, self.OnChanged)
-    
+
     def get_value(self):
         """Get the keys of the columns that are selected."""
         return [b for a,b in self.field.GetSelectionWithData()]
@@ -172,7 +172,8 @@ class ColumnsSelectField(Field):
         self.field.SetSelection([self.choices[k]['long'] for k in value])
 
 
-class FieldGroup(OrderedDict, wx.Panel):
+class FieldGroup(wx.Panel):
+# class FieldGroup(OrderedDict, wx.Panel):
     """Base class for groups of fields.
 
     Fields are arranged into logical groups.  This class provides a way to
@@ -206,7 +207,7 @@ class FieldGroup(OrderedDict, wx.Panel):
 
     def set_values(self, values):
         """Update field group with :class:`OrderedDict` of values.
-        
+
         .. note::
             Values for keys which do not exist in the group ar ignored,
             rather than raising errors; values for other groups may be present
@@ -226,7 +227,7 @@ class FieldGroup(OrderedDict, wx.Panel):
 
     def extract(self, *args):
         """Get the values of fields specified in *args* as a list.
-        
+
         Allows code like this:
 
         .. code-block:: python
@@ -310,9 +311,9 @@ class FieldCollection(OrderedDict):
 
     def add_group(self, key, name, cls, *args, **kwargs):
         """Create a new field group.
-        
+
         An instance of *cls* is created, passing all following arguments to the
-        constructor (with *self* and the parent treebook passed first), and 
+        constructor (with *self* and the parent treebook passed first), and
         associated with *key*.
         """
         self[key] = cls(self, self.treebook, *args, **kwargs)

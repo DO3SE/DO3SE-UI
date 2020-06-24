@@ -26,13 +26,13 @@ class App(wx.App):
 
 def list_outputs(option, opt_str, value, parser, app):
     """List available output formats and output fields and exit."""
-    print 'Available output format presets'
+    print ('Available output format presets')
     for p in app.config.data['output_formats'].keys():
-        print '\t+' + p
+        print ('\t+' + p)
 
-    print 'Available output fields:'
+    print ('Available output fields:')
     for f in model.output_fields.itervalues():
-        print '\t%(variable)-16s %(long)s' % f
+        print ('\t%(variable)-16s %(long)s' % f)
 
     exit(0)
 
@@ -107,7 +107,7 @@ def main(args):
                         show_headers=True,
                         reduce_output=False,
                         outfile=sys.stdout)
-    
+
     (options, args) = parser.parse_args(args)
 
     if len(args) < 2:
