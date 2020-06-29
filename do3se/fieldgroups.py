@@ -156,7 +156,7 @@ class InputFormatParams(fields.FieldGroup):
         """Ensure that required input fields are selected."""
         errors = []
 
-        req = [k for k,v in model.input_fields.iteritems() if v['required']]
+        req = [k for k,v in model.input_fields.items() if v['required']]
         cols = set(self['input_fields'].get_value())
         missing = [k for k in req if k not in cols]
 
@@ -165,7 +165,6 @@ class InputFormatParams(fields.FieldGroup):
 
         validate(errors, 'par' in cols or 'r' in cols,
                  'Required input fields missing: supply at least PAR or R')
-
         return errors
 
 
@@ -175,7 +174,6 @@ class SiteLocationParams(ParameterGroup):
 
     def validate(self):
         errors = []
-
         validate(errors, not self['co2_constant'].get_value()['disabled']
                          or 'co2' in self.fc['format']['input_fields'].get_value(),
                  '"Ambient CO2" input field required when "Use input" selected ' + \
