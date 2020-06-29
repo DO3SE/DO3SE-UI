@@ -1,10 +1,9 @@
 import wx
 import wx.lib.newevent
 
-from collections import OrderedDict
 
 import wxext
-# from util import OrderedDict
+from util import OrderedDict
 
 
 # Generic "value changed" event
@@ -22,7 +21,10 @@ class ValidationError:
         self.msg = msg
 
     def __unicode__(self):
-        return unicode(self.msg)
+        return str(self.msg)
+
+    def __repr__(self):
+        return str(self.msg)
 
 
 def validate(errors, assertion, msg):
