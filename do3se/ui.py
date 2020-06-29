@@ -206,7 +206,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         errors = self.params.validate()
         self.list_errors.Clear()
         if errors:
-            self.list_errors.InsertItems(map(unicode, errors), 0)
+            self.list_errors.InsertItems(list(map(str, errors)), 0)
         if len(errors) == 0:
             self.btn_run.Enable(True)
             self.btn_errors.SetLabel('No errors')
@@ -268,7 +268,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         try:
             d = Dataset(open(filename, 'r'), self.params.get_values(), self)
         except DatasetError as e:
-            wx.MessageBox('Error occurred while loading data file: ' + unicode(e),
+            wx.MessageBox('Error occurred while loading data file: ' + str(e),
                           'Error',
                           wx.OK|wx.ICON_ERROR,
                           self)
