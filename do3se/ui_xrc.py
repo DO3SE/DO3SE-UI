@@ -100,6 +100,8 @@ class xrcframe_projectwindow(wx.Frame):
 #!XRCED:end-block:xrcframe_projectwindow.PreCreate
 
     def __init__(self, parent):
+        super(xrcframe_projectwindow, self).__init__(None)
+
         self.res = xrc.XmlResource(os.path.join(APPDIR, 'ui.xrc'))
         self.frame = self.res.LoadFrame(parent, 'frame_projectwindow')
 
