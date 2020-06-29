@@ -16,7 +16,7 @@ import resources
 
 class ParameterGroup(fields.SimpleFieldGroup):
     """Group of parameters using :class:`~do3se.fields.SimpleFieldGroup`.
-    
+
     Most of the groups start with the :class:`~do3se.fields.SimpleFieldGroup`
     layout containing parameters taken from :data:`do3se.model.paramdefs`
     filtered by group.  This class abstracts that one step further by
@@ -45,7 +45,7 @@ class ParameterGroupWithPreview(ParameterGroup):
     called after :meth:`set_values`.
 
     .. attribute:: preview
-        
+
         A :class:`wx.lib.plot.PlotCanvas` instance to use as a preview canvas.
     """
     def __init__(self, *args, **kwargs):
@@ -82,7 +82,7 @@ class SeasonParameterGroupWithPreview(ParameterGroup):
     called after :meth:`set_values`.
 
     .. attribute:: preview
-        
+
         A :class:`wx.lib.plot.PlotCanvas` instance to use as a preview canvas.
     """
     def __init__(self, *args, **kwargs):
@@ -155,7 +155,7 @@ class InputFormatParams(fields.FieldGroup):
     def validate(self):
         """Ensure that required input fields are selected."""
         errors = []
-        
+
         req = [k for k,v in model.input_fields.iteritems() if v['required']]
         cols = set(self['input_fields'].get_value())
         missing = [k for k in req if k not in cols]
@@ -344,7 +344,7 @@ class FphenParams(ParameterGroupWithPreview):
 
     def __init__(self, *args, **kwargs):
         ParameterGroupWithPreview.__init__(self, *args, **kwargs)
-        
+
         # TODO: This will need to happen somewhere else if the panels are in
         # a different order...
         self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
@@ -469,7 +469,7 @@ class LeafFphenParams(ParameterGroupWithPreview):
         else:
             self['leaf_fphen'].field.Enable(True)
             enabled = self['leaf_fphen'].get_value() == 'fixedday'
-            for field in self.itervalues():
+            for field in self.values():
                 if field is not self['leaf_fphen']:
                     field.field.Enable(enabled)
             self.preview.Show(enabled)

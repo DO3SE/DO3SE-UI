@@ -327,7 +327,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         if len(values) > 0:
             self.OnFieldUpdate(None)
             # Update parts of the UI that depend on field values
-            for group in self.params.itervalues():
+            for group in self.params.values():
                 newevt = fields.ValueChangedEvent(group.GetId())
                 wx.PostEvent(group, newevt)
 

@@ -28,8 +28,8 @@ class SavePanel(wx.Panel):
         # List selector
         self.slOutputs = wxext.SaveListSelectCtrl(self)
         s.Add(self.slOutputs, 1, wx.EXPAND|wx.ALL, 5)
-        self.slOutputs.SetAvailable([(x['long'], x['variable']) for x in model.output_fields.itervalues()])
-        
+        self.slOutputs.SetAvailable([(x['long'], x['variable']) for x in model.output_fields.values()])
+
         # "Include column headers?"
         sHeaders = wx.BoxSizer(wx.HORIZONTAL)
         s.Add(sHeaders, 0, wx.ALL|wx.ALIGN_LEFT, 5)
@@ -56,17 +56,17 @@ class SavePanel(wx.Panel):
                 'headers': self.chkOutputHeaders.GetValue(),
                 'reduce': self.chkReduceOutput.GetValue()}
 
-    
+
     def set_values(self, values):
         self.slOutputs.SetSelection((model.output_fields[f]['long'] for f in values['fields']))
         self.chkOutputHeaders.SetValue(values['headers'])
         self.chkReduceOutput.SetValue(values['reduce'])
 
-    
+
     def GetFields(self):
         return [b for a,b in self.slOutputs.GetSelectionWithData()]
 
-    
+
     def GetAddHeaders(self):
         return self.chkOutputHeaders.GetValue()
 

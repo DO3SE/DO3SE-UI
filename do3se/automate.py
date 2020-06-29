@@ -31,7 +31,7 @@ def list_outputs(option, opt_str, value, parser, app):
         print ('\t+' + p)
 
     print ('Available output fields:')
-    for f in model.output_fields.itervalues():
+    for f in model.output_fields.values():
         print ('\t%(variable)-16s %(long)s' % f)
 
     exit(0)

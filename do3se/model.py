@@ -344,4 +344,4 @@ def extract_outputs():
     Extract a dict containing the values of all of the variables defined in
     output_fields.
     """
-    return dict((x['variable'], x['type'](getattr(x['module'], x['variable']))) for x in output_fields.itervalues())
+    return dict((x['variable'], x['type'](getattr(x['module'], x['variable']))) for x in output_fields.values())

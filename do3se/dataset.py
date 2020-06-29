@@ -41,7 +41,7 @@ class Dataset:
         input_trim = self.params.pop('input_trim', 0)
 
         # Check required fields are present
-        required = [k for k,v in model.input_fields.iteritems() if v['required']]
+        required = [k for k,v in model.input_fields.items() if v['required']]
         for f in required:
             if not f in input_fields:
                 raise RequiredFieldError([f])

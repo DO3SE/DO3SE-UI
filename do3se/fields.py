@@ -1,8 +1,10 @@
 import wx
 import wx.lib.newevent
 
+from collections import OrderedDict
+
 import wxext
-from util import OrderedDict
+# from util import OrderedDict
 
 
 # Generic "value changed" event
@@ -121,7 +123,7 @@ class ChoiceField(Field):
         self._choice_string = choice_string
 
         self.field = wx.Choice(parent)
-        for key, choice in self.choices.iteritems():
+        for key, choice in self.choices.items():
             # Use wx.Choice's "clientdata" field for each choice so it is simple
             # to retrieve the key corresponding to the selected choice.
             self.field.Append(self._choice_string(choice), key)
@@ -155,7 +157,7 @@ class ColumnsSelectField(Field):
         self.choices = choices
 
         self.field = wxext.ListSelectCtrl(parent)
-        self.field.SetAvailable([(v['long'], k) for k,v in self.choices.iteritems()])
+        self.field.SetAvailable([(v['long'], k) for k,v in self.choices.items()])
 
         # Emit EVT_VALUE_CHANGED at appropriate times
         self.field.button_add.Bind(wx.EVT_BUTTON, self.OnChanged)
@@ -172,8 +174,9 @@ class ColumnsSelectField(Field):
         self.field.SetSelection([self.choices[k]['long'] for k in value])
 
 
-class FieldGroup(wx.Panel):
-# class FieldGroup(OrderedDict, wx.Panel):
+# class FieldGroup(OrderedDict):
+# class FieldGroup(wx.Panel):
+class FieldGroup(OrderedDict, wx.Panel):
     """Base class for groups of fields.
 
     Fields are arranged into logical groups.  This class provides a way to
@@ -197,13 +200,14 @@ class FieldGroup(wx.Panel):
 
     def __init__(self, fc, parent):
         OrderedDict.__init__(self)
+        # self.panel = wx.Panel(parent)
         wx.Panel.__init__(self, parent)
 
         self.fc = fc
 
     def get_values(self):
         """Return field group as :class:`OrderedDict` of values."""
-        return OrderedDict((k, v.get_value()) for k,v in self.iteritems())
+        return OrderedDict((k, v.get_value()) for k,v in self.items())
 
     def set_values(self, values):
         """Update field group with :class:`OrderedDict` of values.
@@ -213,7 +217,7 @@ class FieldGroup(wx.Panel):
             rather than raising errors; values for other groups may be present
             in *values*.
         """
-        for k,v in values.iteritems():
+        for k,v in values.items():
             if k in self:
                 self[k].set_value(v)
 
@@ -323,7 +327,7 @@ class FieldCollection(OrderedDict):
     def get_values(self):
         """Get the values of all fields, across all groups, as an :class:`OrderedDict`."""
         values = OrderedDict()
-        for group in self.itervalues():
+        for group in self.values():
             values.update(group.get_values())
         return values
 
@@ -333,7 +337,7 @@ class FieldCollection(OrderedDict):
         All groups get given *values*, so groups should ignore values for fields
         they do not contain.
         """
-        for group in self.itervalues():
+        for group in self.values():
             group.set_values(values)
 
     def validate(self):
@@ -342,7 +346,7 @@ class FieldCollection(OrderedDict):
         Returns all errors from all field groups.
         """
         errors = []
-        for fg in self.itervalues():
+        for fg in self.values():
             errors.extend(fg.validate())
         return errors
 
