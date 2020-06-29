@@ -1,4 +1,4 @@
-""" 
+"""
 Custom wxPython widgets
 """
 from __future__ import absolute_import
@@ -55,6 +55,8 @@ class AutowrapStaticText(wx.StaticText):
 
     def OnResize(self, evt):
         """Re-wrap the label text on resize."""
-        wx.StaticText.SetLabel(self, self._label)
-        self.Wrap(evt.GetSize().x)
-        evt.Skip()
+        pass
+        # TODO: Below causes recursion error
+        # wx.StaticText.SetLabel(self, self._label)
+        # self.Wrap(evt.GetSize().x)
+        # evt.Skip()
