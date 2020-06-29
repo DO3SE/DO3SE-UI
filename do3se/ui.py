@@ -96,15 +96,21 @@ from the Swedish International Development Agency (Sida).
 """
 
 
+# class MainWindow(wx.Frame):
 class MainWindow(ui_xrc.xrcframe_mainwindow):
     def __init__(self, app):
-        ui_xrc.xrcframe_mainwindow.__init__(self, None)
-        self.SetSize((500,500))
+        super(MainWindow, self).__init__(None)
+
+        self.frame.SetSize((500,500))
         self.app = app
         self.html_about.SetPage(_intro_text)
         self.list_recent.Clear()
         for p in reversed(self.app.config.data['recent_projects']):
             self.list_recent.Append(p)
+
+    def Show(self):
+        # Overriden Show() as part of fixing preframe issue
+        self.frame.Show()
 
     def OnListbox_list_recent(self, evt):
         enabled = self.list_recent.GetSelection() != wx.NOT_FOUND
@@ -146,8 +152,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     )
 
     def __init__(self, app, projectfile):
-        ui_xrc.xrcframe_projectwindow.__init__(self, None)
-        self.SetSize((780,780))
+        super(ProjectWindow, self).__init__(None)
+
+        self.frame.SetSize((780,780))
 
         # Add context help button
         _s = self.btn_run.GetContainingSizer()
@@ -182,6 +189,10 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
         self.UpdateTitle()
         self.UpdateErrors()
+
+    def Show(self):
+        # Overriden Show() as part of precreate issue
+        self.frame.Show()
 
     def UpdateTitle(self):
         title = self.app.GetAppName()
