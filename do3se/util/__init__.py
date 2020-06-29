@@ -7,10 +7,12 @@ from builtins import zip
 import csv
 import itertools
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from .ordereddict import OrderedDict
+from .ordereddict import OrderedDict
+
+# try:
+#     from collections import OrderedDict
+# except ImportError:
+#     from .ordereddict import OrderedDict
 
 
 def setattrs(obj, d):
