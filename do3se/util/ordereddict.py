@@ -33,7 +33,10 @@ class OrderedDict():
         return self.mapping.items()
 
     def update(self, data):
-        self.mapping.update(data)
+        return self.mapping.update(data)
+
+    def pop(self, key, default=None):
+        return self.mapping.pop(key, default)
 
 
 # ===============
