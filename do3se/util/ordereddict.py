@@ -7,8 +7,7 @@ from collections.abc import MutableMapping
 
 class OrderedDict():
     def __init__(self, data=()):
-        self.mapping = {}
-        # self.update(data)
+        self.mapping = dict(data)
     def __getitem__(self, key):
         return self.mapping[key]
     def __delitem__(self, key):
@@ -32,6 +31,9 @@ class OrderedDict():
 
     def items(self):
         return self.mapping.items()
+
+    def update(self, data):
+        self.mapping.update(data)
 
 
 # ===============
