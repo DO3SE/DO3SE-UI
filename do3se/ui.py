@@ -267,7 +267,9 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             return
 
         try:
-            d = Dataset(open(filename, 'r'), self.params.get_values(), self)
+            # Dont need to pass self?
+            # d = Dataset(open(filename, 'r'), self.params.get_values(), self)
+            d = Dataset(open(filename, 'r'), self.params.get_values())
         except DatasetError as e:
             wx.MessageBox('Error occurred while loading data file: ' + str(e),
                           'Error',
@@ -278,11 +280,13 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         # Function to return to when the model has been run
         def f(dr):
             self.Enable(True)
-            self.MakeModal(False)
+            # MakeModel is depreciated
+            # self.MakeModal(False)
             w = ResultsWindow(self.app, self, dr.get(), os.path.basename(filename))
             w.Show()
 
-        self.MakeModal(True)
+        # MakeModel is depreciated
+        # self.MakeModal(True)
         self.Enable(False)
         wx.lib.delayedresult.startWorker(f, d.run, wargs=[self.prg_progress])
 
