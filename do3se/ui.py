@@ -96,7 +96,6 @@ from the Swedish International Development Agency (Sida).
 """
 
 
-# class MainWindow(wx.Frame):
 class MainWindow(ui_xrc.xrcframe_mainwindow):
     def __init__(self, app):
         super(MainWindow, self).__init__(None)
@@ -164,7 +163,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
 
         self.app = app
 
-        self.params = fields.FieldCollection(self.tb_main, self.ui_specification)
+        # map xrc and ui spec to params
+        self.params: FieldCollection = fields.FieldCollection(self.tb_main, self.ui_specification)
 
         if projectfile is not None and self.app.IsProjectOpen(projectfile):
             _log.warning('Project already open: ' + projectfile)
@@ -175,6 +175,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
                           self)
         self.project = Project(projectfile, self)
 
+        # assign project data to field groups
         self.params.set_values(self.project.data)
         self.app.windows.add(self)
 

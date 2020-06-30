@@ -202,7 +202,6 @@ class FieldGroup(OrderedDict, wx.Panel):
 
     def __init__(self, fc, parent):
         OrderedDict.__init__(self)
-        # self.panel = wx.Panel(parent)
         wx.Panel.__init__(self, parent)
 
         self.fc = fc

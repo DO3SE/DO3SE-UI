@@ -32,7 +32,8 @@ class xrcframe_mainwindow(wx.Frame):
     def __init__(self, parent):
         super(xrcframe_mainwindow, self).__init__(parent, title="DO3SE")
         self.res = xrc.XmlResource(os.path.join(APPDIR, 'ui.xrc'))
-        self.frame = self.res.LoadFrame(parent, 'frame_mainwindow')
+        # self.frame = self.res.LoadFrame(parent, 'frame_mainwindow')
+        self.frame = get_resources().LoadFrame(parent, "frame_mainwindow")
 
         #==========================
         # Two stage creation (see http://wiki.wxpython.org/index.cgi/TwoStageCreation)
@@ -103,7 +104,8 @@ class xrcframe_projectwindow(wx.Frame):
         super(xrcframe_projectwindow, self).__init__(None)
 
         self.res = xrc.XmlResource(os.path.join(APPDIR, 'ui.xrc'))
-        self.frame = self.res.LoadFrame(parent, 'frame_projectwindow')
+        # self.frame = self.res.LoadFrame(parent, 'frame_projectwindow')
+        self.frame = get_resources().LoadFrame(parent, "frame_projectwindow")
 
         # BELOW IS DEPRECIATED (Delete when sure is fixed)===
         # # Two stage creation (see http://wiki.wxpython.org/index.cgi/TwoStageCreation)
