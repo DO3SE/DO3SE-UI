@@ -27,14 +27,14 @@ class ValidationError:
         return str(self.msg)
 
 
-def validate(errors, assertion, msg):
+def validate(assertion, msg):
     """Helper function for validation.
 
     Adds a :class:`ValidationError` wrapped around *msg* to *errors* if
     *assertion* is False.
     """
     if not assertion:
-        errors.append(ValidationError(msg))
+        return ValidationError(msg)
 
 
 class Field:
@@ -315,7 +315,7 @@ class FieldCollection(OrderedDict):
         for key, name, cls, args, kwargs in groups:
             self.add_group(key, name, cls, *args, **kwargs)
 
-    def add_group(self, key, name, cls, *args, **kwargs):
+    def add_group(self, key, name, cls: FieldGroup, *args, **kwargs):
         """Create a new field group.
 
         An instance of *cls* is created, passing all following arguments to the
