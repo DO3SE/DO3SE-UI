@@ -11,7 +11,7 @@ class DataTable(wx.grid.PyGridTableBase):
     """
     #: Available column field keys, in the order they are defined in
     #: :mod:`~do3se.model`, to display values in the correct columns
-    COLUMNS = model.output_fields.keys()
+    COLUMNS = list(model.output_fields.keys())
     #: Column labels in the same order as :data:`COLUMNS`
     COLUMN_LABELS = [x['short'] for x in model.output_fields.values()]
 
@@ -37,6 +37,7 @@ class DataTable(wx.grid.PyGridTableBase):
 
     def GetValue(self, row, col):
         """Get the value of the cell at (*row*, *col*)."""
+
         return str(self.data[row][self.COLUMNS[col]])
 
     def SetValue(self, row, col, value):
