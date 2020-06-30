@@ -21,7 +21,7 @@ class PickleFile(object):
 
     The purpose of this class is quite similar to the built-in :mod:`shelve`
     module, but differs in almost every way.
-    
+
     The path to the pickle file and the object to be stored are exposed as the
     :attr:`filename` and :attr:`data` attributes respectively, and these are
     intended to be externally manipulated by other code.
@@ -95,11 +95,14 @@ class PickleFile(object):
         if filename is None:
             raise IOError('No filename set')
 
+        print(f'Attempting to open {filename}')
         with open(filename, 'rb') as f:
             # Project files sometimes get mangled newlines when emailed around,
             # so try and fix them...
-            contents = f.read().replace('\r', '')
             try:
+                # TODO: Check if we need to replace lines here
+                # contents = f.read().replace('\r', '')
+                contents = f.read()
                 self.data = pickle.loads(contents)
             except Exception as e:
                 raise IOError('Invalid pickle file', e)
