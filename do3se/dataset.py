@@ -323,8 +323,8 @@ def data_from_csv(infile, keys, trim):
 
     # Skip header rows
     try:
-        for x in xrange(trim):
-            infile.next()
+        for x in range(trim):
+            next(infile)
     except StopIteration:
         raise NoDataError()
 
@@ -332,7 +332,7 @@ def data_from_csv(infile, keys, trim):
 
     # Look at the first row, we can tell a lot from it...
     try:
-        row1 = csvreader.next()
+        row1 = next(csvreader)
     except StopIteration:
         raise NoDataError()
     except ValueError:
@@ -344,12 +344,12 @@ def data_from_csv(infile, keys, trim):
 
         # Check for non-empty strings, means header rows might still exist
         for x in row1[:len(keys)]:
-            if isinstance(x, basestring) and len(x) > 0:
+            if isinstance(x, str) and len(x) > 0:
                 raise NotEnoughTrimError()
 
         # Otherwise, in general, strings mean values couldn't be converted to float
         for i, x in enumerate(row1[:len(keys)], 1):
-            if isinstance(x, basestring):
+            if isinstance(x, str):
                 raise InvalidDataError(trim + 1, i)
         # Empty strings mean missing values
         for i, x in enumerate(row1[:len(keys)], 1):
@@ -363,7 +363,7 @@ def data_from_csv(infile, keys, trim):
     try:
         for r, row in enumerate(csvreader, trim + 2):
             for c, val in enumerate(row[:len(keys)], 1):
-                if isinstance(val, basestring):
+                if isinstance(val, str):
                     raise InvalidDataError(r, c)
             data.append(dict(zip(keys, row)))
     except ValueError:
