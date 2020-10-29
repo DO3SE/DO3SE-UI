@@ -1,14 +1,13 @@
+from dataset import Dataset
+from project import Project
+import model
+import application
+import wx
 import sys
+import os
 import optparse
 import logging
 _log = logging.getLogger('do3se.automate')
-
-import wx
-
-import application
-import model
-from project import Project
-from dataset import Dataset
 
 
 class App(wx.App):
@@ -18,6 +17,7 @@ class App(wx.App):
     application instance.  This application class uses the same application
     name as :class:`do3se.application.App` so that paths remain the same.
     """
+
     def OnInit(self):
         self.SetAppName(application.app_name)
         self.config = application.open_config()
@@ -26,13 +26,13 @@ class App(wx.App):
 
 def list_outputs(option, opt_str, value, parser, app):
     """List available output formats and output fields and exit."""
-    print ('Available output format presets')
+    print('Available output format presets')
     for p in app.config.data['output_formats'].keys():
-        print ('\t+' + p)
+        print('\t+' + p)
 
-    print ('Available output fields:')
+    print('Available output fields:')
     for f in model.output_fields.values():
-        print ('\t%(variable)-16s %(long)s' % f)
+        print('\t%(variable)-16s %(long)s' % f)
 
     exit(0)
 
@@ -54,7 +54,8 @@ def format_option_callback(option, opt_str, value, parser, app):
         parser.values.format = value.split(',')
         for f in parser.values.format:
             if f not in model.output_fields:
-                parser.error('Output field doesn\'t exist: ' + f + ' (see --list-outputs)')
+                parser.error('Output field doesn\'t exist: ' +
+                             f + ' (see --list-outputs)')
 
 
 def outfile_callback(option, opt_str, value, parser):
@@ -62,10 +63,25 @@ def outfile_callback(option, opt_str, value, parser):
     parser.values.outfile = open(value, 'wb')
 
 
+def run(options, projectfile, inputfile, outputfile, parser):
+    project = Project(projectfile)
+    if not project.exists():
+        parser.error('Project file does not exist: ' + projectfile)
+
+    dataset = Dataset(open(inputfile, 'r'), project.data)
+    results = dataset.run()
+    results.save(
+        outputfile,
+        options.format,
+        options.show_headers,
+        (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
+
+
 def main(args):
     app = App()
 
-    parser = optparse.OptionParser(usage='Usage: %prog [options] projectfile inputfile')
+    parser = optparse.OptionParser(
+        usage='Usage: %prog [options] projectfile inputfile')
     parser.add_option('-v', '--verbose',
                       action='store_const',
                       dest='loglevel',
@@ -102,6 +118,10 @@ def main(args):
                       dest='show_headers',
                       const=False,
                       help='Don\'t output column headers')
+    parser.add_option('-m', '--multi-run',
+                      #   action='store_const',
+                      dest='multirun',
+                      help='Run over a set of configs and data files')
     parser.set_defaults(loglevel=logging.CRITICAL,
                         format=model.output_fields.keys(),
                         show_headers=True,
@@ -116,16 +136,17 @@ def main(args):
     application.logging_setup(level=options.loglevel)
     projectfile, inputfile = args
 
-    project = Project(projectfile)
-    if not project.exists():
-        parser.error('Project file does not exist: ' + projectfile)
-
-    dataset = Dataset(open(inputfile, 'r'), project.data)
-    results = dataset.run()
-    results.save(options.outfile,
-                 options.format,
-                 options.show_headers,
-                 (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
+    if options.multirun:
+        # inputfile assumed to be directory of data csvs
+        # TODO: Handle config per inputfile
+        # TODO: Get input files
+        for (dirpath, dirnames, filenames) in os.walk(inputfile):
+            print(filenames)
+            # outputfile = f'{f}_output'
+            # run(options, projectfile, f, outputfile, parser)
+    else:
+        outputfile = options.outfile
+        run(options, projectfile, inputfile, outputfile, parser)
 
 
 if __name__ == '__main__':
