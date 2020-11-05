@@ -21,8 +21,8 @@ class Project(PickleFile):
         if self.filename is not None:
             try:
                 self.load()
-            except EnvironmentError:
-                self._error('Unable to load project ' + self.filename)
+            except EnvironmentError as e:
+                self._error('Unable to load project ' + self.filename, e)
                 self.filename = None
                 self.data = dict()
             else:
@@ -31,11 +31,14 @@ class Project(PickleFile):
             _log.info('Created new project')
             self.data = dict()
 
-    def _error(self, msg):
+    def _error(self, msg, err):
         """Log an error, but also notify the user if running a GUI."""
         _log.error(msg)
         if self.window is not None:
             wx.MessageBox(msg, 'Error', wx.OK|wx.ICON_ERROR, self.window)
+        else:
+            print(err)
+            print(msg)
 
     def save(self, save_as=False):
         """
