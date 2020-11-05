@@ -1,6 +1,6 @@
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '3.1.0'
+app_version = '3.1.1'
 
 import os.path
 import optparse
@@ -76,7 +76,7 @@ class App(wx.App):
 
 def open_config():
     """Open configuration file as a :class:`~do3se.config.Config` object.
-    
+
     Because this function uses :obj:`wx.StandardPaths`, an application object
     with a valid application name must be created first.
     """
@@ -119,7 +119,7 @@ def main(args):
                       dest='loglevel',
                       const=logging.DEBUG)
     parser.set_defaults(loglevel=logging.CRITICAL)
-    
+
     (options, args) = parser.parse_args(args)
 
     logging_setup(level=options.loglevel)
