@@ -25,6 +25,11 @@ dose:
 	$(MAKE) -C F
 	cp F/$@ $@
 
+
+run_dose: clean_dose dose
+	./dose
+
+
 clean_dose:
 	$(MAKE) -C F clean
 	rm -f dose dose.exe
