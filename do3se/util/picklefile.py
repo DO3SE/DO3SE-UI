@@ -96,14 +96,14 @@ class PickleFile(object):
             raise IOError('No filename set')
 
         print(f'Attempting to open {filename}')
-        with open(filename, 'rb') as f:
+        with open(filename, 'r') as f:
             # Project files sometimes get mangled newlines when emailed around,
             # so try and fix them...
             try:
-                # TODO: Check if we need to replace lines here
-                # contents = f.read().replace('\r', '')
-                contents = f.read()
-                self.data = pickle.loads(contents)
+                # we convert to string to replace line endings then back to bytes to pickle
+                contents = f.read().replace('\r', '')
+                arr = bytes(contents, 'utf-8')
+                self.data = pickle.loads(arr)
             except Exception as e:
                 raise IOError('Invalid pickle file', e)
 
