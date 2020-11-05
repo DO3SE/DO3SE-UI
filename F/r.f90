@@ -50,6 +50,8 @@ contains
 
     !==========================================================================
     ! Calculate Ra, Atmospheric resistance, taking into account heat flux data
+    ! Ref: Garratt, 1994, pp.55-58
+    ! Ref: EMEP MSC-W Chemical transport Model
     !==========================================================================
     subroutine Calc_Ra_With_Heat_Flux()
         use Constants, only: Rmass, Ts_K, k, g, cp, pi, z => izR
@@ -58,7 +60,7 @@ contains
         use Parameters, only: d, zo
 
         real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, rho, L, &
-                Xzo, Xzd
+                Xzo_m, Xzd_m, Xzo_h, Xzd_h
 
         Tk = Ts_C + Ts_K
         if (Hd == 0) then
@@ -78,18 +80,20 @@ contains
             Psi_h_zd = -5 * Ezd
             Psi_m_zd = -5 * Ezd
         else
-            Xzd = (1 - 15*Ezd)**(1.0/4.0)
-            Psi_m_zd = log(((1+Xzd**2)/2)*((1+Xzd)/2)**2)-2*ATAN(Xzd)+(PI/2)
-            Psi_h_zd = 2*log((1+Xzd**2)/2)
+            Xzd_m = (1 - 16*Ezd)**(1.0/4.0)
+            Xzd_h = (1 - 16*Ezd)**(1.0/2.0)
+            Psi_m_zd = log(((1+Xzd_m**2)/2)*((1+Xzd_m)/2)**2)-2*ATAN(Xzd_m)+(PI/2)
+            Psi_h_zd = 2*log((1+Xzd_h**2)/2)
         end if
 
         if (Ezo >= 0) then
             Psi_h_zo = -5*Ezo
-            Psi_m_zo = -5*Ezo 
+            Psi_m_zo = -5*Ezo
         else
-            Xzo = (1-15*Ezo)**(0.25)
-            Psi_m_zo = log(((1+Xzo**2)/2)*((1+Xzo)/2)**2)-2*ATAN(Xzo)+(PI/2)
-            Psi_h_zo = 2*log((1+Xzo**2)/2)
+            Xzo_m = (1-16*Ezo)**(1.0/4.0)
+            Xzo_h = (1-16*Ezo)**(1.0/2.0)
+            Psi_m_zo = log(((1+Xzo_m**2)/2)*((1+Xzo_m)/2)**2)-2*ATAN(Xzo_m)+(PI/2)
+            Psi_h_zo = 2*log((1+Xzo_h**2)/2)
         end if
 
         Ra = (1 / (k * ustar)) * (log((z - d) / zo) - Psi_h_zd + Psi_h_zo)
@@ -182,8 +186,7 @@ contains
     ! Calculate Rsto, stomatal resistance
     !==========================================================================
     subroutine Calc_Gsto_Multiplicative()
-        use Parameters, only: gmax, gmorph, fmin, VPD_crit
-        use Inputs, only: VPD, dd
+        use Parameters, only: gmax, gmorph, fmin
         use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, dd_prev
         use Variables, only: leaf_fphen, leaf_flight, LAI
         use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
@@ -217,7 +220,7 @@ contains
         use Parameters, only: Rext
         use Parameters, only: Rsoil
         use Variables, only: LAI, SAI, Rsto_c, Rinc, Rsur
-        
+
         if ( LAI > 0 ) then
             Rsur = 1 / ((1 / Rsto_c) + (SAI / Rext) + (1 / (Rinc + Rsoil)))
         else if ( SAI > 0 ) then
