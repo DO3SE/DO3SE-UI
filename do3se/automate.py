@@ -2,7 +2,7 @@ from dataset import Dataset
 from project import Project
 import model
 import application
-import wx
+# import wx
 import sys
 import os
 import optparse
@@ -10,18 +10,18 @@ import logging
 _log = logging.getLogger('do3se.automate')
 
 
-class App(wx.App):
-    """Minimal wxPython application.
+# class App(wx.App):
+#     """Minimal wxPython application.
 
-    It's not possible to use :obj:`wx.StandardPaths` without first creating an
-    application instance.  This application class uses the same application
-    name as :class:`do3se.application.App` so that paths remain the same.
-    """
+#     It's not possible to use :obj:`wx.StandardPaths` without first creating an
+#     application instance.  This application class uses the same application
+#     name as :class:`do3se.application.App` so that paths remain the same.
+#     """
 
-    def OnInit(self):
-        self.SetAppName(application.app_name)
-        self.config = application.open_config()
-        return True
+#     def OnInit(self):
+#         self.SetAppName(application.app_name)
+#         self.config = application.open_config()
+#         return True
 
 
 def list_outputs(option, opt_str, value, parser, app):
@@ -60,7 +60,7 @@ def format_option_callback(option, opt_str, value, parser, app):
 
 def outfile_callback(option, opt_str, value, parser):
     """Open a different output file."""
-    parser.values.outfile = open(value, 'wb')
+    parser.values.outfile = open(value, 'w')
 
 
 def run(options, projectfile, inputfile, outputfile, parser):
@@ -78,7 +78,7 @@ def run(options, projectfile, inputfile, outputfile, parser):
 
 
 def main(args):
-    app = App()
+    # app = App()
 
     parser = optparse.OptionParser(
         usage='Usage: %prog [options] projectfile inputfile')
@@ -93,11 +93,12 @@ def main(args):
     parser.add_option('--list-outputs',
                       action='callback',
                       callback=list_outputs,
-                      callback_kwargs={'app': app})
+                    #   callback_kwargs={'app': app}
+    )
     parser.add_option('-f', '--format',
                       action='callback',
                       callback=format_option_callback,
-                      callback_kwargs={'app': app},
+                    #   callback_kwargs={'app': app},
                       type='string',
                       nargs=1,
                       help='A comma-separated list of output field keys or +PRESET '
