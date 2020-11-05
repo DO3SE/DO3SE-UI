@@ -18,6 +18,11 @@ py_ext:
 	# Suppress errors, because there will be no .pyd on Linux or .so on Windows
 	cp build/lib.*/do3se/*.so build/lib.*/do3se/*.pyd do3se/ 2> /dev/null ; exit 0
 
+py_cli:
+	python build_f_model.py build_ext
+	# Suppress errors, because there will be no .pyd on Linux or .so on Windows
+	cp build/lib.*/do3se/*.so build/lib.*/do3se/*.pyd do3se/ 2> /dev/null ; exit 0
+
 clean_py_ext:
 	rm -f do3se/*.so do3se/*.pyd *.pyf
 
