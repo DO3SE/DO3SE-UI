@@ -1,6 +1,9 @@
 program Run_DOSE
     use Switchboard
     use Run
+    CHARACTER(len=255) :: homedir
+    CHARACTER(len=255) :: input_path
+    CHARACTER(len=255) :: output_path
 
     sai_method = sai_equals_lai
     rn_method = rn_calculate
@@ -13,6 +16,10 @@ program Run_DOSE
     r_par_method = r_par_use_inputs
     sgs_egs_method = sgs_egs_use_inputs
 
-    call Run_With_Files("input_newstyle.csv", "output.csv")
+    homedir = "tests/spanish_wheat_DO3SE_3_1/"
+    input_path = trim(homedir) // "input.csv"
+    output_path = trim(homedir) // "output3.csv"
+    ! call Run_With_Files("inputb.csv", "output.csv")
+    call Run_With_Files(input_path, output_path)
 end program Run_DOSE
 
