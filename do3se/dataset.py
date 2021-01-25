@@ -1,10 +1,9 @@
+import model
+import util
 import csv
 import logging
 _log = logging.getLogger('do3se.dataset')
 # from itertools import ifilter
-
-import util
-import model
 
 
 class DatasetError(Exception):
@@ -18,6 +17,7 @@ class InvalidFieldCountError(DatasetError):
 
 class RequiredFieldError(DatasetError):
     """One or more required fields missing from input format."""
+
     def __init__(self, fields):
         self.fields = fields
 
@@ -32,6 +32,7 @@ class Dataset:
     modified by the constructor as "virtual" parameters are replaced with real
     parameters and control parameters are removed.
     """
+
     def __init__(self, infile, params):
         self.params = params
         self.switchboard = dict()
@@ -41,7 +42,7 @@ class Dataset:
         input_trim = self.params.pop('input_trim', 0)
 
         # Check required fields are present
-        required = [k for k,v in model.input_fields.items() if v['required']]
+        required = [k for k, v in model.input_fields.items() if v['required']]
         for f in required:
             if not f in input_fields:
                 raise RequiredFieldError([f])
@@ -75,26 +76,32 @@ class Dataset:
         _log.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
         self.switchboard['sai_method'] = SAI['func']
         leaf_fphen = model.leaf_fphen_calcs[
-                self.params.pop('leaf_fphen', model.default_leaf_fphen_calc)]
+            self.params.pop('leaf_fphen', model.default_leaf_fphen_calc)]
         _log.debug('leaf_fphen calculation: "%(name)s" (%(id)s)' % leaf_fphen)
         self.switchboard['leaf_fphen_method'] = leaf_fphen['func']
         # TODO: switchable with heat flux calculation?
         self.switchboard['ra_method'] = model.switchboard.ra_simple
-        fXWP = model.fXWP_calcs[self.params.pop('fxwp', model.default_fXWP_calc)]
+        fXWP = model.fXWP_calcs[self.params.pop(
+            'fxwp', model.default_fXWP_calc)]
         self.switchboard['fxwp_method'] = fXWP['func']
-        fSWP = model.fSWP_calcs[self.params.pop('fswp', model.default_fSWP_calc)]
+        fSWP = model.fSWP_calcs[self.params.pop(
+            'fswp', model.default_fSWP_calc)]
         self.switchboard['fswp_method'] = fSWP['func']
         LWP = model.LWP_calcs[self.params.pop('lwp', model.default_LWP_calc)]
         self.switchboard['lwp_method'] = LWP['func']
-        SGS_EGS = model.SGS_EGS_calcs[self.params.pop('sgs_egs_calc', model.default_SGS_EGS_calc)]
+        SGS_EGS = model.SGS_EGS_calcs[self.params.pop(
+            'sgs_egs_calc', model.default_SGS_EGS_calc)]
         self.switchboard['sgs_egs_method'] = SGS_EGS['func']
-        gsto = model.gsto_calcs[self.params.pop('gsto', model.default_gsto_calc)]
+        gsto = model.gsto_calcs[self.params.pop(
+            'gsto', model.default_gsto_calc)]
         self.switchboard['gsto_method'] = gsto['func']
-        tleaf = model.tleaf_calcs[self.params.pop('tleaf', model.default_tleaf_calc)]
+        tleaf = model.tleaf_calcs[self.params.pop(
+            'tleaf', model.default_tleaf_calc)]
         self.switchboard['tleaf_method'] = tleaf['func']
 
         # Soil parameters from soil type
-        soil = model.soil_classes[self.params.pop('soil_tex', model.default_soil_class)]
+        soil = model.soil_classes[self.params.pop(
+            'soil_tex', model.default_soil_class)]
         self.params.update(soil['data'])
 
         # Use/copy measurement vegetation heights
@@ -105,15 +112,6 @@ class Dataset:
 
         self.input = data_from_csv(infile, input_fields, input_trim)
         self.input, mean_temps = calc_thermal_time(self.input)
-        print (self.params['sgs'])
-        print (self.params['egs'])
-        print (self.params['astart'])
-        print (self.params['aend'])
-        print (self.params['fphen_1'])
-        print (self.params['fphen_4'])
-        print (self.params['leaf_fphen_1'])
-        print (self.params['leaf_fphen_2'])
-
 
         if SGS_EGS['func'] == 3:
             # self.params['sgs']
@@ -144,23 +142,16 @@ class Dataset:
                 if value > (mid_anthesis_acc_value + 525) and not leaf_f_phen_2_set:
                     leaf_fphen_2_day = i
                     leaf_f_phen_2_set = True
-                i =  i + 1
+                i = i + 1
 
             self.params['fphen_1'] = fphen_1_day - self.params['sgs']
-            self.params['leaf_fphen_1'] = leaf_fphen_1_day - self.params['astart']
-            self.params['leaf_fphen_2'] = self.params['aend'] - leaf_fphen_2_day
-            self.params['fphen_4'] = self.params['egs'] - self.params['mid_anthesis']
+            self.params['leaf_fphen_1'] = leaf_fphen_1_day - \
+                self.params['astart']
+            self.params['leaf_fphen_2'] = self.params['aend'] - \
+                leaf_fphen_2_day
+            self.params['fphen_4'] = self.params['egs'] - \
+                self.params['mid_anthesis']
             self.params['aend'] = self.params['egs'] + 1
-
-        print ("AFTER")
-        print (self.params['sgs'])
-        print (self.params['egs'])
-        print (self.params['astart'])
-        print (self.params['aend'])
-        print (self.params['fphen_1'])
-        print (self.params['fphen_4'])
-        print (self.params['leaf_fphen_1'])
-        print (self.params['leaf_fphen_2'])
 
         _log.info("Loaded %d data rows" % len(self.input))
 
@@ -189,7 +180,8 @@ class Dataset:
 
         # Handle special parameters
         if not co2_const['disabled']:
-            _log.debug('Using constant CO2 concentration: %s ppm' % co2_const['value'])
+            _log.debug('Using constant CO2 concentration: %s ppm' %
+                       co2_const['value'])
             util.setattrs(model.inputs, {'co2': co2_const['value']})
 
         # Initialise progress bar
@@ -206,7 +198,8 @@ class Dataset:
                 prog_counter -= 1
                 if prog_counter == 0:
                     prog_counter = progress_interval
-                    progressbar.SetValue(progressbar.GetValue() + progress_interval)
+                    progressbar.SetValue(
+                        progressbar.GetValue() + progress_interval)
 
             # Skip rows that are missing values
             if '' in row.values():
@@ -219,7 +212,6 @@ class Dataset:
                 util.setattrs(model.inputs, row)
             except TypeError:
                 raise InvalidFieldCountError()
-
             model.run.calculate_row()
             results.append(model.extract_outputs())
 
@@ -238,6 +230,7 @@ class Resultset:
     :attr:`params`, and provides the ability to :meth:`save` the results to a
     file.
     """
+
     def __init__(self, data, skipped, params):
         self.data = data
         self.skipped = skipped
@@ -256,17 +249,19 @@ class Resultset:
         _log.debug("Output data format: %s" % (",".join(fields)))
 
         w = csv.DictWriter(outfile, fieldnames=fields, extrasaction='ignore',
-                quoting=csv.QUOTE_NONNUMERIC)
+                           quoting=csv.QUOTE_NONNUMERIC)
 
         if headers:
-            w.writerow(dict( (f, model.output_fields[f]['short']) for f in fields ))
+            w.writerow(
+                dict((f, model.output_fields[f]['short']) for f in fields))
 
         if period is None:
             w.writerows(self.data)
             _log.info('Wrote all %d rows' % (len(self.data),))
         else:
             start, end = period
-            w.writerows(list(filter(lambda r: r['dd'] >= start and r['dd'] <= end, self.data)))
+            w.writerows(
+                list(filter(lambda r: r['dd'] >= start and r['dd'] <= end, self.data)))
             _log.info('Wrote rows from dd=%d to dd=%d' % (start, end))
 
 
@@ -283,7 +278,7 @@ class NotEnoughColumnsError(DatasetError):
 class NotEnoughTrimError(DatasetError):
     def __init__(self):
         DatasetError.__init__(self, 'Non-numeric data at start of input, maybe'
-                ' not enough header rows were trimmed?')
+                              ' not enough header rows were trimmed?')
 
 
 class InvalidDataError(DatasetError):
@@ -291,7 +286,7 @@ class InvalidDataError(DatasetError):
         self.row = row
         self.col = col
         DatasetError.__init__(self, 'Invalid/empty value at row %d, '
-                                    'column %d'% (row, col))
+                                    'column %d' % (row, col))
 
 
 class UnquotedStringError(DatasetError):
@@ -371,6 +366,7 @@ def data_from_csv(infile, keys, trim):
 
     return data
 
+
 def calc_mean(temp_list):
     temp_list_sum = sum(temp_list)
     temp_list_len = len(temp_list)
@@ -378,6 +374,7 @@ def calc_mean(temp_list):
     if mean_value > 0:
         return mean_value
     return 0
+
 
 def calc_thermal_time(data):
     day_temps = []
@@ -392,7 +389,8 @@ def calc_thermal_time(data):
         if int(r['dd']) != set_day:
             mean_temps[set_day] = calc_mean(day_temps)
             if set_day > 1:
-                mean_temps[set_day] = mean_temps[set_day] + mean_temps[set_day - 1]
+                mean_temps[set_day] = mean_temps[set_day] + \
+                    mean_temps[set_day - 1]
             day_temps = []
             set_day = int(r['dd'])
             day_temps.append(r['ts_c'])
