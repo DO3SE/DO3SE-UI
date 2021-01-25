@@ -1,3 +1,4 @@
+
 module Run
 
     public :: Run_With_Callbacks
@@ -25,13 +26,13 @@ contains
         use Inputs, only: Init_Inputs
 
         dd_prev = -1
-        
+
         AFst0 = 0
         AFstY = 0
         AOT0 = 0
         AOT40 = 0
         Rsto_c = 100000
-
+        print *, "Rinning Init"
         ! Put calls to initialisation functions here
         call SB_Calc_SGS_EGS()
         call Derive_d_zo()
@@ -68,7 +69,7 @@ contains
 
         call SB_Calc_fO3()
         call SB_Calc_fXWP()
-    
+
         call SB_Calc_Ra()
         call Calc_Rb()
         call Calc_Rgs()
@@ -83,8 +84,8 @@ contains
         call SB_Calc_Es_blocked()
         call Calc_Penman_Monteith()
 
-        call SB_Calc_LWP()  ! This *must* happen after calculating SWP - SWP is 
-                            ! calculated as the day rolls over, and LWP should 
+        call SB_Calc_LWP()  ! This *must* happen after calculating SWP - SWP is
+                            ! calculated as the day rolls over, and LWP should
                             ! use the previous day's SWP
         call Calc_fLWP()
 
@@ -132,8 +133,11 @@ contains
     subroutine Open_Files(infile, outfile)
         character(len=*), intent(in) :: infile, outfile
 
+        print *, "Opening files"
+
         open(unit=inunit, file=infile, status="old", &
              action="read", position="rewind")
+
         open(unit=outunit, file=outfile, status="replace", &
              action="write", position="rewind")
 
@@ -151,8 +155,13 @@ contains
         logical, intent(out) :: done
         integer :: ios
 
+        ! Modify this to match the input headings
         read(unit=inunit, fmt=*, iostat=ios) &
-            mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, Hd, R, PAR
+            mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, PAR
+        ! mm, mdd, dd
+            ! mm, mdd, dd, hr, Ts_C, VPD, uh_zR, precip, P, O3_ppb_zR, Hd, R, PAR
+
+
 
         if (ios /= 0) then
             done = .TRUE.
@@ -174,7 +183,7 @@ contains
         !rsto, &
         !gsto, &
         !rgs, &
-        !vd, & 
+        !vd, &
         !o3_ppb, &
         !o3_nmol_m3, &
         !fst, &
