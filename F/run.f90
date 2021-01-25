@@ -32,7 +32,7 @@ contains
         AOT0 = 0
         AOT40 = 0
         Rsto_c = 100000
-        print *, "Rinning Init"
+        print *, "Running Init"
         ! Put calls to initialisation functions here
         call SB_Calc_SGS_EGS()
         call Derive_d_zo()
