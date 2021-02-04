@@ -64,7 +64,7 @@ def outfile_callback(option, opt_str, value, parser):
 
 
 def run(options, projectfile, inputfile, outputfile, parser):
-    project = Project(projectfile)
+    project = Project(projectfile, format=options.config_format)
     if not project.exists():
         parser.error('Project file does not exist: ' + projectfile)
 
@@ -93,16 +93,21 @@ def main(args):
     parser.add_option('--list-outputs',
                       action='callback',
                       callback=list_outputs,
-                    #   callback_kwargs={'app': app}
-    )
+                      #   callback_kwargs={'app': app}
+                      )
     parser.add_option('-f', '--format',
                       action='callback',
                       callback=format_option_callback,
-                    #   callback_kwargs={'app': app},
+                      #   callback_kwargs={'app': app},
                       type='string',
                       nargs=1,
                       help='A comma-separated list of output field keys or +PRESET '
                            '(see --list-outputs) [default: all fields]')
+    parser.add_option('-c', '--config-format',
+                      action='store',
+                      dest='config_format',
+                      #   const='do3se',
+                      help='Input file format can be do3se project file or json'),
     parser.add_option('-o', '--outfile',
                       action='callback',
                       callback=outfile_callback,
