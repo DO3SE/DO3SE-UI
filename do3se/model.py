@@ -84,6 +84,12 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      u'Net radiation (Rn, MJ/m\u00b2)'),
     (inputs,        'rn_w',     float,  'Rn_W (Wh/m^2)',
      u'Net radiation (Rn, Wh/m\u00b2)'),
+    (inputs,        'sinb',     float,  'sinB',
+     u'Solar angle'),
+    (variables,        'pardir',     float,  'parDIR',
+     u'parDIR'),
+    (variables,        'pardif',     float,  'parDIF',
+     u'parDIF'),
     (variables,     'ra',       float,  'Ra (s/m)',
      'Aerodynamic resistance (Ra, s/m)'),
     (variables,     'rb',       float,  'Rb (s/m)',
@@ -219,6 +225,10 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      'ASW_FC',       'ASW_FC'),
     (soilwater,     'asw_max',       float,
      'ASW_max',       'ASW_max'),
+    (parameters,     'sgs',       float,
+     'sgs',       'sgs'),
+    (parameters,     'egs',       float,
+     'egs',       'egs'),
 
 )), 'variable', OrderedDict)
 

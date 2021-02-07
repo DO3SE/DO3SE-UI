@@ -16,5 +16,6 @@ if __name__ == "__main__":
     project_file_loc = args[0]
     output_file_location = project_file_loc.split('.')[0] + '.json'
     project = Project(project_file_loc)
+    print(output_file_location)
     with open(output_file_location, 'w') as outfile:
         json.dump(dict(project.data), outfile)

@@ -33,7 +33,8 @@ class Project(PickleFile):
                 with open(filename) as file_obj:
                     self.data = json.load(file_obj)
             else:
-                raise ValueError('Config input format must be json or do3se')
+                raise ValueError(
+                    f'Config input format must be json or do3se. Got: {format}')
         else:
             _log.info('Created new project')
             self.data = dict()

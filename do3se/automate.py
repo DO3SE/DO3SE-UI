@@ -77,9 +77,7 @@ def run(options, projectfile, inputfile, outputfile, parser):
         (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
 
 
-def main(args):
-    # app = App()
-
+def get_option_parser():
     parser = optparse.OptionParser(
         usage='Usage: %prog [options] projectfile inputfile')
     parser.add_option('-v', '--verbose',
@@ -107,7 +105,7 @@ def main(args):
                       action='store',
                       dest='config_format',
                       #   const='do3se',
-                      help='Input file format can be do3se project file or json'),
+                      help='Input file format can be do3se project file or json')
     parser.add_option('-o', '--outfile',
                       action='callback',
                       callback=outfile_callback,
@@ -133,7 +131,16 @@ def main(args):
                         show_headers=True,
                         reduce_output=False,
                         outfile=sys.stdout)
+    parser.add_option('-l', '--gridded-data',
+                      action='store',
+                      dest='gridded_data_map',
+                      help='A json map of coordinate to lat long to parse configs')
 
+    return parser
+
+
+def main(args):
+    parser = get_option_parser()
     (options, args) = parser.parse_args(args)
 
     if len(args) < 2:
