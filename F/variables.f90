@@ -5,7 +5,7 @@
 !*******************************************************************************
 
 module Variables
-    
+
     ! Day of year for previous row
     real, public, save :: dd_prev = -1
 
@@ -88,6 +88,9 @@ module Variables
     real, public, save :: fO3
 
     ! More variables, for testing
+    real, public, save :: PARdir
+    real, public, save :: PARdif
+
     real, public, save :: pPARdir
     real, public, save :: pPARdif
     real, public, save :: fPARdir
