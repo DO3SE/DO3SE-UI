@@ -8,7 +8,7 @@ import sys
 import os
 import re
 import json
-from multiprocessing import Process
+from multiprocessing import Pool, Process
 from do3se.automate import run, main, get_option_parser
 
 
@@ -60,15 +60,20 @@ def inject_location_into_config(config_dir: str, config_file: str, coordinate_ma
         return new_config_file_name
 
 
-def run_file(config_file, input_file, output_file, options):
+def run_file(args):
+    config_file = args['config_file']
+    input_file = args['input_file']
+    output_file = args['output_file']
+    options = args['options']
     # TODO: Need to allow a per input file alteration
     print(f"Running config: {config_file} on input: {input_file}")
     args_in = options + \
         [f'--outfile={output_file}'] + [config_file, input_file]
-    p = Process(target=main, args=(args_in, ))
-    # p = Process(target=main, args=(config_file, input_file, ))
-    p.start()
-    return p
+    main(args=args_in)
+    # p = Process(target=main, args=(args_in, ))
+    # # p = Process(target=main, args=(config_file, input_file, ))
+    # p.start()
+    # return p
 
 
 def get_file_directories_and_options(parser, parsed_args, args):
@@ -93,31 +98,55 @@ def get_file_directories_and_options(parser, parsed_args, args):
     return config_dir, input_dir, output_dir, options
 
 
-def run_distributed(config_files, input_files, config_dir, input_dir, output_dir,  options, gridded_data_map=None):
-    processes_running = []
+def run_distributed(run_args):
+    # processes_running = []
     failed_runs = []
-    for config_file in config_files:
+
+    print('Running in pools')
+    with Pool(processes=8) as pool:
+        pool.map(run_file, run_args[0:3])
+
+    if len(failed_runs):
+        print("Some runs failed:")
+        print(failed_runs)
+
+
+def get_run_args_list(config_files, input_files, config_dir, input_dir, output_dir, options, gridded_data_map=None):
+    run_args = []
+    failed_runs = []
+    for i, config_file in enumerate(config_files):
+        print(f"Getting args for {config_file} {i}/{len(config_files)}")
         output_dir_full = output_dir + '/' + config_file.split('.')[0]
         config_loc = config_dir + '/' + config_file
         make_dir(output_dir_full)
-        for input_file in input_files:
+        for j, input_file in enumerate(input_files):
+            print(
+                f"{i}/{len(config_files)} {j}/{len(input_files)} Getting args for {input_file}")
+
             try:
                 config_loc_injected = inject_location_into_config(
                     config_dir, config_file, gridded_data_map, input_file, config_dir + '/location'
                 ) if gridded_data_map else config_loc
-                processes_running.append(
-                    run_file(
-                        config_file=config_loc_injected,
-                        input_file=input_dir + '/' + input_file,
-                        output_file=output_dir_full + '/' + input_file,
-                        options=options,
-                    )
-                )
-            except:
+                args = {
+                    "config_file": config_loc_injected,
+                    "input_file": input_dir + '/' + input_file,
+                    "output_file": output_dir_full + '/' + input_file,
+                    "options": options,
+                }
+                run_args.append(args)
+                # processes_running.append(
+                #     run_file(
+                #         config_file=config_loc_injected,
+                #         input_file=input_dir + '/' + input_file,
+                #         output_file=output_dir_full + '/' + input_file,
+                #         options=options,
+                #     )
+                # )
+            except Exception as e:
+                print(e)
                 failed_runs.append(f"{config_file}-{input_file}")
-    if len(failed_runs):
-        print("Some runs failed:")
-        print(failed_runs)
+    print(failed_runs)
+    return run_args
 
 
 if __name__ == "__main__":
@@ -141,5 +170,12 @@ if __name__ == "__main__":
     print(config_files)
     print(config_file_type)
     input_files = os.listdir(input_dir)
-    run_distributed(config_files, input_files, config_dir, input_dir, output_dir, options,
-                    parsed_options.gridded_data_map)
+    args_to_run = get_run_args_list(
+        config_files, input_files, config_dir, input_dir, output_dir, options,
+        parsed_options.gridded_data_map
+    )
+    with open(f"{output_dir}/args.json", 'w') as argsfile:
+        json.dump(args_to_run, argsfile)
+    # run_distributed(args_to_run)
+    with Pool(processes=8) as pool:
+        pool.map(run_file, args_to_run)
