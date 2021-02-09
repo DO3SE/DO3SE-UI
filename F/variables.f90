@@ -99,6 +99,7 @@ module Variables
     real, public, save :: LAIshade
     real, public, save :: PARsun
     real, public, save :: PARshade
+    real, public, save :: ST
 
 end module Variables
 
