@@ -24,11 +24,12 @@ _log = logging.getLogger('do3se.automate')
 #         return True
 
 
-def list_outputs(option, opt_str, value, parser, app):
+def list_outputs(option, opt_str, value, parser, app=None):
     """List available output formats and output fields and exit."""
-    print('Available output format presets')
-    for p in app.config.data['output_formats'].keys():
-        print('\t+' + p)
+    if app:
+        print('Available output format presets')
+        for p in app.config.data['output_formats'].keys():
+            print('\t+' + p)
 
     print('Available output fields:')
     for f in model.output_fields.values():
@@ -37,12 +38,12 @@ def list_outputs(option, opt_str, value, parser, app):
     exit(0)
 
 
-def format_option_callback(option, opt_str, value, parser, app):
+def format_option_callback(option, opt_str, value, parser, app=None):
     """Parse format option, either as a list of fields or a preset name."""
     if len(value) == 0:
         parser.error('Invalid output format')
 
-    if value[0] == '+':
+    if value[0] == '+' and app:
         preset = value[1:]
         if preset not in app.config.data['output_formats']:
             parser.error('Output format preset doesn\'t exist: ' +
