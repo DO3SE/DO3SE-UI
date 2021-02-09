@@ -9,17 +9,22 @@ import re
 
 def get_headers(file):
     with open(file) as f:
-        return f.readline().split(',')
+        return f.readline().replace('\n', '').replace('\r\n', '').split(',')
 
 
 def get_last_line_in_file(filename, headers):
-    with open(filename, 'rb') as f:
-        f.seek(-2, os.SEEK_END)
-        while f.read(1) != b'\n':
-            f.seek(-2, os.SEEK_CUR)
-        last_line = f.readline().decode().split(',')
-        last_line_data = {h: d for h, d in zip(headers, last_line)}
-        return last_line_data
+    try:
+        with open(filename, 'rb') as f:
+            f.seek(-2, os.SEEK_END)
+            while f.read(1) != b'\n':
+                f.seek(-2, os.SEEK_CUR)
+            last_line = f.readline().decode().replace(
+                '\n', '').replace('\r\n', '').replace('\r', '').split(',')
+            last_line_data = {h: d for h, d in zip(headers, last_line)}
+            return last_line_data
+    except OSError:
+        Warning(f'Os Error while getting last line in file {filename}')
+        return {h: None for h in headers}
 
 
 def get_last_line_of_files(dir, files, headers):
