@@ -35,6 +35,8 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
      u'Photosynthetically active radiation (PAR, umol/m\u00b2/s) **'),
     (inputs,    'rn',       float,  False,
      'Rn (MJ/m^2)',  u'Net radiation (Rn, MJ/m\u00b2)'),
+    (inputs,    'cloudfrac',       float,  False,
+     'cloudfrac',  u'cloudfrac [fraction] **'),
     (inputs,    'leaf_fphen_input', float, False,
      'Leaf fphen', 'Leaf fphen (fraction)'),
 )), 'variable', OrderedDict)
@@ -333,6 +335,15 @@ SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 
 default_SGS_EGS_calc = 'inputs'
 
+# Ra calculation method (simple, heat flux)
+ra_method = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('simple', switchboard.ra_simple, 'Simple'),
+    ('heat_flux', switchboard.ra_with_heat_flux,
+     'Ra with heat flux(Requires Hd input data)'),
+)), 'id', OrderedDict)
+
+default_ra_method = 'simple'
+
 # Stomatal conductance calculations (multiplicative, photosynthetic)
 gsto_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('multiplicative', switchboard.gsto_multiplicative, 'Multiplicative'),
@@ -424,6 +435,8 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
     ('vegenv', 'swp_max', FloatSpinField, (-6, 0, -0.05,
                                            0.01, 2), 'SWP for max. g (SWP_max, MPa)', ''),
 
+    ('modelopts', 'ra_method', ChoiceField, (gsto_calcs,
+                                             default_gsto_calc), 'Stomatal conductance model', ''),
     ('modelopts', 'gsto', ChoiceField, (gsto_calcs,
                                         default_gsto_calc), 'Stomatal conductance model', ''),
     ('modelopts', 'tleaf', ChoiceField, (tleaf_calcs,

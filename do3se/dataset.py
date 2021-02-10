@@ -57,6 +57,9 @@ class Dataset:
         elif 'r' in input_fields:
             self.switchboard['r_par_method'] = model.switchboard.r_par_derive_par
             _log.debug('R/PAR calculation: derive PAR')
+        elif 'cloudfrac' in input_fields:
+            self.switchboard['r_par_method'] = model.switchboard.r_par_derive_cloudfrac
+            _log.debug('R/PAR calculation: derive PAR from cloudfrac4e5')
         else:
             raise RequiredFieldError(['par', 'r'])
 
@@ -79,8 +82,9 @@ class Dataset:
             self.params.pop('leaf_fphen', model.default_leaf_fphen_calc)]
         _log.debug('leaf_fphen calculation: "%(name)s" (%(id)s)' % leaf_fphen)
         self.switchboard['leaf_fphen_method'] = leaf_fphen['func']
-        # TODO: switchable with heat flux calculation?
-        self.switchboard['ra_method'] = model.switchboard.ra_simple
+        ra_method = model.ra_method[self.params.pop(
+            'ra_method', model.default_ra_method)]
+        self.switchboard['ra_method'] = ra_method['func']
         fXWP = model.fXWP_calcs[self.params.pop(
             'fxwp', model.default_fXWP_calc)]
         self.switchboard['fxwp_method'] = fXWP['func']

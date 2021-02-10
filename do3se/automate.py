@@ -123,10 +123,6 @@ def get_option_parser():
                       dest='show_headers',
                       const=False,
                       help='Don\'t output column headers')
-    parser.add_option('-m', '--multi-run',
-                      #   action='store_const',
-                      dest='multirun',
-                      help='Run over a set of configs and data files')
     parser.set_defaults(loglevel=logging.CRITICAL,
                         format=model.output_fields.keys(),
                         show_headers=True,
@@ -149,18 +145,8 @@ def main(args):
 
     application.logging_setup(level=options.loglevel)
     projectfile, inputfile = args
-
-    if options.multirun:
-        # inputfile assumed to be directory of data csvs
-        # TODO: Handle config per inputfile
-        # TODO: Get input files
-        for (dirpath, dirnames, filenames) in os.walk(inputfile):
-            print(filenames)
-            # outputfile = f'{f}_output'
-            # run(options, projectfile, f, outputfile, parser)
-    else:
-        outputfile = options.outfile
-        run(options, projectfile, inputfile, outputfile, parser)
+    outputfile = options.outfile
+    run(options, projectfile, inputfile, outputfile, parser)
 
 
 if __name__ == '__main__':
