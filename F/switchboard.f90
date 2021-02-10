@@ -63,6 +63,8 @@ module Switchboard
     integer, public, parameter :: r_par_derive_r   = 2
     ! Derive PAR from R
     integer, public, parameter :: r_par_derive_par = 3
+    ! Derive PAR from Cloudfrac
+    integer, public, parameter :: r_par_derive_cloudfrac = 4
     integer, public, save :: r_par_method = r_par_use_inputs
     public :: SB_Calc_R_PAR
 
@@ -323,6 +325,7 @@ contains
 
     subroutine SB_Calc_R_PAR()
         use Inputs, only: R, PAR
+        use Environmental, only:Calc_PAR_from_cloudfrac
 
         select case (r_par_method)
 
@@ -334,7 +337,9 @@ contains
 
         case (r_par_derive_par)
             PAR = R * (0.45 * 4.57)
-
+        case (r_par_derive_cloudfrac)
+            call Calc_PAR_from_cloudfrac()
+            R = (PAR / 4.57) / 0.45
         end select
     end subroutine SB_Calc_R_PAR
 
