@@ -45,7 +45,7 @@ def get_lat_long_from_file_name(file, coord_map):
         x), re.split('[_-]|[.]', file)))
     coords_string = "_".join(coords)
     try:
-        lat, long = coord_map[coords_string]
+        lat, long, elev = coord_map[coords_string]
         return lat, long
     except KeyError:
         Warning(
@@ -77,10 +77,7 @@ def merge_data(line_data, lat_long):
     # }
 
 
-if __name__ == "__main__":
-    args = sys.argv[1:]
-
-    input_file_directory, coordinate_file, outfile = args
+def map_pody_to_geolocation(input_file_directory, coordinate_file, outfile):
     files = os.listdir(input_file_directory)
     headers = get_headers(input_file_directory + "/" + files[0])
     last_lines = get_last_line_of_files(input_file_directory, files, headers)
@@ -100,6 +97,12 @@ if __name__ == "__main__":
         # json.dump(final_data, output_file_data)
 
 
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    input_file_directory, coordinate_file, outfile = args
+    map_pody_to_geolocation(input_file_directory, coordinate_file, outfile)
+
+
 # # %%
 # def get_last_line_in_file(filename):
 #     with open(filename, 'rb') as f:
@@ -112,3 +115,22 @@ if __name__ == "__main__":
 
 # get_last_line_in_file(
 #     './tests/multirun/outputs/using_spanish_wheat_defaults_multiplicative_latlon/input_2_3.csv')
+
+
+# Multirun setup
+# %%
+
+# from tools.map_pody_to_geolocation import map_pody_to_geolocation
+# import os
+# PROJECT_DIR = "..."
+# dirs = os.listdir(f'{PROJECT_DIR}/outputs')
+# print(dirs)
+
+# for d in dirs:
+#     if d !="args.json":
+#         print(d)
+#         try:
+#             map_pody_to_geolocation(f"{PROJECT_DIR}/outputs/{d}", '{PROJECT_DIR}/coordinates.json', f"../carbon_seq_runs/02/outputs_pod/{d}.csv")
+#         except Exception:
+#             print(f"Failed: {d}")
+#             pass
