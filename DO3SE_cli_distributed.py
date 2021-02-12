@@ -25,15 +25,15 @@ def is_int(val):
         return False
 
 
-def get_lat_long(input_file_name, coordinate_map_file):
+def get_lat_long_elev(input_file_name, coordinate_map_file):
     coords = list(filter(lambda x: is_int(
         x), re.split('[_-]|[.]', input_file_name)))
     with open(coordinate_map_file) as coordinate_map_file_raw:
         coord_map = json.load(coordinate_map_file_raw)
         coords_string = "_".join(coords)
         try:
-            lat, long = coord_map[coords_string]
-            return ([lat, long], coords)
+            lat, long, elev = coord_map[coords_string]
+            return ([lat, long, elev], coords)
         except KeyError:
             Warning(
                 f"Filename invalid or {coords_string} not found in coord map file.")
@@ -48,11 +48,13 @@ def inject_location_into_config(config_dir: str, config_file: str, coordinate_ma
     Coordinate_map_file should be a json that maps `{ "<x_coord>_<y_coord>": [<lat>,<long>] }`
         for example: `{"2_4": [27.3,-4.28], "2_5": [28.9, -5.23]}`
     """
-    [lat, long], [x, y] = get_lat_long(input_file, coordinate_map_file)
+    [lat, long, elev], [x, y] = get_lat_long_elev(
+        input_file, coordinate_map_file)
     with open(f"{config_dir}/{config_file}") as config_file_raw:
         config_data = json.load(config_file_raw)
         config_data['lat'] = lat
         config_data['lon'] = long
+        config_data['elev'] = elev
         new_config_file_name = f"{target_config_dir}/{config_file.split('.')[0]}_{x}_{y}.json"
         make_dir(target_config_dir)
         with open(new_config_file_name, 'w') as new_config_file_raw:
