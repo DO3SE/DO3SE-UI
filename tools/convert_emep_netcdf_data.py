@@ -17,7 +17,6 @@ where each row is an hour of data.
 
 import sys
 import os
-import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 import json
