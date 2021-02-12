@@ -17,7 +17,7 @@ module Inputs
     real, public, save :: Hd            ! Sensible heat flux (W/m^2)
     real, public, save :: R             ! Global radiation (Wh/m^2)
     real, public, save :: PAR           ! PAR (umol/m^2/s)
-    real, public, save :: cloudFrac     ! Fraction of cloud cover
+    real, public, save :: cloudfrac     ! Fraction of cloud cover
 
     ! These input variables usually aren't available, but have derivations
     real, public, save :: Rn            ! Net radiation (MJ/m^2/h)

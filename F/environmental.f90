@@ -105,14 +105,11 @@ contains
     !==========================================================================
     subroutine Calc_PAR_from_cloudfrac()
         use Constants, only: seaP
-        use Parameters, only: f_lightfac, cosA
-        use Inputs, only: P, sinB, cloudFrac, PAR
-        use Variables, only: LAI, Flight, leaf_flight
+        use Inputs, only: P, sinB, cloudfrac, PAR
         use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
-                LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif, ST
+              PARdir, PARdif, ST
 
-        real :: m, pPARtotal, Flightsun, &
-                Flightshade
+        real :: m, pPARtotal
 
         if (sinB > 0 .and. LAI > 0) then
             ! Note: Assuming sinB = cos0
