@@ -16,7 +16,7 @@ import resources
 
 class ParameterGroup(fields.SimpleFieldGroup):
     """Group of parameters using :class:`~do3se.fields.SimpleFieldGroup`.
-    
+
     Most of the groups start with the :class:`~do3se.fields.SimpleFieldGroup`
     layout containing parameters taken from :data:`do3se.model.paramdefs`
     filtered by group.  This class abstracts that one step further by
@@ -45,7 +45,7 @@ class ParameterGroupWithPreview(ParameterGroup):
     called after :meth:`set_values`.
 
     .. attribute:: preview
-        
+
         A :class:`wx.lib.plot.PlotCanvas` instance to use as a preview canvas.
     """
     def __init__(self, *args, **kwargs):
@@ -82,7 +82,7 @@ class SeasonParameterGroupWithPreview(ParameterGroup):
     called after :meth:`set_values`.
 
     .. attribute:: preview
-        
+
         A :class:`wx.lib.plot.PlotCanvas` instance to use as a preview canvas.
     """
     def __init__(self, *args, **kwargs):
@@ -155,17 +155,16 @@ class InputFormatParams(fields.FieldGroup):
     def validate(self):
         """Ensure that required input fields are selected."""
         errors = []
-        
-        req = [k for k,v in model.input_fields.iteritems() if v['required']]
+
+        req = [k for k,v in model.input_fields.items() if v['required']]
         cols = set(self['input_fields'].get_value())
         missing = [k for k in req if k not in cols]
 
-        validate(errors, len(missing) == 0,
-                 'Required input fields missing: ' + ', '.join(missing))
+        errors.append(validate( len(missing) == 0,
+                 'Required input fields missing: ' + ', '.join(missing)))
 
-        validate(errors, 'par' in cols or 'r' in cols,
-                 'Required input fields missing: supply at least PAR or R')
-
+        errors.append(validate( 'par' in cols or 'r' in cols,
+                 'Required input fields missing: supply at least PAR or R'))
         return errors
 
 
@@ -176,10 +175,15 @@ class SiteLocationParams(ParameterGroup):
     def validate(self):
         errors = []
 
-        validate(errors, not self['co2_constant'].get_value()['disabled']
-                         or 'co2' in self.fc['format']['input_fields'].get_value(),
+        co2_constant_check = \
+            not self['co2_constant'].get_value()['disabled'] \
+            or \
+            'co2' in self.fc['format']['input_fields'].get_value()
+
+
+        errors.append(validate( co2_constant_check,
                  '"Ambient CO2" input field required when "Use input" selected ' + \
-                 'for CO2 concentration')
+                 'for CO2 concentration'))
 
         return errors
 
@@ -214,9 +218,9 @@ class VegEnvParams(ParameterGroup):
         errors = []
 
         t_min, t_opt, t_max = self.extract('t_min', 't_opt', 't_max')
-        validate(errors, t_min < t_max, 'T_min must be less than T_max')
-        validate(errors, t_opt > t_min, 'T_opt must be greater than T_min')
-        validate(errors, t_opt < t_max, 'T_opt must be less than T_max')
+        errors.append(validate( t_min < t_max, 'T_min must be less than T_max'))
+        errors.append(validate( t_opt > t_min, 'T_opt must be greater than T_min'))
+        errors.append(validate( t_opt < t_max, 'T_opt must be less than T_max'))
 
         return errors
 
@@ -240,9 +244,9 @@ class ModelOptionsParams(ParameterGroup):
     def validate(self):
         errors = []
 
-        validate(errors, not self['tleaf'].get_value() == 'input' or
+        errors.append(validate( not self['tleaf'].get_value() == 'input' or
                          'tleaf' in self.fc['format']['input_fields'].get_value(),
-                 'Leaf temperature input field required by "Use input" method')
+                 'Leaf temperature input field required by "Use input" method'))
 
         return errors
 
@@ -326,9 +330,9 @@ class SeasonParams(SeasonParameterGroupWithPreview):
 
         if sgs_egs_calc not in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
                                                 'thermal_time_mb', 'thermal_time_md']:
-            validate(errors, sgs < egs, 'SGS must be before EGS')
-            validate(errors, (sgs + lai_1) <= (egs - lai_2),
-                    'SGS + LAI_1 cannot be later than EGS - LAI_2')
+            errors.append(validate( sgs < egs, 'SGS must be before EGS'))
+            errors.append(validate( (sgs + lai_1) <= (egs - lai_2),
+                    'SGS + LAI_1 cannot be later than EGS - LAI_2'))
 
 
         return errors
@@ -344,7 +348,7 @@ class FphenParams(ParameterGroupWithPreview):
 
     def __init__(self, *args, **kwargs):
         ParameterGroupWithPreview.__init__(self, *args, **kwargs)
-        
+
         # TODO: This will need to happen somewhere else if the panels are in
         # a different order...
         self.fc['season']['sgs'].field.Bind(EVT_VALUE_CHANGED, self.update_preview)
@@ -396,18 +400,18 @@ class FphenParams(ParameterGroupWithPreview):
 
         if sgs_egs_calc not in ['thermal_time', 'thermal_time_pot', 'thermal_time_tom',
                                                 'thermal_time_mb', 'thermal_time_md']:
-            validate(errors, (sgs + fphen_1) <= (egs - fphen_4),
-                     'SGS + fphen_1 cannot be later than EGS - fphen_4')
+            errors.append(validate( (sgs + fphen_1) <= (egs - fphen_4),
+                     'SGS + fphen_1 cannot be later than EGS - fphen_4'))
         else:
-            validate(errors, mid_anthesis > sgs, 'mid-anthesis must be later than SGS.')
+            errors.append(validate( mid_anthesis > sgs, 'mid-anthesis must be later than SGS.'))
 
         if fphen_lima > 0 or fphen_limb > 0:
-            validate(errors, fphen_lima > (sgs + fphen_1),
-                    'fphen_limA must be after SGS + fphen_1')
-            validate(errors, fphen_limb > fphen_lima,
-                    'fphen_limB must be after fphen_limA')
-            validate(errors, fphen_limb < (egs - fphen_4),
-                    'fphen_limB must be before EGS - fphen_4')
+            errors.append(validate( fphen_lima > (sgs + fphen_1),
+                    'fphen_limA must be after SGS + fphen_1'))
+            errors.append(validate( fphen_limb > fphen_lima,
+                    'fphen_limB must be after fphen_limA'))
+            errors.append(validate( fphen_limb < (egs - fphen_4),
+                    'fphen_limB must be before EGS - fphen_4'))
 
         return errors
 
@@ -469,7 +473,7 @@ class LeafFphenParams(ParameterGroupWithPreview):
         else:
             self['leaf_fphen'].field.Enable(True)
             enabled = self['leaf_fphen'].get_value() == 'fixedday'
-            for field in self.itervalues():
+            for field in self.values():
                 if field is not self['leaf_fphen']:
                     field.field.Enable(enabled)
             self.preview.Show(enabled)
@@ -479,8 +483,8 @@ class LeafFphenParams(ParameterGroupWithPreview):
     def validate(self):
         errors = []
 
-        validate(errors, not self['leaf_fphen'].get_value() == 'input' or
+        errors.append(validate( not self['leaf_fphen'].get_value() == 'input' or
                          'leaf_fphen_input' in self.fc['format']['input_fields'].get_value(),
-                 'Leaf fphen input field required by "Use input" leaf fphen method')
+                 'Leaf fphen input field required by "Use input" leaf fphen method'))
 
         return errors

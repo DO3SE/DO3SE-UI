@@ -1,3 +1,4 @@
+from builtins import range
 import wx
 
 class ListSelectCtrl(wx.Panel):
@@ -96,7 +97,7 @@ class ListSelectCtrl(wx.Panel):
         Get the current selection as (text, clientdata) pairs
         """
         return ((self.list_sel.GetString(n), self.list_sel.GetClientData(n))
-                for n in xrange(self.list_sel.GetCount()))
+                for n in range(self.list_sel.GetCount()))
 
 
     def OnAdd(self, evt):
@@ -264,7 +265,7 @@ class SaveListSelectCtrl(wx.Panel):
         Get the current selection as (text, clientdata) pairs
         """
         return ((self.list_sel.GetString(n), self.list_sel.GetClientData(n))
-                for n in xrange(self.list_sel.GetCount()))
+                for n in range(self.list_sel.GetCount()))
 
 
     def OnAdd(self, evt):

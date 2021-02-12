@@ -1,48 +1,49 @@
+from dataset import Dataset
+from project import Project
+import model
+import application
+# import wx
 import sys
+import os
 import optparse
 import logging
 _log = logging.getLogger('do3se.automate')
 
-import wx
 
-import application
-import model
-from project import Project
-from dataset import Dataset
+# class App(wx.App):
+#     """Minimal wxPython application.
 
+#     It's not possible to use :obj:`wx.StandardPaths` without first creating an
+#     application instance.  This application class uses the same application
+#     name as :class:`do3se.application.App` so that paths remain the same.
+#     """
 
-class App(wx.App):
-    """Minimal wxPython application.
-
-    It's not possible to use :obj:`wx.StandardPaths` without first creating an
-    application instance.  This application class uses the same application
-    name as :class:`do3se.application.App` so that paths remain the same.
-    """
-    def OnInit(self):
-        self.SetAppName(application.app_name)
-        self.config = application.open_config()
-        return True
+#     def OnInit(self):
+#         self.SetAppName(application.app_name)
+#         self.config = application.open_config()
+#         return True
 
 
-def list_outputs(option, opt_str, value, parser, app):
+def list_outputs(option, opt_str, value, parser, app=None):
     """List available output formats and output fields and exit."""
-    print 'Available output format presets'
-    for p in app.config.data['output_formats'].keys():
-        print '\t+' + p
+    if app:
+        print('Available output format presets')
+        for p in app.config.data['output_formats'].keys():
+            print('\t+' + p)
 
-    print 'Available output fields:'
-    for f in model.output_fields.itervalues():
-        print '\t%(variable)-16s %(long)s' % f
+    print('Available output fields:')
+    for f in model.output_fields.values():
+        print('\t%(variable)-16s %(long)s' % f)
 
     exit(0)
 
 
-def format_option_callback(option, opt_str, value, parser, app):
+def format_option_callback(option, opt_str, value, parser, app=None):
     """Parse format option, either as a list of fields or a preset name."""
     if len(value) == 0:
         parser.error('Invalid output format')
 
-    if value[0] == '+':
+    if value[0] == '+' and app:
         preset = value[1:]
         if preset not in app.config.data['output_formats']:
             parser.error('Output format preset doesn\'t exist: ' +
@@ -54,18 +55,32 @@ def format_option_callback(option, opt_str, value, parser, app):
         parser.values.format = value.split(',')
         for f in parser.values.format:
             if f not in model.output_fields:
-                parser.error('Output field doesn\'t exist: ' + f + ' (see --list-outputs)')
+                parser.error('Output field doesn\'t exist: ' +
+                             f + ' (see --list-outputs)')
 
 
 def outfile_callback(option, opt_str, value, parser):
     """Open a different output file."""
-    parser.values.outfile = open(value, 'wb')
+    parser.values.outfile = open(value, 'w')
 
 
-def main(args):
-    app = App()
+def run(options, projectfile, inputfile, outputfile, parser):
+    project = Project(projectfile, format=options.config_format)
+    if not project.exists():
+        parser.error('Project file does not exist: ' + projectfile)
 
-    parser = optparse.OptionParser(usage='Usage: %prog [options] projectfile inputfile')
+    dataset = Dataset(open(inputfile, 'r'), project.data)
+    results = dataset.run()
+    results.save(
+        outputfile,
+        options.format,
+        options.show_headers,
+        (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
+
+
+def get_option_parser():
+    parser = optparse.OptionParser(
+        usage='Usage: %prog [options] projectfile inputfile')
     parser.add_option('-v', '--verbose',
                       action='store_const',
                       dest='loglevel',
@@ -77,15 +92,21 @@ def main(args):
     parser.add_option('--list-outputs',
                       action='callback',
                       callback=list_outputs,
-                      callback_kwargs={'app': app})
+                      #   callback_kwargs={'app': app}
+                      )
     parser.add_option('-f', '--format',
                       action='callback',
                       callback=format_option_callback,
-                      callback_kwargs={'app': app},
+                      #   callback_kwargs={'app': app},
                       type='string',
                       nargs=1,
                       help='A comma-separated list of output field keys or +PRESET '
                            '(see --list-outputs) [default: all fields]')
+    parser.add_option('-c', '--config-format',
+                      action='store',
+                      dest='config_format',
+                      #   const='do3se',
+                      help='Input file format can be do3se project file or json')
     parser.add_option('-o', '--outfile',
                       action='callback',
                       callback=outfile_callback,
@@ -107,7 +128,16 @@ def main(args):
                         show_headers=True,
                         reduce_output=False,
                         outfile=sys.stdout)
-    
+    parser.add_option('-l', '--gridded-data',
+                      action='store',
+                      dest='gridded_data_map',
+                      help='A json map of coordinate to lat long to parse configs')
+
+    return parser
+
+
+def main(args):
+    parser = get_option_parser()
     (options, args) = parser.parse_args(args)
 
     if len(args) < 2:
@@ -115,17 +145,8 @@ def main(args):
 
     application.logging_setup(level=options.loglevel)
     projectfile, inputfile = args
-
-    project = Project(projectfile)
-    if not project.exists():
-        parser.error('Project file does not exist: ' + projectfile)
-
-    dataset = Dataset(open(inputfile, 'r'), project.data)
-    results = dataset.run()
-    results.save(options.outfile,
-                 options.format,
-                 options.show_headers,
-                 (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
+    outputfile = options.outfile
+    run(options, projectfile, inputfile, outputfile, parser)
 
 
 if __name__ == '__main__':

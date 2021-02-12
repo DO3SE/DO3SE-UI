@@ -1,3 +1,6 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import logging
 _log = logging.getLogger('do3se.util.picklefile')
 import tempfile
@@ -5,20 +8,20 @@ import shutil
 import os
 import os.path
 try:
-    import cPickle as pickle
+    import pickle as pickle
     _log.debug('Using cPickle =D')
 except ImportError:
     import pickle
     _log.debug('Using plain pickle =(')
 
 
-class PickleFile:
+class PickleFile(object):
     """
     A lazy wrapper for storing an object using the pickle interface.
 
     The purpose of this class is quite similar to the built-in :mod:`shelve`
     module, but differs in almost every way.
-    
+
     The path to the pickle file and the object to be stored are exposed as the
     :attr:`filename` and :attr:`data` attributes respectively, and these are
     intended to be externally manipulated by other code.
@@ -92,12 +95,15 @@ class PickleFile:
         if filename is None:
             raise IOError('No filename set')
 
-        with open(filename, 'rb') as f:
+        print(f'Attempting to open {filename}')
+        with open(filename, 'r') as f:
             # Project files sometimes get mangled newlines when emailed around,
             # so try and fix them...
-            contents = f.read().replace('\r', '')
             try:
-                self.data = pickle.loads(contents)
+                # we convert to string to replace line endings then back to bytes to pickle
+                contents = f.read().replace('\r', '')
+                arr = bytes(contents, 'utf-8')
+                self.data = pickle.loads(arr)
             except Exception as e:
                 raise IOError('Invalid pickle file', e)
 

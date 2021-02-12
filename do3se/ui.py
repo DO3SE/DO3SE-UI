@@ -17,13 +17,13 @@ import fieldgroups
 from project import Project
 from dataset import Dataset, DatasetError
 from resultswindow import ResultsWindow
-from help_about import DO3SEAbout
+# from help_about import DO3SEAbout TODO: This module is missing
 
 
 _intro_text = u"""
 <h2>DO<sub>3</sub>SE model user interface</h2>
 
-To start using the model, click the "New project" button at the bottom.  To 
+To start using the model, click the "New project" button at the bottom.  To
 use an existing project either click it in the "Recent projects" list and click
 "Open selected", or click "Open other..." and locate your project (.do3se) file.
 
@@ -98,13 +98,18 @@ from the Swedish International Development Agency (Sida).
 
 class MainWindow(ui_xrc.xrcframe_mainwindow):
     def __init__(self, app):
-        ui_xrc.xrcframe_mainwindow.__init__(self, None)
-        self.SetSize((500,500))
+        super(MainWindow, self).__init__(None)
+
+        self.frame.SetSize((500,500))
         self.app = app
         self.html_about.SetPage(_intro_text)
         self.list_recent.Clear()
         for p in reversed(self.app.config.data['recent_projects']):
             self.list_recent.Append(p)
+
+    def Show(self):
+        # Overriden Show() as part of fixing preframe issue
+        self.frame.Show()
 
     def OnListbox_list_recent(self, evt):
         enabled = self.list_recent.GetSelection() != wx.NOT_FOUND
@@ -146,18 +151,20 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     )
 
     def __init__(self, app, projectfile):
-        ui_xrc.xrcframe_projectwindow.__init__(self, None)
-        self.SetSize((780,780))
-        
+        super(ProjectWindow, self).__init__(None)
+
+        self.frame.SetSize((780,780))
+
         # Add context help button
         _s = self.btn_run.GetContainingSizer()
         _s.PrependSpacer(5)
         self.btn_help = wx.ContextHelpButton(_s.GetContainingWindow())
         _s.Prepend(self.btn_help, 0, wx.EXPAND)
-        
+
         self.app = app
-        
-        self.params = fields.FieldCollection(self.tb_main, self.ui_specification)
+
+        # map xrc and ui spec to params
+        self.params: FieldCollection = fields.FieldCollection(self.tb_main, self.ui_specification)
 
         if projectfile is not None and self.app.IsProjectOpen(projectfile):
             _log.warning('Project already open: ' + projectfile)
@@ -167,7 +174,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
                           wx.OK|wx.ICON_ERROR,
                           self)
         self.project = Project(projectfile, self)
-        
+
+        # assign project data to field groups
         self.params.set_values(self.project.data)
         self.app.windows.add(self)
 
@@ -183,6 +191,10 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.UpdateTitle()
         self.UpdateErrors()
 
+    def Show(self):
+        # Overriden Show() as part of precreate issue
+        self.frame.Show()
+
     def UpdateTitle(self):
         title = self.app.GetAppName()
         if self.unsaved:
@@ -195,7 +207,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         errors = self.params.validate()
         self.list_errors.Clear()
         if errors:
-            self.list_errors.InsertItems(map(unicode, errors), 0)
+            self.list_errors.InsertItems(list(map(str, errors)), 0)
         if len(errors) == 0:
             self.btn_run.Enable(True)
             self.btn_errors.SetLabel('No errors')
@@ -255,9 +267,11 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             return
 
         try:
-            d = Dataset(open(filename, 'r'), self.params.get_values(), self)
+            # Dont need to pass self?
+            # d = Dataset(open(filename, 'r'), self.params.get_values(), self)
+            d = Dataset(open(filename, 'r'), self.params.get_values())
         except DatasetError as e:
-            wx.MessageBox('Error occurred while loading data file: ' + unicode(e),
+            wx.MessageBox('Error occurred while loading data file: ' + str(e),
                           'Error',
                           wx.OK|wx.ICON_ERROR,
                           self)
@@ -266,11 +280,13 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         # Function to return to when the model has been run
         def f(dr):
             self.Enable(True)
-            self.MakeModal(False)
+            # MakeModel is depreciated
+            # self.MakeModal(False)
             w = ResultsWindow(self.app, self, dr.get(), os.path.basename(filename))
             w.Show()
 
-        self.MakeModal(True)
+        # MakeModel is depreciated
+        # self.MakeModal(True)
         self.Enable(False)
         wx.lib.delayedresult.startWorker(f, d.run, wargs=[self.prg_progress])
 
@@ -312,11 +328,11 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         values = dialogs.apply_preset(self, self.app.config.data['presets'],
                                       self.app.default_presets)
         self.params.set_values(dict(values))
-            
+
         if len(values) > 0:
             self.OnFieldUpdate(None)
             # Update parts of the UI that depend on field values
-            for group in self.params.itervalues():
+            for group in self.params.values():
                 newevt = fields.ValueChangedEvent(group.GetId())
                 wx.PostEvent(group, newevt)
 
@@ -331,6 +347,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         os.startfile(help_path + '\\DO3SE-UI Help.chm')
 
     def OnMenu_open_about(self, evt):
-        dlg = DO3SEAbout(self)
-        dlg.ShowModal()
-        dlg.Destroy()
+        pass
+        # TODO: lost DO3SEAbout!
+        # dlg = DO3SEAbout(self)
+        # dlg.ShowModal()
+        # dlg.Destroy()

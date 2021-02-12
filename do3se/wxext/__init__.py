@@ -1,19 +1,20 @@
-""" 
+"""
 Custom wxPython widgets
 """
+from __future__ import absolute_import
 import functools
 
 import wx
 
-from listselectctrl import ListSelectCtrl, SaveListSelectCtrl
-from presetchooser import PresetChooser
+from .listselectctrl import ListSelectCtrl, SaveListSelectCtrl
+from .presetchooser import PresetChooser
 
 # Andrea Gavana's FloatSpin control
 # (attempt to use built-in if wxPython is new enough)
 try:
     from wx.lib.agw.floatspin import FloatSpin
 except ImportError:
-    from floatspin import FloatSpin
+    from .floatspin import FloatSpin
 
 def autoeventskip(f):
     """Decorate class method to always ``evt.Skip()``.
@@ -54,6 +55,8 @@ class AutowrapStaticText(wx.StaticText):
 
     def OnResize(self, evt):
         """Re-wrap the label text on resize."""
-        wx.StaticText.SetLabel(self, self._label)
-        self.Wrap(evt.GetSize().x)
-        evt.Skip()
+        pass
+        # TODO: Below causes recursion error
+        # wx.StaticText.SetLabel(self, self._label)
+        # self.Wrap(evt.GetSize().x)
+        # evt.Skip()

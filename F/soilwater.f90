@@ -54,7 +54,7 @@ module SoilWater
     real, private :: r_meas
 
 contains
-    
+
     subroutine Init_SoilWater()
         use Constants, only: SWC_sat
         use Parameters, only: Fc_m, soil_b, SWP_AE, D_meas
@@ -121,15 +121,16 @@ contains
         real        :: P_Pa         ! Pressure in Pa, not kPa
         real        :: esat, eact   ! esat and eact in Pa
         real        :: Tvir, delta, lambda, psychro, Pair, Cair, G
-        
+
         real        :: Et_1, Et_2, Ei_3 !, PEt_3, Et_3, Ei_hr, PEt_hr, Et_hr
         real        :: t, Es_Rn, Es_G, Es_1, Es_2, Es_3 !, Es_hr
         real :: SW_a, SW_s, SW_c, C_canopy, C_soil
 
         ! Convert Rn to J from MJ
         real :: Rn
+        ! Rinc = 216.42455968
         Rn = Rn_MJ * 1000000.0
-
+        ! LAI = 3.0
         VPD_Pa = VPD * 1000
         P_Pa = P * 1000
 
@@ -137,14 +138,14 @@ contains
         eact = 1000 * eact_kPa
 
         Tvir = (Ts_c+Ts_K)/(1-(0.378*(eact/P_Pa)))
-        delta= ((4098*esat)/((Ts_c+237.3)**2)) 
+        delta= ((4098*esat)/((Ts_c+237.3)**2))
         lambda = (2501000-(2361*Ts_c))
         psychro = 1628.6 * (P_Pa/lambda)
         Pair = (0.003486*(P_Pa/Tvir))
         Cair = (0.622*((lambda*psychro)/P_Pa))
 
         G = 0.1 * Rn
-        
+
         Et_1 = (delta * (Rn - G)) / lambda
         Et_2 = 3600 * Pair * Cair * VPD_Pa / Rb_H2O / lambda
 
@@ -273,7 +274,7 @@ contains
         ! Calculated LWP parameters
         real :: Rsr         ! Soil-rot resistance
         real :: Ks          ! Bulk soil hydraulic conductivity
-        real :: delta_t     ! Time between readings - TODO: handle when readings 
+        real :: delta_t     ! Time between readings - TODO: handle when readings
                             ! are NOT hourly?
         real :: delta_Et    ! Difference in hourly Et from last hour
 
@@ -337,19 +338,19 @@ contains
         if (Et_meas > ((Sn_meas-PWP_vol) * D_meas)) then
             Et_meas = (Sn_meas-PWP_vol) * D_meas
         end if
-        
+
         trans_diff_meas = P_input_meas - Et_meas
-        
+
         Sn_diff_meas = trans_diff_meas / D_meas
-        
+
         Sn_meas = min(Fc_m, Sn_meas + Sn_diff_meas)
         Sn_meas = max(PWP_vol, Sn_meas)
-        
+
         SWP_meas = SWP_AE * ((SWC_sat / Sn_meas)**soil_b)
 
         SMD_meas = (Fc_m - Sn_meas) * D_meas
     end subroutine Calc_SWP_meas
-    
+
     subroutine Calc_fPAW()
         use Variables, only: ASW, fPAW
         use Parameters, only: root, fmin

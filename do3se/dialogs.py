@@ -74,7 +74,7 @@ def save_datafile(parent, default='output'+DATAFILE_EXTENSION):
 
 def open_datafile(parent):
     """Prompt the user to select a data file to open.
-    
+
     Returns the path to the selected file, or None if the user cancelled.
     """
     fd = wx.FileDialog(parent, message='Open data file',
@@ -121,14 +121,14 @@ class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthM
     def GetSelections(self):
         """Get currently checked parameter values as ``(key, value)`` pairs."""
         selections = list()
-        for index in xrange(self.GetItemCount()):
+        for index in range(self.GetItemCount()):
             if self.IsChecked(index):
                 selections.append(self.values[index])
         return selections
 
     def CheckAll(self):
         """Check all items."""
-        for index in xrange(self.GetItemCount()):
+        for index in range(self.GetItemCount()):
             self.CheckItem(index, True)
 
 
@@ -158,7 +158,7 @@ class PresetCreatorDialog(wx.Dialog):
 
     def GetParameters(self):
         """Get selected parameters.
-        
+
         See :meth:`ParameterSelectionCtrl.GetSelections`."""
         return self.selector.GetSelections()
 
@@ -172,7 +172,7 @@ def make_preset(parent, presets, values):
     in :data:`do3se.model.paramdefs`.
     """
     pcd = PresetCreatorDialog(parent, values)
-    
+
     # Bleh, have to resort to this ugly hack because the documented Validator
     # API in wxWidgets seems to be completely unimplemented in wxPython...
     while True:
