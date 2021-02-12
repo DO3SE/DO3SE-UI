@@ -153,13 +153,18 @@ if __name__ == "__main__":
     args = sys.argv[1:]
 
     parser = get_option_parser()
+    parser.add_option('-j', '--run-with-saved-args',
+                      action='store_const',
+                      dest='run_with_saved_args',
+                      const=True)
+
     # print(options)
     parser.set_usage('Usage: %prog [options] config_dir input_dir output_dir')
 
     (parsed_options, parsed_args) = parser.parse_args(args)
     config_dir, input_dir, output_dir, options = get_file_directories_and_options(
         parser, parsed_args, args)
-
+    print(parsed_options)
     print(config_dir)
     print(input_dir)
     print(output_dir)
@@ -170,12 +175,19 @@ if __name__ == "__main__":
     print(config_files)
     print(config_file_type)
     input_files = os.listdir(input_dir)
-    args_to_run = get_run_args_list(
-        config_files, input_files, config_dir, input_dir, output_dir, options,
-        parsed_options.gridded_data_map
-    )
-    with open(f"{output_dir}/args.json", 'w') as argsfile:
-        json.dump(args_to_run, argsfile)
+
+    if parsed_options.run_with_saved_args:
+        print('Using loaded args')
+        with open(f"{output_dir}/args.json") as argsfile:
+            args_to_run = json.load(argsfile)
+    else:
+        args_to_run = get_run_args_list(
+            config_files, input_files, config_dir, input_dir, output_dir, options,
+            parsed_options.gridded_data_map
+        )
+        with open(f"{output_dir}/args.json", 'w') as argsfile:
+            json.dump(args_to_run, argsfile)
+
     # run_distributed(args_to_run)
     with Pool(processes=8) as pool:
         pool.map(run_file, args_to_run)
