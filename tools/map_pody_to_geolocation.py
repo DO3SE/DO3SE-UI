@@ -46,7 +46,7 @@ def get_lat_long_from_file_name(file, coord_map):
     coords_string = "_".join(coords)
     try:
         lat, long, elev = coord_map[coords_string]
-        return lat, long
+        return lat, long, elev
     except KeyError:
         Warning(
             f"Filename invalid or {coords_string} not found in coord map file.")
@@ -60,12 +60,13 @@ def get_coordinates(coordinate_file):
         return coord_data
 
 
-def merge_data(line_data, lat_long):
+def merge_data(line_data, lat_long_elev):
     # print(line_data.keys())
-    lat, long = lat_long
+    lat, long, elev = lat_long_elev
     return [
         lat,
         long,
+        elev,
         line_data['"PODY (mmol/m^2 PLA)"'],
         line_data['"POD0 (mmol/m^2 PLA)"'],
     ]
@@ -82,13 +83,14 @@ def map_pody_to_geolocation(input_file_directory, coordinate_file, outfile):
     headers = get_headers(input_file_directory + "/" + files[0])
     last_lines = get_last_line_of_files(input_file_directory, files, headers)
     coordinates = get_coordinates(coordinate_file)
-    lat_long = [get_lat_long_from_file_name(f, coordinates) for f in files]
-    final_data = [merge_data(line_data, lat_long)
-                  for line_data, lat_long in zip(last_lines, lat_long)]
+    lat_long_elevs = [get_lat_long_from_file_name(
+        f, coordinates) for f in files]
+    final_data = [merge_data(line_data, lat_long_elev)
+                  for line_data, lat_long_elev in zip(last_lines, lat_long_elevs)]
     # output_file = "pod_map.csv"
     # output_file = input_file_directory + "/" + "pod_map.csv"
     with open(outfile, 'w') as output_file_data:
-        output_headers = 'lat,long,pody,pod0'
+        output_headers = 'lat,long, elev,pody,pod0'
         output_file_data.write(output_headers)
         output_file_data.write('\n')
         data_to_write = "\n".join([",".join([str(t) for t in line])
