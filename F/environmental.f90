@@ -107,7 +107,7 @@ contains
         use Constants, only: seaP
         use Inputs, only: P, sinB, cloudfrac, PAR
         use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
-              PARdir, PARdif, ST
+              PARdir, PARdif, ST, LAI
 
         real :: m, pPARtotal
 
