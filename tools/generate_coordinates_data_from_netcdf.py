@@ -16,8 +16,6 @@ where each row is an hour of data.
 # %%
 
 import sys
-import os
-import numpy as np
 import xarray as xr
 import json
 NEWLINE = '\n'

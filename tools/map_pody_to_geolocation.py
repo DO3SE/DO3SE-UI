@@ -1,5 +1,6 @@
 """This tool takes a directory of do3se outputs and maps the final POD values against the
 latitude and longitude.
+
 """
 import sys
 import os

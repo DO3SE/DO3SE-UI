@@ -1,9 +1,7 @@
-"""This cli entrypoint is for running distributed multiruns."""
+"""Convert a project file from the UI to a json file."""
 
 import sys
-import os
 from do3se.project import Project
-from pprint import pprint
 import json
 
 if __name__ == "__main__":
