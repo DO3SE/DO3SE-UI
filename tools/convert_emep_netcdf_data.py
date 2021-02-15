@@ -36,7 +36,7 @@ def get_dataset(var, data_directory, file_prefix):
     return ds
 
 
-def generate_gridded_hourly_data_files(data_directory, vars, headings=None, i_min=0, i_max=119, j_min=0, j_max=131, file_prefix='hourly_', elevation_file=False):
+def generate_gridded_hourly_data_files(data_directory, vars, headings=None, i_min=0, i_max=119, j_min=0, j_max=131, file_prefix='hourly_'):
     # WARNING THIS WILL LOAD EVERYTHING INTO MEMORY
     headings = headings or vars
     datasets = [get_dataset(var, data_directory, file_prefix) for var in vars]
@@ -62,11 +62,9 @@ if __name__ == "__main__":
     if len(args) == 2:
         input_directory, file_prefix = args
         elevation_file = None
-    elif len(args) == 3:
-        input_directory, file_prefix, elevation_file = args
     else:
         raise ValueError(
-            'Invalid args. Should be input_directory, file_prefix, <elevation_file>')
+            'Invalid args. Should be input_directory, file_prefix')
 
     # i_min, i_max, j_min, j_max = grid // TODO: Get grid from args
     files = [f for f in os.listdir(
@@ -74,7 +72,7 @@ if __name__ == "__main__":
     vars = [f.replace(file_prefix, '').replace('.nc', '') for f in files]
     print(vars)
     generate_gridded_hourly_data_files(
-        input_directory, vars, file_prefix=file_prefix, elevation_file=elevation_file)
+        input_directory, vars, file_prefix=file_prefix)
 
 # %%
 # Test run
