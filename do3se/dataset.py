@@ -59,7 +59,7 @@ class Dataset:
             _log.debug('R/PAR calculation: derive PAR')
         elif 'cloudfrac' in input_fields:
             self.switchboard['r_par_method'] = model.switchboard.r_par_derive_cloudfrac
-            _log.debug('R/PAR calculation: derive PAR from cloudfrac4e5')
+            _log.debug('R/PAR calculation: derive PAR from cloudfrac')
         else:
             raise RequiredFieldError(['par', 'r'])
 
