@@ -8,8 +8,8 @@ import sys
 import os
 import re
 import json
-from multiprocessing import Pool, Process
-from do3se.automate import run, main, get_option_parser
+from multiprocessing import Pool
+from do3se.automate import main, get_option_parser
 
 
 def make_dir(target_dir):
@@ -45,8 +45,8 @@ def inject_location_into_config(config_dir: str, config_file: str, coordinate_ma
     """Extract the coordinates from the filename and get the lat long from a coordinate map.
 
     Filename should represent `name_{x_coord}_{y_coord}` for example `datainput_2_4.csv`
-    Coordinate_map_file should be a json that maps `{ "<x_coord>_<y_coord>": [<lat>,<long>] }`
-        for example: `{"2_4": [27.3,-4.28], "2_5": [28.9, -5.23]}`
+    Coordinate_map_file should be a json that maps `{ "<x_coord>_<y_coord>": [<lat>,<long>,<elev>] }`
+        for example: `{"2_4": [27.3,-4.28, 1.2], "2_5": [28.9, -5.23, 1.8]}`
     """
     [lat, long, elev], [x, y] = get_lat_long_elev(
         input_file, coordinate_map_file)
@@ -113,17 +113,20 @@ def run_distributed(run_args):
         print(failed_runs)
 
 
-def get_run_args_list(config_files, input_files, config_dir, input_dir, output_dir, options, gridded_data_map=None):
+def get_run_args_list(config_files, input_files, config_dir, input_dir, output_dir, options, gridded_data_map=None, LOG=0):
+    """Get the arguments for each run as a list. This does not run the model."""
     run_args = []
     failed_runs = []
     for i, config_file in enumerate(config_files):
-        print(f"Getting args for {config_file} {i}/{len(config_files)}")
+        if LOG > 0:
+            print(f"Getting args for {config_file} {i}/{len(config_files)}")
         output_dir_full = output_dir + '/' + config_file.split('.')[0]
         config_loc = config_dir + '/' + config_file
         make_dir(output_dir_full)
         for j, input_file in enumerate(input_files):
-            print(
-                f"{i}/{len(config_files)} {j}/{len(input_files)} Getting args for {input_file}")
+            if LOG > 0:
+                print(
+                    f"{i}/{len(config_files)} {j}/{len(input_files)} Getting args for {input_file}")
 
             try:
                 config_loc_injected = inject_location_into_config(
@@ -136,14 +139,6 @@ def get_run_args_list(config_files, input_files, config_dir, input_dir, output_d
                     "options": options,
                 }
                 run_args.append(args)
-                # processes_running.append(
-                #     run_file(
-                #         config_file=config_loc_injected,
-                #         input_file=input_dir + '/' + input_file,
-                #         output_file=output_dir_full + '/' + input_file,
-                #         options=options,
-                #     )
-                # )
             except Exception as e:
                 print(e)
                 failed_runs.append(f"{config_file}-{input_file}")
@@ -178,6 +173,7 @@ if __name__ == "__main__":
     print(config_file_type)
     input_files = os.listdir(input_dir)
 
+    # First get the arguments for each run
     if parsed_options.run_with_saved_args:
         print('Using loaded args')
         with open(f"{output_dir}/args.json") as argsfile:
@@ -190,6 +186,6 @@ if __name__ == "__main__":
         with open(f"{output_dir}/args.json", 'w') as argsfile:
             json.dump(args_to_run, argsfile)
 
-    # run_distributed(args_to_run)
+    # Run each file distributed
     with Pool(processes=8) as pool:
         pool.map(run_file, args_to_run)
