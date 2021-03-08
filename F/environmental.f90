@@ -44,35 +44,19 @@ contains
         ! TODO: document variables
         use Constants, only: seaP
         use Parameters, only: f_lightfac, cosA
-        use Inputs, only: P, PAR, sinB
+        use Inputs, only: PAR, sinB
         use Variables, only: LAI, Flight, leaf_flight
-        use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
-                LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif, ST
+        use Variables, only: fPARdir, fPARdif, &
+                LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
 
-        real :: m, pPARtotal, Flightsun, &
+        real :: Flightsun, &
                 Flightshade
 
         if (sinB > 0 .and. LAI > 0) then
-            m = 1.0 / sinB
-            ! Above canopy PAR
-            ! Potential direct and diffuse PAR
-            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
-            pPARdif = 0.4 * (600 - pPARdir) * sinB
-            pPARtotal = pPARdir + pPARdif
-
-            ! Sky transmissivity (with PAR converted to W/m^2)
-            ST = min(0.9, max(0.21, (PAR/4.57)/pPARtotal))
-
-            ! TODO: Check these included in EMEP
-            fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
-            fPARdif = 1 - fPARdir
-
             PARdir = fPARdir * PAR
             PARdif = fPARdif * PAR
 
             ! In canopy PAR
-            ! TODO: Check using EMEP lai sun term works
-            ! LAIsun = (1 - exp(-0.5 * LAI / sinB)) * (2 * sinB)
             LAIsun = (1 - exp(-0.5 * LAI / sinB)) * (sinB/cosA)
             LAIshade = LAI - LAIsun
 
@@ -102,6 +86,8 @@ contains
 
     !==========================================================================
     ! Calculate PAR from cloudfrac
+    !
+    ! Calculates ST and PARdir and PARdif
     !==========================================================================
     subroutine Calc_PAR_from_cloudfrac()
         use Constants, only: seaP
@@ -143,6 +129,40 @@ contains
             PARdif = 0
         end if
     end subroutine Calc_PAR_from_cloudfrac
+
+
+    !==========================================================================
+    ! Calculate Sky transmissivity from PAR
+    !==========================================================================
+    subroutine Calc_ST_from_PAR()
+        use Constants, only: seaP
+        use Inputs, only: P, sinB, PAR
+        use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
+              ST, LAI
+
+        real :: m, pPARtotal
+
+        if (sinB > 0 .and. LAI > 0) then
+            m = 1.0 / sinB
+            ! Above canopy PAR
+            ! Potential direct and diffuse PAR
+            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
+            pPARdif = 0.4 * (600 - pPARdir) * sinB
+            pPARtotal = pPARdir + pPARdif
+
+            ! Sky transmissivity from cloud frac
+            ST = min(0.9, max(0.21, (PAR/4.57)/pPARtotal))
+
+            ! A = 0.9
+            ! B = 0.7
+            fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
+            fPARdif = 1 - fPARdir
+        else
+            ST = 0
+            fPARdir=0
+            fPARdir=0
+        end if
+    end subroutine Calc_ST_from_PAR
 
     !==========================================================================
     ! Calculate Flight and flight with cloudFrac

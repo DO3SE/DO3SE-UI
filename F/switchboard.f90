@@ -323,20 +323,24 @@ contains
         end if
     end subroutine SB_Calc_Es_blocked
 
+
     subroutine SB_Calc_R_PAR()
         use Inputs, only: R, PAR
-        use Environmental, only:Calc_PAR_from_cloudfrac
+        use Environmental, only:Calc_PAR_from_cloudfrac, Calc_ST_from_PAR
 
         select case (r_par_method)
 
         ! Do nothing if using input data for both
         !case (r_par_use_inputs)
+            ! TODO: May need to still recalculate sun shade fracs
 
         case (r_par_derive_r)
+            call Calc_ST_from_PAR()
             R = (PAR / 4.57) / 0.45
 
         case (r_par_derive_par)
             PAR = R * (0.45 * 4.57)
+            call Calc_ST_from_PAR()
         case (r_par_derive_cloudfrac)
             call Calc_PAR_from_cloudfrac()
             R = (PAR / 4.57) / 0.45
