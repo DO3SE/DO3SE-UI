@@ -108,11 +108,11 @@ contains
             pPARtotal = pPARdir + pPARdif
 
             ! Sky transmissivity from cloud frac
-            ST = 1.0 - 0.75 * (cloudFrac) ** 3.4
+            ST = 1.0 - (0.75 * (cloudFrac ** 3.4))
 
             ! A = 0.9
             ! B = 0.7
-            if (cloudFrac < 0.9) then
+            if (ST < 0.9) then
                 fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
             else
                 fPARdir = (pPARdir/pPARtotal)
@@ -124,6 +124,7 @@ contains
             PARdir = fPARdir * PAR
             PARdif = PAR - PARdir
         else
+            ST = 0
             PAR = 0
             PARdir = 0
             PARdif = 0
@@ -155,7 +156,7 @@ contains
 
             ! A = 0.9
             ! B = 0.7
-            fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
+            fPARdir = 0 !(pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
             fPARdif = 1 - fPARdir
         else
             ST = 0
@@ -232,3 +233,4 @@ contains
     ! end subroutine Calc_Flight_cloudfrac
 
 end module Environmental
+
