@@ -14,7 +14,7 @@ After this has ran you can run the distributed cli.
 """
 # %%
 
-import sys
+import click
 from multiprocessing import Pool
 from math import exp
 import os
@@ -83,6 +83,7 @@ def rename_fields(data, fields):
 
 def save_file(data, id):
     global PROJECT_DIR
+    os.makedirs(f"{PROJECT_DIR}/inputs", exist_ok=True)
     data.to_csv(f"{PROJECT_DIR}/inputs/{id}", index=False)
 
 
@@ -95,9 +96,9 @@ def pick_fields(data):
 # %%
 
 
-def convert_file(filename):
+def convert_file(filepath):
     """Get a pandas dataframe from the input data and pass it through the cleaning functions."""
-    data = load_file(filename)
+    data = load_file(filepath)
     data = add_hour_of_day(data)
     data = add_julian_day(data)
     data = convert_tsk_to_tsc(data, 't2m')
@@ -106,19 +107,30 @@ def convert_file(filename):
     data = rename_fields(data, [('O3_45m', 'o3_ppb_zr'),
                                 ('u_45m', 'uh_zr'), ('TsC', 'ts_c'), ('SH_Wm2', 'Hd')])
     data = pick_fields(data)
-    save_file(data, filename)
+    save_file(data, filepath)
 # %%
 
 
-if __name__ == "__main__":
-    # global PROJECT_DIR
-    args = sys.argv[1:]
-    PROJECT_DIR = args[0]
-    files_list = os.listdir(f'{PROJECT_DIR}/input_data_raw')
+@click.group()
+def cli():
+    click.echo("Using prep input data tool")
 
+
+@cli.command()
+@click.argument("project_dir")
+def run(
+    project_dir,
+):
+    global PROJECT_DIR
+    files_list = os.listdir(f'{project_dir}/input_data_raw')
+    PROJECT_DIR = project_dir
     with Pool(processes=8) as pool:
         pool.map(convert_file, files_list)
 
+
+if __name__ == "__main__":
+    cli()
+    # global PROJECT_DIR
 
 # # %%
 # # ======== TESTING ===========
