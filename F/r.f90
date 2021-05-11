@@ -54,7 +54,7 @@ contains
     ! Ref: EMEP MSC-W Chemical transport Model
     !==========================================================================
     subroutine Calc_Ra_With_Heat_Flux()
-        use Constants, only: pi, z => izR
+        use Constants, only: k, pi, z => izR
         use Inputs, only: ustar, L
         use Variables, only: Ra
         use Parameters, only: d, zo
