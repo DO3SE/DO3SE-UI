@@ -59,7 +59,7 @@ contains
         use Variables, only: Ra
         use Parameters, only: d, zo
 
-        real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, &
+        real :: Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, &
                 Xzo_m, Xzd_m, Xzo_h, Xzd_h
 
 
@@ -161,7 +161,7 @@ contains
     ! Limit Gsto values if accumulated VPD exceeds VPD_crit
     subroutine VPDcrit_apply()
         use Parameters, only: VPD_crit
-        use Variables, only: dd_prev, Flight, Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
 
         if (VPD_dd >= VPD_crit) then
             ! Limit values to previous hour's Gsto
@@ -177,10 +177,9 @@ contains
     !==========================================================================
     subroutine Calc_Gsto_Multiplicative()
         use Parameters, only: gmax, gmorph, fmin
-        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, dd_prev
+        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3
         use Variables, only: leaf_fphen, leaf_flight, LAI
-        use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
-                             Gsto_PEt, Rsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
         ! Leaf Gsto
         Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
         ! Mean Gsto
