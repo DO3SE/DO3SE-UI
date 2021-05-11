@@ -50,20 +50,20 @@ contains
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
 
         real :: Flightsun, &
-                Flightshade
+                Flightshade, cosT
+
+        cosT = sinB
 
         if (sinB > 0 .and. LAI > 0) then
-            PARdir = fPARdir * PAR
-            PARdif = fPARdif * PAR
+             PARdir = fPARdir * PAR
+             PARdif = fPARdif * PAR
 
             ! In canopy PAR
-            LAIsun = (1 - exp(-0.5 * LAI / sinB)) * (sinB/cosA)
+            LAIsun = (1 - exp(-0.5 * LAI / cosT)) * (cosT/cosA)
             LAIshade = LAI - LAIsun
 
-            ! PARshade = PARdif*exp(-0.5*(LAI**0.8))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-sinB)
-            PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-sinB)
-            ! PARsun = PARdir * 0.8 * (cosA/sinB) + PARshade
-            PARsun = PARdir * (cosA/sinB) + PARshade
+            PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-cosT)
+            PARsun = PARdir * cosA/cosT + PARshade
 
             ! TODO: does this need albedo?
             Flightsun = (1.0 - exp(-f_lightfac * PARsun))
@@ -95,16 +95,17 @@ contains
         use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
               PARdir, PARdif, ST, LAI
 
-        real :: m, pPARtotal
+        real :: m, pPARtotal, cosT
 
+        cosT = sinB
         if (sinB > 0 .and. LAI > 0) then
             ! Note: Assuming sinB = cos0
 
-            m = 1.0 / sinB
+            m = 1.0 / cosT
             ! Above canopy PAR
             ! Potential direct and diffuse PAR for clear sky
-            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
-            pPARdif = 0.4 * (600 - pPARdir) * sinB
+            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * cosT
+            pPARdif = 0.4 * (600 - pPARdir) * cosT
             pPARtotal = pPARdir + pPARdif
 
             ! Sky transmissivity from cloud frac
@@ -128,6 +129,10 @@ contains
             PAR = 0
             PARdir = 0
             PARdif = 0
+            pPARdir = 0
+            fPARdir = 1
+            pPARdif = 0
+            fPARdif = 0
         end if
     end subroutine Calc_PAR_from_cloudfrac
 

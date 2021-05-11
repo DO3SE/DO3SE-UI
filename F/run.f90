@@ -56,9 +56,9 @@ contains
 
         ! Derivation of inputs not supplied
         call Accumulate_precip()
+        call Calc_sinB()
         call Calc_ustar_uh()
         call SB_Calc_R_PAR()
-        call Calc_sinB()
         call SB_Calc_Rn()
         call Calc_humidity()
 
