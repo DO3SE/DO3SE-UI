@@ -1,22 +1,22 @@
 # coding: utf-8
+from do3se.resultswindow import ResultsWindow
+from do3se.dataset import Dataset, DatasetError
+from do3se.project import Project
+from do3se import fieldgroups
+from do3se import fields
+from do3se import dialogs
+from do3se import ui_xrc
+from do3se import model
+from do3se import wxext
+import wx.lib.delayedresult
+import wx.lib.plot
+import wx.html
+import wx
 import os.path
 import logging
 _log = logging.getLogger('do3se.ui')
 
-import wx
-import wx.html
-import wx.lib.plot
-import wx.lib.delayedresult
 
-import wxext
-import model
-import ui_xrc
-import dialogs
-import fields
-import fieldgroups
-from project import Project
-from dataset import Dataset, DatasetError
-from resultswindow import ResultsWindow
 # from help_about import DO3SEAbout TODO: This module is missing
 
 
@@ -100,7 +100,7 @@ class MainWindow(ui_xrc.xrcframe_mainwindow):
     def __init__(self, app):
         super(MainWindow, self).__init__(None)
 
-        self.frame.SetSize((500,500))
+        self.frame.SetSize((500, 500))
         self.app = app
         self.html_about.SetPage(_intro_text)
         self.list_recent.Clear()
@@ -142,7 +142,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         ('format', 'Input data format', fieldgroups.InputFormatParams, (), {}),
         ('siteloc', 'Location properties', fieldgroups.SiteLocationParams, (), {}),
         ('meas', 'Measurement data', fieldgroups.MeasurementParams, (), {}),
-        ('vegchar', 'Vegetation characteristics', fieldgroups.VegCharParams, (), {}),
+        ('vegchar', 'Vegetation characteristics',
+         fieldgroups.VegCharParams, (), {}),
         ('vegenv', 'Environmental response', fieldgroups.VegEnvParams, (), {}),
         ('modelopts', 'Model options', fieldgroups.ModelOptionsParams, (), {}),
         ('season', 'Season', fieldgroups.SeasonParams, (), {}),
@@ -153,7 +154,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
     def __init__(self, app, projectfile):
         super(ProjectWindow, self).__init__(None)
 
-        self.frame.SetSize((780,780))
+        self.frame.SetSize((780, 780))
 
         # Add context help button
         _s = self.btn_run.GetContainingSizer()
@@ -164,14 +165,15 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         self.app = app
 
         # map xrc and ui spec to params
-        self.params: FieldCollection = fields.FieldCollection(self.tb_main, self.ui_specification)
+        self.params: FieldCollection = fields.FieldCollection(
+            self.tb_main, self.ui_specification)
 
         if projectfile is not None and self.app.IsProjectOpen(projectfile):
             _log.warning('Project already open: ' + projectfile)
             projectfile = None
             wx.MessageBox('Project already open, empty project created instead',
                           'Error',
-                          wx.OK|wx.ICON_ERROR,
+                          wx.OK | wx.ICON_ERROR,
                           self)
         self.project = Project(projectfile, self)
 
@@ -214,7 +216,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             self.btn_errors.SetForegroundColour(wx.NullColour)
         else:
             self.btn_run.Enable(False)
-            self.btn_errors.SetLabel('%d errors (click for more information)' % (len(errors),))
+            self.btn_errors.SetLabel(
+                '%d errors (click for more information)' % (len(errors),))
             self.btn_errors.SetForegroundColour(wx.RED)
         self.btn_errors.GetContainingSizer().Layout()
 
@@ -231,7 +234,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         if self.unsaved:
             response = wx.MessageBox('Project has unsaved changes.  Save?',
                                      'Unsaved changes',
-                                     wx.YES_NO|wx.CANCEL|wx.ICON_EXCLAMATION,
+                                     wx.YES_NO | wx.CANCEL | wx.ICON_EXCLAMATION,
                                      self)
             if response == wx.NO:
                 really_close = True
@@ -247,7 +250,6 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             evt.Skip()
         else:
             evt.Veto()
-
 
     def OnButton_btn_errors(self, evt):
         self.pnl_errors.Show(not self.pnl_errors.IsShown())
@@ -273,7 +275,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         except DatasetError as e:
             wx.MessageBox('Error occurred while loading data file: ' + str(e),
                           'Error',
-                          wx.OK|wx.ICON_ERROR,
+                          wx.OK | wx.ICON_ERROR,
                           self)
             return
 
@@ -282,7 +284,8 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
             self.Enable(True)
             # MakeModel is depreciated
             # self.MakeModal(False)
-            w = ResultsWindow(self.app, self, dr.get(), os.path.basename(filename))
+            w = ResultsWindow(self.app, self, dr.get(),
+                              os.path.basename(filename))
             w.Show()
 
         # MakeModel is depreciated

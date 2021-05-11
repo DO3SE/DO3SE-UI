@@ -1,7 +1,7 @@
 import wx
 import wx.grid
 
-import model
+import do3se.model
 
 
 class DataTable(wx.grid.PyGridTableBase):
@@ -60,6 +60,7 @@ class DataGrid(wx.grid.Grid):
     cells.  Instead a virtual table (:class:`DataTable`) is used to provide
     on-demand access to cell contents.
     """
+
     def __init__(self, parent, data):
         wx.grid.Grid.__init__(self, parent, -1)
 
@@ -74,6 +75,7 @@ class DataPanel(wx.Panel):
 
     Create a panel containing a :class:`DataGrid` for displaying *data*.
     """
+
     def __init__(self, parent, data):
         wx.Panel.__init__(self, parent)
 
@@ -81,4 +83,4 @@ class DataPanel(wx.Panel):
         self.SetSizer(s)
 
         grid = DataGrid(self, data)
-        s.Add(grid, 1, wx.EXPAND|wx.ALL, 5)
+        s.Add(grid, 1, wx.EXPAND | wx.ALL, 5)

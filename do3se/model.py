@@ -1,7 +1,7 @@
 # coding: utf-8
-from _model import *
-from util import to_dicts, dicts_to_map, OrderedDict
-from fields import SpinField, FloatSpinField, ChoiceField, disableable
+from do3se._model import *
+from do3se.util import to_dicts, dicts_to_map, OrderedDict
+from do3se.fields import SpinField, FloatSpinField, ChoiceField, disableable
 
 #: Available input fields
 input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (

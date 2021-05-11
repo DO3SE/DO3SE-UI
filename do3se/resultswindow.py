@@ -1,9 +1,8 @@
 import wx
 
-from datapanel import DataPanel
-from savepanel import SavePanel
-from plotpanel import PlotPanel, PlotPanel2, PlotPanel3, PlotPanel4
-
+from do3se.datapanel import DataPanel
+from do3se.savepanel import SavePanel
+from do3se.plotpanel import PlotPanel, PlotPanel2, PlotPanel3, PlotPanel4
 
 
 class ResultsWindow(wx.Frame):
@@ -16,7 +15,6 @@ class ResultsWindow(wx.Frame):
         self.app = app
         self.results = results
 
-
         ### Main panel ###
         s = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(s)
@@ -24,15 +22,15 @@ class ResultsWindow(wx.Frame):
         s.Add(p, 1, wx.EXPAND)
         sMain = wx.BoxSizer(wx.VERTICAL)
         p.SetSizer(sMain)
-        
+
         # Create notebook
         nbMain = wx.Notebook(p)
-        sMain.Add(nbMain, 1, wx.EXPAND|wx.ALL, 5)
+        sMain.Add(nbMain, 1, wx.EXPAND | wx.ALL, 5)
         # Create bottom buttons
         sButtons = wx.BoxSizer(wx.HORIZONTAL)
-        sMain.Add(sButtons, 0, wx.ALL|wx.ALIGN_RIGHT, 5)
+        sMain.Add(sButtons, 0, wx.ALL | wx.ALIGN_RIGHT, 5)
         bClose = wx.Button(p, wx.ID_CLOSE)
-        sButtons.Add(bClose, 0, wx.EXPAND|wx.LEFT, 5)
+        sButtons.Add(bClose, 0, wx.EXPAND | wx.LEFT, 5)
         self.Bind(wx.EVT_BUTTON, lambda evt: self.Close(), bClose)
 
         ### Data panel ###

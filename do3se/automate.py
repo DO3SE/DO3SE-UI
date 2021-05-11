@@ -1,7 +1,7 @@
-from dataset import Dataset
-from project import Project
-import model
-import application
+from do3se.dataset import Dataset
+from do3se.project import Project
+from do3se import model
+from do3se import application
 # import wx
 import sys
 import os
@@ -142,7 +142,7 @@ def main(args):
 
     if len(args) < 2:
         parser.error('Not enough arguments')
-
+    print(args)
     application.logging_setup(level=options.loglevel)
     projectfile, inputfile = args
     outputfile = options.outfile

@@ -2,8 +2,8 @@ import wx
 import wx.lib.newevent
 
 
-import wxext
-from util import OrderedDict
+from do3se import wxext
+from do3se.util import OrderedDict
 
 
 # Generic "value changed" event
@@ -17,6 +17,7 @@ class ValidationError:
     useful stuff at a later date.  When a :class:`FieldGroup` is validated, it
     returns a list of these errors; an empty list means everything is valid.
     """
+
     def __init__(self, msg):
         self.msg = msg
 
@@ -50,6 +51,7 @@ class Field:
     they have changed to :meth:`OnChanged` so that :class:`ValueChangedEvent`
     events are emitted.
     """
+
     def __init__(self, parent):
         self.parent = parent
         self.field = None
@@ -72,6 +74,7 @@ class Field:
 
 class TextField(Field):
     """Field using :class:`wx.TextCtrl`."""
+
     def __init__(self, parent, initial=''):
         Field.__init__(self, parent)
 
@@ -83,6 +86,7 @@ class TextField(Field):
 
 class SpinField(Field):
     """Field using :class:`wx.SpinCtrl`."""
+
     def __init__(self, parent, min=0, max=100, initial=0):
         Field.__init__(self, parent)
 
@@ -93,6 +97,7 @@ class SpinField(Field):
 
 class FloatSpinField(Field):
     """Field using :class:`FloatSpin`."""
+
     def __init__(self, parent, min=0, max=1, initial=0, step=0.1, digits=2):
         Field.__init__(self, parent)
 
@@ -118,6 +123,7 @@ class ChoiceField(Field):
     .. note::
         Values returned by *choice_string* must be unique within the field.
     """
+
     def __init__(self, parent, choices, default, choice_string=lambda x: x['name']):
         Field.__init__(self, parent)
 
@@ -153,13 +159,15 @@ class ColumnsSelectField(Field):
     :data:`EVT_VALUE_CHANGED` events are emitted when columns are added, removed
     or moved around.
     """
+
     def __init__(self, parent, choices):
         Field.__init__(self, parent)
 
         self.choices = choices
 
         self.field = wxext.ListSelectCtrl(parent)
-        self.field.SetAvailable([(v['long'], k) for k,v in self.choices.items()])
+        self.field.SetAvailable([(v['long'], k)
+                                 for k, v in self.choices.items()])
 
         # Emit EVT_VALUE_CHANGED at appropriate times
         self.field.button_add.Bind(wx.EVT_BUTTON, self.OnChanged)
@@ -169,7 +177,7 @@ class ColumnsSelectField(Field):
 
     def get_value(self):
         """Get the keys of the columns that are selected."""
-        return [b for a,b in self.field.GetSelectionWithData()]
+        return [b for a, b in self.field.GetSelectionWithData()]
 
     def set_value(self, value):
         """Set the current selection from a list of column keys."""
@@ -208,7 +216,7 @@ class FieldGroup(OrderedDict, wx.Panel):
 
     def get_values(self):
         """Return field group as :class:`OrderedDict` of values."""
-        return OrderedDict((k, v.get_value()) for k,v in self.items())
+        return OrderedDict((k, v.get_value()) for k, v in self.items())
 
     def set_values(self, values):
         """Update field group with :class:`OrderedDict` of values.
@@ -218,7 +226,7 @@ class FieldGroup(OrderedDict, wx.Panel):
             rather than raising errors; values for other groups may be present
             in *values*.
         """
-        for k,v in values.items():
+        for k, v in values.items():
             if k in self:
                 self[k].set_value(v)
 
@@ -266,12 +274,13 @@ class SimpleFieldGroup(FieldGroup):
     :param parent:  :class:`wx.Window` parent (usually the book control)
     :param fields:  Iterable of field definitions
     """
+
     def __init__(self, fc, parent, fields=()):
         FieldGroup.__init__(self, fc, parent)
 
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
         self.sizer = wx.FlexGridSizer(cols=3, vgap=5, hgap=15)
-        self.GetSizer().Add(self.sizer, 0, wx.EXPAND|wx.ALL, 5)
+        self.GetSizer().Add(self.sizer, 0, wx.EXPAND | wx.ALL, 5)
 
         for field in fields:
             self.add(field)
@@ -364,7 +373,8 @@ def disableable(cls, chklabel='Disabled?'):
     class DisableableCls(cls):
         def __init__(self, parent, *args, **kwargs):
             cls.__init__(self, parent, *args, **kwargs)
-            self.other = wx.CheckBox(parent, label=chklabel, style=wx.CHK_2STATE)
+            self.other = wx.CheckBox(
+                parent, label=chklabel, style=wx.CHK_2STATE)
             self.other.Bind(wx.EVT_CHECKBOX, self.OnCheckbox_disable)
             self.other.Bind(wx.EVT_CHECKBOX, self.OnChanged)
 

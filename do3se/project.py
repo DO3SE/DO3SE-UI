@@ -1,5 +1,5 @@
-import dialogs
-from util.picklefile import PickleFile
+from do3se import dialogs
+from do3se.util.picklefile import PickleFile
 import wx
 import json
 import logging

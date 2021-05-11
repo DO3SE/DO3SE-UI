@@ -1,5 +1,5 @@
-import model
-import util
+from do3se import model
+from do3se import util
 import csv
 import logging
 _log = logging.getLogger('do3se.dataset')

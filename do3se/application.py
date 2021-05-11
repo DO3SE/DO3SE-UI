@@ -1,5 +1,5 @@
-from config import Config
-from util import load_presets
+from do3se.config import Config
+from do3se.util import load_presets
 import resources
 import wx
 import logging
