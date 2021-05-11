@@ -6,6 +6,7 @@
 - future # install with pip
 
 - If running with a headless ubuntu setup (Docker/WSL etc) then additional dependencies may need to be installed.
+
 ```
 apt-get install freeglut3-dev \
 libgl1-mesa-dev \
@@ -28,14 +29,20 @@ libxtst-dev
 - `make py_cli` for python cli only
 - `make dose` for fortran only
 
+# Running Cli
+
+- Run `make py_cli`
+- Run `python DO3SE_cli.py -c json -o [OUTFILE] [CONFIG_FILE] [INPUT_FILE]`
 
 # Troubleshooting
- - py2exe is depreciated. Use python >3.4
 
- - _model module not found. This must be built using python setup.py build_ext then copied to the do3se directory
+- py2exe is depreciated. Use python >3.4
 
+- \_model module not found. This must be built using python setup.py build_ext then copied to the do3se directory
 
- - wxpython failing to build on ubuntu
-   - `apt-get install build-essentials`
-   - `pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04 wxPython`
- - wxpython missing dependencies on linux. Check extra dependencies installed: https://github.com/wxWidgets/Phoenix/blob/master/README.rst#prerequisites
+- wxpython failing to build on ubuntu
+  - `apt-get install build-essentials`
+  - `pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04 wxPython`
+- wxpython missing dependencies on linux. Check extra dependencies installed: https://github.com/wxWidgets/Phoenix/blob/master/README.rst#prerequisites
+
+- Make sure to run `make py_cli` after making any fortran changes
