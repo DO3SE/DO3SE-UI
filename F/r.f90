@@ -54,24 +54,14 @@ contains
     ! Ref: EMEP MSC-W Chemical transport Model
     !==========================================================================
     subroutine Calc_Ra_With_Heat_Flux()
-        use Constants, only: Rmass, Ts_K, k, g, cp, pi, z => izR
-        use Inputs, only: P, Hd, Ts_C, ustar
+        use Constants, only: pi, z => izR
+        use Inputs, only: ustar, L
         use Variables, only: Ra
         use Parameters, only: d, zo
 
-        real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, rho, L, &
+        real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, &
                 Xzo_m, Xzd_m, Xzo_h, Xzd_h
 
-        Tk = Ts_C + Ts_K
-        if (Hd == 0) then
-            Hd = 0.000000000001
-        end if
-
-        ! Surface density of dry air (including conversion from to Pa to kPa)
-        rho = (P * 1000) / (Rmass * Tk)
-
-        ! Monin-Obukhov Length
-        L = -(Tk * ustar**3 * rho * cp) / (k * g * Hd)
 
         Ezd = (z - d) / L
         Ezo = zo / L

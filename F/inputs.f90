@@ -29,6 +29,7 @@ module Inputs
     real, public, save :: ustar         ! Friction velocity (m/s)
     real, public, save :: uh_i          ! Windspeed at intermediate height
     real, public, save :: uh            ! Windspeed at canopy
+    real, public, save :: L             ! Monin-Obukhov Length
     real, public, save :: precip_acc    ! Previous day's accumulated precip (m)
     real, public, save :: esat          ! Saturated vapour pressure (kPa)
     real, public, save :: eact          ! Actual vapour pressure (kPa)
@@ -44,6 +45,7 @@ module Inputs
 
     public :: estimate_velocity
     public :: estimate_ustar
+    public :: calc_monin_obukhov_length
 
     ! These are intermediate variables not used outside of this module
     real, private :: precip_dd  ! Accumulated precip for today so far
@@ -60,48 +62,118 @@ contains
         precip_acc = 0
     end subroutine Init_Inputs
 
+
+
+    function calc_monin_obukhov_length(Tk, ustar, Hd, P) result(L)
+        use Constants, only: Rmass, k, g, cp
+
+        real, intent(in) :: Tk       ! Temperature in K
+        real, intent(in) :: ustar    ! wind ustar
+        real, intent(in) :: Hd       ! Grid Hd
+        real, intent(in) :: P        ! Grid Pressure kPa
+
+        real :: rho, L, Hd_f
+
+        Hd_f = max(Hd, 0.000000000001)
+        ! Surface density of dry air (including conversion from to Pa to kPa)
+        rho = (P * 1000) / (Rmass * Tk)
+
+        ! Monin-Obukhov Length
+        L = -(Tk * ustar**3 * rho * cp) / (k * g * Hd_f)
+
+    end function
+
+
+    !==========================================================================
+    ! Estimate integral flux-gradient stability function for momentum
+    !==========================================================================
+    function calc_PsiM(zL) result (stab_m)
+        use Constants, only: pi
+        !   Out:
+        !   PsiM = integral flux-gradient stability function for momentum
+        !   Ref: Garratt, 1994, pp52-54
+
+         real, intent(in) ::  zL    ! = surface layer stability parameter, (z-d)/L
+                                    ! notation must be preserved
+         real :: stab_m
+         real  :: x
+
+         if( zL < 0) then !unstable
+            x    = sqrt(sqrt(1.0 - 16.0*zL))
+            stab_m = log( 0.125*(1.0+x)*(1.0+x)*(1.0+x*x) ) +  PI/2.0 - 2.0*atan(x)
+         else             !stable
+             !ESX if ( FluxPROFILE == "Ln95" ) then
+             !ESX    stab_m = -( a*zL + b*(zl-c/d)*exp(-d*zL) + b*c/d)
+             !ESX else
+                stab_m = -5.0 * zL
+             !ESX end if
+         end if
+
+       end function calc_PsiM
+
+
+    !==========================================================================
+    ! Estimate Wind Velocity
+    !==========================================================================
     function estimate_velocity(ustar, z, z0) result (u)
+        use Constants, only: K
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
         real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
 
         real :: u                   ! Output: velocity (m/s)
 
-        real, parameter :: K = 0.41 ! von Karman's constant
-
         u = (ustar / K) * log(z / z0)
     end function estimate_velocity
 
-    function estimate_ustar(u, z, z0) result (ustar)
+
+    !==========================================================================
+    ! Estimate Wind U*
+    !==========================================================================
+    function estimate_ustar(u, z, z0, L) result (ustar)
+        use Constants, only: K
         real, intent(in) :: u       ! Velocity at height above boundary (m/s)
         real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
         real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
 
-        real :: ustar               ! Output: friction velocity, ustar (m/s)
+        real :: ustar, L, psim_a, psim_b               ! Output: friction velocity, ustar (m/s)
 
-        real, parameter :: K = 0.41 ! von Karman's constant
-
-        ustar = (u * K) / log(z / z0)
+        psim_a = 1 !calc_PsiM(z/L)
+        psim_b = 1 !calc_PsiM(z0/L)
+        ustar = (u * K) / (log(z / z0) - psim_a + psim_b)
     end function estimate_ustar
 
-    !
+    !==========================================================================
+    ! Calc Monin-Obukhov Length for row
+    !==========================================================================
+    subroutine Calc_monin_obukhov_length_row()
+        use Constants, only: Ts_K
+        real ::  Tk
+        Tk = Ts_C + Ts_K
+        L = calc_monin_obukhov_length(Tk, ustar, Hd, P)
+    end subroutine Calc_monin_obukhov_length_row
+
+    !==========================================================================
     ! Derive ustar for the flux canopy and the windspeed at the canopy
-    !
+    !==========================================================================
     subroutine Calc_ustar_uh()
-        use Constants, only: izR
+        use Constants, only: Rmass, Ts_K, k, g, cp, pi, izR
         use Parameters, only: h, d, zo, u_d, u_zo, uzR
 
         real :: ustar_ref   ! ustar for where windspeed is measured
+        real :: Tk
 
         real, parameter :: MIN_WINDSPEED = 0.1
 
+        Tk = Ts_C + Ts_K
+
         ! Find ustar over reference canopy
-        ustar_ref = estimate_ustar(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_zo)
+        ustar_ref = estimate_ustar(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_zo, L)
         ! Find windspeed at izR, over reference canopy
         uh_i = max(MIN_WINDSPEED, estimate_velocity(ustar_ref, izR - u_d, u_zo))
         ! Find ustar over target canopy, assuming that at izR windspeed will be
         ! equal over both vegetations
-        ustar = estimate_ustar(max(MIN_WINDSPEED, uh_i), izR - d, zo)
+        ustar = estimate_ustar(max(MIN_WINDSPEED, uh_i), izR - d, zo, L)
         ! Find windspeed at top of target canopy
         uh = max(MIN_WINDSPEED, estimate_velocity(ustar, h - d, zo))
 
@@ -109,26 +181,26 @@ contains
         ustar = max(0.0001, ustar)
     end subroutine Calc_ustar_uh
 
-    !
+    !==========================================================================
     ! Accumulate precipitation for the day, converted to metres
-    !
+    !==========================================================================
     subroutine Accumulate_precip()
         precip_dd = precip_dd + (precip/1000)
     end subroutine Accumulate_precip
 
-    !
+    !==========================================================================
     ! Store the previous day's accumulated precipitation
-    !
+    !==========================================================================
     subroutine Calc_precip_acc()
         precip_acc = precip_dd
         precip_dd = 0
     end subroutine Calc_precip_acc
 
-    !
+    !==========================================================================
     ! Calculate the solar elevation angle, using the geographical location of
     ! the site and the time of day and day of year.  Also calculates h and dec
     ! which are required for Rn calculation.
-    !
+    !==========================================================================
     subroutine Calc_sinB()
         ! TODO: document variables
         use Parameters, only: lat, lon
@@ -158,9 +230,9 @@ contains
         sinB = max(0.0, sinB)
     end subroutine Calc_sinB
 
-    !
+    !==========================================================================
     ! Calculate net radiation
-    !
+    !==========================================================================
     subroutine Calc_Rn()
         ! TODO: document variables
         use Parameters, only: elev, lat
@@ -212,10 +284,12 @@ contains
         Rn_W = Rn * 277.8
     end subroutine Calc_Rn
 
+    !==========================================================================
     ! Calculate leaf temperature
     !
     ! Based on: Jackson, R.D. (1982). "Canopy temperature and crop water stress."
     !           Advances in irrigation, vol. 1, pp.43-85.  Specifically p.66 eq.9.
+    !==========================================================================
     real function Calc_Tleaf (Tair, P, VPD, Rn, ra, rc)
         implicit none
 
@@ -256,13 +330,18 @@ contains
         Calc_Tleaf = Tair + Tdiff
     end function Calc_Tleaf
 
+    !==========================================================================
+    ! Tleaf estimate db
+    !==========================================================================
     subroutine Tleaf_Estimate_db()
         use Variables, only: Ra, Rsto_c
 
         !Tleaf = Calc_Tleaf(Ts_C, P*1000, VPD*1000, Rn_W, Ra, Rsto_c)
     end subroutine Tleaf_Estimate_db
 
+    !==========================================================================
     ! Calculated saturation/actual vapour pressure and relative humidity
+    !==========================================================================
     subroutine Calc_humidity()
         esat = 0.611 * exp(17.27 * Ts_C / (Ts_C + 237.3))
         eact = esat - VPD
