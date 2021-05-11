@@ -1,8 +1,8 @@
+from do3se.util import OrderedDict
+from do3se.util.picklefile import PickleFile
 import logging
 _log = logging.getLogger('do3se.config')
 
-from util.picklefile import PickleFile
-from util import OrderedDict
 
 class Config(PickleFile):
     """Application configuration file handler.
@@ -10,9 +10,10 @@ class Config(PickleFile):
     Extends :class:`PickleFile` to implement application configuration logic,
     such as ensuring certain configuration keys always exist.
     """
+
     def __init__(self, filename):
         PickleFile.__init__(self, filename)
-        
+
         # Load file if it exists
         if self.exists():
             self.load()
@@ -33,7 +34,7 @@ class Config(PickleFile):
 
     def add_recent_project(self, path):
         """Add a path to the recent project list.
-        
+
         This keeps a list of no more than the 9 most recently loaded/saved
         projects.  The limit of 9 entries mirrors that of the
         :class:`wx.FileHistory` class.

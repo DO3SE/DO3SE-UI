@@ -1,8 +1,9 @@
 import wx
 import wx.lib.newevent
 
-import wxext
-from util import OrderedDict
+
+from do3se import wxext
+from do3se.util import OrderedDict
 
 
 # Generic "value changed" event
@@ -16,21 +17,25 @@ class ValidationError:
     useful stuff at a later date.  When a :class:`FieldGroup` is validated, it
     returns a list of these errors; an empty list means everything is valid.
     """
+
     def __init__(self, msg):
         self.msg = msg
 
     def __unicode__(self):
-        return unicode(self.msg)
+        return str(self.msg)
+
+    def __repr__(self):
+        return str(self.msg)
 
 
-def validate(errors, assertion, msg):
+def validate(assertion, msg):
     """Helper function for validation.
-    
+
     Adds a :class:`ValidationError` wrapped around *msg* to *errors* if
     *assertion* is False.
     """
     if not assertion:
-        errors.append(ValidationError(msg))
+        return ValidationError(msg)
 
 
 class Field:
@@ -46,6 +51,7 @@ class Field:
     they have changed to :meth:`OnChanged` so that :class:`ValueChangedEvent`
     events are emitted.
     """
+
     def __init__(self, parent):
         self.parent = parent
         self.field = None
@@ -68,6 +74,7 @@ class Field:
 
 class TextField(Field):
     """Field using :class:`wx.TextCtrl`."""
+
     def __init__(self, parent, initial=''):
         Field.__init__(self, parent)
 
@@ -79,6 +86,7 @@ class TextField(Field):
 
 class SpinField(Field):
     """Field using :class:`wx.SpinCtrl`."""
+
     def __init__(self, parent, min=0, max=100, initial=0):
         Field.__init__(self, parent)
 
@@ -89,6 +97,7 @@ class SpinField(Field):
 
 class FloatSpinField(Field):
     """Field using :class:`FloatSpin`."""
+
     def __init__(self, parent, min=0, max=1, initial=0, step=0.1, digits=2):
         Field.__init__(self, parent)
 
@@ -114,6 +123,7 @@ class ChoiceField(Field):
     .. note::
         Values returned by *choice_string* must be unique within the field.
     """
+
     def __init__(self, parent, choices, default, choice_string=lambda x: x['name']):
         Field.__init__(self, parent)
 
@@ -121,7 +131,7 @@ class ChoiceField(Field):
         self._choice_string = choice_string
 
         self.field = wx.Choice(parent)
-        for key, choice in self.choices.iteritems():
+        for key, choice in self.choices.items():
             # Use wx.Choice's "clientdata" field for each choice so it is simple
             # to retrieve the key corresponding to the selected choice.
             self.field.Append(self._choice_string(choice), key)
@@ -149,29 +159,33 @@ class ColumnsSelectField(Field):
     :data:`EVT_VALUE_CHANGED` events are emitted when columns are added, removed
     or moved around.
     """
+
     def __init__(self, parent, choices):
         Field.__init__(self, parent)
 
         self.choices = choices
-        
+
         self.field = wxext.ListSelectCtrl(parent)
-        self.field.SetAvailable([(v['long'], k) for k,v in self.choices.iteritems()])
+        self.field.SetAvailable([(v['long'], k)
+                                 for k, v in self.choices.items()])
 
         # Emit EVT_VALUE_CHANGED at appropriate times
         self.field.button_add.Bind(wx.EVT_BUTTON, self.OnChanged)
         self.field.button_remove.Bind(wx.EVT_BUTTON, self.OnChanged)
         self.field.button_up.Bind(wx.EVT_BUTTON, self.OnChanged)
         self.field.button_down.Bind(wx.EVT_BUTTON, self.OnChanged)
-    
+
     def get_value(self):
         """Get the keys of the columns that are selected."""
-        return [b for a,b in self.field.GetSelectionWithData()]
+        return [b for a, b in self.field.GetSelectionWithData()]
 
     def set_value(self, value):
         """Set the current selection from a list of column keys."""
         self.field.SetSelection([self.choices[k]['long'] for k in value])
 
 
+# class FieldGroup(OrderedDict):
+# class FieldGroup(wx.Panel):
 class FieldGroup(OrderedDict, wx.Panel):
     """Base class for groups of fields.
 
@@ -202,17 +216,17 @@ class FieldGroup(OrderedDict, wx.Panel):
 
     def get_values(self):
         """Return field group as :class:`OrderedDict` of values."""
-        return OrderedDict((k, v.get_value()) for k,v in self.iteritems())
+        return OrderedDict((k, v.get_value()) for k, v in self.items())
 
     def set_values(self, values):
         """Update field group with :class:`OrderedDict` of values.
-        
+
         .. note::
             Values for keys which do not exist in the group ar ignored,
             rather than raising errors; values for other groups may be present
             in *values*.
         """
-        for k,v in values.iteritems():
+        for k, v in values.items():
             if k in self:
                 self[k].set_value(v)
 
@@ -226,7 +240,7 @@ class FieldGroup(OrderedDict, wx.Panel):
 
     def extract(self, *args):
         """Get the values of fields specified in *args* as a list.
-        
+
         Allows code like this:
 
         .. code-block:: python
@@ -260,12 +274,13 @@ class SimpleFieldGroup(FieldGroup):
     :param parent:  :class:`wx.Window` parent (usually the book control)
     :param fields:  Iterable of field definitions
     """
+
     def __init__(self, fc, parent, fields=()):
         FieldGroup.__init__(self, fc, parent)
 
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
         self.sizer = wx.FlexGridSizer(cols=3, vgap=5, hgap=15)
-        self.GetSizer().Add(self.sizer, 0, wx.EXPAND|wx.ALL, 5)
+        self.GetSizer().Add(self.sizer, 0, wx.EXPAND | wx.ALL, 5)
 
         for field in fields:
             self.add(field)
@@ -308,11 +323,11 @@ class FieldCollection(OrderedDict):
         for key, name, cls, args, kwargs in groups:
             self.add_group(key, name, cls, *args, **kwargs)
 
-    def add_group(self, key, name, cls, *args, **kwargs):
+    def add_group(self, key, name, cls: FieldGroup, *args, **kwargs):
         """Create a new field group.
-        
+
         An instance of *cls* is created, passing all following arguments to the
-        constructor (with *self* and the parent treebook passed first), and 
+        constructor (with *self* and the parent treebook passed first), and
         associated with *key*.
         """
         self[key] = cls(self, self.treebook, *args, **kwargs)
@@ -322,7 +337,7 @@ class FieldCollection(OrderedDict):
     def get_values(self):
         """Get the values of all fields, across all groups, as an :class:`OrderedDict`."""
         values = OrderedDict()
-        for group in self.itervalues():
+        for group in self.values():
             values.update(group.get_values())
         return values
 
@@ -332,7 +347,7 @@ class FieldCollection(OrderedDict):
         All groups get given *values*, so groups should ignore values for fields
         they do not contain.
         """
-        for group in self.itervalues():
+        for group in self.values():
             group.set_values(values)
 
     def validate(self):
@@ -341,7 +356,7 @@ class FieldCollection(OrderedDict):
         Returns all errors from all field groups.
         """
         errors = []
-        for fg in self.itervalues():
+        for fg in self.values():
             errors.extend(fg.validate())
         return errors
 
@@ -358,7 +373,8 @@ def disableable(cls, chklabel='Disabled?'):
     class DisableableCls(cls):
         def __init__(self, parent, *args, **kwargs):
             cls.__init__(self, parent, *args, **kwargs)
-            self.other = wx.CheckBox(parent, label=chklabel, style=wx.CHK_2STATE)
+            self.other = wx.CheckBox(
+                parent, label=chklabel, style=wx.CHK_2STATE)
             self.other.Bind(wx.EVT_CHECKBOX, self.OnCheckbox_disable)
             self.other.Bind(wx.EVT_CHECKBOX, self.OnChanged)
 

@@ -282,6 +282,7 @@ pure function leaf_temp_de_Boeck(R, e_a, T_air, initial_T_leaf, P, u, g_vs, hypo
         ! Calculate final stomatal conductances
         gsto_final = max(0.0, g_sto / 1000.0)
 
+        ! Still in H2O umol
         pngsto_l = gsto_final * min(leaf_fphen, fO3) * max(fmin, fXWP)
         pngsto = gsto_final * gmorph * fphen * max(fmin, fXWP)
         pngsto_c = pngsto * LAI

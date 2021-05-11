@@ -33,7 +33,7 @@ module Parameters
     real, public, save :: O3zR = 25     ! Ozone concentration measurement height (m)
     real, public, save :: xzR = 25      ! "Other" measurement height (m)
     real, public, save :: D_meas = 0.5  ! Soil water measurement depth (m)
-    
+
     ! Properties of vegetation over which windspeed is measured
     real, public, save :: u_h = 25      ! Canopy height (m)
     real, public, save :: u_d           ! Canopy displacement height (m)
@@ -64,7 +64,7 @@ module Parameters
     real, public, save :: VPD_min = 3.25    ! VPD for min g
     real, public, save :: VPD_max = 1.0     ! VPD for max g
     real, public, save :: VPD_crit = 1000   ! Critical daily VPD sum (kPa)
-    
+
     real, public, save :: SWP_min = -1.25   ! SWP for min g
     real, public, save :: SWP_max = -0.05   ! SWP for max g
 
@@ -77,7 +77,7 @@ module Parameters
                                             ! 0.12 for needle leaf trees
                                             ! 0.14 for moorland
                                             ! 0.16 for broad leaf trees
-    
+
     real, public, save :: root = 1.2        ! root depth (m)
     real, public, save :: h = 25            ! Canopy height (m)
     real, public, save :: zo                ! Roughness length (m)
@@ -121,7 +121,7 @@ module Parameters
 
     real, public, save :: cosA = 0.5        ! A = mean leaf inclination (60 degs)
     real, public, save :: f_lightfac = 0.006 ! single leaf flight coefficient
-                                            
+
     real, public, save :: Rext = 2500       ! external plant cuticle resistance in s/m
     real, public, save :: Rinc_b = 14       ! Rinc co-efficient
 
@@ -133,13 +133,13 @@ module Parameters
     real, public, save :: m = 7.65          ! Species-specific sensitivity/fudge-factor
     real, public, save :: V_cmax_25 = 70.03 ! Maximum catalytic rate at 25C (umol m-2 s-1)
     real, public, save :: J_max_25 = 163.05 ! Maximum rate of electron transport at 25C (umol m-2 s-1)
-    
+
     public :: Derive_d_zo
 
 contains
 
     !==========================================================================
-    ! Derive the displacement height (d) and roughness length (zo) of the 
+    ! Derive the displacement height (d) and roughness length (zo) of the
     ! vegetation under the windspeed measurement based on its height
     !==========================================================================
     subroutine Derive_Windspeed_d_zo()
@@ -148,7 +148,7 @@ contains
     end subroutine Derive_Windspeed_d_zo
 
     !==========================================================================
-    ! Derive the displacement height (d) and roughness length (zo) of the 
+    ! Derive the displacement height (d) and roughness length (zo) of the
     ! vegetation under the O3 measurement based on its height
     !==========================================================================
     subroutine Derive_O3_d_zo()
@@ -157,7 +157,7 @@ contains
     end subroutine Derive_O3_d_zo
 
     !==========================================================================
-    ! Derive the displacement height and roughness length from the height of 
+    ! Derive the displacement height and roughness length from the height of
     ! the canopy.
     !==========================================================================
     subroutine Derive_d_zo()

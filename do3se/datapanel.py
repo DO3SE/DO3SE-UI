@@ -1,7 +1,7 @@
 import wx
 import wx.grid
 
-import model
+import do3se.model
 
 
 class DataTable(wx.grid.PyGridTableBase):
@@ -9,11 +9,11 @@ class DataTable(wx.grid.PyGridTableBase):
 
     Implements virtual table interface to lookup cell values in *data*.
     """
-    #: Available column field keys, in the order they are defined in 
+    #: Available column field keys, in the order they are defined in
     #: :mod:`~do3se.model`, to display values in the correct columns
-    COLUMNS = model.output_fields.keys()
+    COLUMNS = list(model.output_fields.keys())
     #: Column labels in the same order as :data:`COLUMNS`
-    COLUMN_LABELS = [x['short'] for x in model.output_fields.itervalues()]
+    COLUMN_LABELS = [x['short'] for x in model.output_fields.values()]
 
     def __init__(self, data):
         wx.grid.PyGridTableBase.__init__(self)
@@ -37,6 +37,7 @@ class DataTable(wx.grid.PyGridTableBase):
 
     def GetValue(self, row, col):
         """Get the value of the cell at (*row*, *col*)."""
+
         return str(self.data[row][self.COLUMNS[col]])
 
     def SetValue(self, row, col, value):
@@ -59,6 +60,7 @@ class DataGrid(wx.grid.Grid):
     cells.  Instead a virtual table (:class:`DataTable`) is used to provide
     on-demand access to cell contents.
     """
+
     def __init__(self, parent, data):
         wx.grid.Grid.__init__(self, parent, -1)
 
@@ -70,9 +72,10 @@ class DataGrid(wx.grid.Grid):
 
 class DataPanel(wx.Panel):
     """A panel containing nothing but a :class:`DataGrid`.
-    
+
     Create a panel containing a :class:`DataGrid` for displaying *data*.
     """
+
     def __init__(self, parent, data):
         wx.Panel.__init__(self, parent)
 
@@ -80,4 +83,4 @@ class DataPanel(wx.Panel):
         self.SetSizer(s)
 
         grid = DataGrid(self, data)
-        s.Add(grid, 1, wx.EXPAND|wx.ALL, 5)
+        s.Add(grid, 1, wx.EXPAND | wx.ALL, 5)

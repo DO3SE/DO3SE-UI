@@ -121,12 +121,18 @@ Or no range
 [,]  => SetRange(min_val=None, max_val=None)
 
 """
+from __future__ import division
 
 
 #----------------------------------------------------------------------
 # Beginning Of FLOATSPIN wxPython Code
 #----------------------------------------------------------------------
 
+from past.builtins import cmp
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import wx
 
 # Set The Styles For The Underline wx.TextCtrl
@@ -279,7 +285,7 @@ class FloatSpin(wx.PyControl):
         self.SetBestSize((width, height))
         
         self._validkeycode = [43, 45, 46, 69, 101, 127, 314]
-        self._validkeycode.extend(range(48, 58))
+        self._validkeycode.extend(list(range(48, 58)))
         self._validkeycode.extend([wx.WXK_RETURN, wx.WXK_TAB, wx.WXK_BACK,
                                    wx.WXK_LEFT, wx.WXK_RIGHT])
        
@@ -843,7 +849,7 @@ class FloatSpin(wx.PyControl):
         """ Tries To Determine If A Value Is Finite Or Infinite/NaN. """
 
         try:
-            snap_value = (value - self._defaultvalue)/self._increment
+            snap_value = old_div((value - self._defaultvalue),self._increment)
             finite = True
         except:
             finite = False
@@ -978,7 +984,7 @@ __version__ = 0, 0, 4
 # decimal point.  This only has effect at compile-time.
 DEFAULT_PRECISION = 2
 
-class FixedPoint:
+class FixedPoint(object):
 
     # the exact value is self.n / 10**self.p;
     # self.n is a long; self.p is an int
@@ -999,8 +1005,8 @@ class FixedPoint:
             self.n = n
             return
 
-        if isinstance(value, type(42)) or isinstance(value, type(42L)):
-            self.n = long(value) * _tento(p)
+        if isinstance(value, type(42)) or isinstance(value, type(42)):
+            self.n = int(value) * _tento(p)
             return
 
         if isinstance(value, FixedPoint):
@@ -1020,7 +1026,7 @@ class FixedPoint:
             # up all bits in 2 iterations for all known binary double-
             # precision formats, and small enough to fit in an int.
             CHUNK = 28
-            top = 0L
+            top = 0
             # invariant: |value| = (top + f) * 2**e exactly
             while f:
                 f = math.ldexp(f, CHUNK)
@@ -1038,7 +1044,7 @@ class FixedPoint:
             if e >= 0:
                 n = top << e
             else:
-                n = _roundquotient(top, 1L << -e)
+                n = _roundquotient(top, 1 << -e)
             if value < 0:
                 n = -n
             self.n = n
@@ -1046,7 +1052,7 @@ class FixedPoint:
 
         if isinstance(value, type(42-42j)):
             raise TypeError("can't convert complex to FixedPoint: " +
-                            `value`)
+                            repr(value))
 
         # can we coerce to a float?
         yes = 1
@@ -1061,14 +1067,14 @@ class FixedPoint:
         # similarly for long
         yes = 1
         try:
-            aslong = long(value)
+            aslong = int(value)
         except:
             yes = 0
         if yes:
             self.__init__(aslong, p)
             return
 
-        raise TypeError("can't convert to FixedPoint: " + `value`)
+        raise TypeError("can't convert to FixedPoint: " + repr(value))
 
     def get_precision(self):
         """Return the precision of this FixedPoint.
@@ -1093,9 +1099,9 @@ class FixedPoint:
             p = int(precision)
         except:
             raise TypeError("precision not convertable to int: " +
-                            `precision`)
+                            repr(precision))
         if p < 0:
-            raise ValueError("precision must be >= 0: " + `precision`)
+            raise ValueError("precision must be >= 0: " + repr(precision))
 
         if p > self.p:
             self.n = self.n * _tento(p - self.p)
@@ -1116,7 +1122,7 @@ class FixedPoint:
                "." + frac
 
     def __repr__(self):
-        return "FixedPoint" + `(str(self), self.p)`
+        return "FixedPoint" + repr((str(self), self.p))
 
     def copy(self):
         return _mkFP(self.n, self.p)
@@ -1144,7 +1150,7 @@ class FixedPoint:
         # a float, their hashes may differ.  This is a teensy bit Bad.
         return hash(n) ^ hash(p)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.n != 0
 
     def __neg__(self):
@@ -1189,14 +1195,14 @@ class FixedPoint:
 
     def __rdiv__(self, other):
         n1, n2, p = _norm(self, other)
-        return _mkFP(n2, p) / self
+        return old_div(_mkFP(n2, p), self)
 
     def __divmod__(self, other):
         n1, n2, p = _norm(self, other)
         if n2 == 0:
             raise ZeroDivisionError("FixedPoint modulo")
         # floor((n1/10**p)/(n2*10**p)) = floor(n1/n2)
-        q = n1 / n2
+        q = old_div(n1, n2)
         # n1/10**p - q * n2/10**p = (n1 - q * n2)/10**p
         return q, _mkFP(n1 - q * n2, p)
 
@@ -1221,7 +1227,7 @@ class FixedPoint:
     # XXX note that __int__ inherits whatever __long__ does,
     # XXX and .frac() is affected too
     def __long__(self):
-        answer = abs(self.n) / _tento(self.p)
+        answer = old_div(abs(self.n), _tento(self.p))
         if self.n < 0:
             answer = -answer
         return answer
@@ -1234,7 +1240,7 @@ class FixedPoint:
 
            x.frac() + long(x) == x
         """
-        return self - long(self)
+        return self - int(self)
 
     # return n, p s.t. self == n/10**p and n % 10 != 0
     def __reduce(self):
@@ -1243,7 +1249,7 @@ class FixedPoint:
             p = 0
         while p and n % 10 == 0:
             p = p - 1
-            n = n / 10
+            n = old_div(n, 10)
         return n, p
 
 # return 10L**n
@@ -1252,7 +1258,7 @@ def _tento(n, cache={}):
     try:
         return cache[n]
     except KeyError:
-        answer = cache[n] = 10L ** n
+        answer = cache[n] = 10 ** n
         return answer
 
 # return xn, yn, p s.t.
@@ -1329,7 +1335,7 @@ del re
 def _string2exact(s):
     m = _parser(s)
     if m is None:
-        raise ValueError("can't parse as number: " + `s`)
+        raise ValueError("can't parse as number: " + repr(s))
 
     exp = m.group('exp')
     if exp is None:
@@ -1348,7 +1354,7 @@ def _string2exact(s):
     assert intpart
     assert fracpart
 
-    i, f = long(intpart), long(fracpart)
+    i, f = int(intpart), int(fracpart)
     nfrac = len(fracpart)
     i = i * _tento(nfrac) + f
     exp = exp - nfrac

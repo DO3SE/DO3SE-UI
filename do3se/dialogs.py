@@ -4,19 +4,21 @@ import sys
 import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 
-import model
-import ui_xrc
-import wxext
-from util import OrderedDict
+from do3se import model
+from do3se import ui_xrc
+from do3se import wxext
+from do3se.util import OrderedDict
 
 
 #: Default/suggested file extension for project files
 PROJECT_EXTENSION = '.do3se'
 #: Wildcard string for :class:`wx.FileDialog`
-PROJECT_WILDCARD = 'DO3SE project files (*%s)|*%s|All (*.*)|*.*' % (PROJECT_EXTENSION, PROJECT_EXTENSION)
+PROJECT_WILDCARD = 'DO3SE project files (*%s)|*%s|All (*.*)|*.*' % (
+    PROJECT_EXTENSION, PROJECT_EXTENSION)
 #: Default/suggested file extension for data files
 DATAFILE_EXTENSION = '.csv'
-DATAFILE_WILDCARD = 'Comma-separated values (*%s)|*%s|All (*.*)|*.*' % (DATAFILE_EXTENSION, DATAFILE_EXTENSION)
+DATAFILE_WILDCARD = 'Comma-separated values (*%s)|*%s|All (*.*)|*.*' % (
+    DATAFILE_EXTENSION, DATAFILE_EXTENSION)
 
 
 def save_project(parent, default='project'+PROJECT_EXTENSION):
@@ -30,7 +32,7 @@ def save_project(parent, default='project'+PROJECT_EXTENSION):
                        defaultDir=os.path.dirname(default),
                        defaultFile=os.path.basename(default),
                        wildcard=PROJECT_WILDCARD,
-                       style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR)
+                       style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
 
     if fd.ShowModal() == wx.ID_OK:
         return fd.GetPath()
@@ -46,7 +48,7 @@ def open_project(parent):
     """
     fd = wx.FileDialog(parent, message='Open project',
                        wildcard=PROJECT_WILDCARD,
-                       style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR)
+                       style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_CHANGE_DIR)
 
     if fd.ShowModal() == wx.ID_OK:
         return fd.GetPath()
@@ -64,7 +66,7 @@ def save_datafile(parent, default='output'+DATAFILE_EXTENSION):
                        defaultDir=os.path.dirname(default),
                        defaultFile=os.path.basename(default),
                        wildcard=DATAFILE_WILDCARD,
-                       style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT|wx.FD_CHANGE_DIR)
+                       style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
 
     if fd.ShowModal() == wx.ID_OK:
         return fd.GetPath()
@@ -74,12 +76,12 @@ def save_datafile(parent, default='output'+DATAFILE_EXTENSION):
 
 def open_datafile(parent):
     """Prompt the user to select a data file to open.
-    
+
     Returns the path to the selected file, or None if the user cancelled.
     """
     fd = wx.FileDialog(parent, message='Open data file',
                        wildcard=DATAFILE_WILDCARD,
-                       style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST|wx.FD_CHANGE_DIR)
+                       style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_CHANGE_DIR)
     if fd.ShowModal() == wx.ID_OK:
         return fd.GetPath()
     else:
@@ -91,6 +93,7 @@ class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthM
 
     Displays a list of parameter names and values with a checkbox next to each.
     """
+
     def __init__(self, parent, values=[]):
         wx.ListCtrl.__init__(self, parent, style=wx.LC_REPORT)
         CheckListCtrlMixin.__init__(self)
@@ -112,7 +115,8 @@ class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthM
         self.DeleteAllItems()
 
         for k, v in self.values:
-            index = self.InsertStringItem(sys.maxint, model.paramdefs[k]['name'])
+            index = self.InsertStringItem(
+                sys.maxint, model.paramdefs[k]['name'])
             self.SetStringItem(index, 1, str(v))
 
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
@@ -121,36 +125,38 @@ class ParameterSelectionCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthM
     def GetSelections(self):
         """Get currently checked parameter values as ``(key, value)`` pairs."""
         selections = list()
-        for index in xrange(self.GetItemCount()):
+        for index in range(self.GetItemCount()):
             if self.IsChecked(index):
                 selections.append(self.values[index])
         return selections
 
     def CheckAll(self):
         """Check all items."""
-        for index in xrange(self.GetItemCount()):
+        for index in range(self.GetItemCount()):
             self.CheckItem(index, True)
 
 
 class PresetCreatorDialog(wx.Dialog):
     """Dialog for creating a named preset by selecting parameters."""
+
     def __init__(self, parent, values):
-        wx.Dialog.__init__(self, parent, title='Save preset', size=(500,300),
-                           style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, parent, title='Save preset', size=(500, 300),
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.SetSizer(wx.BoxSizer(wx.VERTICAL))
 
         s = wx.BoxSizer(wx.HORIZONTAL)
-        s.Add(wx.StaticText(self, label="Preset name"), 0, wx.ALIGN_CENTER_VERTICAL)
+        s.Add(wx.StaticText(self, label="Preset name"),
+              0, wx.ALIGN_CENTER_VERTICAL)
         s.AddSpacer(5)
         self.name = wx.TextCtrl(self)
         s.Add(self.name, 1, wx.ALIGN_CENTER_VERTICAL)
-        self.GetSizer().Add(s, 0, wx.EXPAND|wx.ALL, 5)
+        self.GetSizer().Add(s, 0, wx.EXPAND | wx.ALL, 5)
 
         self.selector = ParameterSelectionCtrl(self, values)
         self.GetSizer().Add(self.selector, 1, wx.EXPAND)
 
-        buttons = self.CreateButtonSizer(wx.OK|wx.CANCEL)
-        self.GetSizer().Add(buttons, 0, wx.ALL|wx.EXPAND, 5)
+        buttons = self.CreateButtonSizer(wx.OK | wx.CANCEL)
+        self.GetSizer().Add(buttons, 0, wx.ALL | wx.EXPAND, 5)
 
     def GetName(self):
         """Get supplied preset name."""
@@ -158,7 +164,7 @@ class PresetCreatorDialog(wx.Dialog):
 
     def GetParameters(self):
         """Get selected parameters.
-        
+
         See :meth:`ParameterSelectionCtrl.GetSelections`."""
         return self.selector.GetSelections()
 
@@ -172,7 +178,7 @@ def make_preset(parent, presets, values):
     in :data:`do3se.model.paramdefs`.
     """
     pcd = PresetCreatorDialog(parent, values)
-    
+
     # Bleh, have to resort to this ugly hack because the documented Validator
     # API in wxWidgets seems to be completely unimplemented in wxPython...
     while True:
@@ -184,21 +190,21 @@ def make_preset(parent, presets, values):
         if len(pcd.GetParameters()) == 0:
             wx.MessageBox('No parameters selected',
                           'Save preset',
-                          wx.OK|wx.ICON_ERROR,
+                          wx.OK | wx.ICON_ERROR,
                           parent)
             continue
 
         if len(pcd.GetName()) == 0:
             wx.MessageBox('Must supply a preset name',
                           'Save preset',
-                          wx.OK|wx.ICON_ERROR,
+                          wx.OK | wx.ICON_ERROR,
                           parent)
             continue
 
         if pcd.GetName() in presets:
             response = wx.MessageBox('Overwrite preset "%s"?' % (pcd.GetName(),),
                                      'Save preset',
-                                     wx.YES_NO|wx.ICON_QUESTION,
+                                     wx.YES_NO | wx.ICON_QUESTION,
                                      parent)
             if response != wx.YES:
                 continue
@@ -210,6 +216,7 @@ def make_preset(parent, presets, values):
 
 class PresetManagerDialog(ui_xrc.xrcdialog_presets):
     """Dialog for applying or deleting presets."""
+
     def __init__(self, parent, user_presets, default_presets):
         ui_xrc.xrcdialog_presets.__init__(self, parent)
 
@@ -221,33 +228,37 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
 
         # Replace the placeholder panel with a ParameterSelectionCtrl
         self.paramlist = ParameterSelectionCtrl(self)
-        self.paramlist_dummy.GetContainingSizer().Replace(self.paramlist_dummy, self.paramlist)
+        self.paramlist_dummy.GetContainingSizer().Replace(
+            self.paramlist_dummy, self.paramlist)
         self.paramlist_dummy.Destroy()
         self.paramlist.GetContainingSizer().Layout()
 
         # Add some explanatory text
         self.paramlist.GetContainingSizer().Insert(0, wxext.AutowrapStaticText(self,
-            label='Presets are collections of parameter values.  Applying a preset '
-            'will update the current project\'s parameters.  Uncheck parameters to '
-            'skip them, preserving their current values.', bg=(255,255,255)
-            ),
-            flag=wx.EXPAND|wx.GROW|wx.ALL, border=5)
+                                                                               label='Presets are collections of parameter values.  Applying a preset '
+                                                                               'will update the current project\'s parameters.  Uncheck parameters to '
+                                                                               'skip them, preserving their current values.', bg=(255, 255, 255)
+                                                                               ),
+                                                   flag=wx.EXPAND | wx.GROW | wx.ALL, border=5)
         self.paramlist.GetContainingSizer().Layout()
 
         # Initialise presets list
         plroot = self.presetlist.AddRoot('')
         # (application-default presets)
-        self.default_presets_root = self.presetlist.AppendItem(plroot, 'Built-in presets')
+        self.default_presets_root = self.presetlist.AppendItem(
+            plroot, 'Built-in presets')
         for k in self.default_presets.iterkeys():
             self.presetlist.AppendItem(self.default_presets_root, k)
         self.presetlist.Expand(self.default_presets_root)
         # (user-defined presets)
-        self.user_presets_root = self.presetlist.InsertItemBefore(plroot, 0, 'Custom presets')
+        self.user_presets_root = self.presetlist.InsertItemBefore(
+            plroot, 0, 'Custom presets')
         for k in self.user_presets.iterkeys():
             self.presetlist.AppendItem(self.user_presets_root, k)
         self.presetlist.Expand(self.user_presets_root)
 
-        self.presetlist.Bind(wx.EVT_TREE_SEL_CHANGED, self.OnTreeSelChanged_presetlist)
+        self.presetlist.Bind(wx.EVT_TREE_SEL_CHANGED,
+                             self.OnTreeSelChanged_presetlist)
 
     def GetParameters(self):
         """Get the selected parameters to apply."""
@@ -291,7 +302,7 @@ class PresetManagerDialog(ui_xrc.xrcdialog_presets):
         if parent == self.user_presets_root:
             label = self.presetlist.GetItemText(item)
             response = wx.MessageBox('Delete preset "%s"?  This cannot be undone.' % (label,),
-                                     'Delete preset', wx.YES_NO|wx.ICON_QUESTION, self)
+                                     'Delete preset', wx.YES_NO | wx.ICON_QUESTION, self)
             if response == wx.YES:
                 del self.user_presets[label]
                 self.presetlist.Delete(item)

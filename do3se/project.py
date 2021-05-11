@@ -1,10 +1,9 @@
+from do3se import dialogs
+from do3se.util.picklefile import PickleFile
+import wx
+import json
 import logging
 _log = logging.getLogger('do3se.project')
-
-import wx
-
-from util.picklefile import PickleFile
-import dialogs
 
 
 class Project(PickleFile):
@@ -13,29 +12,41 @@ class Project(PickleFile):
 
     :param filename:    Path to the project file if it currently exists
     :param window:      :class:`wx.Frame` the project belongs to (if using GUI)
+    :param format:      input config format. Either do3se or json
     """
-    def __init__(self, filename=None, window=None):
+
+    def __init__(self, filename=None, window=None, format='do3se'):
         PickleFile.__init__(self, filename)
         self.window = window
 
         if self.filename is not None:
-            try:
-                self.load()
-            except EnvironmentError:
-                self._error('Unable to load project ' + self.filename)
-                self.filename = None
-                self.data = dict()
+            if format == 'do3se':
+                try:
+                    self.load()
+                except EnvironmentError as e:
+                    self._error('Unable to load project ' + self.filename, e)
+                    self.filename = None
+                    self.data = dict()
+                else:
+                    _log.info('Opened project ' + self.filename)
+            elif format == 'json':
+                with open(filename) as file_obj:
+                    self.data = json.load(file_obj)
             else:
-                _log.info('Opened project ' + self.filename)
+                raise ValueError(
+                    f'Config input format must be json or do3se. Got: {format}')
         else:
             _log.info('Created new project')
             self.data = dict()
 
-    def _error(self, msg):
+    def _error(self, msg, err):
         """Log an error, but also notify the user if running a GUI."""
         _log.error(msg)
         if self.window is not None:
-            wx.MessageBox(msg, 'Error', wx.OK|wx.ICON_ERROR, self.window)
+            wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR, self.window)
+        else:
+            print(err)
+            print(msg)
 
     def save(self, save_as=False):
         """
@@ -64,7 +75,8 @@ class Project(PickleFile):
         try:
             PickleFile.save(self)
         except EnvironmentError as e:
-            self._error('Failed to save project %s (%s)' % (self.filename, str(e)))
+            self._error('Failed to save project %s (%s)' %
+                        (self.filename, str(e)))
             return False
         else:
             _log.info('Saved project ' + self.filename)

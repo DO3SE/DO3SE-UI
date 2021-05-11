@@ -1,14 +1,18 @@
 """
 Generic utility functions.
 """
+from __future__ import absolute_import
 
+from builtins import zip
 import csv
 import itertools
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from .ordereddict import OrderedDict
+
+# try:
+#     from collections import OrderedDict
+# except ImportError:
+#     from .ordereddict import OrderedDict
 
 
 def setattrs(obj, d):
@@ -16,7 +20,7 @@ def setattrs(obj, d):
     Using :obj:`d` as a mapping of attribute name to a new value, set the values
     of attributes on :obj:`obj`.
     """
-    for k,v in d.iteritems():
+    for k,v in d.items():
         setattr(obj, k, v)
 
 
@@ -29,7 +33,7 @@ def csv2dict(infile):
       * The first row contains field names (excluding the first column),
       * The first column contains "row names" (excluding the first row),
       * All other cells represent the row's value for the column's field.
-    
+
     From a file-like object :obj:`infile`, a dictionary is created which maps
     from a row name to another dictionary, which in turn maps from field names
     to values.
@@ -42,7 +46,7 @@ def csv2dict(infile):
 
     for row in reader:
         key = row.pop(reader.fieldnames[0])
-        data[key] = dict((k, _attempt_float(v)) for k,v in row.iteritems() if v)
+        data[key] = dict((k, _attempt_float(v)) for k,v in row.items() if v)
 
     return data
 
@@ -68,13 +72,13 @@ def load_presets(infile):
 
     # Read the first row as field names
     row_iter = iter(reader)
-    fieldnames = row_iter.next()[1:]
+    fieldnames = next(row_iter)[1:]
 
     # Read the remaining rows, filtering out empty values and converting to
     # float where possible
     for row in row_iter:
         key = row.pop(0)
-        data[key] = [(k, _attempt_float(v)) for k,v in itertools.izip(fieldnames, row) if v != '']
+        data[key] = [(k, _attempt_float(v)) for k,v in zip(fieldnames, row) if v != '']
 
     return data
 
@@ -92,7 +96,7 @@ def _attempt_float(v):
 
 def to_dicts(keys, tuples):
     """Given an n-tuple of keys and a list of n-tuples, make a list of dicts."""
-    return [dict(zip(keys, t)) for t in tuples]
+    return [dict(list(zip(keys, t))) for t in tuples]
 
 
 def dicts_to_map(dicts, key, cls=dict):

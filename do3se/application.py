@@ -1,17 +1,16 @@
+from do3se.config import Config
+from do3se.util import load_presets
+import resources
+import wx
+import logging
+import optparse
+import os.path
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '3.1.1'
+app_version = '3.2.0'
 
-import os.path
-import optparse
-import logging
 _log = logging.getLogger('do3se.application')
 
-import wx
-
-import resources
-from util import load_presets
-from config import Config
 
 class App(wx.App):
     """DO3SE application.
@@ -28,23 +27,26 @@ class App(wx.App):
 
         # Only allow one instance of the application
         si_filename = '%s-%s.lock' % (self.GetAppName(), wx.GetUserId())
-        self.sichecker = wx.SingleInstanceChecker(si_filename, wx.StandardPaths_Get().GetTempDir())
+        self.sichecker = wx.SingleInstanceChecker(
+            si_filename, wx.StandardPaths.Get().GetTempDir())
         if self.sichecker.IsAnotherRunning():
             _log.error("Another instance is already running - exiting!")
-            wx.MessageDialog(None, "DO3SE is already running", style=wx.OK|wx.ICON_ERROR).ShowModal()
+            wx.MessageDialog(None, "DO3SE is already running",
+                             style=wx.OK | wx.ICON_ERROR).ShowModal()
             return False
 
         # Load configuration
         self.config = open_config()
         # Load default presets
-        self.default_presets = load_presets(resources.get_memoryfs_stream('resources/default_veg_presets.csv'))
+        self.default_presets = load_presets(
+            resources.get_memoryfs_stream('resources/default_veg_presets.csv'))
 
         # Keep track of existing project windows - ProjectWindow instances add
         # and remove themselves from this
         self.windows = set()
 
         # Set up context help provider
-        wx.HelpProvider_Set(wx.SimpleHelpProvider())
+        wx.HelpProvider.Set(wx.SimpleHelpProvider())
 
         return True
 
@@ -81,7 +83,7 @@ def open_config():
     with a valid application name must be created first.
     """
     # Find path where the config file should be
-    filename = os.path.join(wx.StandardPaths_Get().GetUserDataDir(),
+    filename = os.path.join(wx.StandardPaths.Get().GetUserDataDir(),
                             'config.pickle')
     # Create config directory if it doesn't exist
     dirname = os.path.dirname(filename)

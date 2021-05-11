@@ -1,102 +1,143 @@
 # Recipe from http://code.activestate.com/recipes/576693/
 
-from UserDict import DictMixin
+# from builtins import next
+# from UserDict import DictMixin
 
-class OrderedDict(dict, DictMixin):
+from collections.abc import MutableMapping
 
-    def __init__(self, *args, **kwds):
-        if len(args) > 1:
-            raise TypeError('expected at most 1 arguments, got %d' % len(args))
-        try:
-            self.__end
-        except AttributeError:
-            self.clear()
-        self.update(*args, **kwds)
-
-    def clear(self):
-        self.__end = end = []
-        end += [None, end, end]         # sentinel node for doubly linked list
-        self.__map = {}                 # key --> [key, prev, next]
-        dict.clear(self)
-
-    def __setitem__(self, key, value):
-        if key not in self:
-            end = self.__end
-            curr = end[1]
-            curr[2] = end[1] = self.__map[key] = [key, curr, end]
-        dict.__setitem__(self, key, value)
-
+class OrderedDict():
+    def __init__(self, data=()):
+        self.mapping = dict(data)
+    def __getitem__(self, key):
+        return self.mapping[key]
     def __delitem__(self, key):
-        dict.__delitem__(self, key)
-        key, prev, next = self.__map.pop(key)
-        prev[2] = next
-        next[1] = prev
-
+        del self.mapping[key]
+    def __setitem__(self, key, value):
+        if key in self:
+            del self[self[key]]
+        self.mapping[key] = value
     def __iter__(self):
-        end = self.__end
-        curr = end[2]
-        while curr is not end:
-            yield curr[0]
-            curr = curr[2]
+        return iter(self.mapping)
+    def __len__(self):
+        return len(self.mapping)
+    def __repr__(self):
+        return f"{type(self).__name__}({self.mapping})"
 
-    def __reversed__(self):
-        end = self.__end
-        curr = end[1]
-        while curr is not end:
-            yield curr[0]
-            curr = curr[1]
-
-    def popitem(self, last=True):
-        if not self:
-            raise KeyError('dictionary is empty')
-        if last:
-            key = reversed(self).next()
-        else:
-            key = iter(self).next()
-        value = self.pop(key)
-        return key, value
-
-    def __reduce__(self):
-        items = [[k, self[k]] for k in self]
-        tmp = self.__map, self.__end
-        del self.__map, self.__end
-        inst_dict = vars(self).copy()
-        self.__map, self.__end = tmp
-        if inst_dict:
-            return (self.__class__, (items,), inst_dict)
-        return self.__class__, (items,)
+    def values(self):
+        return self.mapping.values()
 
     def keys(self):
-        return list(self)
+        return self.mapping.keys()
 
-    setdefault = DictMixin.setdefault
-    update = DictMixin.update
-    pop = DictMixin.pop
-    values = DictMixin.values
-    items = DictMixin.items
-    iterkeys = DictMixin.iterkeys
-    itervalues = DictMixin.itervalues
-    iteritems = DictMixin.iteritems
+    def items(self):
+        return self.mapping.items()
 
-    def __repr__(self):
-        if not self:
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, self.items())
+    def update(self, data):
+        return self.mapping.update(data)
 
-    def copy(self):
-        return self.__class__(self)
+    def pop(self, key, default=None):
+        return self.mapping.pop(key, default)
 
-    @classmethod
-    def fromkeys(cls, iterable, value=None):
-        d = cls()
-        for key in iterable:
-            d[key] = value
-        return d
 
-    def __eq__(self, other):
-        if isinstance(other, OrderedDict):
-            return len(self)==len(other) and self.items() == other.items()
-        return dict.__eq__(self, other)
+# ===============
+# ===============
+# ===============
 
-    def __ne__(self, other):
-        return not self == other
+# class OrderedDict(dict, DictMixin):
+
+#     def __init__(self, *args, **kwds):
+#         if len(args) > 1:
+#             raise TypeError('expected at most 1 arguments, got %d' % len(args))
+#         try:
+#             self.__end
+#         except AttributeError:
+#             self.clear()
+#         self.update(*args, **kwds)
+
+#     def clear(self):
+#         self.__end = end = []
+#         end += [None, end, end]         # sentinel node for doubly linked list
+#         self.__map = {}                 # key --> [key, prev, next]
+#         dict.clear(self)
+
+#     def __setitem__(self, key, value):
+#         if key not in self:
+#             end = self.__end
+#             curr = end[1]
+#             curr[2] = end[1] = self.__map[key] = [key, curr, end]
+#         dict.__setitem__(self, key, value)
+
+#     def __delitem__(self, key):
+#         dict.__delitem__(self, key)
+#         key, prev, next = self.__map.pop(key)
+#         prev[2] = next
+#         next[1] = prev
+
+#     def __iter__(self):
+#         end = self.__end
+#         curr = end[2]
+#         while curr is not end:
+#             yield curr[0]
+#             curr = curr[2]
+
+#     def __reversed__(self):
+#         end = self.__end
+#         curr = end[1]
+#         while curr is not end:
+#             yield curr[0]
+#             curr = curr[1]
+
+#     def popitem(self, last=True):
+#         if not self:
+#             raise KeyError('dictionary is empty')
+#         if last:
+#             key = next(reversed(self))
+#         else:
+#             key = next(iter(self))
+#         value = self.pop(key)
+#         return key, value
+
+#     def __reduce__(self):
+#         items = [[k, self[k]] for k in self]
+#         tmp = self.__map, self.__end
+#         del self.__map, self.__end
+#         inst_dict = vars(self).copy()
+#         self.__map, self.__end = tmp
+#         if inst_dict:
+#             return (self.__class__, (items,), inst_dict)
+#         return self.__class__, (items,)
+
+#     def keys(self):
+#         return list(self)
+
+#     setdefault = DictMixin.setdefault
+#     update = DictMixin.update
+#     pop = DictMixin.pop
+#     values = DictMixin.values
+#     items = DictMixin.items
+#     iterkeys = DictMixin.iterkeys
+#     itervalues = DictMixin.itervalues
+#     iteritems = DictMixin.iteritems
+
+#     def __repr__(self):
+#         if not self:
+#             return '%s()' % (self.__class__.__name__,)
+#         return '%s(%r)' % (self.__class__.__name__, list(self.items()))
+
+#     def copy(self):
+#         return self.__class__(self)
+
+#     @classmethod
+#     def fromkeys(cls, iterable, value=None):
+#         d = cls()
+#         for key in iterable:
+#             d[key] = value
+#         return d
+
+#     def __eq__(self, other):
+#         if isinstance(other, OrderedDict):
+#             return len(self)==len(other) and list(self.items()) == list(other.items())
+#         return dict.__eq__(self, other)
+
+#     def __ne__(self, other):
+#         return not self == other

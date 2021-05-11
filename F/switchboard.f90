@@ -63,6 +63,8 @@ module Switchboard
     integer, public, parameter :: r_par_derive_r   = 2
     ! Derive PAR from R
     integer, public, parameter :: r_par_derive_par = 3
+    ! Derive PAR from Cloudfrac
+    integer, public, parameter :: r_par_derive_cloudfrac = 4
     integer, public, save :: r_par_method = r_par_use_inputs
     public :: SB_Calc_R_PAR
 
@@ -89,16 +91,16 @@ contains
         use Variables, only: SAI, LAI
 
         select case (sai_method)
-        
+
         case (sai_equals_lai)
             SAI = LAI
-        
+
         case (sai_forest)
             SAI = LAI + 1
-        
+
         case (sai_wheat)
             call Calc_SAI_Wheat()
-        
+
         end select
     end subroutine SB_Calc_SAI
 
@@ -106,13 +108,13 @@ contains
         use Inputs, only: Rn, Rn_W, Calc_Rn
 
         select case (rn_method)
-        
+
         case (rn_use_input)
             Rn_W = Rn * 277.8
-        
+
         case (rn_calculate)
             call Calc_Rn()  ! Also calculates Rn_W
-        
+
         end select
     end subroutine SB_Calc_Rn
 
@@ -122,10 +124,10 @@ contains
         use Variables, only: fphen, leaf_fphen
 
         select case (leaf_fphen_method)
-        
+
         case (leaf_fphen_equals_fphen)
             leaf_fphen = fphen
-        
+
         case (leaf_fphen_fixed_day)
             call Calc_leaf_fphen_fixed_day()
 
@@ -134,7 +136,7 @@ contains
 
         case (leaf_fphen_thermal_time)
             call Calc_tt_leaf_fphen()
-        
+
         end select
     end subroutine SB_Calc_leaf_fphen
 
@@ -172,7 +174,7 @@ contains
         use Pn_Gsto, only: Calc_Gsto_Pn, leaf_temp_de_Boeck, gsto_final, pngsto_l, &
                 pngsto, pngsto_c, pngsto_PEt
         use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
-        
+
         use Parameters, only: Lm, albedo
         real :: Tleaf_balance_threshold, Tleaf_adjustment_factor
         integer :: Tleaf_max_iterations
@@ -199,9 +201,9 @@ contains
                 call Calc_Gsto_Pn()
 
                 case (tleaf_estimate)
-                
 
-                
+
+
                     Tleaf = Ts_C
                     call Calc_Gsto_Pn()
                     ! Copy Calc_Gsto_Pn() results to correct places
@@ -215,7 +217,7 @@ contains
                         call Calc_Gsto_Pn()
                     end do
             end select
-            
+
 
         case (gsto_photosynthetic)
             select case (tleaf_method)
@@ -224,9 +226,9 @@ contains
                 call Calc_Gsto_Pn()
 
                 case (tleaf_estimate)
-                
 
-                
+
+
                     Tleaf = Ts_C
                     call Calc_Gsto_Pn()
                     ! Copy Calc_Gsto_Pn() results to correct places
@@ -321,20 +323,27 @@ contains
         end if
     end subroutine SB_Calc_Es_blocked
 
+
     subroutine SB_Calc_R_PAR()
         use Inputs, only: R, PAR
+        use Environmental, only:Calc_PAR_from_cloudfrac, Calc_ST_from_PAR
 
         select case (r_par_method)
 
         ! Do nothing if using input data for both
         !case (r_par_use_inputs)
+            ! TODO: May need to still recalculate sun shade fracs
 
         case (r_par_derive_r)
+            call Calc_ST_from_PAR()
             R = (PAR / 4.57) / 0.45
 
         case (r_par_derive_par)
             PAR = R * (0.45 * 4.57)
-
+            call Calc_ST_from_PAR()
+        case (r_par_derive_cloudfrac)
+            call Calc_PAR_from_cloudfrac()
+            R = (PAR / 4.57) / 0.45
         end select
     end subroutine SB_Calc_R_PAR
 
@@ -346,7 +355,7 @@ contains
 
         ! Use inputs, nothing to do
         !case (sgs_egs_use_inputs)
-        
+
         case (sgs_egs_latitude)
             call Latitude_SGS_EGS(lat, elev, SGS, EGS)
 

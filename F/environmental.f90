@@ -1,6 +1,6 @@
 module Environmental
 
-    public :: Calc_ftemp, Calc_fVPD, Calc_Flight
+    public :: Calc_ftemp, Calc_fVPD, Calc_Flight, Calc_PAR_from_cloudfrac
 
 contains
 
@@ -13,8 +13,8 @@ contains
         use Inputs, only: Ts_c
         use Parameters, only: T_max, T_min, T_opt, fmin
 
-        real :: bt 
-        
+        real :: bt
+
         bt = (T_max - T_opt) / (T_opt - T_min)
         ftemp = max(((Ts_c-T_min)/(T_opt-T_min))*((T_max-Ts_c)/(T_max-T_opt))**bt, fmin)
     end subroutine Calc_ftemp
@@ -35,44 +35,35 @@ contains
             fVPD = 1
         end if
     end subroutine Calc_fVPD
-    
+
+
     !==========================================================================
-    ! Calculate Flight and flight
+    ! Calculate Flight and flight with PAR
     !==========================================================================
     subroutine Calc_Flight()
         ! TODO: document variables
         use Constants, only: seaP
         use Parameters, only: f_lightfac, cosA
-        use Inputs, only: P, PAR, sinB
+        use Inputs, only: PAR, sinB
         use Variables, only: LAI, Flight, leaf_flight
-        use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
-                LAIsun, LAIshade, PARsun, PARshade
+        use Variables, only: fPARdir, fPARdif, &
+                LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
 
-        real :: m, pPARtotal, ST, PARdir, PARdif, Flightsun, &
-                Flightshade
+        real :: Flightsun, &
+                Flightshade, cosT
+
+        cosT = sinB
 
         if (sinB > 0 .and. LAI > 0) then
-            m = 1.0 / sinB
+             PARdir = fPARdir * PAR
+             PARdif = fPARdif * PAR
 
-            ! Potential direct and diffuse PAR
-            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
-            pPARdif = 0.4 * (600 - pPARdir) * sinB
-            pPARtotal = pPARdir + pPARdif
-
-            ! Sky transmissivity (with PAR converted to W/m^2)
-            ST = min(0.9, max(0.21, (PAR/4.57)/pPARtotal))
-
-            fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
-            fPARdif = 1 - fPARdir
-
-            PARdir = fPARdir * PAR
-            PARdif = fPARdif * PAR
-
-            LAIsun = (1 - exp(-0.5 * LAI / sinB)) * (2 * sinB)
+            ! In canopy PAR
+            LAIsun = (1 - exp(-0.5 * LAI / cosT)) * (cosT/cosA)
             LAIshade = LAI - LAIsun
 
-            PARshade = PARdif*exp(-0.5*(LAI**0.8))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-sinB)
-            PARsun = PARdir * 0.8 * (cosA/sinB) + PARshade
+            PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-cosT)
+            PARsun = PARdir * cosA/cosT + PARshade
 
             ! TODO: does this need albedo?
             Flightsun = (1.0 - exp(-f_lightfac * PARsun))
@@ -81,9 +72,170 @@ contains
             leaf_flight = (1.0 - exp(-f_lightfac * PAR))
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
         else
+            PARdir = 0
+            PARdif = 0
+
+            PARshade = 0
+            PARsun = 0
+
             leaf_flight = 0
             Flight = 0
         end if
     end subroutine Calc_Flight
 
+
+    !==========================================================================
+    ! Calculate PAR from cloudfrac
+    !
+    ! Calculates ST and PARdir and PARdif
+    !==========================================================================
+    subroutine Calc_PAR_from_cloudfrac()
+        use Constants, only: seaP
+        use Inputs, only: P, sinB, cloudfrac, PAR
+        use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
+              PARdir, PARdif, ST, LAI
+
+        real :: m, pPARtotal, cosT
+
+        cosT = sinB
+        if (sinB > 0 .and. LAI > 0) then
+            ! Note: Assuming sinB = cos0
+
+            m = 1.0 / cosT
+            ! Above canopy PAR
+            ! Potential direct and diffuse PAR for clear sky
+            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * cosT
+            pPARdif = 0.4 * (600 - pPARdir) * cosT
+            pPARtotal = pPARdir + pPARdif
+
+            ! Sky transmissivity from cloud frac
+            ST = 1.0 - (0.75 * (cloudFrac ** 3.4))
+
+            ! A = 0.9
+            ! B = 0.7
+            if (ST < 0.9) then
+                fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
+            else
+                fPARdir = (pPARdir/pPARtotal)
+            end if
+
+            fPARdif = 1 - fPARdir
+
+            PAR = ST * pPARtotal
+            PARdir = fPARdir * PAR
+            PARdif = PAR - PARdir
+        else
+            ST = 0
+            PAR = 0
+            PARdir = 0
+            PARdif = 0
+            pPARdir = 0
+            fPARdir = 1
+            pPARdif = 0
+            fPARdif = 0
+        end if
+    end subroutine Calc_PAR_from_cloudfrac
+
+
+    !==========================================================================
+    ! Calculate Sky transmissivity from PAR
+    !==========================================================================
+    subroutine Calc_ST_from_PAR()
+        use Constants, only: seaP
+        use Inputs, only: P, sinB, PAR
+        use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
+              ST, LAI
+
+        real :: m, pPARtotal
+
+        if (sinB > 0 .and. LAI > 0) then
+            m = 1.0 / sinB
+            ! Above canopy PAR
+            ! Potential direct and diffuse PAR
+            pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
+            pPARdif = 0.4 * (600 - pPARdir) * sinB
+            pPARtotal = pPARdir + pPARdif
+
+            ! Sky transmissivity from cloud frac
+            ST = min(0.9, max(0.21, (PAR/4.57)/pPARtotal))
+
+            ! A = 0.9
+            ! B = 0.7
+            fPARdir = 0 !(pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
+            fPARdif = 1 - fPARdir
+        else
+            ST = 0
+            fPARdir=0
+            fPARdir=0
+        end if
+    end subroutine Calc_ST_from_PAR
+
+    !==========================================================================
+    ! Calculate Flight and flight with cloudFrac
+    !==========================================================================
+    ! subroutine Calc_Flight_cloudfrac()
+    !     use Constants, only: seaP
+    !     use Parameters, only: f_lightfac, cosA
+    !     use Inputs, only: P, sinB, cloudFrac
+    !     use Variables, only: LAI, Flight, leaf_flight
+    !     use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
+    !             LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif, ST
+
+    !     real :: m, pPARtotal, Flightsun, &
+    !             Flightshade
+
+    !     if (sinB > 0 .and. LAI > 0) then
+    !         ! TODO: We are duplicating code here to calc par again
+    !         ! Note: Assuming sinB = cos0
+
+    !         m = 1.0 / sinB
+    !         ! Above canopy PAR
+    !         ! Potential direct and diffuse PAR for clear sky
+    !         pPARdir = 600 * exp(-0.185 * (P/seaP) * m) * sinB
+    !         pPARdif = 0.4 * (600 - pPARdir) * sinB
+    !         pPARtotal = pPARdir + pPARdif
+
+    !         ! Sky transmissivity from cloud frac
+    !         ST = 1.0 - 0.75 * (cloudFrac) ** 3.4
+
+    !         ! A = 0.9
+    !         ! B = 0.7
+    !         if (cloudFrac < 0.9) then
+    !             fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
+    !         else
+    !             fPARdir = (pPARdir/pPARtotal)
+    !         end if
+
+    !         fPARdif = 1 - fPARdir
+
+    !         PARh = ST * pPARtotal
+    !         PARdir = fPARdir * PARh
+    !         PARdif = PARh - PARdir
+
+    !         ! In canopy PAR
+    !         LAIsun = (1 - exp(-0.5 * LAI / sinB)) * (sinB/cosA)
+    !         LAIshade = LAI - LAIsun
+
+    !         PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-sinB)
+    !         PARsun = PARdir * (cosA/sinB) + PARshade
+
+    !         ! TODO: does this need albedo?
+    !         Flightsun = (1.0 - exp(-f_lightfac * PARsun))
+    !         Flightshade = (1.0 - exp(-f_lightfac * PARshade))
+
+    !         leaf_flight = (1.0 - exp(-f_lightfac * PARh))
+    !         Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
+    !     else
+    !         PARdir = 0
+    !         PARdif = 0
+
+    !         PARshade = 0
+    !         PARsun = 0
+
+    !         leaf_flight = 0
+    !         Flight = 0
+    !     end if
+    ! end subroutine Calc_Flight_cloudfrac
+
 end module Environmental
+
