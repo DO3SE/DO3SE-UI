@@ -1,13 +1,23 @@
-import wx
-import wx.lib.newevent
+try:
+    import wx
+    import wx.lib.newevent
+    from do3se import wxext
+
+    # Generic "value changed" event
+    ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
+
+except ModuleNotFoundError:
+    # Mock wx functions
+    class wxext():
+        def autoeventskip(self):
+            pass
+
+    class wx():
+        class Panel():
+            pass
 
 
-from do3se import wxext
 from do3se.util import OrderedDict
-
-
-# Generic "value changed" event
-ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
 
 
 class ValidationError:

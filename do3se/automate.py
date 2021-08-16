@@ -142,7 +142,6 @@ def main(args):
 
     if len(args) < 2:
         parser.error('Not enough arguments')
-    print(args)
     application.logging_setup(level=options.loglevel)
     projectfile, inputfile = args
     outputfile = options.outfile

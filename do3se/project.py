@@ -1,6 +1,15 @@
-from do3se import dialogs
+try:
+    import wx
+    import wx.lib.newevent
+    from do3se import dialogs
+
+    # Generic "value changed" event
+    ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
+
+except ModuleNotFoundError:
+    pass
+
 from do3se.util.picklefile import PickleFile
-import wx
 import json
 import logging
 _log = logging.getLogger('do3se.project')

@@ -32,7 +32,7 @@ contains
         AOT0 = 0
         AOT40 = 0
         Rsto_c = 100000
-        print *, "Running Init"
+        ! print *, "Running Init"
         ! Put calls to initialisation functions here
         call SB_Calc_SGS_EGS()
         call Derive_d_zo()
@@ -56,8 +56,9 @@ contains
         ! Derivation of inputs not supplied
         call Accumulate_precip()
         call Calc_sinB()
-        call Calc_ustar_uh()
         call Calc_monin_obukhov_length_row()
+        ! call Calc_ustar_uh()
+        call SB_Calc_ustar()
         call SB_Calc_R_PAR()
         call SB_Calc_Rn()
         call Calc_humidity()

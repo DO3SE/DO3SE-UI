@@ -83,6 +83,14 @@ module Switchboard
     integer, public, save :: sgs_egs_method = sgs_egs_use_inputs
     public :: SB_Calc_SGS_EGS
 
+    ! ustar methods
+    integer, public, parameter :: ustar_calculate = 1
+    integer, public, parameter :: ustar_input = 2
+    integer, public, save :: ustar_method = ustar_calculate
+    public :: SB_Calc_ustar
+
+
+
 
 contains
 
@@ -361,5 +369,21 @@ contains
 
         end select
     end subroutine SB_Calc_SGS_EGS
+
+    subroutine SB_Calc_ustar()
+        use Inputs, only: Calc_ustar_uh
+        select case (ustar_method)
+
+        case (ustar_calculate)
+            call Calc_ustar_uh()
+
+        ! If input nothing to do
+        ! case (ustar_input)
+            ! call Calc_ustar_uh()
+
+
+        end select
+
+    end subroutine
 
 end module Switchboard

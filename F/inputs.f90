@@ -30,6 +30,7 @@ module Inputs
     real, public, save :: uh_i          ! Windspeed at intermediate height
     real, public, save :: uh            ! Windspeed at canopy
     real, public, save :: L             ! Monin-Obukhov Length
+    real, public, save :: invL          ! Inverse Monin-Obukhov Length
     real, public, save :: precip_acc    ! Previous day's accumulated precip (m)
     real, public, save :: esat          ! Saturated vapour pressure (kPa)
     real, public, save :: eact          ! Actual vapour pressure (kPa)
@@ -69,17 +70,20 @@ contains
 
         real, intent(in) :: Tk       ! Temperature in K
         real, intent(in) :: ustar    ! wind ustar
-        real, intent(in) :: Hd       ! Grid Hd
+        real, intent(in) :: Hd       ! Grid Hd # Note should be +ve in middle of summer day
         real, intent(in) :: P        ! Grid Pressure kPa
 
         real :: rho, L, Hd_f
 
-        Hd_f = max(Hd, 0.000000000001)
-        ! Surface density of dry air (including conversion from to Pa to kPa)
+        Hd_f = Hd ! max(Hd, 0.000000000001) # Limit turned off to match EMEP
+        ! Surface density of dry air (including conversion from to hPa to kPa)
+        ! TODO: Check units
         rho = (P * 1000) / (Rmass * Tk)
 
         ! Monin-Obukhov Length
-        L = -(Tk * ustar**3 * rho * cp) / (k * g * Hd_f)
+        L = -(Tk * ustar**3 * rho * cp) / (k * g * (-Hd_f))
+        invL = 1/L ! should be -ve in middle of summer day
+
 
     end function
 
@@ -115,15 +119,32 @@ contains
     !==========================================================================
     ! Estimate Wind Velocity
     !==========================================================================
-    function estimate_velocity(ustar, z, z0) result (u)
-        use Constants, only: K
-        real, intent(in) :: ustar   ! Friction velocity (m/s)
-        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+    ! function estimate_velocity(ustar, z, z0) result (u)
+    !     use Constants, only: K
+    !     real, intent(in) :: ustar   ! Friction velocity (m/s)
+    !     real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+    !     real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+
+    !     real :: u                   ! Output: velocity (m/s)
+
+    !     u = (ustar / K) * log(z / z0)
+    ! end function estimate_velocity
+
+    ! Updated to match EMEP
+    function estimate_velocity(u_ref, z_ref, z, z0, d) result (u)
+        real, intent(in) :: u_ref   ! velocity at izR (m/s)
+        real, intent(in) :: z_ref   ! reference height (m)
+        real, intent(in) :: z       ! Target height (m)
         real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+        real, intent(in) :: d       ! displacement height(m)
 
-        real :: u                   ! Output: velocity (m/s)
+        real :: u, zr, zt                   ! Output: velocity (m/s)
 
-        u = (ustar / K) * log(z / z0)
+        zt = z-d
+        zr = z_ref - d
+
+        u = u_ref * log(zt/z0)/log(zr/z0)
+
     end function estimate_velocity
 
 
@@ -138,8 +159,8 @@ contains
 
         real :: ustar, L, psim_a, psim_b               ! Output: friction velocity, ustar (m/s)
 
-        psim_a = 1 !calc_PsiM(z/L)
-        psim_b = 1 !calc_PsiM(z0/L)
+        psim_a = 1 ! calc_PsiM(z/L)
+        psim_b = 1 ! calc_PsiM(z0/L)
         ustar = (u * K) / (log(z / z0) - psim_a + psim_b)
     end function estimate_ustar
 
@@ -162,20 +183,26 @@ contains
 
         real :: ustar_ref   ! ustar for where windspeed is measured
         real :: Tk
+        real :: uh_zr_lim
 
         real, parameter :: MIN_WINDSPEED = 0.1
 
         Tk = Ts_C + Ts_K
 
         ! Find ustar over reference canopy
-        ustar_ref = estimate_ustar(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_zo, L)
+        uh_zr_lim = max(MIN_WINDSPEED, uh_zR)
+
+        ! TODO: What is the diff between u_d and d and u_zo and zo?
+        ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
         ! Find windspeed at izR, over reference canopy
-        uh_i = max(MIN_WINDSPEED, estimate_velocity(ustar_ref, izR - u_d, u_zo))
+        uh_i = estimate_velocity(uh_zR_lim, uzR, izR, zo, d)
+        uh_i = max(MIN_WINDSPEED, uh_i)
         ! Find ustar over target canopy, assuming that at izR windspeed will be
         ! equal over both vegetations
-        ustar = estimate_ustar(max(MIN_WINDSPEED, uh_i), izR - d, zo, L)
+        ustar = estimate_ustar(uh_i, izR - d, zo, L)
         ! Find windspeed at top of target canopy
-        uh = max(MIN_WINDSPEED, estimate_velocity(ustar, h - d, zo))
+        uh = estimate_velocity(uh_i, izR, h, zo, d)
+        uh = max(MIN_WINDSPEED, uh)
 
         ! Stop ustar being 0
         ustar = max(0.0001, ustar)

@@ -1,7 +1,19 @@
+try:
+    import wx
+    import wx.lib.newevent
+    import resources
+
+    # Generic "value changed" event
+    ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
+
+except ModuleNotFoundError:
+    class wx():
+        class App():
+            pass
+
+
 from do3se.config import Config
 from do3se.util import load_presets
-import resources
-import wx
 import logging
 import optparse
 import os.path

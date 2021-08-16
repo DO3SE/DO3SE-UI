@@ -39,6 +39,8 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
      'cloudfrac',  u'cloudfrac [fraction] **'),
     (inputs,    'leaf_fphen_input', float, False,
      'Leaf fphen', 'Leaf fphen (fraction)'),
+    (inputs,    'ustar', float, False,
+     'ustar', 'Ustar'),
 )), 'variable', OrderedDict)
 
 #: Available output fields
@@ -90,6 +92,8 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      u'Net radiation (Rn, Wh/m\u00b2)'),
     (inputs,        'sinb',     float,  'sinB',
      u'Solar angle'),
+    (inputs,        'invl',     float,  'invL',
+     u'Inverse Monin-Obukhov Length'),
     (variables,        'pardir',     float,  'parDIR',
      u'parDIR'),
     (variables,        'pardif',     float,  'parDIF',
@@ -287,6 +291,14 @@ fO3_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
 )), 'id', OrderedDict)
 
 default_fO3_calc = 'none'
+
+# ustar calculations
+ustar_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('calculate',    switchboard.ustar_calculate,   'Ustar calculated'),
+    ('input',   switchboard.ustar_input,      'Ustar inputed'),
+)), 'id', OrderedDict)
+
+default_ustar_calc = 'calculate'
 
 # SAI calculations
 SAI_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (

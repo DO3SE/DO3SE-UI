@@ -22,7 +22,7 @@ module Constants
     real, public, parameter :: Rmass = 287.0    ! mass gas constant for dry
                                                 ! air (J/Kg/K)
 
-    real, public, parameter :: izR = 50         ! Intermediate "decoupled" height for
+    real, public, parameter :: izR = 45         ! Intermediate "decoupled" height for
                                                 ! transfer of O3 and windspeed
 
     real, public, parameter :: SWC_sat = 0.4    ! Saturated soil water content, for

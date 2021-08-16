@@ -75,6 +75,12 @@ class Dataset:
         fO3 = model.fO3_calcs[self.params.pop('fo3', model.default_fO3_calc)]
         _log.debug('fO3 calculation: "%(name)s" (%(id)s)' % fO3)
         self.switchboard['fo3_method'] = fO3['func']
+
+        ustar = model.ustar_calcs[self.params.pop(
+            'ustar_method', model.default_ustar_calc)]
+        _log.debug('ustar calculation: "%(name)s" (%(id)s)' % ustar)
+        self.switchboard['ustar_method'] = ustar['func']
+
         SAI = model.SAI_calcs[self.params.pop('sai', model.default_SAI_calc)]
         _log.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
         self.switchboard['sai_method'] = SAI['func']
