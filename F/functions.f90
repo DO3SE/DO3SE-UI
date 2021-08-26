@@ -6,18 +6,18 @@ module Functions
     public :: rad2deg
 
 contains
-    
+
     !==========================================================================
-    !   
+    !
     !  y|      ____________
     !   |     /            \
     !  z|    /              \___
-    !  x|___/                
+    !  x|___/
     !   |_______________________
     !       a  b          c d
     !
-    ! This function finds the value on the y-axis for a given x-axis 
-    ! value on a graph that follows the generic 3-level polygon 
+    ! This function finds the value on the y-axis for a given x-axis
+    ! value on a graph that follows the generic 3-level polygon
     ! shape
     !==========================================================================
     function Polygon(a, b, c, d, x, y, z, value) result(retval)
@@ -38,7 +38,7 @@ contains
     end function Polygon
 
     !==========================================================================
-    !   
+    !
     !   |  x ____________
     !   |   /            \
     !   |w /              \
@@ -50,7 +50,7 @@ contains
     !
     ! TODO: Make this work
     !
-    ! This function finds the value on the y-axis for a given x-axis 
+    ! This function finds the value on the y-axis for a given x-axis
     ! value on a graph that follows a polygon shape
     !==========================================================================
     function newPolygon(a, b, c, d, v, w, x, y, z, value) result(retval)
@@ -72,7 +72,7 @@ contains
         end if
     end function newPolygon
 
-    
+
     !==========================================================================
     ! Conversions between degrees and radians
     !==========================================================================
@@ -91,5 +91,6 @@ contains
 
         retval = x / D2R
     end function rad2deg
+
 
 end module Functions

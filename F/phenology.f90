@@ -6,7 +6,7 @@ module Phenology
     public :: Calc_fphen
     public :: Calc_leaf_fphen_fixed_day
 
-contains 
+contains
 
     !
     ! Latitude function for calculating start and end of growing season

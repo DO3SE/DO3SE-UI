@@ -32,7 +32,7 @@ contains
         AOT0 = 0
         AOT40 = 0
         Rsto_c = 100000
-        print *, "Running Init"
+        ! print *, "Running Init"
         ! Put calls to initialisation functions here
         call SB_Calc_SGS_EGS()
         call Derive_d_zo()
@@ -48,8 +48,7 @@ contains
         use R, only: VPDcrit_prepare, VPDcrit_apply, Calc_Rsto
         use SoilWater
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
-        use Inputs, only: dd, Calc_ustar_uh, Accumulate_precip, Calc_sinB, Calc_humidity
-        use Variables, only: dd_prev
+        use Inputs, only: Calc_ustar_uh, Accumulate_precip, Calc_sinB, Calc_humidity, Calc_monin_obukhov_length_row
 
         use Switchboard
 
@@ -57,7 +56,8 @@ contains
         ! Derivation of inputs not supplied
         call Accumulate_precip()
         call Calc_sinB()
-        call Calc_ustar_uh()
+        call Calc_monin_obukhov_length_row()
+        call SB_Calc_ustar()
         call SB_Calc_R_PAR()
         call SB_Calc_Rn()
         call Calc_humidity()

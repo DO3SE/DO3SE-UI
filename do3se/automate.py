@@ -1,4 +1,4 @@
-from do3se.dataset import Dataset
+from do3se.dataset import Dataset, data_from_csv
 from do3se.project import Project
 from do3se import model
 from do3se import application
@@ -65,17 +65,47 @@ def outfile_callback(option, opt_str, value, parser):
 
 
 def run(options, projectfile, inputfile, outputfile, parser):
-    project = Project(projectfile, format=options.config_format)
+    project = Project(projectfile)
     if not project.exists():
         parser.error('Project file does not exist: ' + projectfile)
 
-    dataset = Dataset(open(inputfile, 'r'), project.data)
+    # Extract parameters which control loading of data
+    input_fields = project.data.pop('input_fields', [])
+    input_trim = project.data.pop('input_trim', 0)
+    input_data = data_from_csv(open(inputfile, 'r'), input_fields, input_trim)
+    dataset = Dataset(input_data, input_fields, project.data)
+    # Run
     results = dataset.run()
     results.save(
         outputfile,
         options.format,
         options.show_headers,
         (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
+
+
+def run_from_pipe(options, projectfile, input_fields=[], output_file=None):
+    """Run model with piped data.
+
+    input_data must be iterable of dicts
+
+    Example
+    -------
+    runner = run_from_pipe(options, projectfile, output_file, parser)
+    output = runner(input_data)
+    """
+    def _inner(input_data, project_overrides={}):
+        project = Project(projectfile)
+        project.data = {**project.data, **project_overrides}
+        dataset = Dataset(input_data, input_fields, project.data)
+        results = dataset.run()
+        if output_file:
+            results.save(
+                output_file,
+                options.format,
+                options.show_headers,
+                (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
+        return results
+    return _inner
 
 
 def get_option_parser():
@@ -102,11 +132,6 @@ def get_option_parser():
                       nargs=1,
                       help='A comma-separated list of output field keys or +PRESET '
                            '(see --list-outputs) [default: all fields]')
-    parser.add_option('-c', '--config-format',
-                      action='store',
-                      dest='config_format',
-                      #   const='do3se',
-                      help='Input file format can be do3se project file or json')
     parser.add_option('-o', '--outfile',
                       action='callback',
                       callback=outfile_callback,
@@ -139,10 +164,8 @@ def get_option_parser():
 def main(args):
     parser = get_option_parser()
     (options, args) = parser.parse_args(args)
-
     if len(args) < 2:
         parser.error('Not enough arguments')
-    print(args)
     application.logging_setup(level=options.loglevel)
     projectfile, inputfile = args
     outputfile = options.outfile

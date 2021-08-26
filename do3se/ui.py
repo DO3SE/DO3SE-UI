@@ -1,6 +1,6 @@
 # coding: utf-8
 from do3se.resultswindow import ResultsWindow
-from do3se.dataset import Dataset, DatasetError
+from do3se.dataset import Dataset, DatasetError, data_from_csv
 from do3se.project import Project
 from do3se import fieldgroups
 from do3se import fields
@@ -271,7 +271,11 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
         try:
             # Dont need to pass self?
             # d = Dataset(open(filename, 'r'), self.params.get_values(), self)
-            d = Dataset(open(filename, 'r'), self.params.get_values())
+            input_fields = self.params.get_values().pop('input_fields', [])
+            input_trim = self.params.get_values().pop('input_trim', 0)
+            input_data = data_from_csv(
+                open(filename, 'r'), input_fields, input_trim)
+            d = Dataset(input_data, input_fields,  self.params.get_values())
         except DatasetError as e:
             wx.MessageBox('Error occurred while loading data file: ' + str(e),
                           'Error',

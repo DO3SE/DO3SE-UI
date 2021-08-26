@@ -33,13 +33,9 @@ class Dataset:
     parameters and control parameters are removed.
     """
 
-    def __init__(self, infile, params):
+    def __init__(self, input_data, input_fields, params):
         self.params = params
         self.switchboard = dict()
-
-        # Extract parameters which control loading of data
-        input_fields = self.params.pop('input_fields', [])
-        input_trim = self.params.pop('input_trim', 0)
 
         # Check required fields are present
         required = [k for k, v in model.input_fields.items() if v['required']]
@@ -75,6 +71,12 @@ class Dataset:
         fO3 = model.fO3_calcs[self.params.pop('fo3', model.default_fO3_calc)]
         _log.debug('fO3 calculation: "%(name)s" (%(id)s)' % fO3)
         self.switchboard['fo3_method'] = fO3['func']
+
+        ustar = model.ustar_calcs[self.params.pop(
+            'ustar_method', model.default_ustar_calc)]
+        _log.debug('ustar calculation: "%(name)s" (%(id)s)' % ustar)
+        self.switchboard['ustar_method'] = ustar['func']
+
         SAI = model.SAI_calcs[self.params.pop('sai', model.default_SAI_calc)]
         _log.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
         self.switchboard['sai_method'] = SAI['func']
@@ -114,7 +116,7 @@ class Dataset:
         o3_h = self.params.pop('o3_h')
         self.params['o3_h'] = self.params['h'] if o3_h['disabled'] else o3_h['value']
 
-        self.input = data_from_csv(infile, input_fields, input_trim)
+        self.input = input_data
         self.input, mean_temps = calc_thermal_time(self.input)
 
         if SGS_EGS['func'] == 3:

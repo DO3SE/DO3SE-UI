@@ -54,24 +54,14 @@ contains
     ! Ref: EMEP MSC-W Chemical transport Model
     !==========================================================================
     subroutine Calc_Ra_With_Heat_Flux()
-        use Constants, only: Rmass, Ts_K, k, g, cp, pi, z => izR
-        use Inputs, only: P, Hd, Ts_C, ustar
+        use Constants, only: k, pi, z => izR
+        use Inputs, only: ustar, L
         use Variables, only: Ra
         use Parameters, only: d, zo
 
-        real :: Tk, Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, rho, L, &
+        real :: Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, &
                 Xzo_m, Xzd_m, Xzo_h, Xzd_h
 
-        Tk = Ts_C + Ts_K
-        if (Hd == 0) then
-            Hd = 0.000000000001
-        end if
-
-        ! Surface density of dry air (including conversion from to Pa to kPa)
-        rho = (P * 1000) / (Rmass * Tk)
-
-        ! Monin-Obukhov Length
-        L = -(Tk * ustar**3 * rho * cp) / (k * g * Hd)
 
         Ezd = (z - d) / L
         Ezo = zo / L
@@ -171,7 +161,7 @@ contains
     ! Limit Gsto values if accumulated VPD exceeds VPD_crit
     subroutine VPDcrit_apply()
         use Parameters, only: VPD_crit
-        use Variables, only: dd_prev, Flight, Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
 
         if (VPD_dd >= VPD_crit) then
             ! Limit values to previous hour's Gsto
@@ -187,10 +177,9 @@ contains
     !==========================================================================
     subroutine Calc_Gsto_Multiplicative()
         use Parameters, only: gmax, gmorph, fmin
-        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, dd_prev
+        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3
         use Variables, only: leaf_fphen, leaf_flight, LAI
-        use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, &
-                             Gsto_PEt, Rsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
         ! Leaf Gsto
         Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
         ! Mean Gsto

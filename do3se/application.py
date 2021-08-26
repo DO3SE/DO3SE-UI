@@ -1,13 +1,25 @@
+try:
+    import wx
+    import wx.lib.newevent
+    import resources
+
+    # Generic "value changed" event
+    ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
+
+except ModuleNotFoundError:
+    class wx():
+        class App():
+            pass
+
+
 from do3se.config import Config
 from do3se.util import load_presets
-import resources
-import wx
 import logging
 import optparse
 import os.path
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '3.3.0'
+app_version = '3.4.0'
 
 _log = logging.getLogger('do3se.application')
 
