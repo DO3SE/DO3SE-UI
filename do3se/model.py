@@ -204,6 +204,8 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      '[DEBUG] Photosynthetic Gsto (PEt)'),
     (pn_gsto,       'pngsto_an', float,
      'Pn_Gsto_An',       '[DEBUG] Net assimilation'),
+    (variables,       'rb', float,
+     'Rb',       '[DEBUG] Rb'),
     #(variables,     'fswp',     float,  'fSWP',             '[DEBUG] fSWP'),
     #(inputs,        'sinb',     float,  'sinB',             '[DEBUG] sinB'),
     (variables,     'st',  float,  'st',          '[DEBUG] st'),
