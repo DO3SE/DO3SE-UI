@@ -38,6 +38,7 @@ module Inputs
 
     public :: Init_Inputs
     public :: Calc_ustar_uh
+    public :: Calc_ustar_uh_ustar_in
     public :: Accumulate_precip
     public :: Calc_precip_acc
     public :: Calc_sinB
@@ -61,6 +62,7 @@ contains
     subroutine Init_Inputs()
         precip_dd = 0
         precip_acc = 0
+        ustar = 0
     end subroutine Init_Inputs
 
 
@@ -79,9 +81,9 @@ contains
         ! Surface density of dry air (including conversion from to hPa to kPa)
         ! TODO: Check units
         rho = (P * 1000) / (Rmass * Tk)
-
         ! Monin-Obukhov Length
         L = -(Tk * ustar**3 * rho * cp) / (k * g * (-Hd_f))
+
         invL = 1/L ! should be -ve in middle of summer day
 
 
@@ -159,8 +161,9 @@ contains
 
         real :: ustar, L, psim_a, psim_b               ! Output: friction velocity, ustar (m/s)
 
-        psim_a = 1 ! calc_PsiM(z/L)
-        psim_b = 1 ! calc_PsiM(z0/L)
+        psim_a = calc_PsiM(z/L)
+        psim_b = calc_PsiM(z0/L)
+
         ustar = (u * K) / (log(z / z0) - psim_a + psim_b)
     end function estimate_ustar
 
@@ -186,6 +189,7 @@ contains
         real :: uh_zr_lim
 
         real, parameter :: MIN_WINDSPEED = 0.1
+        real, parameter :: MIN_USTAR = 0.1
 
         Tk = Ts_C + Ts_K
 
@@ -194,9 +198,11 @@ contains
 
         ! TODO: What is the diff between u_d and d and u_zo and zo?
         ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
+        ustar_ref = max(0.0001, ustar_ref)
         ! Find windspeed at izR, over reference canopy
         uh_i = estimate_velocity(uh_zR_lim, uzR, izR, zo, d)
         uh_i = max(MIN_WINDSPEED, uh_i)
+
         ! Find ustar over target canopy, assuming that at izR windspeed will be
         ! equal over both vegetations
         ustar = estimate_ustar(uh_i, izR - d, zo, L)
@@ -205,8 +211,41 @@ contains
         uh = max(MIN_WINDSPEED, uh)
 
         ! Stop ustar being 0
-        ustar = max(0.0001, ustar)
+        ustar = max(MIN_USTAR, ustar)
     end subroutine Calc_ustar_uh
+
+    !==========================================================================
+    ! Derive Wind state from ustar input(WIP)
+    !==========================================================================
+    subroutine Calc_ustar_uh_ustar_in()
+        use Constants, only: Rmass, Ts_K, k, g, cp, pi, izR
+        use Parameters, only: h, d, zo, u_d, u_zo, uzR
+
+        real :: ustar_ref   ! ustar for where windspeed is measured
+        real :: Tk
+        real :: uh_zr_lim
+        real :: psim_a, psim_b
+
+        real, parameter :: MIN_WINDSPEED = 0.1
+
+        Tk = Ts_C + Ts_K
+
+        ! DONT CALCULATE USTAR AS IT IS INPUTED
+        ! ustar = estimate_ustar(uh_i, izR - d, zo, L)
+        psim_a = 1 ! calc_PsiM(z/L)
+        psim_b = 1 ! calc_PsiM(z0/L)
+        uh_i = (((log((izR-d) / zo) - psim_a + psim_b)) * ustar) / k ! inverse estiate ustar
+        ! L = ? Calculate this again?
+
+
+        uh = estimate_velocity(uh_i, izR, h, zo, d)
+        uh = max(MIN_WINDSPEED, uh)
+
+        ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
+        ustar_ref = max(0.0001, ustar_ref)
+        uh_zr_lim = max(MIN_WINDSPEED, uh_zR)
+
+    end subroutine Calc_ustar_uh_ustar_in
 
     !==========================================================================
     ! Accumulate precipitation for the day, converted to metres

@@ -57,7 +57,6 @@ contains
         call Accumulate_precip()
         call Calc_sinB()
         call Calc_monin_obukhov_length_row()
-        ! call Calc_ustar_uh()
         call SB_Calc_ustar()
         call SB_Calc_R_PAR()
         call SB_Calc_Rn()
