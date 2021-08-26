@@ -33,13 +33,9 @@ class Dataset:
     parameters and control parameters are removed.
     """
 
-    def __init__(self, infile, params):
+    def __init__(self, input_data, input_fields, params):
         self.params = params
         self.switchboard = dict()
-
-        # Extract parameters which control loading of data
-        input_fields = self.params.pop('input_fields', [])
-        input_trim = self.params.pop('input_trim', 0)
 
         # Check required fields are present
         required = [k for k, v in model.input_fields.items() if v['required']]
@@ -120,7 +116,7 @@ class Dataset:
         o3_h = self.params.pop('o3_h')
         self.params['o3_h'] = self.params['h'] if o3_h['disabled'] else o3_h['value']
 
-        self.input = data_from_csv(infile, input_fields, input_trim)
+        self.input = input_data
         self.input, mean_temps = calc_thermal_time(self.input)
 
         if SGS_EGS['func'] == 3:

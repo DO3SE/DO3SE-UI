@@ -24,12 +24,12 @@ class Project(PickleFile):
     :param format:      input config format. Either do3se or json
     """
 
-    def __init__(self, filename=None, window=None, format='do3se'):
+    def __init__(self, filename=None, window=None):
         PickleFile.__init__(self, filename)
         self.window = window
-
         if self.filename is not None:
-            if format == 'do3se':
+            file_format = filename.split('.')[-1]
+            if file_format == 'do3se':
                 try:
                     self.load()
                 except EnvironmentError as e:
@@ -38,12 +38,12 @@ class Project(PickleFile):
                     self.data = dict()
                 else:
                     _log.info('Opened project ' + self.filename)
-            elif format == 'json':
+            elif file_format == 'json':
                 with open(filename) as file_obj:
                     self.data = json.load(file_obj)
             else:
                 raise ValueError(
-                    f'Config input format must be json or do3se. Got: {format}')
+                    f'Config input format must be json or do3se. Got: {file_format}')
         else:
             _log.info('Created new project')
             self.data = dict()
