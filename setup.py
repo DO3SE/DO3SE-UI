@@ -22,7 +22,7 @@ setuptools.setup(
     extras_require={'cli': ['pytest', 'numpy', 'pandas']},
     packages=setuptools.find_packages(),
     package_dir={'pyDO3SE': 'pyDO3SE'},
-    install_require=['numpy'],
+    install_require=['numpy', 'future'],
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "Operating System :: OS Independent",
