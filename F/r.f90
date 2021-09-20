@@ -101,13 +101,16 @@ contains
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: d       ! Molecular diffusivity of substance in air (m2/s)
 
-        real, parameter :: PR = 0.72    ! Prandtl number
+        real, parameter :: PR = 0.71    ! Prandtl number
         real, parameter :: K = 0.41     ! von Karman's constant
-        real, parameter :: V = 0.000015 ! Kinematic viscosity of air at 20 C (m2/s)
+        real, parameter :: V = 1.35e-5 ! Kinematic viscosity of air at 20 C (m2/s)
 
         real :: rb_out              ! Output: Rb (s/m)
+        real :: rb_cor              ! Output: Rb (s/m)
 
-        rb_out = (2.0 / (K * ustar)) * (((V/d)/PR)**(2.0/3.0))
+
+        rb_cor = ((V/d)/PR)**(2.0/3.0)
+        rb_out = (2.0 / (K * ustar)) * rb_cor
     end function rb
 
     !==========================================================================

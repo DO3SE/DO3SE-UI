@@ -152,8 +152,9 @@ contains
     ! vegetation under the O3 measurement based on its height
     !==========================================================================
     subroutine Derive_O3_d_zo()
-        O3_d = O3_h * 0.7
-        O3_zo = O3_h * 0.1
+        ! TODO: Depends on ground cover type
+        O3_d = O3_h * 0.78
+        O3_zo = O3_h * 0.07
     end subroutine Derive_O3_d_zo
 
     !==========================================================================
@@ -161,8 +162,9 @@ contains
     ! the canopy.
     !==========================================================================
     subroutine Derive_d_zo()
-        d = h * 0.7
-        zo = h * 0.1
+        ! TODO: Depends on ground cover type
+        d = h * 0.78
+        zo = h * 0.07
     end subroutine Derive_d_zo
 
 end module Parameters
