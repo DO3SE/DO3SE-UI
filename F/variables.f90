@@ -13,6 +13,8 @@ module Variables
     real, public, save  :: ftemp
     real, public, save  :: fVPD
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
+    real, public, save  :: f_sun       ! Canopy average gsto in relation to canopy light
+
     real, public, save  :: leaf_flight  ! light related g
 
     ! Phenology
@@ -65,7 +67,10 @@ module Variables
     real, public, save  :: Gsto     ! Mean O3 conductance
     real, public, save  :: Rsto     ! Mean O3 resistance (s/m)
     real, public, save  :: Gsto_l   ! Single leaf O3 conductance
+    real, public, save  :: Gsun_l   ! Single leaf sunlit O3 conductance
+    real, public, save  :: Gsun_l_ms   ! Single leaf sunlit O3 conductance[ms]
     real, public, save  :: Rsto_l   ! Single leaf O3 resistance (s/m)
+    real, public, save  :: Rsun_l   ! Single leaf sunlit O3 resistance (s/m)
     real, public, save  :: Gsto_c   ! Canopy O3 conductance
     real, public, save  :: Rsto_c   ! Canopy O3 resistance (s/m)
     real, public, save  :: Gsto_PEt ! Potential canopy O3 conductance (for PEt)
@@ -79,6 +84,7 @@ module Variables
     real, public, save :: Vd_i          ! Deposition velocity at izR (m/s)
     real, public, save :: Ftot          ! Total O3 flux
     real, public, save :: Fst           ! Upper leaf stomatal flux
+    real, public, save :: Fst_sun       ! Upper leaf sunlit stomatal flux
     real, public, save :: AFst0         ! Accumulated Fst
     real, public, save :: AFstY         ! Accumulated Fst over threshold Y
     real, public, save :: OT40          ! OT40 (canopy)

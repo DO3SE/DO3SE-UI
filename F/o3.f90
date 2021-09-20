@@ -70,7 +70,7 @@ contains
     subroutine Calc_Fst()
         use Parameters, only: Lm, Rext
         use Inputs, only: uh
-        use Variables, only: Gsto_l, Rsto_l, O3_nmol_m3, Fst
+        use Variables, only: Gsto_l, Rsto_l, O3_nmol_m3, Fst, Fst_sun, Rsun_l
 
         real :: leaf_rb, leaf_r
 
@@ -79,8 +79,11 @@ contains
             leaf_rb = 1.3 * 150 * sqrt(Lm/uh)   ! leaf boundary layer resistance (s/m)
             leaf_r = 1.0 / ((1.0/Rsto_l) + (1.0/Rext))  ! leaf resistance in s/m
             Fst = O3_nmol_m3 * (1/Rsto_l) * (leaf_r / (leaf_rb + leaf_r))
+
+            Fst_sun = O3_nmol_m3 *(leaf_r / (leaf_rb + leaf_r)) *  (1/Rsun_l)
         else
             Fst = 0
+            Fst_sun = 0
         end if
     end subroutine Calc_Fst
 
