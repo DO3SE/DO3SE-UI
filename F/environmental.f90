@@ -45,15 +45,14 @@ contains
         use Constants, only: seaP
         use Parameters, only: f_lightfac, cosA
         use Inputs, only: PAR, sinB
-        use Variables, only: LAI, Flight, leaf_flight
+        use Variables, only: LAI, Flight, leaf_flight, f_sun
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
 
-        real :: Flightsun, &
-                Flightshade, cosT
+        real :: Flightsun, Flightshade, cosT, Wm2_uE
 
         cosT = sinB
-
+        Wm2_uE  =4.57
         if (sinB > 0 .and. LAI > 0) then
              PARdir = fPARdir * PAR
              PARdif = fPARdif * PAR
@@ -71,6 +70,9 @@ contains
 
             leaf_flight = (1.0 - exp(-f_lightfac * PAR))
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
+
+            ! Setup for g_sun and fst_sunlit as in EMEP model.
+            f_sun   = (1.0 - exp (-f_lightfac * PARsun * Wm2_uE))
         else
             PARdir = 0
             PARdif = 0
@@ -80,6 +82,7 @@ contains
 
             leaf_flight = 0
             Flight = 0
+            f_sun = 0
         end if
     end subroutine Calc_Flight
 

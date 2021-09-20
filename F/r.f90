@@ -9,7 +9,7 @@ module R
 
     ! VPD sum for the day (kPa)
     real, private, save :: VPD_dd = 0
-    real, private, save :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev
+    real, private, save :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev, Gsun_l_prev
 
 contains
 
@@ -26,14 +26,21 @@ contains
         ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
     end function ra_simple
 
-    function rsto_from_gsto(gsto) result (rsto)
+    function rsto_from_gsto(gsto, Ts_C) result (rsto)
         real, intent(in) :: gsto    ! Stomatal conductance (mmol m-2 s-1)
+        real, intent(in) :: Ts_C    ! Tile temperature (degrees C)
         real :: rsto                ! Output: stomatal resistance (
+        real :: mmol2sm
         real, parameter :: MAX_RSTO = 100000
+        real, parameter :: Ts_K = 273.15
+
+
+        mmol2sm = 8.3144e-8 * (Ts_C + Ts_K) ! should this be kelvin?
 
         ! (gsto in m s-1) = 41000 * (gsto in mmol m-2 s-1)
         ! (rsto in s m-1) = 1 / (gsto in m s-1)
-        rsto = min(MAX_RSTO, 41000.0 / gsto)
+        ! mmol to m/s conversion from EMEP
+        rsto = min(MAX_RSTO, 1 / (gsto * mmol2sm))
     end function rsto_from_gsto
 
     !==========================================================================
@@ -94,13 +101,16 @@ contains
         real, intent(in) :: ustar   ! Friction velocity (m/s)
         real, intent(in) :: d       ! Molecular diffusivity of substance in air (m2/s)
 
-        real, parameter :: PR = 0.72    ! Prandtl number
+        real, parameter :: PR = 0.71    ! Prandtl number
         real, parameter :: K = 0.41     ! von Karman's constant
-        real, parameter :: V = 0.000015 ! Kinematic viscosity of air at 20 C (m2/s)
+        real, parameter :: V = 1.35e-5 ! Kinematic viscosity of air at 20 C (m2/s)
 
         real :: rb_out              ! Output: Rb (s/m)
+        real :: rb_cor              ! Output: Rb (s/m)
 
-        rb_out = (2.0 / (K * ustar)) * (((V/d)/PR)**(2.0/3.0))
+
+        rb_cor = ((V/d)/PR)**(2.0/3.0)
+        rb_out = (2.0 / (K * ustar)) * rb_cor
     end function rb
 
     !==========================================================================
@@ -140,10 +150,11 @@ contains
     ! Store previous hour's Gsto values, calculate accumulated VPD
     subroutine VPDcrit_prepare()
         use Inputs, only: VPD, dd, R
-        use Variables, only: dd_prev, Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        use Variables, only: dd_prev, Gsto_l, Gsto, Gsto_c, Gsto_PEt, Gsun_l
 
         ! Copy old Gsto values
         Gsto_l_prev = Gsto_l
+        Gsun_l_prev = Gsun_l
         Gsto_prev = Gsto
         Gsto_c_prev = Gsto_c
         Gsto_PEt_prev = Gsto_PEt
@@ -161,11 +172,12 @@ contains
     ! Limit Gsto values if accumulated VPD exceeds VPD_crit
     subroutine VPDcrit_apply()
         use Parameters, only: VPD_crit
-        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt, Gsun_l
 
         if (VPD_dd >= VPD_crit) then
             ! Limit values to previous hour's Gsto
             Gsto_l = min(Gsto_l, Gsto_l_prev)
+            Gsun_l = min(Gsun_l, Gsun_l_prev)
             Gsto = min(Gsto, Gsto_prev)
             Gsto_c = min(Gsto_c, Gsto_c_prev)
             Gsto_PEt = min(Gsto_PEt, Gsto_PEt_prev)
@@ -177,11 +189,22 @@ contains
     !==========================================================================
     subroutine Calc_Gsto_Multiplicative()
         use Parameters, only: gmax, gmorph, fmin
-        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3
+        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, f_sun
         use Variables, only: leaf_fphen, leaf_flight, LAI
-        use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
+        use Variables, only: Gsto_l, Gsun_l, Gsto, Gsto_c, Gsto_PEt, Gsun_l_ms
+
+        use Inputs, only: Ts_C
+        use constants, only: Ts_K
+
+        REAL :: mmol2sm
+
+        mmol2sm = 8.3144e-8 * (Ts_C + Ts_K)
+
         ! Leaf Gsto
         Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
+        ! Leaf sunlit gsto
+        Gsun_l = gmax * min(fphen, fO3) * f_sun * max(fmin, ftemp * fVPD * fXWP)
+        Gsun_l_ms = gmax * min(fphen, fO3) * f_sun * max(fmin, ftemp * fVPD * fXWP) *mmol2sm
         ! Mean Gsto
         Gsto = (gmax * gmorph) * fphen * flight * max(fmin, ftemp * fVPD * fXWP)
         ! Estimate canopy Gsto from mean leaf Gsto
@@ -191,16 +214,19 @@ contains
     end subroutine Calc_Gsto_Multiplicative
 
     subroutine Calc_Rsto()
-        use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, Gsto_PEt, Rsto_PEt
+        use Variables, only: Gsto_l, Rsto_l, Gsto, Rsto, Gsto_c, Rsto_c, Gsto_PEt, Rsto_PEt, Gsun_l, Rsun_l
+        use Inputs, only: Ts_C
 
         ! Leaf Rsto
-        Rsto_l = rsto_from_gsto(Gsto_l)
+        Rsto_l = rsto_from_gsto(Gsto_l, Ts_C)
+        ! Leaf sunlit Rsto
+        Rsun_l = rsto_from_gsto(Gsun_l, Ts_C)
         ! Mean Rsto
-        Rsto = rsto_from_gsto(Gsto)
+        Rsto = rsto_from_gsto(Gsto, Ts_C)
         ! Canopy Rsto
-        Rsto_c = rsto_from_gsto(Gsto_c)
+        Rsto_c = rsto_from_gsto(Gsto_c, Ts_C)
         ! Potential canopy Rsto for PEt calculation
-        Rsto_PEt = rsto_from_gsto(Gsto_PEt)
+        Rsto_PEt = rsto_from_gsto(Gsto_PEt, Ts_C)
     end subroutine Calc_Rsto
 
     !==========================================================================
