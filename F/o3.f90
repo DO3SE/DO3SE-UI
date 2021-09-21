@@ -12,37 +12,66 @@ contains
     ! This procedure results in the calculation of deposition velocity (Vd) and
     ! the ozone concentration at the canopy in both parts-per-billion and
     ! nmol/m^3
+
+    ! We translate the ozone from the measured height up to a decoupled height
+    ! then back down to the target canopy. As the measured data may have had a canopy
+    ! of a different height we need to calculate the deposition velocity for a
+    ! reference canopy.
     !==========================================================================
     subroutine Calc_O3_Concentration()
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
-        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar, L
+        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar, L, invL
         use Inputs, only: estimate_ustar
         use Variables, only: Ra, Rb, Rsur
         use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
-                             Ra_ref, Ra_O3zR_i, Ra_tar_i
-        use Parameters, only: O3zR, O3_d, O3_zo, h, d, zo
-        use R, only: ra_simple, rb_func => rb
+                             Ra_O3zR_i, Ra_tar_i
+        use Parameters, only: O3zR, O3_d, O3_zo, d, zo
+        use R, only: calc_ra_simple => ra_simple, calc_ra_with_heat_flux=>ra_heat_flux, rb_func => rb
+        use Switchboard, only: ra_method, ra_simple, ra_with_heat_flux
+
 
         real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
 
         real :: ustar_ref, Rb_ref, Vn
 
         ! ustar over reference canopy
+        ! TODO: we calculate ustar here but if it is taken from input data
         ustar_ref = estimate_ustar(uh_i, izR - O3_d, O3_zo, L)
         ! Ra between reference canopy and izR
-        Ra_ref_i = ra_simple(ustar_ref, O3_zo + O3_d, izR, O3_d)
+        select case (ra_method)
+            case (ra_simple)
+                Ra_ref_i = calc_ra_simple(ustar_ref, O3_zo + O3_d, izR, O3_d)
+            case (ra_with_heat_flux)
+                Ra_ref_i = calc_ra_with_heat_flux(ustar_ref, O3_zo + O3_d, izR, invL)
+        end select
         ! Rb for reference canopy
         Rb_ref = rb_func(ustar_ref, DO3)
         ! Deposition velocity at izR over reference canopy
         ! (assuming that Rsur_ref = Rsur)
+        ! The deposition velocity between the measured height and decoupled height is
+        ! effected by the canopy below the measured height not our modelled canopy!s
         Vd_i = 1.0 / (Ra_ref_i + Rb_ref + Rsur)
         ! Ra between measurement height and izR
-        Ra_O3zR_i = ra_simple(ustar_ref, O3zR, izR, O3_d)
+        select case (ra_method)
+            case (ra_simple)
+                Ra_O3zR_i = calc_ra_simple(ustar_ref, O3zR, izR, O3_d)
+            case (ra_with_heat_flux)
+                Ra_O3zR_i = calc_ra_with_heat_flux(ustar_ref, O3zR, izR, invL)
+        end select
+
         ! O3 concentration at izR
         O3_ppb_i = O3_ppb_zR / (1.0 - (Ra_O3zR_i * Vd_i))
+
         ! Ra between target canopy and izR
+        ! Same as Ra from r.f90 but lower height includes +h*0.78 and upper height removes h*0.78
         ! (ustar already calculated for target canopy)
-        Ra_tar_i = ra_simple(ustar, zo + d, izR, d)
+        select case (ra_method)
+            case (ra_simple)
+                Ra_tar_i = calc_ra_simple(ustar, zo + d, izR, d)
+            case (ra_with_heat_flux)
+                Ra_tar_i = calc_ra_with_heat_flux(ustar, zo + d, izR, invL)
+        end select
+
         ! Deposition velocity at izR over target canopy
         Vd = 1.0 / (Ra_tar_i + Rb + Rsur)
         ! O3 concentration at target canopy
