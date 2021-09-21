@@ -13,18 +13,94 @@ module R
 
 contains
 
-    function ra_simple(ustar, z1, z2, d) result (ra)
-        real, intent(in) :: ustar   ! Friction velocity (m/s)
-        real, intent(in) :: z1      ! Lower height (m)
-        real, intent(in) :: z2      ! Upper height (m)
-        real, intent(in) :: d       ! Zero displacement height (m)
+        function ra_simple(ustar, z1, z2, d) result (ra)
+            real, intent(in) :: ustar   ! Friction velocity (m/s)
+            real, intent(in) :: z1      ! Lower height (m)
+            real, intent(in) :: z2      ! Upper height (m)
+            real, intent(in) :: d       ! Zero displacement height (m)
 
-        real :: ra                  ! Output: aerodynamic resistance (s/m)
+            real :: ra                  ! Output: aerodynamic resistance (s/m)
 
-        real, parameter :: K = 0.41 ! von Karman's constant
+            real, parameter :: K = 0.41 ! von Karman's constant
 
-        ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
-    end function ra_simple
+            ra = (1.0 / (ustar * K)) * log((z2 - d) / (z1 - d))
+        end function ra_simple
+
+        !==============================================
+        ! Estimate integral flux-gradient stability function for heat
+        !==============================================
+        function calc_PsiH(zL) result (stab_h)
+            !  PsiH = integral flux-gradient stability function for heat
+            !  Ref: Garratt, 1994, pp52-54
+            !  VDHH modified - use van der Hurk + Holtslag?
+
+            ! In:
+            real, intent(in) :: zL   ! surface layer stability parameter, (z-d)/L
+
+            ! Out:
+            real :: stab_h         !   PsiH(zL)
+
+            ! Local
+            real :: x
+
+            if (zL <  0) then !unstable
+                x    = sqrt(1.0 - 16.0 * zL)
+                stab_h = 2.0 * log( (1.0 + x)/2.0 )
+            else             !stable
+                !ESX if ( FluxPROFILE == "Ln95" ) then
+                !ESX    stab_h = -( (1+2*a/3.0*zL)**1.5 + b*(zL-c/d)* exp(-d*zL) + (b*c/d-1) )
+                !ESX else
+                stab_h = -5.0 * zL
+                !ESX end if
+            end if
+
+        end function calc_PsiH
+
+        function ra_heat_flux(ustar, z1, z2, invL) result (ra)
+            real, intent(in) :: ustar   ! Friction velocity (m/s)
+            real, intent(in) :: z1      ! Lower height (m)
+            real, intent(in) :: z2      ! Upper height (m)
+            real, intent(in) :: invL    ! Inverse Monik length
+
+            real :: ra                  ! Output: aerodynamic resistance (s/m)
+
+            real, parameter :: K = 0.41 ! von Karman's constant
+
+
+            ! Ezd = (z - d) / L
+            ! Ezo = zo / L
+
+            ! if (Ezd >= 0) then
+            !     Psi_h_zd = -5 * Ezd
+            !     Psi_m_zd = -5 * Ezd
+            ! else
+            !     Xzd_m = (1 - 16*Ezd)**(1.0/4.0)
+            !     Xzd_h = (1 - 16*Ezd)**(1.0/2.0)
+            !     Psi_m_zd = log(((1+Xzd_m**2)/2)*((1+Xzd_m)/2)**2)-2*ATAN(Xzd_m)+(PI/2)
+            !     Psi_h_zd = 2*log((1+Xzd_h**2)/2)
+            ! end if
+
+            ! if (Ezo >= 0) then
+            !     Psi_h_zo = -5*Ezo
+            !     Psi_m_zo = -5*Ezo
+            ! else
+            !     Xzo_m = (1-16*Ezo)**(1.0/4.0)
+            !     Xzo_h = (1-16*Ezo)**(1.0/2.0)
+            !     Psi_m_zo = log(((1+Xzo_m**2)/2)*((1+Xzo_m)/2)**2)-2*ATAN(Xzo_m)+(PI/2)
+            !     Psi_h_zo = 2*log((1+Xzo_h**2)/2)
+            ! end if
+
+            ! Ra = (1 / (k * ustar)) * (log((z - d) / zo) - Psi_h_zd + Psi_h_zo)
+
+            ! EMEP SETUP
+
+            if ( z1 > z2 ) then
+                Ra = -999.0
+            else
+                Ra = log(z2/z1) - calc_PsiH(z2*invL) + calc_PsiH(z1*invL)
+                Ra = Ra/(k*ustar)
+            end if
+        end function ra_heat_flux
 
     function rsto_from_gsto(gsto, Ts_C) result (rsto)
         real, intent(in) :: gsto    ! Stomatal conductance (mmol m-2 s-1)
@@ -62,38 +138,15 @@ contains
     !==========================================================================
     subroutine Calc_Ra_With_Heat_Flux()
         use Constants, only: k, pi, z => izR
-        use Inputs, only: ustar, L
+        use Inputs, only: ustar, invL
         use Variables, only: Ra
         use Parameters, only: d, zo
 
-        real :: Ezo, Ezd, Psi_m_zd, Psi_m_zo, Psi_h_zd, Psi_h_zo, &
-                Xzo_m, Xzd_m, Xzo_h, Xzd_h
+        REAL :: z1,z2
 
-
-        Ezd = (z - d) / L
-        Ezo = zo / L
-
-        if (Ezd >= 0) then
-            Psi_h_zd = -5 * Ezd
-            Psi_m_zd = -5 * Ezd
-        else
-            Xzd_m = (1 - 16*Ezd)**(1.0/4.0)
-            Xzd_h = (1 - 16*Ezd)**(1.0/2.0)
-            Psi_m_zd = log(((1+Xzd_m**2)/2)*((1+Xzd_m)/2)**2)-2*ATAN(Xzd_m)+(PI/2)
-            Psi_h_zd = 2*log((1+Xzd_h**2)/2)
-        end if
-
-        if (Ezo >= 0) then
-            Psi_h_zo = -5*Ezo
-            Psi_m_zo = -5*Ezo
-        else
-            Xzo_m = (1-16*Ezo)**(1.0/4.0)
-            Xzo_h = (1-16*Ezo)**(1.0/2.0)
-            Psi_m_zo = log(((1+Xzo_m**2)/2)*((1+Xzo_m)/2)**2)-2*ATAN(Xzo_m)+(PI/2)
-            Psi_h_zo = 2*log((1+Xzo_h**2)/2)
-        end if
-
-        Ra = (1 / (k * ustar)) * (log((z - d) / zo) - Psi_h_zd + Psi_h_zo)
+        z1 = zo
+        z2 = z - d
+        Ra = ra_heat_flux(ustar, z1, z2, invL)
     end subroutine Calc_Ra_With_Heat_Flux
 
 
