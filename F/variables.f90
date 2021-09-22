@@ -51,12 +51,13 @@ module Variables
     logical, public, save :: Es_blocked ! Is soil evaporation blocked?
 
     ! R
-    real, public, save  :: Ra
+    real, public, save  :: Ra       ! Air resistance
     real, public, save  :: Rb       ! Boundary resistance to O3
     real, public, save  :: Rb_H2O   ! Boundary resistance to H2O
-    real, public, save  :: Rsur
-    real, public, save  :: Rinc
-    real, public, save  :: Rgs
+    real, public, save  :: Rsur     ! total canopy surface resistance
+    real, public, save  :: Rinc     ! in-canopy aerodynamic resistance
+    real, public, save  :: Rgs      ! non-vegetative surface resistance
+    real, public, save  :: Rext     ! external plant cuticle resistance in s/m
     ! Resistances used in "transfer functions"
     real, public, save  :: Ra_ref_i
     real, public, save  :: Ra_O3zR_i

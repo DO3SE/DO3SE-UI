@@ -44,7 +44,7 @@ contains
 
     subroutine Hourly()
         use Environmental, only: Calc_ftemp, Calc_fVPD, Calc_Flight
-        use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsur
+        use R, only: Calc_Rb, Calc_Rgs, Calc_Rinc, Calc_Rsur,Calc_Rext
         use R, only: VPDcrit_prepare, VPDcrit_apply, Calc_Rsto
         use SoilWater
         use O3, only: Calc_O3_Concentration, Calc_Ftot, Calc_Fst, Calc_AFstY, Calc_AOT40
@@ -74,6 +74,7 @@ contains
         call Calc_Rb()
         call Calc_Rgs()
         call Calc_Rinc()
+        call Calc_Rext()
         call SB_Calc_Tleaf()
         call VPDcrit_prepare()
         call SB_Calc_gsto()

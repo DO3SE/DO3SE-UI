@@ -1,7 +1,7 @@
 module R
 
     public :: Calc_Ra_Simple, Calc_Rb, Calc_Rgs, &
-                Calc_Rinc, Calc_Rsur, Calc_Ra_With_Heat_Flux
+                Calc_Rinc, Calc_Rsur, Calc_Ra_With_Heat_Flux,Calc_Rext
 
     public :: ra_simple, rb, rsto_from_gsto
 
@@ -180,16 +180,44 @@ contains
 
     !==========================================================================
     ! Calculate Rgs, non-vegetative surface resistance
+    !
+    ! Simpson et al 2012 8.4
     !==========================================================================
     subroutine Calc_Rgs()
         use Parameters, only: Rsoil
         use Variables, only: Rgs
 
+        ! TODO: Modify for snow cover
+        ! Rsoil parameter is gas specific
         Rgs = Rsoil
     end subroutine Calc_Rgs
 
     !==========================================================================
+    ! Calculate Rext external plant cuticle resistance in s/m
+    !
+    ! Ts_C being the surface (2 m) temperature in degC
+    ! Simpson et al 2012 8.7.1
+    !
+    ! This results in Rext being constant above -1 degc
+    ! Rext increases between -1 and -4.5 degc
+    ! Rext is twice the constant below -4.5 degc
+    !==========================================================================
+    subroutine Calc_Rext()
+        use Parameters, only: Rext_const => Rext
+        use Inputs, only: Ts_C
+        use Variables, only: Rext
+
+        Real :: F_t  ! Low temperature factor (1 <= F_t <= 2)
+
+        F_t = MIN(2.0, MAX(1.0, EXP(-0.2*(1+Ts_C))))
+        Rext = Rext_const * F_t
+
+    end subroutine Calc_Rext
+
+    !==========================================================================
     ! Calculate Rinc, in-canopy aerodynamic resistance
+    !
+    ! These calculations are checked against EMEP during communications 2021
     !==========================================================================
     subroutine Calc_Rinc()
         use Parameters, only: Rinc_b, h
@@ -282,12 +310,15 @@ contains
         Rsto_PEt = rsto_from_gsto(Gsto_PEt, Ts_C)
     end subroutine Calc_Rsto
 
+
     !==========================================================================
+    ! Calculate the total canopy surface resistance
+    !
+    ! These calculations are checked against EMEP during communications 2021
     !==========================================================================
     subroutine Calc_Rsur()
-        use Parameters, only: Rext
         use Parameters, only: Rsoil
-        use Variables, only: LAI, SAI, Rsto_c, Rinc, Rsur
+        use Variables, only: LAI, SAI, Rsto_c, Rinc, Rsur, Rext
 
         if ( LAI > 0 ) then
             Rsur = 1 / ((1 / Rsto_c) + (SAI / Rext) + (1 / (Rinc + Rsoil)))
