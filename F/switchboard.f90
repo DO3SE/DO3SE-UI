@@ -86,10 +86,9 @@ module Switchboard
     ! ustar methods
     integer, public, parameter :: ustar_calculate = 1
     integer, public, parameter :: ustar_input = 2
+    integer, public, parameter :: ustar_i_input = 3
     integer, public, save :: ustar_method = ustar_calculate
     public :: SB_Calc_ustar
-
-
 
 
 contains
@@ -371,14 +370,15 @@ contains
     end subroutine SB_Calc_SGS_EGS
 
     subroutine SB_Calc_ustar()
-        use Inputs, only: Calc_ustar_uh, Calc_ustar_uh_ustar_in
+        use Inputs, only: Calc_ustar_uh, Calc_ustar_uh_ustar_in, Calc_ustar_uh_ustar_i_in
         select case (ustar_method)
 
         case (ustar_calculate)
             call Calc_ustar_uh()
         case (ustar_input)
             call Calc_ustar_uh_ustar_in()
-
+        case (ustar_i_input)
+            call Calc_ustar_uh_ustar_i_in()
 
         end select
 
