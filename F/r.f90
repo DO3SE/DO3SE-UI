@@ -181,14 +181,27 @@ contains
     !==========================================================================
     ! Calculate Rgs, non-vegetative surface resistance
     !
-    ! Simpson et al 2012 8.4
+    ! Simpson et al 2012 8.6
+    !
+    ! Rsoil parameter is gas specific
     !==========================================================================
     subroutine Calc_Rgs()
         use Parameters, only: Rsoil
         use Variables, only: Rgs
+        use Inputs, only: Ts_C
 
-        ! TODO: Modify for snow cover
-        ! Rsoil parameter is gas specific
+        Real :: F_t  ! Low temperature factor (1 <= F_t <= 2)
+        Real :: f_snow, r_snow ! Should come from input
+        Real :: rgs_inv
+
+        f_snow = 0 ! This should come from inputs
+        r_snow = 1 ! This should come from inputs
+
+        F_t = MIN(2.0, MAX(1.0, EXP(-0.2*(1+Ts_C))))
+
+
+        rgs_inv = (1 - 2*f_snow)/(F_t * Rsoil) + (2*f_snow)/r_snow
+
         Rgs = Rsoil
     end subroutine Calc_Rgs
 
