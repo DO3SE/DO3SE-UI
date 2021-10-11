@@ -84,6 +84,8 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
     # Calculated variables
     (inputs,        'ustar',    float,  'u* (m/s)',
      'Friction velocity (u*, m/s)'),
+    (inputs,        'ustar_ref',    float,  'u*_ref (m/s)',
+     'Friction velocity at reference height(u*, m/s)'),
     (inputs,        'uh_i',     float,  'uh50 (m/s)',
      'Wind speed at 50m (uh50, m/s)'),
     (inputs,        'uh',       float,  'uh (m/s)',
@@ -96,9 +98,9 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      u'Solar angle'),
     (inputs,        'invl',     float,  'invL',
      u'Inverse Monin-Obukhov Length'),
-    (variables,        'pardir',     float,  'parDIR',
+    (variables,     'pardir',     float,  'parDIR',
      u'parDIR'),
-    (variables,        'pardif',     float,  'parDIF',
+    (variables,     'pardif',     float,  'parDIF',
      u'parDIF'),
     (variables,     'ra',       float,  'Ra (s/m)',
      'Aerodynamic resistance (Ra, s/m)'),
@@ -308,6 +310,7 @@ default_fO3_calc = 'none'
 ustar_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('calculate',    switchboard.ustar_calculate,   'Ustar calculated'),
     ('input',   switchboard.ustar_input,      'Ustar inputed'),
+    ('input_ref',   switchboard.ustar_i_input,      'Ustar_ref inputed'),
 )), 'id', OrderedDict)
 
 default_ustar_calc = 'calculate'
