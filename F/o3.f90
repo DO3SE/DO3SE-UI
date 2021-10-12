@@ -1,5 +1,8 @@
 module O3
 
+
+    real, public, save :: ustar_ref_o3  ! ustar_ref for O3 calcs
+
     public :: Calc_O3_Concentration, Calc_Ftot
     public :: Calc_Fst, Calc_AFstY, Calc_AOT40
     public :: Calc_fO3_Ignore, Calc_fO3_Wheat, Calc_fO3_Potato
@@ -22,7 +25,7 @@ contains
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
         use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar, L, invL
         use Inputs, only: estimate_ustar
-        use Variables, only: Ra, Rb, Rsur
+        use Variables, only: Ra, Rb, Rsur, Rb_ref
         use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
                              Ra_O3zR_i, Ra_tar_i
         use Parameters, only: O3zR, O3_d, O3_zo, d, zo
@@ -32,20 +35,21 @@ contains
 
         real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
 
-        real :: ustar_ref, Rb_ref, Vn
+        real ::  Vn
 
         ! ustar over reference canopy
         ! TODO: we calculate ustar here but if it is taken from input data
-        ustar_ref = estimate_ustar(uh_i, izR - O3_d, O3_zo, L)
+        ustar_ref_o3 = estimate_ustar(uh_i, izR - O3_d, O3_zo, L)
+
         ! Ra between reference canopy and izR
         select case (ra_method)
             case (ra_simple)
-                Ra_ref_i = calc_ra_simple(ustar_ref, O3_zo + O3_d, izR, O3_d)
+                Ra_ref_i = calc_ra_simple(ustar_ref_o3, O3_zo + O3_d, izR, O3_d)
             case (ra_with_heat_flux)
-                Ra_ref_i = calc_ra_with_heat_flux(ustar_ref, O3_zo + O3_d, izR, invL)
+                Ra_ref_i = calc_ra_with_heat_flux(ustar_ref_o3, O3_zo + O3_d, izR, invL)
         end select
         ! Rb for reference canopy
-        Rb_ref = rb_func(ustar_ref, DO3)
+        Rb_ref = rb_func(ustar_ref_o3, DO3)
         ! Deposition velocity at izR over reference canopy
         ! (assuming that Rsur_ref = Rsur)
         ! The deposition velocity between the measured height and decoupled height is
@@ -54,9 +58,9 @@ contains
         ! Ra between measurement height and izR
         select case (ra_method)
             case (ra_simple)
-                Ra_O3zR_i = calc_ra_simple(ustar_ref, O3zR, izR, O3_d)
+                Ra_O3zR_i = calc_ra_simple(ustar_ref_o3, O3zR, izR, O3_d)
             case (ra_with_heat_flux)
-                Ra_O3zR_i = calc_ra_with_heat_flux(ustar_ref, O3zR, izR, invL)
+                Ra_O3zR_i = calc_ra_with_heat_flux(ustar_ref_o3, O3zR, izR, invL)
         end select
 
         ! O3 concentration at izR

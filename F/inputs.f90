@@ -82,7 +82,8 @@ contains
 
         real :: rho, L, Hd_f
 
-        Hd_f = Hd ! max(Hd, 0.000000000001) # Limit turned off to match EMEP
+        ! TODO: We should check if this should be negative on input
+        Hd_f = -Hd ! max(Hd, 0.000000000001) # Limit turned off to match EMEP
         ! Surface density of dry air (including conversion from to hPa to kPa)
         ! TODO: Check units
         rho = (P * 1000) / (Rmass * Tk)

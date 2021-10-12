@@ -254,6 +254,18 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      'sgs',       'sgs'),
     (parameters,     'egs',       float,
      'egs',       'egs'),
+    (o3,        'ustar_ref_o3', float,  'ustar_ref_o3',
+     'Ustar ref for ozone calcs'),
+    (variables,    'ra_o3zr_i', float,  'ra_o3zr_i',
+     'ra_o3zr_i'),
+    (variables,    'ra_ref_i', float,  'ra_ref_i',
+     'ra_ref_i'),
+    (variables,    'vd_i', float,  'vd_i',
+     'vd_i'),
+    (variables,    'rb_ref', float,  'rb_ref',
+     'rb_ref'),
+    (r,     'vpd_dd',     float,  'VPD_dd',
+     'Accumulated daily VPD'),
 
 )), 'variable', OrderedDict)
 

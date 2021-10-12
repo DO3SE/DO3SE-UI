@@ -143,8 +143,9 @@ contains
     ! vegetation under the windspeed measurement based on its height
     !==========================================================================
     subroutine Derive_Windspeed_d_zo()
-        u_d = u_h * 0.7
-        u_zo = u_h * 0.1
+        ! TODO: Depends on ground cover type
+        u_d = u_h * 0.78 ! 0.7
+        u_zo = u_h * 0.07 ! 0.1
     end subroutine Derive_Windspeed_d_zo
 
     !==========================================================================
@@ -164,7 +165,7 @@ contains
     subroutine Derive_d_zo()
         ! TODO: Depends on ground cover type
         d = h * 0.78
-        zo = h * 0.07
+        zo = min(1.0, h * 0.07)
     end subroutine Derive_d_zo
 
 end module Parameters

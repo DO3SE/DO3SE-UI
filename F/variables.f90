@@ -53,6 +53,7 @@ module Variables
     ! R
     real, public, save  :: Ra       ! Air resistance
     real, public, save  :: Rb       ! Boundary resistance to O3
+    real, public, save  :: Rb_ref       ! Boundary resistance to O3
     real, public, save  :: Rb_H2O   ! Boundary resistance to H2O
     real, public, save  :: Rsur     ! total canopy surface resistance
     real, public, save  :: Rinc     ! in-canopy aerodynamic resistance

@@ -8,7 +8,7 @@ module R
     public :: Calc_Gsto_Multiplicative, Calc_Rsto, VPDcrit_prepare, VPDcrit_apply
 
     ! VPD sum for the day (kPa)
-    real, private, save :: VPD_dd = 0
+    real, public, save :: VPD_dd = 0
     real, private, save :: Gsto_l_prev, Gsto_prev, Gsto_c_prev, Gsto_PEt_prev, Gsun_l_prev
 
 contains
@@ -201,8 +201,7 @@ contains
 
 
         rgs_inv = (1 - 2*f_snow)/(F_t * Rsoil) + (2*f_snow)/r_snow
-
-        Rgs = Rsoil
+        Rgs = 1/rgs_inv
     end subroutine Calc_Rgs
 
     !==========================================================================
@@ -298,11 +297,13 @@ contains
         Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
         ! Leaf sunlit gsto
         Gsun_l = gmax * min(fphen, fO3) * f_sun * max(fmin, ftemp * fVPD * fXWP)
-        Gsun_l_ms = gmax * min(fphen, fO3) * f_sun * max(fmin, ftemp * fVPD * fXWP) *mmol2sm
+        Gsun_l_ms = gmax * min(fphen, fO3) * f_sun * max(fmin, ftemp * fVPD * fXWP) * mmol2sm
         ! Mean Gsto
+        ! TODO: Should we have fO3 here?
         Gsto = (gmax * gmorph) * fphen * flight * max(fmin, ftemp * fVPD * fXWP)
         ! Estimate canopy Gsto from mean leaf Gsto
         Gsto_c = Gsto * LAI
+
         ! Potential canopy Gsto for PEt calculation (non-limiting SWP)
         Gsto_PEt = gmax * fphen * flight * ftemp * fVPD * LAI
     end subroutine Calc_Gsto_Multiplicative
