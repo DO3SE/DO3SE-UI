@@ -19,7 +19,7 @@ import optparse
 import os.path
 app_name = 'DO3SE'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '3.4.2'
+app_version = '3.4.3'
 
 _log = logging.getLogger('do3se.application')
 
