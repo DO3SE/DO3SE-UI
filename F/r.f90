@@ -282,7 +282,7 @@ contains
     !==========================================================================
     subroutine Calc_Gsto_Multiplicative()
         use Parameters, only: gmax, gmorph, fmin
-        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, f_sun
+        use Variables, only: fphen, flight, ftemp, fVPD, fXWP, fO3, Flightsun
         use Variables, only: leaf_fphen, leaf_flight, LAI
         use Variables, only: Gsto_l, Gsun_l, Gsto, Gsto_c, Gsto_PEt, Gsun_l_ms
 
@@ -296,8 +296,8 @@ contains
         ! Leaf Gsto
         Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
         ! Leaf sunlit gsto
-        Gsun_l = gmax * min(fphen, fO3) * f_sun * max(fmin, ftemp * fVPD * fXWP)
-        Gsun_l_ms = gmax * min(fphen, fO3) * f_sun * max(fmin, ftemp * fVPD * fXWP) * mmol2sm
+        Gsun_l = gmax * min(fphen, fO3) * Flightsun * max(fmin, ftemp * fVPD * fXWP)
+        Gsun_l_ms = gmax * min(fphen, fO3) * Flightsun * max(fmin, ftemp * fVPD * fXWP) * mmol2sm
         ! Mean Gsto
         ! TODO: Should we have fO3 here?
         Gsto = (gmax * gmorph) * fphen * flight * max(fmin, ftemp * fVPD * fXWP)

@@ -23,7 +23,7 @@ contains
     !==========================================================================
     subroutine Calc_O3_Concentration()
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
-        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar, L, invL
+        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar, L, invL, ustar_ref
         use Inputs, only: estimate_ustar
         use Variables, only: Ra, Rb, Rsur, Rb_ref
         use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
@@ -39,7 +39,8 @@ contains
 
         ! ustar over reference canopy
         ! TODO: we calculate ustar here but if it is taken from input data
-        ustar_ref_o3 = estimate_ustar(uh_i, izR - O3_d, O3_zo, L)
+        ! ustar_ref_o3 = estimate_ustar(uh_i, izR - O3_d, O3_zo, L)
+        ustar_ref_o3 = ustar_ref
 
         ! Ra between reference canopy and izR
         select case (ra_method)
@@ -103,17 +104,18 @@ contains
     subroutine Calc_Fst()
         use Parameters, only: Lm, Rext
         use Inputs, only: uh
-        use Variables, only: Gsto_l, Rsto_l, O3_nmol_m3, Fst, Fst_sun, Rsun_l
+        use Variables, only: Rsto, Gsto_l, Rsto_l, O3_nmol_m3, Fst, Fst_sun, Rsun_l
 
-        real :: leaf_rb, leaf_r
+        real :: leaf_rb, leaf_r_l, leaf_rs
 
 
         if (Gsto_l > 0) then
             leaf_rb = 1.3 * 150 * sqrt(Lm/uh)   ! leaf boundary layer resistance (s/m)
-            leaf_r = 1.0 / ((1.0/Rsto_l) + (1.0/Rext))  ! leaf resistance in s/m
-            Fst = O3_nmol_m3 * (1/Rsto_l) * (leaf_r / (leaf_rb + leaf_r))
+            leaf_r_l = 1.0 / ((1.0/Rsto_l) + (1.0/Rext))  ! leaf resistance in s/m
+            Fst = O3_nmol_m3 * (1/Rsto_l) * (leaf_r_l / (leaf_rb + leaf_r_l))
 
-            Fst_sun = O3_nmol_m3 *(leaf_r / (leaf_rb + leaf_r)) *  (1/Rsun_l)
+            leaf_rs = 1.0 / ((1.0/Rsto) + (1.0/Rext))  ! resistance in s/m
+            Fst_sun = O3_nmol_m3 *(leaf_rs / (leaf_rb + leaf_rs)) *  (1/Rsun_l)
         else
             Fst = 0
             Fst_sun = 0
@@ -124,13 +126,13 @@ contains
     ! Calculate the accumulated stomatal flux above threshold Y
     !==========================================================================
     subroutine Calc_AFstY()
-        use Variables, only: Fst, AFstY, AFst0
+        use Variables, only: Fst_sun, AFstY, AFst0
         use Parameters, only: Y
 
         ! Fst == 0 if Gsto_l == 0 (and Gsto_l == 0 if leaf_fphen == 0), so no
         ! need to check leaf_fphen
-        AFst0 = AFst0 + ((Fst*60*60)/1000000)
-        AFstY = AFstY + ((max(0.0, Fst - Y)*60*60)/1000000)
+        AFst0 = AFst0 + ((Fst_sun*60*60)/1000000)
+        AFstY = AFstY + ((max(0.0, Fst_sun - Y)*60*60)/1000000)
     end subroutine Calc_AFstY
 
     !==========================================================================

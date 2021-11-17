@@ -51,11 +51,11 @@ contains
         use Constants, only: seaP
         use Parameters, only: f_lightfac, cosA
         use Inputs, only: PAR, sinB
-        use Variables, only: LAI, Flight, leaf_flight, f_sun
+        use Variables, only: LAI, Flight, leaf_flight, Flightsun, Flightshade
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
 
-        real :: Flightsun, Flightshade, cosT, Wm2_uE
+        real :: cosT, Wm2_uE
 
         cosT = sinB
         Wm2_uE = 4.57
@@ -70,15 +70,21 @@ contains
             PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-cosT)
             PARsun = PARdir * cosA/cosT + PARshade
 
-            ! TODO: does this need albedo?
-            Flightsun = (1.0 - exp(-f_lightfac * PARsun))
-            Flightshade = (1.0 - exp(-f_lightfac * PARshade))
 
-            leaf_flight = (1.0 - exp(-f_lightfac * PAR))
-            Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
+
+            ! TODO: Should we have Wm2_uE conversion here?
+            leaf_flight = (1.0 - exp(-f_lightfac * PAR * Wm2_uE))
 
             ! Setup for g_sun and fst_sunlit as in EMEP model.
-            f_sun   = (1.0 - exp (-f_lightfac * PARsun * Wm2_uE))
+
+            ! Canopy
+            ! TODO: does this need albedo?
+            ! TODO: Should we have Wm2_uE conversion here?
+            Flightsun = (1.0 - exp(-f_lightfac * PARsun * Wm2_uE))
+            Flightshade = (1.0 - exp(-f_lightfac * PARshade * Wm2_uE))
+            Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
+
+
         else
             PARdir = 0
             PARdif = 0
@@ -88,7 +94,8 @@ contains
 
             leaf_flight = 0
             Flight = 0
-            f_sun = 0
+            Flightsun = 0
+            Flightshade = 0
         end if
     end subroutine Calc_Flight
 

@@ -13,7 +13,8 @@ module Variables
     real, public, save  :: ftemp
     real, public, save  :: fVPD
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
-    real, public, save  :: f_sun       ! Canopy average gsto in relation to canopy light
+    real, public, save  :: Flightsun       ! Canopy average gsto in relation to canopy sunlight
+    real, public, save  :: Flightshade       ! Canopy average gsto in relation to canopy shaded light
 
     real, public, save  :: leaf_flight  ! light related g
 
