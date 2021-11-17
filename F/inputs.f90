@@ -27,6 +27,7 @@ module Inputs
     real, public, save :: sinB          ! Solar elevation angle
     real, public, save :: Rn_W          ! Net radiation (W/m^2)
     real, public, save :: ustar         ! Friction velocity (m/s)
+    real, public, save :: ustar_ref     ! Friction velocity at reference height (m/s)
     real, public, save :: uh_i          ! Windspeed at intermediate height
     real, public, save :: uh            ! Windspeed at canopy
     real, public, save :: L             ! Monin-Obukhov Length
@@ -39,6 +40,7 @@ module Inputs
     public :: Init_Inputs
     public :: Calc_ustar_uh
     public :: Calc_ustar_uh_ustar_in
+    public :: Calc_ustar_uh_ustar_i_in
     public :: Accumulate_precip
     public :: Calc_precip_acc
     public :: Calc_sinB
@@ -62,7 +64,10 @@ contains
     subroutine Init_Inputs()
         precip_dd = 0
         precip_acc = 0
-        ustar = 0
+        ustar = 0.5
+        ustar_ref = 1
+        invL = 1
+        L = 1
     end subroutine Init_Inputs
 
 
@@ -77,7 +82,8 @@ contains
 
         real :: rho, L, Hd_f
 
-        Hd_f = Hd ! max(Hd, 0.000000000001) # Limit turned off to match EMEP
+        ! TODO: We should check if this should be negative on input
+        Hd_f = -Hd ! max(Hd, 0.000000000001) # Limit turned off to match EMEP
         ! Surface density of dry air (including conversion from to hPa to kPa)
         ! TODO: Check units
         rho = (P * 1000) / (Rmass * Tk)
@@ -111,7 +117,7 @@ contains
              !ESX if ( FluxPROFILE == "Ln95" ) then
              !ESX    stab_m = -( a*zL + b*(zl-c/d)*exp(-d*zL) + b*c/d)
              !ESX else
-                stab_m = -5.0 * zL
+            stab_m = -5.0 * zL
              !ESX end if
          end if
 
@@ -133,19 +139,25 @@ contains
     ! end function estimate_velocity
 
     ! Updated to match EMEP
-    function estimate_velocity(u_ref, z_ref, z, z0, d) result (u)
+    function estimate_velocity(u_ref, z_ref, z, z0, d, invL) result (u)
         real, intent(in) :: u_ref   ! velocity at izR (m/s)
         real, intent(in) :: z_ref   ! reference height (m)
         real, intent(in) :: z       ! Target height (m)
         real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
         real, intent(in) :: d       ! displacement height(m)
+        real, intent(in) :: invL       ! Inverse Monin-Obukhov Length (1/m)
 
         real :: u, zr, zt                   ! Output: velocity (m/s)
-
+        real :: psima, psimb, psimc
         zt = z-d
         zr = z_ref - d
 
-        u = u_ref * log(zt/z0)/log(zr/z0)
+        ! u = u_ref * log(zt/z0)/log(zr/z0)
+        ! Updated to match EMEP
+        psima = calc_PsiM((z-d)*invL)
+        psimb = calc_PsiM(z0*invL)
+        psimc = calc_PsiM((z_ref-d)*invL)
+        u = u_ref * (log((z-d)/z0)  -psima + psimb)/(log((z_ref-d)/z0) -psimc + psimb)
 
     end function estimate_velocity
 
@@ -158,27 +170,36 @@ contains
         real, intent(in) :: u       ! Velocity at height above boundary (m/s)
         real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
         real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+        real, intent(in) :: L       ! Monin-Obukhov Length (m)
 
-        real :: ustar, L, psim_a, psim_b               ! Output: friction velocity, ustar (m/s)
+        real :: ustar, psim_a, psim_b               ! Output: friction velocity, ustar (m/s)
 
         psim_a = calc_PsiM(z/L)
         psim_b = calc_PsiM(z0/L)
 
-        ustar = (u * K) / (log(z / z0) - psim_a + psim_b)
+        ustar = u * K / (log(z / z0) - psim_a + psim_b)
     end function estimate_ustar
 
     !==========================================================================
     ! Calc Monin-Obukhov Length for row
+    !
+    ! If ustar ref is inputed then we use that value
+    ! If ustar is inputed then we use the ustar_ref value calculated at previous hour
+    ! If neither is inputed we use the ustar_ref calculated at previous hour
+
     !==========================================================================
     subroutine Calc_monin_obukhov_length_row()
         use Constants, only: Ts_K
         real ::  Tk
         Tk = Ts_C + Ts_K
-        L = calc_monin_obukhov_length(Tk, ustar, Hd, P)
+        L = calc_monin_obukhov_length(Tk, ustar_ref, Hd, P)
+        invL = 1/L
     end subroutine Calc_monin_obukhov_length_row
 
     !==========================================================================
     ! Derive ustar for the flux canopy and the windspeed at the canopy
+    !
+    ! We are only supplied with wind speed at measured height
     !==========================================================================
     subroutine Calc_ustar_uh()
         use Constants, only: Rmass, Ts_K, k, g, cp, pi, izR
@@ -196,18 +217,23 @@ contains
         ! Find ustar over reference canopy
         uh_zr_lim = max(MIN_WINDSPEED, uh_zR)
 
-        ! TODO: What is the diff between u_d and d and u_zo and zo?
         ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
         ustar_ref = max(0.0001, ustar_ref)
+
+        ! TODO: We are recalculating L here but should split all into seperate components
+        L = calc_monin_obukhov_length(Tk, ustar_ref, Hd, P)
+        invL = 1/L
+
         ! Find windspeed at izR, over reference canopy
-        uh_i = estimate_velocity(uh_zR_lim, uzR, izR, zo, d)
+        uh_i = estimate_velocity(uh_zr_lim, uzR, izR, zo, d, invL)
         uh_i = max(MIN_WINDSPEED, uh_i)
 
         ! Find ustar over target canopy, assuming that at izR windspeed will be
         ! equal over both vegetations
         ustar = estimate_ustar(uh_i, izR - d, zo, L)
+
         ! Find windspeed at top of target canopy
-        uh = estimate_velocity(uh_i, izR, h, zo, d)
+        uh = estimate_velocity(uh_i, izR, h, zo, d, invL)
         uh = max(MIN_WINDSPEED, uh)
 
         ! Stop ustar being 0
@@ -215,38 +241,89 @@ contains
     end subroutine Calc_ustar_uh
 
     !==========================================================================
-    ! Derive Wind state from ustar input(WIP)
+    ! Derive Wind state from ustar ref input(WIP)
+    !
+    ! Input grid ustar
+    !==========================================================================
+    subroutine Calc_ustar_uh_ustar_i_in()
+        use Constants, only: Rmass, Ts_K, k, g, cp, pi, izR
+        use Parameters, only: h, d, zo, uzR
+
+        real :: Tk
+        real :: uh_zr_lim
+
+        real, parameter :: MIN_WINDSPEED = 0.1
+        real, parameter :: MIN_USTAR = 0.1
+
+        Tk = Ts_C + Ts_K
+
+        uh_zr_lim = max(MIN_WINDSPEED, uh_zR)
+
+        ! Find ustar over reference canopy
+        ! TAKEN FROM INPUT
+        ! ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
+        ! ustar_ref = max(0.0001, ustar_ref)
+
+        ! NOTE: invL should have already been calculated from ustar_ref
+        ! L = calc_monin_obukhov_length(Tk, ustar_ref, Hd, P)
+        ! invL = 1/L
+
+        ! Find windspeed at izR, over reference canopy
+        uh_i = estimate_velocity(uh_zr_lim, uzR, izR, zo, d, invL)
+        uh_i = max(MIN_WINDSPEED, uh_i)
+
+        ! Find ustar over target canopy, assuming that at izR windspeed will be
+        ! equal over both vegetations
+
+        ustar = estimate_ustar(uh_i, izR - d, zo, L)
+
+        ! Find windspeed at top of target canopy
+        uh = estimate_velocity(uh_i, izR, h, zo, d, invL)
+        uh = max(MIN_WINDSPEED, uh)
+
+        ! Stop ustar being 0
+        ustar = max(MIN_USTAR, ustar)
+    end subroutine Calc_ustar_uh_ustar_i_in
+
+
+
+    !==========================================================================
+    ! Derive ustar for the flux canopy and the windspeed at the canopy
     !==========================================================================
     subroutine Calc_ustar_uh_ustar_in()
         use Constants, only: Rmass, Ts_K, k, g, cp, pi, izR
         use Parameters, only: h, d, zo, u_d, u_zo, uzR
 
-        real :: ustar_ref   ! ustar for where windspeed is measured
+        ! real :: ustar_ref   ! ustar for where windspeed is measured
         real :: Tk
         real :: uh_zr_lim
-        real :: psim_a, psim_b
 
         real, parameter :: MIN_WINDSPEED = 0.1
+        real, parameter :: MIN_USTAR = 0.1
 
         Tk = Ts_C + Ts_K
 
-        ! DONT CALCULATE USTAR AS IT IS INPUTED
-        ! ustar = estimate_ustar(uh_i, izR - d, zo, L)
-        psim_a = 1 ! calc_PsiM(z/L)
-        psim_b = 1 ! calc_PsiM(z0/L)
-        uh_i = (((log((izR-d) / zo) - psim_a + psim_b)) * ustar) / k ! inverse estiate ustar
-        ! L = ? Calculate this again?
-
-
-        uh = estimate_velocity(uh_i, izR, h, zo, d)
-        uh = max(MIN_WINDSPEED, uh)
-
-        ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
-        ustar_ref = max(0.0001, ustar_ref)
+        ! Find ustar over reference canopy
         uh_zr_lim = max(MIN_WINDSPEED, uh_zR)
 
-    end subroutine Calc_ustar_uh_ustar_in
+        ! TODO: What is the diff between u_d and d and u_zo and zo?
+        ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
+        ustar_ref = max(0.0001, ustar_ref)
 
+        ! Find windspeed at izR, over reference canopy
+        uh_i = estimate_velocity(uh_zR_lim, uzR, izR, zo, d, invL)
+        uh_i = max(MIN_WINDSPEED, uh_i)
+
+        ! Find ustar over target canopy, assuming that at izR windspeed will be
+        ! equal over both vegetations
+        ! ustar = estimate_ustar(uh_i, izR - d, zo, L)
+        ! Find windspeed at top of target canopy
+        uh = estimate_velocity(uh_i, izR, h, zo, d, invL)
+        uh = max(MIN_WINDSPEED, uh)
+
+        ! Stop ustar being 0
+        ustar = max(MIN_USTAR, ustar)
+    end subroutine Calc_ustar_uh_ustar_in
     !==========================================================================
     ! Accumulate precipitation for the day, converted to metres
     !==========================================================================

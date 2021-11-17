@@ -6,17 +6,23 @@ contains
 
     !***************************************************************************
     ! Calculate ftemp
+    !
+    ! Made daylight only to match EMEP
     !***************************************************************************
     subroutine Calc_ftemp()
         use Variables, only: ftemp
 
-        use Inputs, only: Ts_c
+        use Inputs, only: Ts_c, PAR
         use Parameters, only: T_max, T_min, T_opt, fmin
 
         real :: bt
+        if (PAR > 0) then
+            bt = (T_max - T_opt) / (T_opt - T_min)
+            ftemp = max(((Ts_c-T_min)/(T_opt-T_min))*((T_max-Ts_c)/(T_max-T_opt))**bt, fmin)
+        else
+            ftemp = 0
+        endif
 
-        bt = (T_max - T_opt) / (T_opt - T_min)
-        ftemp = max(((Ts_c-T_min)/(T_opt-T_min))*((T_max-Ts_c)/(T_max-T_opt))**bt, fmin)
     end subroutine Calc_ftemp
 
     !***************************************************************************
@@ -45,15 +51,14 @@ contains
         use Constants, only: seaP
         use Parameters, only: f_lightfac, cosA
         use Inputs, only: PAR, sinB
-        use Variables, only: LAI, Flight, leaf_flight
+        use Variables, only: LAI, Flight, leaf_flight, Flightsun, Flightshade
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
 
-        real :: Flightsun, &
-                Flightshade, cosT
+        real :: cosT, Wm2_uE
 
         cosT = sinB
-
+        Wm2_uE = 4.57
         if (sinB > 0 .and. LAI > 0) then
              PARdir = fPARdir * PAR
              PARdif = fPARdif * PAR
@@ -65,12 +70,21 @@ contains
             PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-cosT)
             PARsun = PARdir * cosA/cosT + PARshade
 
-            ! TODO: does this need albedo?
-            Flightsun = (1.0 - exp(-f_lightfac * PARsun))
-            Flightshade = (1.0 - exp(-f_lightfac * PARshade))
 
-            leaf_flight = (1.0 - exp(-f_lightfac * PAR))
+
+            ! TODO: Should we have Wm2_uE conversion here?
+            leaf_flight = (1.0 - exp(-f_lightfac * PAR * Wm2_uE))
+
+            ! Setup for g_sun and fst_sunlit as in EMEP model.
+
+            ! Canopy
+            ! TODO: does this need albedo?
+            ! TODO: Should we have Wm2_uE conversion here?
+            Flightsun = (1.0 - exp(-f_lightfac * PARsun * Wm2_uE))
+            Flightshade = (1.0 - exp(-f_lightfac * PARshade * Wm2_uE))
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
+
+
         else
             PARdir = 0
             PARdif = 0
@@ -80,6 +94,8 @@ contains
 
             leaf_flight = 0
             Flight = 0
+            Flightsun = 0
+            Flightshade = 0
         end if
     end subroutine Calc_Flight
 

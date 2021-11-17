@@ -13,6 +13,9 @@ module Variables
     real, public, save  :: ftemp
     real, public, save  :: fVPD
     real, public, save  :: Flight       ! Canopy average gsto in relation to canopy light
+    real, public, save  :: Flightsun       ! Canopy average gsto in relation to canopy sunlight
+    real, public, save  :: Flightshade       ! Canopy average gsto in relation to canopy shaded light
+
     real, public, save  :: leaf_flight  ! light related g
 
     ! Phenology
@@ -49,15 +52,16 @@ module Variables
     logical, public, save :: Es_blocked ! Is soil evaporation blocked?
 
     ! R
-    real, public, save  :: Ra
+    real, public, save  :: Ra       ! Air resistance
     real, public, save  :: Rb       ! Boundary resistance to O3
+    real, public, save  :: Rb_ref       ! Boundary resistance to O3
     real, public, save  :: Rb_H2O   ! Boundary resistance to H2O
-    real, public, save  :: Rsur
-    real, public, save  :: Rinc
-    real, public, save  :: Rgs
+    real, public, save  :: Rsur     ! total canopy surface resistance
+    real, public, save  :: Rinc     ! in-canopy aerodynamic resistance
+    real, public, save  :: Rgs      ! non-vegetative surface resistance
+    real, public, save  :: Rext     ! external plant cuticle resistance in s/m
     ! Resistances used in "transfer functions"
     real, public, save  :: Ra_ref_i
-    real, public, save  :: Ra_ref
     real, public, save  :: Ra_O3zR_i
     real, public, save  :: Ra_tar_i
 
@@ -65,7 +69,10 @@ module Variables
     real, public, save  :: Gsto     ! Mean O3 conductance
     real, public, save  :: Rsto     ! Mean O3 resistance (s/m)
     real, public, save  :: Gsto_l   ! Single leaf O3 conductance
+    real, public, save  :: Gsun_l   ! Single leaf sunlit O3 conductance
+    real, public, save  :: Gsun_l_ms   ! Single leaf sunlit O3 conductance[ms]
     real, public, save  :: Rsto_l   ! Single leaf O3 resistance (s/m)
+    real, public, save  :: Rsun_l   ! Single leaf sunlit O3 resistance (s/m)
     real, public, save  :: Gsto_c   ! Canopy O3 conductance
     real, public, save  :: Rsto_c   ! Canopy O3 resistance (s/m)
     real, public, save  :: Gsto_PEt ! Potential canopy O3 conductance (for PEt)
@@ -79,6 +86,7 @@ module Variables
     real, public, save :: Vd_i          ! Deposition velocity at izR (m/s)
     real, public, save :: Ftot          ! Total O3 flux
     real, public, save :: Fst           ! Upper leaf stomatal flux
+    real, public, save :: Fst_sun       ! Upper leaf sunlit stomatal flux
     real, public, save :: AFst0         ! Accumulated Fst
     real, public, save :: AFstY         ! Accumulated Fst over threshold Y
     real, public, save :: OT40          ! OT40 (canopy)
