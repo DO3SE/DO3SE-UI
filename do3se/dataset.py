@@ -35,7 +35,7 @@ class Dataset:
 
     def __init__(self, input_data, input_fields, params):
         self.params = params
-        self.switchboard = dict()
+        self.options = dict()
 
         # Check required fields are present
         required = [k for k, v in model.input_fields.items() if v['required']]
@@ -45,65 +45,65 @@ class Dataset:
 
         # Handle PAR/Global radiation input/derivation
         if 'par' in input_fields and 'r' in input_fields:
-            self.switchboard['r_par_method'] = model.switchboard.r_par_use_inputs
+            self.options['r_par_method'] = model.options.r_par_use_inputs
             _log.debug('R/PAR calculation: use inputs')
         elif 'par' in input_fields:
-            self.switchboard['r_par_method'] = model.switchboard.r_par_derive_r
+            self.options['r_par_method'] = model.options.r_par_derive_r
             _log.debug('R/PAR calculation: derive R')
         elif 'r' in input_fields:
-            self.switchboard['r_par_method'] = model.switchboard.r_par_derive_par
+            self.options['r_par_method'] = model.options.r_par_derive_par
             _log.debug('R/PAR calculation: derive PAR')
         elif 'cloudfrac' in input_fields:
-            self.switchboard['r_par_method'] = model.switchboard.r_par_derive_cloudfrac
+            self.options['r_par_method'] = model.options.r_par_derive_cloudfrac
             _log.debug('R/PAR calculation: derive PAR from cloudfrac')
         else:
             raise RequiredFieldError(['par', 'r'])
 
         # Calculate net radiation if not supplied
         if 'rn' in input_fields:
-            self.switchboard['rn_method'] = model.switchboard.rn_use_input
+            self.options['rn_method'] = model.options.rn_use_input
             _log.debug('Rn calculation: use input')
         else:
-            self.switchboard['rn_method'] = model.switchboard.rn_calculate
+            self.options['rn_method'] = model.options.rn_calculate
             _log.debug('Rn calculation: calculate')
 
         # Other switchable procedures
         fO3 = model.fO3_calcs[self.params.pop('fo3', model.default_fO3_calc)]
         _log.debug('fO3 calculation: "%(name)s" (%(id)s)' % fO3)
-        self.switchboard['fo3_method'] = fO3['func']
+        self.options['fo3_method'] = fO3['func']
 
         ustar = model.ustar_calcs[self.params.pop(
             'ustar_method', model.default_ustar_calc)]
         _log.debug('ustar calculation: "%(name)s" (%(id)s)' % ustar)
-        self.switchboard['ustar_method'] = ustar['func']
+        self.options['ustar_method'] = ustar['func']
 
         SAI = model.SAI_calcs[self.params.pop('sai', model.default_SAI_calc)]
         _log.debug('SAI calculation: "%(name)s" (%(id)s)' % SAI)
-        self.switchboard['sai_method'] = SAI['func']
+        self.options['sai_method'] = SAI['func']
         leaf_fphen = model.leaf_fphen_calcs[
             self.params.pop('leaf_fphen', model.default_leaf_fphen_calc)]
         _log.debug('leaf_fphen calculation: "%(name)s" (%(id)s)' % leaf_fphen)
-        self.switchboard['leaf_fphen_method'] = leaf_fphen['func']
+        self.options['leaf_fphen_method'] = leaf_fphen['func']
         ra_method = model.ra_method[self.params.pop(
             'ra_method', model.default_ra_method)]
-        self.switchboard['ra_method'] = ra_method['func']
+        self.options['ra_method'] = ra_method['func']
         fXWP = model.fXWP_calcs[self.params.pop(
             'fxwp', model.default_fXWP_calc)]
-        self.switchboard['fxwp_method'] = fXWP['func']
+        self.options['fxwp_method'] = fXWP['func']
         fSWP = model.fSWP_calcs[self.params.pop(
             'fswp', model.default_fSWP_calc)]
-        self.switchboard['fswp_method'] = fSWP['func']
+        self.options['fswp_method'] = fSWP['func']
         LWP = model.LWP_calcs[self.params.pop('lwp', model.default_LWP_calc)]
-        self.switchboard['lwp_method'] = LWP['func']
+        self.options['lwp_method'] = LWP['func']
         SGS_EGS = model.SGS_EGS_calcs[self.params.pop(
             'sgs_egs_calc', model.default_SGS_EGS_calc)]
-        self.switchboard['sgs_egs_method'] = SGS_EGS['func']
+        self.options['sgs_egs_method'] = SGS_EGS['func']
         gsto = model.gsto_calcs[self.params.pop(
             'gsto', model.default_gsto_calc)]
-        self.switchboard['gsto_method'] = gsto['func']
+        self.options['gsto_method'] = gsto['func']
         tleaf = model.tleaf_calcs[self.params.pop(
             'tleaf', model.default_tleaf_calc)]
-        self.switchboard['tleaf_method'] = tleaf['func']
+        self.options['tleaf_method'] = tleaf['func']
 
         # Soil parameters from soil type
         soil = model.soil_classes[self.params.pop(
@@ -176,7 +176,7 @@ class Dataset:
         co2_const = self.params.pop('co2_constant')
 
         # Initialise function switchboard
-        util.setattrs(model.switchboard, self.switchboard)
+        util.setattrs(model.options, self.options)
         # Load parameters
         util.setattrs(model.parameters, self.params)
 

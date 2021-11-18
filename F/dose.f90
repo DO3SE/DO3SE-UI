@@ -1,5 +1,6 @@
 program Run_DOSE
     use Switchboard
+    use Options
     use Run
     CHARACTER(len=255) :: homedir
     CHARACTER(len=255) :: input_path
