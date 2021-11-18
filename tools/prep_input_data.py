@@ -64,16 +64,23 @@ def add_julian_day(data):
     return data
 
 
-def calculate_VPD(data, temp_field='TsC', rh_field='rh2m'):
-    """Calculate VPD equation taken from pyDO3SE."""
-    def saturated_vapour_pressure(Ts_C: float) -> float:
-        return 0.611 * exp(17.27 * Ts_C / (Ts_C + 237.3))
-    esat = [saturated_vapour_pressure(t) for t in data[temp_field]]
-    eact = (_esat * rh for _esat, rh in zip(esat, data[rh_field]))
-    vpd = [es - ea for es, ea in zip(esat, eact)]
-    data['VPD'] = vpd
-    return data
+def saturated_vapour_pressure(Ts_C: float) -> float:
+    return 0.611 * exp(17.27 * Ts_C / (Ts_C + 237.3))
 
+# def calculate_VPD(Ts_C, rh):
+#     """Calculate VPD equation taken from pyDO3SE."""
+#     esat = [saturated_vapour_pressure(t) for t in Ts_C]
+#     eact = (_esat * rh for _esat, rh in zip(esat, rh))
+#     vpd = [es - ea for es, ea in zip(esat, eact)]
+#     return vpd
+
+
+def calculate_VPD(Ts_C, rh):
+    """Calculate VPD equation taken from pyDO3SE."""
+    esat = saturated_vapour_pressure(Ts_C)
+    eact = esat * rh
+    vpd = esat - eact
+    return vpd
 
 def rename_fields(data, fields):
     for fin, fout in fields:
