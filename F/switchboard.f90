@@ -1,93 +1,18 @@
 module Switchboard
 
-    integer, public, parameter :: sai_equals_lai = 1
-    integer, public, parameter :: sai_forest     = 2
-    integer, public, parameter :: sai_wheat      = 3
-    integer, public, save :: sai_method = sai_equals_lai
     public :: SB_Calc_SAI
-
-    integer, public, parameter :: rn_use_input  = 1
-    integer, public, parameter :: rn_calculate  = 2
-    integer, public, save :: rn_method = rn_use_input
     public :: SB_Calc_Rn
-
-    integer, public, parameter :: leaf_fphen_equals_fphen = 1
-    integer, public, parameter :: leaf_fphen_fixed_day    = 2
-    integer, public, parameter :: leaf_fphen_use_input    = 3
-    integer, public, parameter :: leaf_fphen_thermal_time = 4
-    integer, public, save :: leaf_fphen_method = leaf_fphen_equals_fphen
     public :: SB_Calc_leaf_fphen
-
-    integer, public, parameter :: ra_simple         = 1
-    integer, public, parameter :: ra_with_heat_flux = 2
-    integer, public, save :: ra_method = ra_simple
     public :: SB_Calc_Ra
-
-    integer, public, parameter :: tleaf_use_input        = 1
-    integer, public, parameter :: tleaf_estimate = 2
-    integer, public, save :: tleaf_method = tleaf_use_input
     public :: SB_Calc_Tleaf
-
-    integer, public, parameter :: gsto_multiplicative = 1
-    integer, public, parameter :: gsto_photosynthetic = 2
-    integer, public, save :: gsto_method = gsto_multiplicative
     public :: SB_Calc_Gsto
-
-    integer, public, parameter :: fo3_disabled = 1
-    integer, public, parameter :: fo3_wheat    = 2
-    integer, public, parameter :: fo3_potato   = 3
-    integer, public, save :: fo3_method = fo3_disabled
     public :: SB_Calc_fO3
-
-    integer, public, parameter :: fswp_exponential = 1
-    integer, public, parameter :: fswp_linear      = 2
-    integer, public, save :: fswp_method = fswp_exponential
     public :: SB_Calc_fSWP
-
-    integer, public, parameter :: lwp_non_steady_state = 1
-    integer, public, parameter :: lwp_steady_state     = 2
-    integer, public, save :: lwp_method = lwp_non_steady_state
     public :: SB_Calc_LWP
-
-    integer, public, parameter :: fxwp_disabled = 1
-    integer, public, parameter :: fxwp_use_fswp = 2
-    integer, public, parameter :: fxwp_use_flwp = 3
-    integer, public, parameter :: fxwp_use_fpaw = 4
-    integer, public, save :: fxwp_method = fxwp_disabled
     public :: SB_Calc_fXWP
     public :: SB_Calc_Es_blocked
-
-    ! Both R and PAR are inputs, do nothing
-    integer, public, parameter :: r_par_use_inputs = 1
-    ! Derived R from PAR
-    integer, public, parameter :: r_par_derive_r   = 2
-    ! Derive PAR from R
-    integer, public, parameter :: r_par_derive_par = 3
-    ! Derive PAR from Cloudfrac
-    integer, public, parameter :: r_par_derive_cloudfrac = 4
-    integer, public, save :: r_par_method = r_par_use_inputs
     public :: SB_Calc_R_PAR
-
-    ! Use supplied SGS/EGS
-    integer, public, parameter :: sgs_egs_use_inputs = 1
-    ! Use latitude function to calculate SGS/EGS
-    integer, public, parameter :: sgs_egs_latitude   = 2
-    ! Use thermal time to calculate all seasonal factors for wheat
-    integer, public, parameter :: sgs_egs_tt         = 3
-    integer, public, parameter :: sgs_egs_tt_mb      = 4
-    integer, public, parameter :: sgs_egs_tt_md      = 5
-    ! Use thermal time to calculate all seasonal factors for potato
-    integer, public, parameter :: sgs_egs_tt_pot     = 6
-    ! Use thermal time to calculate all seasonal factors for tomato
-    integer, public, parameter :: sgs_egs_tt_tom     = 7
-    integer, public, save :: sgs_egs_method = sgs_egs_use_inputs
     public :: SB_Calc_SGS_EGS
-
-    ! ustar methods
-    integer, public, parameter :: ustar_calculate = 1
-    integer, public, parameter :: ustar_input = 2
-    integer, public, parameter :: ustar_i_input = 3
-    integer, public, save :: ustar_method = ustar_calculate
     public :: SB_Calc_ustar
 
 
@@ -95,6 +20,7 @@ contains
 
     subroutine SB_Calc_SAI()
         use Phenology, only: Calc_SAI_Wheat
+        use Options, only: sai_method, sai_equals_lai, sai_forest, sai_wheat
         use Variables, only: SAI, LAI
 
         select case (sai_method)
@@ -113,6 +39,7 @@ contains
 
     subroutine SB_Calc_Rn()
         use Inputs, only: Rn, Rn_W, Calc_Rn
+        use Options, only: rn_method, rn_use_input, rn_calculate
 
         select case (rn_method)
 
@@ -129,6 +56,8 @@ contains
         use Phenology, only: Calc_leaf_fphen_fixed_day, Calc_tt_leaf_fphen
         use Inputs, only: leaf_fphen_input
         use Variables, only: fphen, leaf_fphen
+        use Options, only: leaf_fphen_method, leaf_fphen_equals_fphen, leaf_fphen_fixed_day,&
+         leaf_fphen_use_input, leaf_fphen_thermal_time
 
         select case (leaf_fphen_method)
 
@@ -149,6 +78,7 @@ contains
 
     subroutine SB_Calc_Ra()
         use R, only: Calc_Ra_Simple, Calc_Ra_With_Heat_Flux
+        use Options, only: ra_method, ra_simple, ra_with_heat_flux
 
         select case (ra_method)
 
@@ -163,6 +93,7 @@ contains
 
     subroutine SB_Calc_Tleaf()
         use Inputs, only: Tleaf_Estimate_db => Tleaf_Estimate_db
+        use Options, only: tleaf_method, tleaf_estimate
 
         select case (tleaf_method)
 
@@ -181,8 +112,10 @@ contains
         use Pn_Gsto, only: Calc_Gsto_Pn, leaf_temp_de_Boeck, gsto_final, pngsto_l, &
                 pngsto, pngsto_c, pngsto_PEt
         use Variables, only: Gsto_l, Gsto, Gsto_c, Gsto_PEt
-
         use Parameters, only: Lm, albedo
+        use Options, only: gsto_method, tleaf_method, tleaf_use_input, tleaf_estimate, &
+            gsto_photosynthetic, gsto_multiplicative
+
         real :: Tleaf_balance_threshold, Tleaf_adjustment_factor
         integer :: Tleaf_max_iterations
         integer :: i
@@ -208,9 +141,6 @@ contains
                 call Calc_Gsto_Pn()
 
                 case (tleaf_estimate)
-
-
-
                     Tleaf = Ts_C
                     call Calc_Gsto_Pn()
                     ! Copy Calc_Gsto_Pn() results to correct places
@@ -259,6 +189,7 @@ contains
     subroutine SB_Calc_fO3()
         use O3, only: Calc_fO3_Wheat, Calc_fO3_Potato
         use Variables, only: fO3
+        use Options, only: fo3_method, fo3_disabled, fo3_wheat, fo3_potato
 
         select case (fo3_method)
 
@@ -276,6 +207,7 @@ contains
 
     subroutine SB_Calc_fSWP()
         use SoilWater
+        use Options, only: fswp_method, fswp_exponential, fswp_linear
 
         select case (fswp_method)
         case (fswp_exponential)
@@ -287,6 +219,7 @@ contains
 
     subroutine SB_Calc_LWP()
         use SoilWater
+        use Options, only: lwp_method, lwp_non_steady_state, lwp_steady_state
 
         select case (lwp_method)
         case (lwp_non_steady_state)
@@ -298,6 +231,7 @@ contains
 
     subroutine SB_Calc_fXWP()
         use Variables, only: fXWP, fSWP, fLWP, fPAW
+        use Options, only: fxwp_method, fxwp_disabled, fxwp_use_fswp, fxwp_use_flwp, fxwp_use_fpaw
 
         select case (fxwp_method)
 
@@ -322,6 +256,7 @@ contains
         use Soilwater, only: ASW_FC, ASW_max
         use Parameters, only: SWP_max
         use Variables, only: Es_blocked, ASW, SWP
+        use Options, only: fxwp_method, fxwp_use_fpaw
 
         if (fxwp_method == fxwp_use_fpaw) then
             Es_blocked = (ASW < (ASW_FC * (ASW_max / 100.0)))
@@ -334,6 +269,8 @@ contains
     subroutine SB_Calc_R_PAR()
         use Inputs, only: R, PAR
         use Environmental, only:Calc_PAR_from_cloudfrac, Calc_ST_from_PAR
+        use Options, only: r_par_method, r_par_derive_r, r_par_derive_par, r_par_derive_cloudfrac
+
 
         select case (r_par_method)
 
@@ -357,6 +294,7 @@ contains
     subroutine SB_Calc_SGS_EGS()
         use Parameters, only: lat, elev, SGS, EGS
         use Phenology, only: Latitude_SGS_EGS
+        use Options, only: sgs_egs_method, sgs_egs_latitude
 
         select case (sgs_egs_method)
 
@@ -371,6 +309,8 @@ contains
 
     subroutine SB_Calc_ustar()
         use Inputs, only: Calc_ustar_uh, Calc_ustar_uh_ustar_in, Calc_ustar_uh_ustar_i_in
+        use Options, only: ustar_method, ustar_calculate, ustar_input, ustar_i_input
+
         select case (ustar_method)
 
         case (ustar_calculate)

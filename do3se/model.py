@@ -304,78 +304,78 @@ default_soil_class = 'loam'
 
 #: Leaf fphen calculations
 leaf_fphen_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('copy',    switchboard.leaf_fphen_equals_fphen,    'Same as Fphen'),
-    ('fixedday', switchboard.leaf_fphen_fixed_day,      'Fixed day'),
-    ('input',   switchboard.leaf_fphen_use_input,       'Use hourly input data'),
+    ('copy',    options.leaf_fphen_equals_fphen,    'Same as Fphen'),
+    ('fixedday', options.leaf_fphen_fixed_day,      'Fixed day'),
+    ('input',   options.leaf_fphen_use_input,       'Use hourly input data'),
 )), 'id', OrderedDict)
 
 default_leaf_fphen_calc = 'copy'
 
 # fO3 calculations
 fO3_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('none',    switchboard.fo3_disabled,   'Not used (fO3 = 1)'),
-    ('wheat',   switchboard.fo3_wheat,      'Wheat'),
-    ('potato',  switchboard.fo3_potato,     'Potato'),
+    ('none',    options.fo3_disabled,   'Not used (fO3 = 1)'),
+    ('wheat',   options.fo3_wheat,      'Wheat'),
+    ('potato',  options.fo3_potato,     'Potato'),
 )), 'id', OrderedDict)
 
 default_fO3_calc = 'none'
 
 # ustar calculations
 ustar_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('calculate',    switchboard.ustar_calculate,   'Ustar calculated'),
-    ('input',   switchboard.ustar_input,      'Ustar inputed'),
-    ('input_ref',   switchboard.ustar_i_input,      'Ustar_ref inputed'),
+    ('calculate',    options.ustar_calculate,   'Ustar calculated'),
+    ('input',   options.ustar_input,      'Ustar inputed'),
+    ('input_ref',   options.ustar_i_input,      'Ustar_ref inputed'),
 )), 'id', OrderedDict)
 
 default_ustar_calc = 'calculate'
 
 # SAI calculations
 SAI_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('copy',    switchboard.sai_equals_lai, 'Same as LAI'),
-    ('forest',  switchboard.sai_forest,     'Forest'),
-    ('wheat',   switchboard.sai_wheat,      'Wheat'),
+    ('copy',    options.sai_equals_lai, 'Same as LAI'),
+    ('forest',  options.sai_forest,     'Forest'),
+    ('wheat',   options.sai_wheat,      'Wheat'),
 )), 'id', OrderedDict)
 
 default_SAI_calc = 'copy'
 
 # fXWP calculations (switching between fSWP, fLWP and neither)
 fXWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('disabled',    switchboard.fxwp_disabled,  'Disabled'),
-    ('fswp',        switchboard.fxwp_use_fswp,  'Use fSWP'),
-    ('flwp',        switchboard.fxwp_use_flwp,  'Use fLWP'),
-    ('fpaw',        switchboard.fxwp_use_fpaw,  'Use fPAW'),
+    ('disabled',    options.fxwp_disabled,  'Disabled'),
+    ('fswp',        options.fxwp_use_fswp,  'Use fSWP'),
+    ('flwp',        options.fxwp_use_flwp,  'Use fLWP'),
+    ('fpaw',        options.fxwp_use_fpaw,  'Use fPAW'),
 )), 'id', OrderedDict)
 
 default_fXWP_calc = 'disabled'
 
 # fSWP calculations (switching between exponential and linear relationship
 fSWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('exp',     switchboard.fswp_exponential,   'Exponential'),
-    ('linear',  switchboard.fswp_linear,        'Linear (SWP_min, SWP_max)'),
+    ('exp',     options.fswp_exponential,   'Exponential'),
+    ('linear',  options.fswp_linear,        'Linear (SWP_min, SWP_max)'),
 )), 'id', OrderedDict)
 
 default_fSWP_calc = 'exp'
 
 # LWP calculations (steady-state and non-steady-state)
 LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('nss',     switchboard.lwp_non_steady_state, 'Non steady-state'),
-    ('ss',      switchboard.lwp_steady_state,     'Steady-state'),
+    ('nss',     options.lwp_non_steady_state, 'Non steady-state'),
+    ('ss',      options.lwp_steady_state,     'Steady-state'),
 )), 'id', OrderedDict)
 
 default_LWP_calc = 'nss'
 
 # SGS/EGS calculations (latitude function or inputs)
 SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('inputs',       switchboard.sgs_egs_use_inputs,     'Use inputs below'),
-    ('latitude',     switchboard.sgs_egs_latitude,       'Latitude function'),
-    ('thermal_time', switchboard.sgs_egs_tt,
+    ('inputs',       options.sgs_egs_use_inputs,     'Use inputs below'),
+    ('latitude',     options.sgs_egs_latitude,       'Latitude function'),
+    ('thermal_time', options.sgs_egs_tt,
      'ETS ((Bread) Wheat (atlantic, boreal, continental))'),
-    ('thermal_time_mb', switchboard.sgs_egs_tt_mb,
+    ('thermal_time_mb', options.sgs_egs_tt_mb,
      'ETS ((Bread) Wheat (Mediterranean))'),
-    ('thermal_time_md', switchboard.sgs_egs_tt_md,
+    ('thermal_time_md', options.sgs_egs_tt_md,
      'ETS ((Durum) Wheat (Mediterranean))'),
-    ('thermal_time_pot', switchboard.sgs_egs_tt_pot,      'ETS (Potato)'),
-    ('thermal_time_tom', switchboard.sgs_egs_tt_tom,      'ETS (Tomato)'),
+    ('thermal_time_pot', options.sgs_egs_tt_pot,      'ETS (Potato)'),
+    ('thermal_time_tom', options.sgs_egs_tt_tom,      'ETS (Tomato)'),
 
 )), 'id', OrderedDict)
 
@@ -383,8 +383,8 @@ default_SGS_EGS_calc = 'inputs'
 
 # Ra calculation method (simple, heat flux)
 ra_method = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('simple', switchboard.ra_simple, 'Simple'),
-    ('heat_flux', switchboard.ra_with_heat_flux,
+    ('simple', options.ra_simple, 'Simple'),
+    ('heat_flux', options.ra_with_heat_flux,
      'Ra with heat flux(Requires Hd input data)'),
 )), 'id', OrderedDict)
 
@@ -392,16 +392,16 @@ default_ra_method = 'simple'
 
 # Stomatal conductance calculations (multiplicative, photosynthetic)
 gsto_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('multiplicative', switchboard.gsto_multiplicative, 'Multiplicative'),
-    ('photosynthetic', switchboard.gsto_photosynthetic, 'Photosynthetic'),
+    ('multiplicative', options.gsto_multiplicative, 'Multiplicative'),
+    ('photosynthetic', options.gsto_photosynthetic, 'Photosynthetic'),
 )), 'id', OrderedDict)
 
 default_gsto_calc = 'multiplicative'
 
 # Leaf temperature calculation
 tleaf_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
-    ('input',    switchboard.tleaf_use_input,        'Use hourly input data'),
-    ('estimate', switchboard.tleaf_estimate, 'Estimate'),
+    ('input',    options.tleaf_use_input,        'Use hourly input data'),
+    ('estimate', options.tleaf_estimate, 'Estimate'),
 )), 'id', OrderedDict)
 
 default_tleaf_calc = 'estimate'

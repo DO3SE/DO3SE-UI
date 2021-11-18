@@ -1,5 +1,6 @@
 objects = constants.o \
 		  functions.o \
+		  options.o \
 		  parameters.o \
 		  variables.o \
 		  inputs.o \

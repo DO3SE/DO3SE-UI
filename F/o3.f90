@@ -30,7 +30,7 @@ contains
                              Ra_O3zR_i, Ra_tar_i
         use Parameters, only: O3zR, O3_d, O3_zo, d, zo
         use R, only: calc_ra_simple => ra_simple, calc_ra_with_heat_flux=>ra_heat_flux, rb_func => rb
-        use Switchboard, only: ra_method, ra_simple, ra_with_heat_flux
+        use Options, only: ra_method, ra_simple, ra_with_heat_flux
 
 
         real, parameter :: M_O3 = 48.0      ! Molecular weight of O3 (g)
