@@ -207,9 +207,14 @@ contains
 
     subroutine SB_Calc_fSWP()
         use SoilWater
-        use Options, only: fswp_method, fswp_exponential, fswp_linear
+        use Inputs, only: fSWPin => fSWP
+        use Options, only: fswp_method, fswp_exponential, fswp_linear, fswp_input
+        use Variables, only: fSWP
 
         select case (fswp_method)
+        case (fswp_input)
+            ! fSWP = 0.8
+            fSWP = fSWPin
         case (fswp_exponential)
             call Calc_fSWP_exponential()
         case (fswp_linear)

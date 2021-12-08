@@ -43,6 +43,8 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
      'ustar', 'Ustar'),
     (inputs,    'ustar_ref', float, False,
      'ustar_ref', 'Ustar Ref'),
+    (inputs,    'fswp', float, False,
+     'fswp', 'fSWP'),
 )), 'variable', OrderedDict)
 
 #: Available output fields
@@ -350,6 +352,7 @@ default_fXWP_calc = 'disabled'
 
 # fSWP calculations (switching between exponential and linear relationship
 fSWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('input',   options.fswp_input,   'input'),
     ('exp',     options.fswp_exponential,   'Exponential'),
     ('linear',  options.fswp_linear,        'Linear (SWP_min, SWP_max)'),
 )), 'id', OrderedDict)
