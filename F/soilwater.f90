@@ -218,7 +218,7 @@ contains
         use Parameters, only: SWP_min, SWP_max, fmin, root
         use Inputs, only: dd, precip_acc
         use Variables, only: AEt, Es, Ei, LAI
-        use Variables, only: Sn, per_vol, ASW, SWP, fSWP, SMD
+        use Variables, only: Sn, per_vol, ASW, SWP, SMD
         use Variables, only: Sn_diff, P_input
 
         if (precip_acc > 0) then

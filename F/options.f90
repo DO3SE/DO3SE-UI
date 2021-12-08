@@ -32,8 +32,9 @@ module Options
     integer, public, parameter :: fo3_potato   = 3
     integer, public, save :: fo3_method = fo3_disabled
 
-    integer, public, parameter :: fswp_exponential = 1
-    integer, public, parameter :: fswp_linear      = 2
+    integer, public, parameter :: fswp_input = 1
+    integer, public, parameter :: fswp_exponential = 2
+    integer, public, parameter :: fswp_linear      = 3
     integer, public, save :: fswp_method = fswp_exponential
 
     integer, public, parameter :: lwp_non_steady_state = 1
