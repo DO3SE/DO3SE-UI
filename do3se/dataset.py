@@ -93,6 +93,9 @@ class Dataset:
         fSWP = model.fSWP_calcs[self.params.pop(
             'fswp', model.default_fSWP_calc)]
         self.options['fswp_method'] = fSWP['func']
+        ASW = model.ASW_calcs[self.params.pop(
+            'asw', model.default_fSWP_calc)]
+        self.options['asw_method'] = ASW['func']
         LWP = model.LWP_calcs[self.params.pop('lwp', model.default_LWP_calc)]
         self.options['lwp_method'] = LWP['func']
         SGS_EGS = model.SGS_EGS_calcs[self.params.pop(
