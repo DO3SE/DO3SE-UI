@@ -113,6 +113,7 @@ contains
         call Calc_SWP()
         call SB_Calc_fSWP()
         call Calc_SWP_meas()
+        call SB_Calc_ASW()
         call Calc_fPAW()
     end subroutine Daily
 

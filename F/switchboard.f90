@@ -222,6 +222,21 @@ contains
         end select
     end subroutine SB_Calc_fSWP
 
+    subroutine SB_Calc_ASW()
+        use SoilWater
+        use Inputs, only: ASWin => ASW
+        use Options, only: asw_method, asw_input, asw_calc
+        use Variables, only: ASW
+
+        select case (asw_method)
+        case (asw_input)
+            ASW = ASWin
+        case (asw_calc)
+            ! TODO: We should really create a seperate function for this
+            ! Do nothing as calculated in SWP calculations
+        end select
+    end subroutine SB_Calc_ASW
+
     subroutine SB_Calc_LWP()
         use SoilWater
         use Options, only: lwp_method, lwp_non_steady_state, lwp_steady_state

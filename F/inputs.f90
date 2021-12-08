@@ -19,6 +19,7 @@ module Inputs
     real, public, save :: PAR           ! PAR (umol/m^2/s)
     real, public, save :: cloudfrac     ! Fraction of cloud cover
     real, public, save :: fSWP
+    real, public, save :: ASW
 
     ! These input variables usually aren't available, but have derivations
     real, public, save :: Rn            ! Net radiation (MJ/m^2/h)

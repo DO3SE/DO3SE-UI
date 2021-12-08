@@ -37,6 +37,10 @@ module Options
     integer, public, parameter :: fswp_linear      = 3
     integer, public, save :: fswp_method = fswp_exponential
 
+    integer, public, parameter :: asw_input = 1
+    integer, public, parameter :: asw_calc = 2
+    integer, public, save :: asw_method = asw_calc
+
     integer, public, parameter :: lwp_non_steady_state = 1
     integer, public, parameter :: lwp_steady_state     = 2
     integer, public, save :: lwp_method = lwp_non_steady_state

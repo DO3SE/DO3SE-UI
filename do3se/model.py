@@ -45,6 +45,8 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
      'ustar_ref', 'Ustar Ref'),
     (inputs,    'fswp', float, False,
      'fswp', 'fSWP'),
+     (inputs,    'asw', float, False,
+     'asw', 'ASW'),
 )), 'variable', OrderedDict)
 
 #: Available output fields
@@ -357,7 +359,16 @@ fSWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('linear',  options.fswp_linear,        'Linear (SWP_min, SWP_max)'),
 )), 'id', OrderedDict)
 
+
 default_fSWP_calc = 'exp'
+
+# ASW calculations
+ASW_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
+    ('input',   options.asw_input,   'input'),
+    ('calc',     options.asw_calc,   'Calculated'),
+)), 'id', OrderedDict)
+
+default_ASW_calc = 'calc'
 
 # LWP calculations (steady-state and non-steady-state)
 LWP_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
@@ -498,6 +509,8 @@ paramdefs = dicts_to_map(to_dicts(('group', 'variable', 'cls', 'args', 'name', '
      (LWP_calcs, default_LWP_calc), 'LWP calculation', ''),
     ('modelopts', 'fswp', ChoiceField, (fSWP_calcs,
                                         default_fSWP_calc), 'fSWP calculation', ''),
+    ('modelopts', 'asw', ChoiceField, (ASW_calcs,
+                                        default_ASW_calc), 'ASW calculation', ''),
 
     ('season', 'sgs_egs_calc', ChoiceField,
      (SGS_EGS_calcs, default_SGS_EGS_calc), 'SGS/EGS method', ''),
