@@ -29,10 +29,6 @@ module SoilWater
     public :: Calc_fPAW
     public :: fSWP_exp_curve
 
-    ! Constants
-    real, public, parameter :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
-    real, public, parameter :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
-
     ! Calculated constants
     real, public :: ASW_FC
 
@@ -353,8 +349,7 @@ contains
 
     subroutine Calc_fPAW()
         use Variables, only: ASW, fPAW
-        use Parameters, only: root, fmin
-        use Parameters, only: Fc_m
+        use Parameters, only: fmin, ASW_min, ASW_max
 
         fPAW = fmin + (1.0-fmin) * ((100 * (ASW/ASW_FC)) - ASW_min) / (ASW_max - ASW_min)
         fPAW = min(1.0, max(fmin, fPAW))

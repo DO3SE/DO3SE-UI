@@ -67,6 +67,12 @@ module Parameters
 
     real, public, save :: SWP_min = -1.25   ! SWP for min g
     real, public, save :: SWP_max = -0.05   ! SWP for max g
+    real, public, save :: ASW_FC_override   ! SWP for max g
+
+    ! Constants
+    real, public, save :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
+    real, public, save :: ASW_max = 50.0   ! ASW for max g (% of ASW_FC)
+
 
     ! Boundary gs values
     real, public, save :: gmax = 148        ! mmol O3 m^-2 PLA s^-1

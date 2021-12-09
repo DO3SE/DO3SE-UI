@@ -254,7 +254,7 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      'Es_blocked',       'Es_blocked'),
     (soilwater,     'asw_fc',       float,
      'ASW_FC',       'ASW_FC'),
-    (soilwater,     'asw_max',       float,
+    (parameters,     'asw_max',       float,
      'ASW_max',       'ASW_max'),
     (parameters,     'sgs',       float,
      'sgs',       'sgs'),

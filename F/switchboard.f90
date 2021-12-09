@@ -223,14 +223,16 @@ contains
     end subroutine SB_Calc_fSWP
 
     subroutine SB_Calc_ASW()
-        use SoilWater
+        use SoilWater, only: ASW_FC
         use Inputs, only: ASWin => ASW
         use Options, only: asw_method, asw_input, asw_calc
         use Variables, only: ASW
+        use Parameters, only: ASW_FC_override
 
         select case (asw_method)
         case (asw_input)
             ASW = ASWin
+            ASW_FC = ASW_FC_override
         case (asw_calc)
             ! TODO: We should really create a seperate function for this
             ! Do nothing as calculated in SWP calculations
@@ -273,8 +275,8 @@ contains
     ! Calculate if there should be no soil evaporation depending on
     ! the current fSWP method
     subroutine SB_Calc_Es_blocked()
-        use Soilwater, only: ASW_FC, ASW_max
-        use Parameters, only: SWP_max
+        use Soilwater, only: ASW_FC
+        use Parameters, only: SWP_max, ASW_max
         use Variables, only: Es_blocked, ASW, SWP
         use Options, only: fxwp_method, fxwp_use_fpaw
 
