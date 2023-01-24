@@ -34,6 +34,11 @@ libxtst-dev
 - Run `make py_cli`
 - Run `python DO3SE_cli.py -c json -o [OUTFILE] [CONFIG_FILE] [INPUT_FILE]`
 
+# Deployment
+
+To deploy to HPC machines run
+`pip install git+ssh://git@github.com/SEI-DO3SE/DO3SE-UI@master`
+
 # Troubleshooting
 
 - py2exe is depreciated. Use python >3.4
