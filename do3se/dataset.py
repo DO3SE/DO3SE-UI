@@ -1,5 +1,6 @@
 from do3se import model
 from do3se import util
+from typing import List
 import csv
 import logging
 _log = logging.getLogger('do3se.dataset')
@@ -31,11 +32,28 @@ class Dataset:
     *parameters* is a dictionary-like object of parameter values, and will be
     modified by the constructor as "virtual" parameters are replaced with real
     parameters and control parameters are removed.
+
+
+    # Input data
+    input_data can either be a list of dictionaries or a a matrix
+    with shape [row_count, heading_count]
+
     """
 
-    def __init__(self, input_data, input_fields, params):
+    def __init__(self, input_data, input_fields, params, headings: List[str]=None):
         self.params = params
         self.options = dict()
+        self.headings = headings or list(input_data[0].keys())
+        self.input_data_is_matrix = headings is not None and type(
+            input_data) is not dict
+
+        self.input = input_data
+        dd_key = "dd" if not self.input_data_is_matrix else headings.index('dd')
+        ts_c_key = "ts_c" if not self.input_data_is_matrix else headings.index('ts_c')
+        mean_temps, td_data = calc_thermal_time(self.input, dd_key, ts_c_key)
+        self.input = [[*row, td] if self.input_data_is_matrix else {
+            **row, "td": td} for row, td in zip(self.input, td_data)]
+        headings = [*headings, 'td']
 
         # Check required fields are present
         required = [k for k, v in model.input_fields.items() if v['required']]
@@ -118,9 +136,6 @@ class Dataset:
         self.params['u_h'] = self.params['h'] if u_h['disabled'] else u_h['value']
         o3_h = self.params.pop('o3_h')
         self.params['o3_h'] = self.params['h'] if o3_h['disabled'] else o3_h['value']
-
-        self.input = input_data
-        self.input, mean_temps = calc_thermal_time(self.input)
 
         if SGS_EGS['func'] == 3:
             # self.params['sgs']
@@ -211,14 +226,17 @@ class Dataset:
                         progressbar.GetValue() + progress_interval)
 
             # Skip rows that are missing values
-            if '' in row.values():
+            if not self.input_data_is_matrix and '' in row.values():
                 skippedrows += 1
                 continue
             # Catch TypeError - usually caused by some attributes being None
             # because there weren't enough fields in the input
             # TODO: Handle this differently?
             try:
-                util.setattrs(model.inputs, row)
+                if self.input_data_is_matrix:
+                    util.setattrsb(model.inputs, row, self.headings)
+                else:
+                    util.setattrs(model.inputs, row)
             except TypeError:
                 raise InvalidFieldCountError()
             model.run.calculate_row()
@@ -385,31 +403,31 @@ def calc_mean(temp_list):
     return 0
 
 
-def calc_thermal_time(data):
+def calc_thermal_time(data, dd_key="dd", ts_c_key="ts_c"):
     day_temps = []
     mean_temps = [0]*367
     set_day = None
-    for r in data:
+    for row in data:
+        dd, ts_c = row[dd_key],row[ts_c_key]
         if set_day == None:
-            set_day = int(r['dd'])
+            set_day = int(dd)
             day_temps = []
-            day_temps.append(r['ts_c'])
+            day_temps.append(ts_c)
             continue
-        if int(r['dd']) != set_day:
+        if int(dd) != set_day:
             mean_temps[set_day] = calc_mean(day_temps)
             if set_day > 1:
                 mean_temps[set_day] = mean_temps[set_day] + \
                     mean_temps[set_day - 1]
             day_temps = []
-            set_day = int(r['dd'])
-            day_temps.append(r['ts_c'])
+            set_day = int(dd)
+            day_temps.append(ts_c)
         else:
-            day_temps.append(r['ts_c'])
+            day_temps.append(ts_c)
     else:
         mean_temps[set_day] = calc_mean(day_temps)
         if set_day > 1:
             mean_temps[set_day] = mean_temps[set_day] + mean_temps[set_day - 1]
-    for r in data:
-        r['td'] = mean_temps[int(r['dd'])]
+    td = [mean_temps[int(row[dd_key])] for row in data]
 
-    return data, mean_temps
+    return mean_temps, td

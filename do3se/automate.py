@@ -64,7 +64,7 @@ def outfile_callback(option, opt_str, value, parser):
     parser.values.outfile = open(value, 'w')
 
 
-def run(options, projectfile, inputfile, outputfile, parser):
+def run(options, projectfile, inputfile, outputfile, parser, headings):
     project = Project(projectfile)
     if not project.exists():
         parser.error('Project file does not exist: ' + projectfile)
@@ -73,7 +73,7 @@ def run(options, projectfile, inputfile, outputfile, parser):
     input_fields = project.data.pop('input_fields', [])
     input_trim = project.data.pop('input_trim', 0)
     input_data = data_from_csv(open(inputfile, 'r'), input_fields, input_trim)
-    dataset = Dataset(input_data, input_fields, project.data)
+    dataset = Dataset(input_data, input_fields, project.data, headings)
     # Run
     results = dataset.run()
     results.save(
@@ -83,7 +83,7 @@ def run(options, projectfile, inputfile, outputfile, parser):
         (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
 
 
-def run_from_pipe(options, projectfile, input_fields=[], output_file=None):
+def run_from_pipe(options, projectfile, input_fields=[], output_file=None, headings=None):
     """Run model with piped data.
 
     input_data must be iterable of dicts
@@ -96,7 +96,7 @@ def run_from_pipe(options, projectfile, input_fields=[], output_file=None):
     def _inner(input_data, project_overrides={}):
         project = Project(projectfile)
         project.data = {**project.data, **project_overrides}
-        dataset = Dataset(input_data, input_fields, project.data)
+        dataset = Dataset(input_data, input_fields, project.data, headings)
         results = dataset.run()
         if output_file:
             results.save(

@@ -24,6 +24,17 @@ def setattrs(obj, d):
         setattr(obj, k, v)
 
 
+
+
+def setattrsb(obj, data, headings):
+    """
+    Using :obj:`d` as a mapping of attribute name to a new value, set the values
+    of attributes on :obj:`obj`.
+    """
+    for k,v in zip(headings, data):
+        setattr(obj, k, v)
+
+
 def csv2dict(infile):
     """
     CSV data loader.
