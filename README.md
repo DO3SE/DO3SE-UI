@@ -1,45 +1,50 @@
-# Dependencies
+# DO3SE Installation
 
-- Numpy
-- wxPython # Install from website
-- libSDL2-2.0.so.0 # install with sudo apt-get
-- future # install with pip
+## Dependencies
 
-- If running with a headless ubuntu setup (Docker/WSL etc) then additional dependencies may need to be installed.
+`pip install -r requirements/common.txt`
+For grid runs also run `pip install -r requirements/gridruns.txt`
 
-```
-apt-get install freeglut3-dev \
-libgl1-mesa-dev \
-libglu1-mesa-dev \
-libgstreamer-plugins-base1.0-dev \
-libgtk-3-dev \
-libjpeg-dev \
-libnotify-dev \
-libpng-dev \
-libsdl2-dev \
-libsm-dev \
-libtiff-dev \
-libwebkit2gtk-4.0-dev \
-libxtst-dev
-```
-
-# Build
+## Build
 
 - `make py_ext` for python
 - `make py_cli` for python cli only
 - `make dose` for fortran only
 
-# Running Cli
+## Install DO3SE
+
+Finally install do3se with `pip install -e .` from the root of this repo.
+
+## Check working
+
+### Single Run
+
+...
+
+### Batch Run
+
+...
+
+### Grid runs
+
+run `python tests/gridrun/grid_run_test.py`.
+Output should be located in `tests/gridrun/outputs`
+Additional grid run docs can be found in `doc/end_user/grid_runs.md`
+
+## Running Cli
 
 - Run `make py_cli`
-- Run `python DO3SE_cli.py -c json -o [OUTFILE] [CONFIG_FILE] [INPUT_FILE]`
+- Run `python -m DO3SE_cli --help`
 
-# Deployment
+<!-- Legacy setup -->
+<!-- - Run `python DO3SE_cli.py -c json -o [OUTFILE] [CONFIG_FILE] [INPUT_FILE]` -->
+
+## Deployment
 
 To deploy to HPC machines run
 `pip install git+ssh://git@github.com/SEI-DO3SE/DO3SE-UI@master`
 
-# Troubleshooting
+## Troubleshooting
 
 - py2exe is depreciated. Use python >3.4
 
