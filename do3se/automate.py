@@ -1,11 +1,6 @@
 from do3se.dataset import Dataset, data_from_csv
 from do3se.project import Project
 from do3se import model
-from do3se import application
-# import wx
-import sys
-import os
-import optparse
 import logging
 _log = logging.getLogger('do3se.automate')
 
@@ -106,71 +101,3 @@ def run_from_pipe(options, projectfile, input_fields=[], output_file=None, headi
                 (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
         return results
     return _inner
-
-
-def get_option_parser():
-    parser = optparse.OptionParser(
-        usage='Usage: %prog [options] projectfile inputfile')
-    parser.add_option('-v', '--verbose',
-                      action='store_const',
-                      dest='loglevel',
-                      const=logging.INFO)
-    parser.add_option('-d', '--debug',
-                      action='store_const',
-                      dest='loglevel',
-                      const=logging.DEBUG)
-    parser.add_option('--list-outputs',
-                      action='callback',
-                      callback=list_outputs,
-                      #   callback_kwargs={'app': app}
-                      )
-    parser.add_option('-f', '--format',
-                      action='callback',
-                      callback=format_option_callback,
-                      #   callback_kwargs={'app': app},
-                      type='string',
-                      nargs=1,
-                      help='A comma-separated list of output field keys or +PRESET '
-                           '(see --list-outputs) [default: all fields]')
-    parser.add_option('-o', '--outfile',
-                      action='callback',
-                      callback=outfile_callback,
-                      type='string',
-                      nargs=1,
-                      help='Write results to OUTFILE [default: use stdout]')
-    parser.add_option('-r', '--reduce',
-                      action='store_const',
-                      dest='reduce_output',
-                      const=True,
-                      help='Only output rows during growing season')
-    parser.add_option('-n', '--no-headers',
-                      action='store_const',
-                      dest='show_headers',
-                      const=False,
-                      help='Don\'t output column headers')
-    parser.set_defaults(loglevel=logging.CRITICAL,
-                        format=model.output_fields.keys(),
-                        show_headers=True,
-                        reduce_output=False,
-                        outfile=sys.stdout)
-    parser.add_option('-l', '--gridded-data',
-                      action='store',
-                      dest='gridded_data_map',
-                      help='A json map of coordinate to lat long to parse configs')
-
-    return parser
-
-
-def main(args):
-    parser = get_option_parser()
-    (options, args) = parser.parse_args(args)
-    if len(args) < 2:
-        parser.error('Not enough arguments')
-    application.logging_setup(level=options.loglevel)
-    projectfile, inputfile = args
-    outputfile = options.outfile
-    run(options, projectfile, inputfile, outputfile, parser)
-
-
-if __name__ == '__main__':
-    main(sys.argv[1:])

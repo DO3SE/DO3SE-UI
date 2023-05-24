@@ -1,3 +1,2 @@
-import sys
-from do3se.automate import main
-main(sys.argv[1:])
+from do3se.cli import cli
+cli()
