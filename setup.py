@@ -51,8 +51,14 @@ setup(
     install_requires=[
         'numpy',
         'future',
+        'pandas',
+        ''
     ],
-    extras_require={'cli': ['pytest', 'numpy', 'pandas']},
+    extras_require={
+        'cli': ['pytest', 'numpy', 'pandas', 'click'],
+        'grid': ['xarray', 'netCDF4', 'pandas', 'numpy'],
+        'test': ['pytest', 'numpy', 'pandas', 'click'],
+    },
     packages=setuptools.find_packages(),
     package_dir={'pyDO3SE': 'pyDO3SE'},
     classifiers=[
