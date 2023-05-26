@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "do3se"
-version = "3.4.9"
+version = "3.5.0"
 authors = [
   { name="Sam Bland", email="sbland.co.uk@gmail.com" },
   { name="Alan Briolat"},
