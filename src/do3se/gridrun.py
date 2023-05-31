@@ -10,18 +10,8 @@ from datetime import datetime
 from pathlib import Path
 
 from do3se.automate import run_from_pipe
+from do3se.logger import Logger
 
-
-def log(log_level):
-    def _inner(*args, **kwargs):
-        stream = kwargs.get('stream', False)
-        if log_level:
-            if stream:
-                sys.stdout.write(f"\r {', '.join([str(a) for a in args])}")
-                sys.stdout.flush()
-            else:
-                print(*args, **kwargs)
-    return _inner
 
 
 def saturated_vapour_pressure(Ts_C: float) -> float:
@@ -348,7 +338,7 @@ def runner(
     throw_exceptions: bool = True,
     run_id="DO3SE_UI_run",
     save_ds: bool = False,
-    logger=log(0),
+    logger=Logger(0),
 ):
     """Run the do3se model for the given project file.
 
@@ -431,17 +421,19 @@ def runner(
             output_file = open(
                 f'{output_file_path}/{run_id}_{i}_{j}.csv', 'w') \
                 if output_file_path is not None and not save_ds else None
-            logger("Running do3se", i, j)
-            runner = run_from_pipe(
+            logger("Running do3se on coords: ", i, j)
+            runner_int = run_from_pipe(
                 options,
                 project_file,
                 input_fields,
                 output_file=output_file,
                 headings=input_fields,
+                output_file_path=output_file_path,
             )
 
-            output = runner(rows, config_overrides)
-            logger("Runner output saved to", output_file, "for coords", i, j)
+            output = runner_int(rows, config_overrides)
+            if output_file:
+                logger("Runner output saved to", output_file_path, "for coords", i, j)
 
             if save_ds:
                 logger("Saving ds output for coords", i, j)
@@ -482,7 +474,7 @@ def runner(
                 logger(f'Failed to run coords: {i}_{j}')
         output_file and output_file.close()
     end_time = datetime.now()
-    logger(f"Model time: {end_time - start_time}")
+    logger(f"Completed running batch. Model time: {end_time - start_time}")
     if save_ds:
         ds_full = xr.merge(outputs_full)
         ds_full.to_netcdf(f'{output_file_path}/out_full_{run_id}.nc')
@@ -500,6 +492,7 @@ def gridrun(
     process_output: Callable[[], any] = process_output_for_pod,
     dims: Tuple[str, str]=['j', 'i'],
     return_outputs: bool = False,
+    output_fields: List[str] = out_fields,
     save_ds: bool = False,
     save_full_outputs: bool = False,
     debug: bool = False,
@@ -529,6 +522,8 @@ def gridrun(
         The dimensions used in the input data
     return_outputs : bool
         If true, return the output of the model. Note this will use more memory
+    output_fields: List[str]
+        The fields to output from the model. Run list_outputs to see options
     save_ds : bool
         If true, save the full output dataset to a netcdf file.
     save_full_outputs : bool
@@ -545,7 +540,7 @@ def gridrun(
     """
     # SETUP MODEL
 
-    logger=log(debug)
+    logger=Logger(debug, f'{output_location}/log_{run_id}.txt', flush_per_log=debug, use_timestamp=True)
     outputs = []
     setup = process_and_run(
         input_data_dir,
@@ -581,7 +576,7 @@ def gridrun(
             project_file,
             coord_batch,
             data_computed,
-            out_fields,
+            output_fields,
             e_state_overrides,
             zero_year,
             output_file_path=full_output_dir,
