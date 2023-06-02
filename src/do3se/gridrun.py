@@ -428,7 +428,6 @@ def runner(
                 input_fields,
                 output_file=output_file,
                 headings=input_fields,
-                output_file_path=output_file_path,
             )
 
             output = runner_int(rows, config_overrides)
