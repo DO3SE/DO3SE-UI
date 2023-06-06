@@ -5,8 +5,8 @@ import wx
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
 
 from do3se import model
-from do3se import ui_xrc
-from do3se import wxext
+from do3seui import ui_xrc
+from do3seui import wxext
 from do3se.util import OrderedDict
 
 

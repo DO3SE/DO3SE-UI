@@ -1,13 +1,14 @@
-try:
-    import wx
-    import wx.lib.newevent
-    from do3se import dialogs
+# try:
+#     import wx
+#     import wx.lib.newevent
+#     from do3seui import dialogs
 
-    # Generic "value changed" event
-    ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
+#     # Generic "value changed" event
+#     ValueChangedEvent, EVT_VALUE_CHANGED = wx.lib.newevent.NewCommandEvent()
 
-except ModuleNotFoundError:
-    pass
+# except ModuleNotFoundError:
+#     wx = None
+#     pass
 
 from do3se.util.picklefile import PickleFile
 import json
@@ -24,7 +25,7 @@ class Project(PickleFile):
     :param format:      input config format. Either do3se or json
     """
 
-    def __init__(self, filename=None, window=None):
+    def __init__(self, filename=None, window=None, wx=None):
         PickleFile.__init__(self, filename)
         self.window = window
         if self.filename is not None:

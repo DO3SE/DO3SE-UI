@@ -1,8 +1,8 @@
 import wx
 
-from do3se.datapanel import DataPanel
-from do3se.savepanel import SavePanel
-from do3se.plotpanel import PlotPanel, PlotPanel2, PlotPanel3, PlotPanel4
+from do3seui.datapanel import DataPanel
+from do3seui.savepanel import SavePanel
+from do3seui.plotpanel import PlotPanel, PlotPanel2, PlotPanel3, PlotPanel4
 
 
 class ResultsWindow(wx.Frame):

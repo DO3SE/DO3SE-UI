@@ -1,8 +1,8 @@
 import wx
 
-from do3se import wxext
+from do3seui import wxext
 from do3se import model
-from do3se import dialogs
+from do3seui import dialogs
 
 
 class SavePanel(wx.Panel):

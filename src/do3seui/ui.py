@@ -1,13 +1,13 @@
 # coding: utf-8
-from do3se.resultswindow import ResultsWindow
+from do3seui.resultswindow import ResultsWindow
 from do3se.dataset import Dataset, DatasetError, data_from_csv
 from do3se.project import Project
-from do3se import fieldgroups
-from do3se import fields
-from do3se import dialogs
-from do3se import ui_xrc
+from do3seui import fieldgroups
+from do3seui import fields
+from do3seui import dialogs
+from do3seui import ui_xrc
 from do3se import model
-from do3se import wxext
+from do3seui import wxext
 import wx.lib.delayedresult
 import wx.lib.plot
 import wx.html
@@ -175,7 +175,7 @@ class ProjectWindow(ui_xrc.xrcframe_projectwindow):
                           'Error',
                           wx.OK | wx.ICON_ERROR,
                           self)
-        self.project = Project(projectfile, self)
+        self.project = Project(projectfile, self, wx)
 
         # assign project data to field groups
         self.params.set_values(self.project.data)

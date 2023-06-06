@@ -10,7 +10,7 @@ from do3se import wxext
 from do3se import model
 from do3se import fields
 from do3se.fields import EVT_VALUE_CHANGED, validate
-import do3se.graphs
+import do3seui.graphs
 import resources
 
 
