@@ -20,19 +20,20 @@ class Logger:
         self.flush_per_log = flush_per_log
         self.history = []
         self.offset = 0 if not use_timestamp else len(
-            str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + '\t')
+            str(datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")) + '\t')
         if log_to_file:
             try:
                 f = open(log_to_file, write_mode)
             except FileNotFoundError:
                 f = open(log_to_file, 'w')
-            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f"))
             f.write(f'\n=========== {t} =========\n')
             self.log_file = f
 
         if set_as_default:
             defaultLogger.__dict__.update(self.__dict__)
-
+        if log_level:
+            print("SETTING UP LOGGER")
     def log(self, *args, **kwargs):
         verbose = kwargs.pop('verbose', False)
         args_to_print = [str(arg).replace('\n', '\n' + self.offset * ' ') for arg in args]
@@ -43,18 +44,18 @@ class Logger:
         if self.log_to_file and self.log_file.closed:
             self.open()
         if self.log_level and self.log_to_file:
-            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + \
+            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")) + \
                 '\t' if self.use_timestamp else ''
             self.log_file.writelines(t + ', '.join(args_to_print) + '\n')
         if self.log_level and not self.log_to_file:
-            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + \
+            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")) + \
                 '\t' if self.use_timestamp else ''
             print(t + ', '.join(args_to_print) + '\n')
         if self.flush_per_log and self.log_to_file and self.log_level >= 2:
             # If running verbose we save the file after each log.
             self.flush()
         if self.log_level >= 2:
-            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S")) + \
+            t = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")) + \
                 '\t' if self.use_timestamp else ''
             self.history.append(t + ', '.join(args_to_print) + '\n')
 

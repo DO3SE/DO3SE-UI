@@ -1,5 +1,5 @@
 import unittest
-import StringIO
+import io
 
 import do3se.dataset as dataset
 
@@ -15,7 +15,7 @@ class TestCSVLoader(unittest.TestCase):
 12,15.3,12.0e-3"""
 
     def setUp(self):
-        self.infile = StringIO.StringIO(self.CSVEXAMPLE)
+        self.infile = io.StringIO(self.CSVEXAMPLE)
 
     def tearDown(self):
         del self.infile

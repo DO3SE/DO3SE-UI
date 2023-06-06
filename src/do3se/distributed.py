@@ -10,7 +10,7 @@ import os
 import re
 import json
 from multiprocessing import Pool
-from do3se.automate import main, get_option_parser
+from do3se.cli import main, get_option_parser
 
 
 def make_dir(target_dir):

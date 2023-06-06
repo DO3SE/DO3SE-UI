@@ -12,7 +12,7 @@ from pathlib import Path
 from do3se.automate import run_from_pipe
 from do3se.logger import Logger
 
-
+INVALID_COORD = -9999
 
 def saturated_vapour_pressure(Ts_C: float) -> float:
     return 0.611 * math.exp(17.27 * Ts_C / (Ts_C + 237.3))
@@ -160,8 +160,8 @@ def load_and_process(
 
         input_data_multi_ds = xr.open_mfdataset(
             f'{data_location}/*.nc',
-            ** kwargs,
-            chunks={'time': 8760, 'i': 5, 'j': 5}, # TODO: Make general to all datasets
+             # TODO: Make general to all datasets
+            **{"chunks":{'time': 8760, 'i': 5, 'j': 5},**kwargs},
             # , concat_dim="Time", combine="nested"
         )
     except OSError as e:
@@ -200,7 +200,8 @@ def get_coord_batches(
     batch_size = math.ceil(len(coords) / batch_len)
     logger(f"===total cells: {len(coords)} batch_size: {batch_size}, batch_len:{batch_len}, target_batch_size={target_batch_size}")
     pad_amount = (batch_len*batch_size) - coords.shape[0]
-    coords_batches = np.pad(coords,  [[0,pad_amount],[0,0]], 'edge').reshape([batch_len, batch_size, 2])
+
+    coords_batches = np.pad(coords,  [[0,pad_amount],[0,0]], 'constant', constant_values=INVALID_COORD).reshape([batch_len, batch_size, 2])
     return coords_batches
 
 
@@ -258,12 +259,13 @@ def process_and_run(
 
     """
     def _data_prep(
-                   coords: List[Tuple[int, int]],
-                   preprocess_data_func=process_emep_data,
-                   return_processed_data=False, precompute=False,
-                   dims: List[str] = ['lon', 'lat'],
-                   logger=print
-                   ):
+            coords: List[Tuple[int, int]],
+            preprocess_data_func=process_emep_data,
+            return_processed_data=False, precompute=False,
+            dims: List[str] = ['lon', 'lat'],
+            loadData_kwargs: dict = {},
+            logger=print
+            ):
         """Load and process data for coords in coords list.
 
         Parameters
@@ -296,6 +298,7 @@ def process_and_run(
             data_location,
             process_func=preprocess_data_func,
             dims=dims,
+            **loadData_kwargs,
             # concat_dim="Time", # TODO: Make this an arg
             # combine="nested", # TODO: Make this an arg
         )
@@ -378,7 +381,10 @@ def runner(
     outputs = []
     outputs_full = []
     start_time = datetime.now()
+    logger(f"Running model for {len(coords)} coords")
     for i, j in coords:
+        if i == INVALID_COORD and j == INVALID_COORD:
+            continue
         logger(f'Running coords: {i}_{j}')
         try:
             # TODO: Can we optimize this?!
@@ -475,6 +481,7 @@ def runner(
     end_time = datetime.now()
     logger(f"Completed running batch. Model time: {end_time - start_time}")
     if save_ds:
+        logger("Saving full ds output")
         ds_full = xr.merge(outputs_full)
         ds_full.to_netcdf(f'{output_file_path}/out_full_{run_id}.nc')
 
@@ -494,14 +501,15 @@ def gridrun(
     output_fields: List[str] = out_fields,
     save_ds: bool = False,
     save_full_outputs: bool = False,
-    debug: bool = False,
     target_batch_size: int = None,
+    loadData_kwargs: dict = {},
+    debug: bool = False,
 ):
     """Internal do3se run function
 
     Parameters
     ----------
-     run_id : str
+    run_id : str
         A user assigned run id which can be used to identify each run.
     project_file : Path
         the path to the do3se project file(Config file)
@@ -527,10 +535,12 @@ def gridrun(
         If true, save the full output dataset to a netcdf file.
     save_full_outputs : bool
         If true, save the full output from each run to csv files
-    debug : bool
-        Run in debug mode
     target_batch_size : int
         The target batch size to run the model on. If None, the model will run on the full batch.
+    loadData_kwargs : dict
+        kwargs to pass to the loadData function
+    debug : bool
+        Run in debug mode
 
     Returns
     -------
@@ -539,7 +549,13 @@ def gridrun(
     """
     # SETUP MODEL
 
-    logger=Logger(debug, f'{output_location}/log_{run_id}.txt', flush_per_log=debug, use_timestamp=True)
+    logger=Logger(
+        debug and 2,
+        log_to_file=f'{output_location}/log_{run_id}.txt',
+        flush_per_log=debug,
+        use_timestamp=True,
+    )
+    logger(f"Running grid run: {run_id}")
     outputs = []
     setup = process_and_run(
         input_data_dir,
@@ -568,6 +584,8 @@ def gridrun(
             coords=coord_batch,
             dims=dims,
             preprocess_data_func=process_emep_data,
+            precompute=loadData_kwargs.pop('precompute', False),
+            loadData_kwargs=loadData_kwargs,
             logger=logger,
         )
 
@@ -591,3 +609,4 @@ def gridrun(
             file_save_path = f'{output_location}/results_{batch_i}.csv'
             df.to_csv(file_save_path, index=False)
 
+    return outputs
