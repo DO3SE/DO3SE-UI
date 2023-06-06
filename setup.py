@@ -19,7 +19,7 @@ with open("README.md", "r") as fh:
 root = os.environ['BUILD_ROOT'] # This is a hack to fix missing objects.mk issue
 app_name = 'do3se'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '3.5.2'
+app_version = '3.6.0'
 fortran_src_dir = 'src/F'
 
 ext_files = [os.path.join(fortran_src_dir, x) for x in
