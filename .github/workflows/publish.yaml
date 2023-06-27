@@ -12,8 +12,8 @@ jobs:
         run: |
           echo "Found $(ls -al)"
       - name: Publish
-        working-directory: .github/scripts
-        run: ./publish.sh
+        run: ./.github/scripts/publish.sh
         shell: bash
         env:
           GITHUB_TOKEN: "${{ secrets.PRIVATE_RELEASE_REPO_SECRET }}"
+          GH_TOKEN: ${{ github.token }}
