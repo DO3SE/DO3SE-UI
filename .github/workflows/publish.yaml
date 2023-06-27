@@ -18,6 +18,7 @@ jobs:
           pip install ruff pytest
           pip install -r requirements/common.txt
           pip install -r requirements/deployment.txt
+          pip install --upgrade build
         shell: bash
       - name: Build
         run: python -m Build
