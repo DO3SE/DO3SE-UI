@@ -8,6 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Publish
-        run: ./.github/actions/publish.sh
+        run: ./.github/scripts/publish.sh
         env:
           GITHUB_TOKEN: "${{ secrets.PRIVATE_RELEASE_REPO_SECRET }}"
