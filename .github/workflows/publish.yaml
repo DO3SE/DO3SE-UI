@@ -7,6 +7,9 @@ jobs:
   publish_release:
     runs-on: ubuntu-latest
     steps:
+      - name: check
+        working-directory: .github/scripts
+        run: ls
       - name: Publish
         working-directory: .github/scripts
         run: publish.sh
