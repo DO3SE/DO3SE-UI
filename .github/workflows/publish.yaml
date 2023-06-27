@@ -20,8 +20,10 @@ jobs:
           pip install -r requirements/deployment.txt
           pip install --upgrade build
         shell: bash
+      - name: Build Fortran
+        run: make dose
       - name: Build
-        run: python -m build
+        run: python setup.py build
         shell: bash
         env:
           BUILD_ROOT: '.'
