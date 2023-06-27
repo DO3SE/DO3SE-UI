@@ -7,8 +7,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - name: Publish
-        uses: ./.github/actions/publish.sh
+        run: ./.github/actions/publish.sh
         env:
           GITHUB_TOKEN: "${{ secrets.PRIVATE_RELEASE_REPO_SECRET }}"
