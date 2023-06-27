@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: check
-        run: ls
+        run: |
+          echo "Found $(ls -al)"
       - name: Publish
         working-directory: .github/scripts
         run: publish.sh
