@@ -39,4 +39,4 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: "${{ secrets.PRIVATE_RELEASE_REPO_SECRET }}"
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PRIVATE_RELEASE_REPO_SECRET  }}
