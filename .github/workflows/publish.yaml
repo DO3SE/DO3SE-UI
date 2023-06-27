@@ -26,7 +26,12 @@ jobs:
         run: python setup.py build
         shell: bash
         env:
-          BUILD_ROOT: '.'
+          BUILD_ROOT: "."
+      - name: BuildB
+        run: python -m build
+        shell: bash
+        env:
+          BUILD_ROOT: "."
       - name: Check Build
         run: echo $(ls dist)
       - name: Publish
