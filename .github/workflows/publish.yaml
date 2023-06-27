@@ -21,7 +21,7 @@ jobs:
           pip install --upgrade build
         shell: bash
       - name: Build
-        run: python -m Build
+        run: python -m build
         shell: bash
       - name: Publish
         run: ./.github/scripts/publish.sh
