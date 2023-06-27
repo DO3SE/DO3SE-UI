@@ -4,10 +4,12 @@ on:
     branches:
       - RELEASE
 jobs:
-  release:
+  publish_release:
     runs-on: ubuntu-latest
     steps:
       - name: Publish
-        run: ./.github/scripts/publish.sh
+        working-directory: ./.github/scripts
+        run: publish.sh
+        shell: bash
         env:
           GITHUB_TOKEN: "${{ secrets.PRIVATE_RELEASE_REPO_SECRET }}"
