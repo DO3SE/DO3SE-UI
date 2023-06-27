@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: check
-        run: |
-          echo "Found $(ls -al)"
       - name: Publish
         run: ./.github/scripts/publish.sh
         shell: bash
