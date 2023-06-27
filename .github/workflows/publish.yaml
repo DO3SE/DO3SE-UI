@@ -27,6 +27,8 @@ jobs:
         shell: bash
         env:
           BUILD_ROOT: "."
+      - name: Check Builda
+        run: echo $(ls src/F)
       - name: BuildB
         run: python -m build
         shell: bash
