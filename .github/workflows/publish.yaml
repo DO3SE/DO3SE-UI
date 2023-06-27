@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Publish
-        working-directory: ./.github/scripts
+        working-directory: .github/scripts
         run: publish.sh
         shell: bash
         env:
