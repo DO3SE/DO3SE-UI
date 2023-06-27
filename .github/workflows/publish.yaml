@@ -23,10 +23,12 @@ jobs:
       - name: Build Fortran
         run: make dose
       - name: Build
-        run: python setup.py build
+        run: python -m build
         shell: bash
         env:
           BUILD_ROOT: '.'
+      - name: Check Build
+        run: echo $(ls dist)
       - name: Publish
         run: ./.github/scripts/publish.sh
         shell: bash
