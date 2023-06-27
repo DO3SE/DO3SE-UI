@@ -23,6 +23,8 @@ jobs:
       - name: Build
         run: python -m build
         shell: bash
+        env:
+          BUILD_ROOT: '.'
       - name: Publish
         run: ./.github/scripts/publish.sh
         shell: bash
