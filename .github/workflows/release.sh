@@ -21,6 +21,7 @@ else
 fi
 
 bumpversion $1
+
 RELEASE_BRANCH=${2:-RELEASE}
 echo $RELEASE_BRANCH
 
