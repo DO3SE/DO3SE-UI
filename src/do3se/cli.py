@@ -1,8 +1,10 @@
 import click
 import pandas as pd
+import json
 from pathlib import Path
 from do3se.gridrun import gridrun
 from do3se.automate import list_outputs, format_option_callback, outfile_callback
+from do3se.project import Project
 from do3se import model
 from do3se import application
 # import wx
@@ -186,6 +188,29 @@ def run(run_id: str,
         debug=debug,
         target_batch_size=target_batch_size,
     )
+
+
+@click.argument(
+    'output_file_location',
+    required=True,
+    type=click.Path(),
+)
+@click.argument(
+    'project_file_loc',
+    required=True,
+    type=click.Path(),
+)
+@cli.command()
+def convert_ui_file_to_json(
+    project_file_loc: Path,
+    output_file_location: Path,
+):
+    """Convert a project file from the UI to a json file."""
+
+    output_file_location = project_file_loc.split('.do3se')[0] + '.json'
+    project = Project(project_file_loc)
+    with open(output_file_location, 'w') as outfile:
+        json.dump(dict(project.data), outfile)
 
 
 if __name__ == "__main__":
