@@ -1,7 +1,7 @@
 import wx
 import wx.grid
 
-import do3se.model
+import do3se.model as model
 
 
 class DataTable(wx.grid.PyGridTableBase):
