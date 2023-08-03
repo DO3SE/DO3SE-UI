@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      # TODO: push release branch to release repo
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
