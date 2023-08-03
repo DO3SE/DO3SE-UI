@@ -74,9 +74,11 @@ def process_wrfchem_data(data_processed, dims=['lon', 'lat']):
     data_processed = data_processed.assign(p=lambda d: d.PSFC / 1000)
     data_processed = data_processed.assign(rh=lambda d: d.RH2/100)
     data_processed = data_processed.assign(par=lambda d: d.SWDDIR + d.SWDDIF)
+    data_processed = data_processed.assign(vpd=add_vpd) # Calculates VPD from ts_c and rh
 
-    data_processed = data_processed.assign(vpd=add_vpd)
     data_processed = data_processed.rename_vars(
+        # Modify this if changing input headings
+        # Keys are headings in input data and values are the names of the variables in the model
         **dict([
             ('o3', 'o3_ppb_zr'),
             ('WINDSPEED10', 'uh_zr'),
@@ -116,8 +118,10 @@ def process_emep_data(data_processed, dims=['j', 'i']):
     data_processed = data_processed.assign(hd=lambda d: -d.SH_Wm2)
     data_processed = data_processed.assign(rh=lambda d: d.rh2m/100)
     data_processed = data_processed.assign(p=lambda d: d.Psurf / 10)
-    data_processed = data_processed.assign(vpd=add_vpd)
+    data_processed = data_processed.assign(vpd=add_vpd) # Calculates VPD from ts_c and rh
     data_processed = data_processed.rename_vars(
+        # Modify this if changing input headings
+        # Keys are headings in input data and values are the names of the variables in the model
         **dict([
             ('O3_45m', 'o3_ppb_zr'),
             ('u_45m', 'uh_zr'),
@@ -265,7 +269,7 @@ def process_and_run(
             dims: List[str] = ['lon', 'lat'],
             loadData_kwargs: dict = {},
             logger=print
-            ):
+        ):
         """Load and process data for coords in coords list.
 
         Parameters
@@ -495,6 +499,7 @@ def gridrun(
     zero_year: int,
     e_state_overrides_path: Path,
     coords: Union[str,List[Tuple[int, int]]],
+    preprocess_data_func: Callable[[xr.Dataset], xr.Dataset] = process_emep_data,
     process_output: Callable[[], any] = process_output_for_pod,
     dims: Tuple[str, str]=['j', 'i'],
     return_outputs: bool = False,
@@ -523,6 +528,8 @@ def gridrun(
         Path to the e_state_overrides.nc file.
     coords : List[Tuple[int, int]]
         list  of coordinates to run the model on
+    preprocess_data_func : Callable[[xr.Dataset], xr.Dataset], optional
+        A function to preprocess the input data before running the model, by default process_emep_data
     process_output : Callable[[], any]
         A function to process the output of the model before concatenating it.
     dims : List[str]
@@ -583,7 +590,7 @@ def gridrun(
         data_computed, e_state_overrides = setup(
             coords=coord_batch,
             dims=dims,
-            preprocess_data_func=process_emep_data,
+            preprocess_data_func=preprocess_data_func,
             precompute=loadData_kwargs.pop('precompute', False),
             loadData_kwargs=loadData_kwargs,
             logger=logger,
