@@ -3,7 +3,21 @@ from do3se._model import *
 from do3se.util import to_dicts, dicts_to_map, OrderedDict
 from do3se.fields import SpinField, FloatSpinField, ChoiceField, disableable
 
+
 #: Available input fields
+"""Input Fields for the model.
+
+One of the following input field is required for solar gain
+ - r
+ - par
+ - cloudfrac
+
+If using soil moisture module then one of the following inputs is required
+ - precip
+ - fswp
+ - asw
+
+"""
 input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 'short', 'long'), (
     (inputs,    'yr',       int,    False,  'Year',         'Year'),
     (inputs,    'mm',       int,    False,  'Month',        'Month'),
@@ -44,9 +58,9 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
     (inputs,    'ustar_ref', float, False,
      'ustar_ref', 'Ustar Ref'),
     (inputs,    'fswp', float, False,
-     'fswp', 'fSWP'),
+     'fswp', 'Soil water potential fraction(fSWP)'),
      (inputs,    'asw', float, False,
-     'asw', 'ASW'),
+     'asw', 'available soil water (ASW)'),
 )), 'variable', OrderedDict)
 
 #: Available output fields
@@ -388,8 +402,8 @@ SGS_EGS_calcs = dicts_to_map(to_dicts(('id', 'func', 'name'), (
      'ETS ((Bread) Wheat (Mediterranean))'),
     ('thermal_time_md', options.sgs_egs_tt_md,
      'ETS ((Durum) Wheat (Mediterranean))'),
-    ('thermal_time_pot', options.sgs_egs_tt_pot,      'ETS (Potato)'),
-    ('thermal_time_tom', options.sgs_egs_tt_tom,      'ETS (Tomato)'),
+    ('thermal_time_pot', options.sgs_egs_tt_pot, 'ETS (Potato)'),
+    ('thermal_time_tom', options.sgs_egs_tt_tom, 'ETS (Tomato)'),
 
 )), 'id', OrderedDict)
 
@@ -399,7 +413,7 @@ default_SGS_EGS_calc = 'inputs'
 ra_method = dicts_to_map(to_dicts(('id', 'func', 'name'), (
     ('simple', options.ra_simple, 'Simple'),
     ('heat_flux', options.ra_with_heat_flux,
-     'Ra with heat flux(Requires Hd input data)'),
+     'Ra with heat flux(Requires Hd and ustar input data)'),
 )), 'id', OrderedDict)
 
 default_ra_method = 'simple'
