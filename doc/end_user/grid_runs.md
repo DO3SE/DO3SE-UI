@@ -10,3 +10,8 @@ The `inputs` directory contains input netcdf files. Currently the model only sup
 inputs shown in the same format as the example. I.e. a file per variable.
 
 The `coords.csv` file contains a list of index coordinates to run.
+
+## Running the example
+
+Edit the `grid_run_test.py` file to change the run_id. Run the `grid_run_test.py` file.
+Outputs should be saved in the `outputs/` directory.

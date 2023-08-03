@@ -1,0 +1,29 @@
+preset_name,mid_anthesis,sgs,egs,sgs_egs_calc,fphen_a,fphen_b,fphen_c,fphen_d,fphen_e,fphen_1,fphen_2,fphen_3,fphen_4,fphen_lima,fphen_limb,lai_a,lai_b,lai_c,lai_d,lai_1,lai_2,gmax,gmorph,fmin,f_lightfac,t_min,t_opt,t_max,rsoil,vpd_max,vpd_min,vpd_crit,swp_min,swp_max,fxwp,leaf_fphen,fo3,sai,astart,aend,leaf_fphen_a,leaf_fphen_b,leaf_fphen_c,leaf_fphen_1,leaf_fphen_2,h,root,albedo,lm,y,g_sto_0,m,v_cmax_25,j_max_25,gsto
+Boreal - Coniferous forests  (Norway spruce),,,,latitude,0,1,1,1,0,20,0,0,30,0,0,6.5,6.5,6.5,6.5,192,96,125,1,0.1,0.006,0,20,200,200,0.8,2.8,1000,,,disabled,copy,none,forest,,,,,,,,20,1,0.12,0.008,1,,,,,
+Scots Pine (Atlantic Central Europe),,,,latitude,0.8,1,1,1,0.8,40,0,0,40,0,0,4.5,4.5,4.5,4.5,192,96,190,1,0.1,0.006,0,20,36,200,0.6,2.8,1000,-1.5,-0.7,fswp,copy,none,forest,,,,,,,,20,1,0.12,0.008,1,,,,,
+Continental - Coniferous (Norway spruce),,1,365,inputs,0,1,1,1,0,0,0,0,0,0,0,12,12,12,12,192,96,130,1,0.16,0.01,0,14,35,200,0.5,3,1000,-0.5,-0.05,fswp,copy,none,forest,,,,,,,,20,1,0.12,0.008,1,,,,,
+Boreal - Broadleaf deciduous (birch),,,,latitude,0,1,1,1,0,20,0,0,30,0,0,0,3,3,0,15,30,240,1,0.1,0.0042,5,20,200,200,0.5,2.7,1000,,,disabled,copy,none,forest,,,,,,,,20,1,0.16,0.05,1,,,,,
+Temperate Oak,,,,latitude,0,1,1,1,0,20,0,0,30,0,0,0,4,4,0,20,30,255,1,0.06,0.003,0,20,35,200,1,3.25,1000,-1.2,-0.5,fswp,copy,none,forest,,,,,,,,20,1,0.16,0.05,1,,,,,
+Continental - Broadleaf deciduous (Beech),,,,latitude,0,1,1,1,0.4,20,0,0,20,0,0,0,5,5,0,15,20,155,1,0.13,0.006,5,16,33,200,1,3.1,1000,-1.25,-0.05,fswp,copy,none,forest,,,,,,,,25,1,0.16,0.07,1,,,,,
+Beech (Mediterranean Europe),,,,latitude,0,1,1,1,0,15,0,0,20,0,0,0,5,5,0,15,30,155,1,0.02,0.006,4,21,37,200,1,4,1000,-3.8,-2,fswp,copy,none,forest,,,,,,,,20,4,0.16,0.07,1,,,,,
+Aleppo Pine (Mediterranean Europe),,1,365,inputs,1,1,0.3,1,1,0,130,60,0,80,320,5,5,5,5,192,96,230,1,0.15,0.013,10,27,38,200,1,3.2,1000,-2.5,-1,fswp,copy,none,forest,,,,,,,,10,4,0.12,0.008,1,,,,,
+Holm Oak (Mediterranean Europe),,1,365,inputs,1,1,0.1,1,1,0,130,60,0,80,320,3.5,5,5,3.5,100,166,180,1,0.02,0.012,1,23,39,200,2.2,4,1000,-4.5,-1,fswp,copy,none,forest,,,,,,,,15,4,0.16,0.055,1.6,,,,,
+Maize,,130,250,inputs,0.1,1,1,1,0.1,0,0,0,45,0,0,0,3,3,0,40,30,325,1,0.05,0.0048,2,25,48,200,0,5,1000,-0.8,-0.12,fswp,copy,none,copy,,,,,,,,2,0.75,0.2,0.01,0,,,,,
+Sunflower,,150,250,inputs,0.6,1,1,1,0.4,34,0,0,34,0,0,0,5,5,0,30,0,385,1,0.05,0.002,2,25,48,200,1.2,4,1000,-1.65,-0.25,fswp,copy,none,copy,,,,,,,,2,0.75,0.2,0.25,0,,,,,
+Mediterranean - Tomato,225,180,,thermal_time_tom,0.1,1,1,1,0.1,0,0,0,0,0,0,0,4.5,4.5,0,90,0,330,1,0.06,0.0125,18,28,37,200,1,4,1000,-1,-0.3,fswp,copy,none,copy,,,1,1,0,,,2,0.8,0.2,0.03,6,,,,,
+Grape Vine,,105,270,inputs,0.2,1,1,1,0.2,60,0,0,45,0,0,0,3,3,0,20,20,230,1,0.01,0.0076,9,30,43,200,1.6,6.2,1000,-1.2,-0.35,fswp,copy,none,copy,,,,,,,,1.7,0.75,0.2,0.15,0,,,,,
+Root Crops (RC),,146,216,inputs,0.2,1,1,1,0.2,20,0,0,45,0,0,0,4.2,4.2,0,35,65,750,1,0.02,0.0023,8,24,50,200,0.31,2.7,1000,-1,-0.44,fswp,copy,none,copy,,,,,,,,1,0.75,0.2,0.04,6,,,,,
+"Atlantic, boreal, continental - Potato",215,146,,thermal_time_pot,0.2,1,1,1,0.2,20,0,0,0,0,0,0,4.2,4.2,0,35,65,750,1,0.01,0.005,13,28,39,200,2.1,3.5,10,-1.1,-0.5,fswp,fixedday,potato,copy,,,0.4,0.4,0.2,,,1,0.8,0.2,0.04,6,,,,,
+Mediterranean Scrub,,1,365,inputs,0.2,1,1,1,0.2,130,0,0,130,0,0,2.5,2.5,2.5,2.5,0,0,213,1,0.014,0.012,4,20,37,200,1.3,3,1000,-3.1,-1.1,fswp,copy,none,copy,,,,,,,,1,0.5,0.2,0.03,0,,,,,
+Grapevine (photosynthesis),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,50000,6.14,100,225,photosynthetic
+Wheat (photosynthesis),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,20000,8.12,180,400,photosynthetic
+Beech (photosynthesis),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30000,16.83,30,60,photosynthetic
+Birch (photosynthesis),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30000,13.5,35,70,photosynthetic
+Mediterranean - Broadleaf deciduous (deciduous oak species),,,,latitude,0.3,1,1,1,0.3,15,0,0,20,0,0,3.5,5,5,3.5,100,166,265,1,0.13,0.006,0,22,35,200,1.1,3.1,1000,-2,-1,fswp,copy,none,forest,,,,,,,,20,4,0.16,0.042,1,,,,,
+Mediterranean - Evergreen (Evergreen /holm oak),,1,365,inputs,1,1,0.3,1,1,0,130,60,0,80,320,5,5,5,5,192,96,195,1,0.02,0.012,1,23,39,200,2.2,4,1000,-4.5,-1,fswp,copy,none,forest,,,,,,,,20,4,0.16,0.03,1,,,,,
+"Atlantic, boreal, continental - (Bread) wheat",,60,,thermal_time,0.1,1,1,1,0.1,0,0,0,0,0,0,0,3.5,3.5,0,70,22,500,1,0.01,0.0105,12,26,40,200,1.2,3.2,8,-1.1,-0.3,fswp,fixedday,wheat,wheat,,,1,0.7,0.3,,,1,0.8,0.2,0.02,6,,,,,
+Mediterranean - (Bread) wheat,,60,,thermal_time_mb,0.1,1,1,1,0.1,0,0,0,0,0,0,0,3.5,3.5,0,70,22,430,1,0.01,0.0105,12,28,39,200,3.2,4.6,16,-1.1,-0.3,fswp,fixedday,none,wheat,,,1,0.99,0,,,1,0.8,0.2,0.02,6,,,,,
+Mediterranean - (Durum) wheat,,60,,thermal_time_md,0.1,1,1,1,0.1,0,0,0,0,0,0,0,3.5,3.5,0,70,22,410,1,0.01,0.0105,12,28,45,200,3.1,4.9,16,-1.1,-0.3,fswp,fixedday,none,wheat,,,1,0.99,0,,,1,0.8,0.2,0.02,6,,,,,
+"Atlantic, boreal, continental - Perennial grasslands (Grass spp.)",,91,273,inputs,1,1,1,1,1,0,0,0,0,0,0,4,4,4,4,85,97,190,1,0.1,0.01,10,24,36,1000,1.75,4.5,1000,-1,-0.1,fswp,copy,none,copy,,,,,,,,0.2,0.8,0.2,0.02,1,,,,,
+"Atlantic, boreal, continental - Perennial grasslands (Forbs incl. legumes)",,91,273,inputs,1,1,1,1,1,0,0,0,0,0,0,4,4,4,4,85,97,210,1,0.1,0.02,10,22,36,1000,1.75,4.5,1000,-0.6,-0.1,fswp,copy,none,copy,,,,,,,,0.2,0.8,0.2,0.04,1,,,,,
+Mediterranean - Annual pastures (Legume spp.),,32,181,inputs,1,1,1,1,1,0,0,0,0,0,0,4,4,4,4,69,80,782,1,0.02,0.013,8,22,33,1000,2.2,4.3,1000,-1.5,-0.5,fswp,copy,none,copy,,,,,,,,0.2,0.8,0.2,0.02,1,,,,,
