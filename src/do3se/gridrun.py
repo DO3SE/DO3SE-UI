@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from collections import namedtuple
-from typing import Tuple, Callable, List, Union
+from typing import Tuple, Callable, List, Union, Dict
 from datetime import datetime
 from pathlib import Path
 
@@ -219,6 +219,30 @@ out_fields = [
 ]
 
 
+def get_config_overrides_from_estate(
+    location_data: xr.Dataset,
+    e_state_overrides_fields: Dict[str, str],
+) -> Dict[str, any]:
+    """Get config overrides from estate overrides file.
+
+    Parameters
+    ----------
+    location_data : xr.Dataset
+        Dataset containing estate overrides
+    e_state_overrides_fields : Dict[str, str]
+        Mapping of estate overrides fields to config overrides
+
+    Returns
+    -------
+    Dict[str, any]
+        Dictionary of config overrides
+    """
+    config_overrides = {}
+    for estate_field, config_field in e_state_overrides_fields.items():
+        if estate_field in location_data:
+            config_overrides[config_field] = float(location_data[estate_field].values[0])
+    return config_overrides
+
 def process_output_for_pod(results):
     """Add variables to outputs."""
     return {
@@ -334,12 +358,13 @@ def process_and_run(
     return _data_prep
 
 def runner(
-    project_file: Path,
+    project_file_path: Path,
     coords: List[Tuple[int, int]],
     data_computed: xr.Dataset,
     output_fields: List[str],
     e_state_overrides: xr.Dataset,
     zero_year: int,
+    e_state_overrides_field_map: Dict[str, str] = None,
     output_file_path: Path=None,
     process_output: Callable[[], any] = process_output_for_pod,
     throw_exceptions: bool = True,
@@ -351,8 +376,8 @@ def runner(
 
     Parameters
     ----------
-    project_file : Path
-        _description_
+    project_file_path : Path
+        path to project file
     coords: List[Tuple[int, int]]
         List of coordinates to run the model for
     data_computed : xr.Dataset
@@ -361,6 +386,8 @@ def runner(
         estate overrides data
     zero_year : int
         Set to be the year of the first day of the simulation.
+    e_state_overrides_field_map: Dict[str, str], optional
+        A mapping of e_state_override.nc fields to project file fields
     output_fields : List[str]
         _description_
     output_file_path : _type_
@@ -410,6 +437,11 @@ def runner(
             grid_i = rows_df.reset_index().i.values[0].tolist()
             grid_j = rows_df.reset_index().j.values[0].tolist()
 
+            additional_e_state_overrides = get_config_overrides_from_estate(
+                location_data,
+                e_state_overrides_field_map,
+            ) if e_state_overrides_field_map is not None else {}
+            logger("using the following additional config overrides from e_state_overrides.nc", additional_e_state_overrides)
 
             input_fields = list(rows_df.columns)
             config_overrides = {
@@ -417,6 +449,7 @@ def runner(
                 "elev": elevation,
                 "lat": float(lat),
                 "lon": float(lon),
+                **additional_e_state_overrides,
             }
 
             options_raw = {
@@ -432,9 +465,10 @@ def runner(
                 f'{output_file_path}/{run_id}_{i}_{j}.csv', 'w') \
                 if output_file_path is not None and not save_ds else None
             logger("Running do3se on coords: ", i, j)
+
             runner_int = run_from_pipe(
                 options,
-                project_file,
+                project_file_path,
                 input_fields,
                 output_file=output_file,
                 headings=input_fields,
@@ -499,6 +533,7 @@ def gridrun(
     zero_year: int,
     e_state_overrides_path: Path,
     coords: Union[str,List[Tuple[int, int]]],
+    e_state_overrides_field_map: Dict[str, str] = None,
     preprocess_data_func: Callable[[xr.Dataset], xr.Dataset] = process_emep_data,
     process_output: Callable[[], any] = process_output_for_pod,
     dims: Tuple[str, str]=['j', 'i'],
@@ -528,6 +563,8 @@ def gridrun(
         Path to the e_state_overrides.nc file.
     coords : List[Tuple[int, int]]
         list  of coordinates to run the model on
+    e_state_overrides_field_map : Dict[str, str], optional
+        A dictionary mapping the e_state_overrides field names to the input data field names, by default None
     preprocess_data_func : Callable[[xr.Dataset], xr.Dataset], optional
         A function to preprocess the input data before running the model, by default process_emep_data
     process_output : Callable[[], any]
@@ -558,7 +595,7 @@ def gridrun(
 
     logger=Logger(
         debug and 2,
-        log_to_file=f'{output_location}/log_{run_id}.txt',
+        log_to_file=f'{output_location}/log_{run_id}.txt'if not debug else None,
         flush_per_log=debug,
         use_timestamp=True,
     )
@@ -604,6 +641,7 @@ def gridrun(
             e_state_overrides,
             zero_year,
             output_file_path=full_output_dir,
+            e_state_overrides_field_map=e_state_overrides_field_map,
             process_output=process_output,
             run_id=run_id,
             save_ds=save_ds,
