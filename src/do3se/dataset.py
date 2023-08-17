@@ -129,7 +129,21 @@ class Dataset:
         # Soil parameters from soil type
         soil = model.soil_classes[self.params.pop(
             'soil_tex', model.default_soil_class)]
+        # Allowing overriding of soil parameters
+        soil['data']['soil_b'] = self.params.pop(
+            'soil_b', soil['data']['soil_b']
+        )
+        soil['data']['fc_m'] = self.params.pop(
+            'fc_m', soil['data']['fc_m']
+        )
+        soil['data']['swp_ae'] = self.params.pop(
+            'swp_ae', soil['data']['swp_ae']
+        )
+        soil['data']['ksat'] = self.params.pop(
+            'ksat', soil['data']['ksat']
+        )
         self.params.update(soil['data'])
+
 
         # Use/copy measurement vegetation heights
         u_h = self.params.pop('u_h')
