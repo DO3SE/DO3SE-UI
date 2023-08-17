@@ -67,7 +67,7 @@ module Parameters
 
     real, public, save :: SWP_min = -1.25   ! SWP for min g
     real, public, save :: SWP_max = -0.05   ! SWP for max g
-    real, public, save :: ASW_FC_override   ! SWP for max g
+    real, public, save :: ASW_FC_override   ! ASW at field capacity
 
     ! Constants
     real, public, save :: ASW_min = 0.0    ! ASW for min g (% of ASW_FC)
