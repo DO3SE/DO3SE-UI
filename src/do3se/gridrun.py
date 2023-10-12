@@ -11,6 +11,7 @@ from pathlib import Path
 
 from do3se.automate import run_from_pipe
 from do3se.logger import Logger
+from do3se.version import app_version
 
 INVALID_COORD = -9999
 
@@ -413,10 +414,10 @@ def runner(
     outputs_full = []
     start_time = datetime.now()
     logger(f"Running model for {len(coords)} coords")
-    for i, j in coords:
-        if i == INVALID_COORD and j == INVALID_COORD:
+    for x, y in coords:
+        if x == INVALID_COORD and y == INVALID_COORD:
             continue
-        logger(f'Running coords: {i}_{j}')
+        logger(f'Running coords: {x}_{y}')
         try:
             # TODO: Can we optimize this?!
             # rows = data_computed.where(
@@ -424,18 +425,23 @@ def runner(
             # ).to_dict('records')
             #                 # TODO: Can we optimize this?!
             rows_df = data_computed.where(
-                lambda d: (d.x == i) & (d.y == j), drop=True).to_dataframe(
+                lambda d: (d.x == x) & (d.y == y), drop=True).to_dataframe(
             )
-
             rows = rows_df.values
             location_data = e_state_overrides.where(
-                lambda d: (d.x == i) & (d.y == j), drop=True)
+                lambda d: (d.x == x) & (d.y == y), drop=True)
 
             elevation = location_data.terrain.values[0, 0].tolist()[0]
             lat = location_data.lat.values[0].tolist()[0]
             lon = location_data.lon.values[0].tolist()[0]
+            input_data_lat = rows_df.lat.iloc[0]
+            input_data_lon = rows_df.lon.iloc[0]
             grid_i = rows_df.reset_index().i.values[0].tolist()
             grid_j = rows_df.reset_index().j.values[0].tolist()
+
+            logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
+            assert lat == input_data_lat, f"input_data and e_state_overrides lat do not match, {lat} != {input_data_lat}"
+            assert lon == input_data_lon, f"input_data and e_state_overrides lon do not match, {lon} != {input_data_lon}"
 
             additional_e_state_overrides = get_config_overrides_from_estate(
                 location_data,
@@ -462,9 +468,9 @@ def runner(
 
             # If save_ds is false then we save each run to a separate csv file
             output_file = open(
-                f'{output_file_path}/{run_id}_{i}_{j}.csv', 'w') \
+                f'{output_file_path}/{run_id}_{x}_{y}.csv', 'w') \
                 if output_file_path is not None and not save_ds else None
-            logger("Running do3se on coords: ", i, j)
+            logger("Running do3se on coords: ", x, y)
 
             runner_int = run_from_pipe(
                 options,
@@ -476,14 +482,16 @@ def runner(
 
             output = runner_int(rows, config_overrides)
             if output_file:
-                logger("Runner output saved to", output_file_path, "for coords", i, j)
+                logger("Runner output saved to", output_file_path, "for coords", x, y)
 
             if save_ds:
-                logger("Saving ds output for coords", i, j)
+                logger("Saving ds output for coords", x, y)
                 # TODO: Can we skip dataframe here?
                 df = pd.DataFrame(output.data)
-                df['x'] = i
-                df['y'] = j
+                df['x'] = x
+                df['y'] = y
+                df['i'] = x + 1 # retained for backwards compatibility
+                df['j'] = y + 1 # retained for backwards compatibility
                 df['grid_i'] = grid_i
                 df['grid_j'] = grid_j
                 df['lat'] = float(lat)
@@ -497,15 +505,15 @@ def runner(
                 outputs_full.append(ds)
 
             if process_output:
-                logger("Processing output for coords", i, j)
+                logger("Processing output for coords", x, y)
                 output_processed = process_output(output)
                 outputs.append({
                     **output_processed,
                     "lat": lat,
                     "lon": lon,
                     "elev": elevation,
-                    "i": i,
-                    "j": j,
+                    "x": x,
+                    "y": y,
                     "grid_i": grid_i,
                     "grid_j": grid_j,
                 })
@@ -514,7 +522,7 @@ def runner(
                 raise e
             else:
                 logger(e)
-                logger(f'Failed to run coords: {i}_{j}')
+                logger(f'Failed to run coords: {x}_{y}')
         output_file and output_file.close()
     end_time = datetime.now()
     logger(f"Completed running batch. Model time: {end_time - start_time}")
@@ -599,7 +607,7 @@ def gridrun(
         flush_per_log=debug,
         use_timestamp=True,
     )
-    logger(f"Running grid run: {run_id}")
+    logger(f"Running grid run: {run_id}. With model version {app_version}")
     outputs = []
     setup = process_and_run(
         input_data_dir,
