@@ -4,6 +4,7 @@ import math
 import numpy as np
 import pandas as pd
 import xarray as xr
+from warnings import warn
 from collections import namedtuple
 from typing import Tuple, Callable, List, Union, Dict
 from datetime import datetime
@@ -37,32 +38,27 @@ def add_vpd(x):
 
 def load_estate_overrides(
     e_state_overrides_path: Path,
-    # grid_size: int,
-    # grid_shape: int,
-    # x: List[int],
-    # y: List[int],
-    # dims: List[str] = ['lon', 'lat'],
 ):
-    # e_state_override_data = xr.open_dataarray(e_state_overrides_path).where(
-    #     lambda d: (d.i.isin(x)) & (d.j.isin(y)), drop=True)
     e_state_override_data = xr.open_dataset(e_state_overrides_path)
-    # TODO: e_state_override file should contain x and y coords
-    grid_size = e_state_override_data.terrain[0].size
-    grid_shape = e_state_override_data.terrain[0].shape
-    dims = ['j', 'i'] # TODO: Assert i and j are in estate_override_data dims
-    y = np.arange(grid_size).reshape(grid_shape) % grid_shape[1]
-    x = (np.arange(grid_size).reshape(list(reversed(grid_shape))) %
-         grid_shape[0]).transpose()
-    dscoords = dict(
-        i=e_state_override_data.i,
-        j=e_state_override_data.j,
-    )
-    x_da = xr.DataArray(x, dscoords,
-                        dims=dims)
-    y_da = xr.DataArray(y, dscoords,
-                        dims=dims)
-    e_state_override_data = e_state_override_data.assign_coords(
-        dict(x=x_da, y=y_da))
+    assert e_state_override_data.x, "x not found in e_state_override_data"
+    assert e_state_override_data.y, "y not found in e_state_override_data"
+    # # TODO: e_state_override file should contain x and y coords
+    # grid_size = e_state_override_data.terrain[0].size
+    # grid_shape = e_state_override_data.terrain[0].shape
+    # dims = ['j', 'i'] # TODO: Assert i and j are in estate_override_data dims
+    # y = np.arange(grid_size).reshape(grid_shape) % grid_shape[1]
+    # x = (np.arange(grid_size).reshape(list(reversed(grid_shape))) %
+    #      grid_shape[0]).transpose()
+    # dscoords = dict(
+    #     i=e_state_override_data.i,
+    #     j=e_state_override_data.j,
+    # )
+    # x_da = xr.DataArray(x, dscoords,
+    #                     dims=dims)
+    # y_da = xr.DataArray(y, dscoords,
+    #                     dims=dims)
+    # e_state_override_data = e_state_override_data.assign_coords(
+    #     dict(x=x_da, y=y_da))
     return e_state_override_data
 
 
@@ -162,15 +158,15 @@ def load_and_process(
         data_location, process_func=process_emep_data,
         dims=['lat', 'lon'], **kwargs):
     try:
-
         input_data_multi_ds = xr.open_mfdataset(
             f'{data_location}/*.nc',
-             # TODO: Make general to all datasets
+            # NOTE: Chunks can be overriden by kwargs
             **{"chunks":{'time': 8760, 'i': 5, 'j': 5},**kwargs},
             # , concat_dim="Time", combine="nested"
         )
     except OSError as e:
         print(f"No files found in {data_location}")
+        print("Files in data dir: ", os.listdir(data_location))
         raise e
     except ValueError as e:
         print(f"Error opening files in {data_location}")
@@ -242,6 +238,8 @@ def get_config_overrides_from_estate(
     for estate_field, config_field in e_state_overrides_fields.items():
         if estate_field in location_data:
             config_overrides[config_field] = float(location_data[estate_field].values[0])
+        else:
+            warn(f"Warning: {estate_field} not found in estate overrides file")
     return config_overrides
 
 def process_output_for_pod(results):
