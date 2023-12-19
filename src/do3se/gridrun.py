@@ -486,7 +486,7 @@ def runner(
                 df['lon'] = float(lon)
                 zero_date = pd.to_datetime(f'{zero_year}-01-01')
                 df['date'] = zero_date + \
-                    pd.to_timedelta(df.dd, unit='D') + \
+                    pd.to_timedelta(df.dd-1, unit='D') + \
                     pd.to_timedelta(df.hr, unit='h')
                 df = df.set_index(['x', 'y', 'date'])
                 ds = df.to_xarray()
