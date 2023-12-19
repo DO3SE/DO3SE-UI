@@ -11,6 +11,11 @@ For grid runs also run `pip install -r requirements/gridruns.txt`
 - `make py_cli` for python cli only
 - `make dose` for fortran only
 
+or...
+
+`python -m build`
+
+
 ## Install DO3SE
 
 Finally install do3se with `pip install -e .` from the root of this repo.

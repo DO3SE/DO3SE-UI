@@ -19,7 +19,7 @@ with open("README.md", "r") as fh:
 root = os.environ['BUILD_ROOT'] # This is a hack to fix missing objects.mk issue
 app_name = 'do3se'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
-app_version = '3.6.31'
+app_version = '3.6.33'
 fortran_src_dir = 'src/F'
 
 ext_files = [os.path.join(fortran_src_dir, x) for x in
@@ -55,9 +55,9 @@ setup(
     author='Sam Bland | Alan Briolat',
     author_email='sam.bland@sei.org',
     description="DO3SE model python API",
-    setup_requires=['numpy'],
+    setup_requires=['numpy==1.24.4', 'future', 'pandas'],
     install_requires=[
-        'numpy',
+        'numpy==1.24.4',
         'future',
         'pandas',
     ],

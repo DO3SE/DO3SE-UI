@@ -1,4 +1,3 @@
-import sys
 import os
 import math
 import numpy as np
@@ -40,29 +39,31 @@ def load_estate_overrides(
     e_state_overrides_path: Path,
 ):
     e_state_override_data = xr.open_dataset(e_state_overrides_path)
-    assert e_state_override_data.x, "x not found in e_state_override_data"
-    assert e_state_override_data.y, "y not found in e_state_override_data"
-    # # TODO: e_state_override file should contain x and y coords
-    # grid_size = e_state_override_data.terrain[0].size
-    # grid_shape = e_state_override_data.terrain[0].shape
-    # dims = ['j', 'i'] # TODO: Assert i and j are in estate_override_data dims
-    # y = np.arange(grid_size).reshape(grid_shape) % grid_shape[1]
-    # x = (np.arange(grid_size).reshape(list(reversed(grid_shape))) %
-    #      grid_shape[0]).transpose()
-    # dscoords = dict(
-    #     i=e_state_override_data.i,
-    #     j=e_state_override_data.j,
-    # )
-    # x_da = xr.DataArray(x, dscoords,
-    #                     dims=dims)
-    # y_da = xr.DataArray(y, dscoords,
-    #                     dims=dims)
-    # e_state_override_data = e_state_override_data.assign_coords(
-    #     dict(x=x_da, y=y_da))
+    assert e_state_override_data.x is not None, "x not found in e_state_override_data"
+    assert e_state_override_data.y is not None, "y not found in e_state_override_data"
+
     return e_state_override_data
 
+def assign_x_and_y(data_processed: xr.Dataset) -> xr.Dataset:
+    data_template = data_processed.isel(time=0).squeeze().drop_vars('time')
+    size = data_template.ts_c.size
+    shape = data_template.ts_c.shape
+
+    y = (np.arange(size).reshape(
+        shape) % shape[1])
+    x = (np.arange(size).reshape(list(reversed(shape))) %
+        shape[0]).transpose()
+
+    x_da = xr.DataArray(x, data_template.coords, dims=data_template.lat.dims)
+    y_da = xr.DataArray(y, data_template.coords, dims=data_template.lat.dims)
+
+    data_processed_out = data_processed.assign_coords(dict(
+        x=x_da, y=y_da,
+    ))
+    return data_processed_out
 
 def process_wrfchem_data(data_processed, dims=['lon', 'lat']):
+    raise NotImplementedError("process_wrfchem_data not implemented")
     data_processed = data_processed.assign(hr=lambda d: d.XTIME.dt.hour)
     data_processed = data_processed.assign(
         dd=lambda d: d.time.dt.strftime('%j').astype(int))
@@ -132,24 +133,7 @@ def process_emep_data(data_processed, dims=['j', 'i']):
         ])
     )
 
-    data_processed_indexed = data_processed.squeeze()
-    # TODO: Check if this is needed for EMEP data
-    grid_size = data_processed_indexed.ts_c[0].size
-    grid_shape = data_processed_indexed.ts_c[0].shape
-
-    y = np.arange(grid_size).reshape(grid_shape) % grid_shape[1]
-    x = (np.arange(grid_size).reshape(list(reversed(grid_shape))) %
-            grid_shape[0]).transpose()
-    dscoords = dict(
-        i=data_processed_indexed.i,
-        j=data_processed_indexed.j,
-    )
-    x_da = xr.DataArray(x, dscoords,
-                        dims=dims)
-    y_da = xr.DataArray(y, dscoords,
-                        dims=dims)
-    data_processed_indexed = data_processed_indexed.assign_coords(
-        dict(x=x_da, y=y_da))
+    data_processed_indexed = assign_x_and_y(data_processed.squeeze())
 
     return data_processed_indexed
 
@@ -164,6 +148,7 @@ def load_and_process(
             **{"chunks":{'time': 8760, 'i': 5, 'j': 5},**kwargs},
             # , concat_dim="Time", combine="nested"
         )
+
     except OSError as e:
         print(f"No files found in {data_location}")
         print("Files in data dir: ", os.listdir(data_location))
@@ -179,6 +164,8 @@ def load_and_process(
 
     data_processed = process_func(input_data_multi_ds, dims=dims)
 
+    assert data_processed.x is not None, "x not found in processed input data"
+    assert data_processed.y is not None, "y not found in processed input data"
     return data_processed
 
 def get_coord_batches(
@@ -368,6 +355,7 @@ def runner(
     process_output: Callable[[], any] = process_output_for_pod,
     throw_exceptions: bool = True,
     run_id="DO3SE_UI_run",
+    batch_id: int = 0,
     save_ds: bool = False,
     logger=Logger(0),
 ):
@@ -397,7 +385,9 @@ def runner(
         If true will throw exceptions if the model fails to run
         If false failing coords will be skipped
     run_id : str, optional
-        _description_, by default "DO3SE_UI_run"
+        run id  includes all batches, by default "DO3SE_UI_run"
+    batch_id : int, optional
+        batch id for currently running batch, by default 0
     save_ds : bool, optional
         If true will combine all outputs to a netcdf file
     batch_i : int, optional
@@ -427,11 +417,11 @@ def runner(
             )
             rows = rows_df.values
             location_data = e_state_overrides.where(
-                lambda d: (d.x == x) & (d.y == y), drop=True)
+                lambda d: (d.x == x) & (d.y == y), drop=True).squeeze()
 
-            elevation = location_data.terrain.values[0, 0].tolist()[0]
-            lat = location_data.lat.values[0].tolist()[0]
-            lon = location_data.lon.values[0].tolist()[0]
+            elevation = location_data.terrain.values.tolist()
+            lat = location_data.lat.values.tolist()
+            lon = location_data.lon.values.tolist()
             input_data_lat = rows_df.lat.iloc[0]
             input_data_lon = rows_df.lon.iloc[0]
             grid_i = rows_df.reset_index().i.values[0].tolist()
@@ -527,7 +517,7 @@ def runner(
     if save_ds:
         logger("Saving full ds output")
         ds_full = xr.merge(outputs_full)
-        ds_full.to_netcdf(f'{output_file_path}/out_full_{run_id}.nc')
+        ds_full.to_netcdf(f'{output_file_path}/out_full_run_{run_id}_batch_{batch_id}.nc')
 
     return outputs
 
@@ -650,6 +640,7 @@ def gridrun(
             e_state_overrides_field_map=e_state_overrides_field_map,
             process_output=process_output,
             run_id=run_id,
+            batch_id=batch_i,
             save_ds=save_ds,
             logger=logger,
         )
