@@ -48,17 +48,16 @@ contains
     !==========================================================================
     subroutine Calc_Flight()
         ! TODO: document variables
-        use Constants, only: seaP
+        use Constants, only: seaP, Wm2_uE
         use Parameters, only: f_lightfac, cosA
-        use Inputs, only: PAR, sinB
+        use Inputs, only: PAR, sinB, PPFD
         use Variables, only: LAI, Flight, leaf_flight, Flightsun, Flightshade
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
 
-        real :: cosT, Wm2_uE
+        real :: cosT
 
         cosT = sinB
-        Wm2_uE = 4.57
         if (sinB > 0 .and. LAI > 0) then
              PARdir = fPARdir * PAR
              PARdif = fPARdif * PAR
@@ -72,8 +71,7 @@ contains
 
 
 
-            ! TODO: Should we have Wm2_uE conversion here?
-            leaf_flight = (1.0 - exp(-f_lightfac * PAR * Wm2_uE))
+            leaf_flight = (1.0 - exp(-f_lightfac * PPFD * Wm2_uE))
 
             ! Setup for g_sun and fst_sunlit as in EMEP model.
 
@@ -83,8 +81,6 @@ contains
             Flightsun = (1.0 - exp(-f_lightfac * PARsun * Wm2_uE))
             Flightshade = (1.0 - exp(-f_lightfac * PARshade * Wm2_uE))
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
-
-
         else
             PARdir = 0
             PARdif = 0
@@ -137,6 +133,7 @@ contains
 
             fPARdif = 1 - fPARdir
 
+            ! TODO: is this PAR or PPFD?
             PAR = ST * pPARtotal
             PARdir = fPARdir * PAR
             PARdif = PAR - PARdir
@@ -173,7 +170,7 @@ contains
             pPARtotal = pPARdir + pPARdif
 
             ! Sky transmissivity from cloud frac
-            ST = min(0.9, max(0.21, (PAR/4.57)/pPARtotal))
+            ST = min(0.9, max(0.21, (PAR)/pPARtotal))
 
             ! A = 0.9
             ! B = 0.7

@@ -4,25 +4,25 @@ module Parameters
     ! Site-specific parameters
     !==========================================================================
 
-    real, public, save  :: Rsoil = 100      ! Soil resistance in (s/m)
+    real, public, save :: Rsoil = 100      ! Soil resistance in (s/m)
 
     ! Soil properties all set based on "Soil texture"
-    real, public, save  :: soil_b = 4.38        ! SWC constant b
+    real, public, save :: soil_b = 4.38        ! SWC constant b
                                                 !  - sandy loam = 3.31
                                                 !  - silt loam  = 4.38
                                                 !  - loam       = 6.58
                                                 !  - clay loam  = 7.00
-    real, public, save  :: Fc_m = 0.26          ! Field capacity (m^3/m^3)
+    real, public, save :: Fc_m = 0.26          ! Field capacity (m^3/m^3)
                                                 !  - sandy loam = 0.16
                                                 !  - silt loam  = 0.26
                                                 !  - loam       = 0.29
                                                 !  - clay loam  = 0.37
-    real, public, save  :: SWP_AE = -0.00158    ! Water potential at air entry (MPa)
+    real, public, save :: SWP_AE = -0.00158    ! Water potential at air entry (MPa)
                                                 !  - sandy loam = -0.00091
                                                 !  - silt loam  = -0.00158
                                                 !  - loam       = -0.00188
                                                 !  - clay loam  = -0.00588
-    real, public, save  :: Ksat = 0.0002178     ! Saturated soil conductance (s-2 MPa-1 mm-1)
+    real, public, save :: Ksat = 0.0002178     ! Saturated soil conductance (s-2 MPa-1 mm-1)
                                                 !  - sandy loam = 0.0009576
                                                 !  - silt loam  = 0.0002178
                                                 !  - loam       = 0.0002286

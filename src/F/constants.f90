@@ -28,4 +28,6 @@ module Constants
     real, public, parameter :: SWC_sat = 0.4    ! Saturated soil water content, for
                                                 ! soil water release curve
 
+    real, public, parameter :: Wm2_uE = 4.57    ! convert umol/m2/s to W/m2 for PAR
+
 end module Constants
