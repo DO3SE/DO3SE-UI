@@ -68,6 +68,9 @@ class Dataset:
         elif 'par' in input_fields:
             self.options['r_par_method'] = model.options.r_par_derive_r
             _log.debug('R/PAR calculation: derive R')
+        elif 'ppfd' in input_fields:
+            self.options['r_par_method'] = model.options.r_par_derive_r
+            _log.debug('R/PAR calculation: derive R')
         elif 'r' in input_fields:
             self.options['r_par_method'] = model.options.r_par_derive_par
             _log.debug('R/PAR calculation: derive PAR')

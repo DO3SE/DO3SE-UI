@@ -289,7 +289,7 @@ contains
 
 
     subroutine SB_Calc_R_PAR()
-        use Inputs, only: R, PPFD
+        use Inputs, only: R, PPFD, PAR
         use Environmental, only:Calc_PAR_from_cloudfrac, Calc_ST_from_PAR
         use Options, only: r_par_method, r_par_derive_r, r_par_derive_par, r_par_derive_cloudfrac
         use Constants, only: Wm2_uE
@@ -298,20 +298,18 @@ contains
 
         ! Do nothing if using input data for both
         !case (r_par_use_inputs)
-            ! TODO: May need to still recalculate sun shade fracs
-        ! NOTE: PAR units are umol m-2 s-1, R is W m-2
-        ! This means that PAR is actually PPFD
+        ! TODO: May need to still recalculate sun shade fracs
         case (r_par_derive_r)
             call Calc_ST_from_PAR()
-            R = (PAR) / 0.45
+            R = PAR / 0.45
             PPFD = PAR / Wm2_uE
         case (r_par_derive_par)
-            PAR = R * (0.45)
+            PAR = R * 0.45
             PPFD = PAR * Wm2_uE
             call Calc_ST_from_PAR()
         case (r_par_derive_cloudfrac)
             call Calc_PAR_from_cloudfrac()
-            R = (PAR) / 0.45
+            R = PAR / 0.45
             PPFD = PAR * Wm2_uE
         end select
     end subroutine SB_Calc_R_PAR
