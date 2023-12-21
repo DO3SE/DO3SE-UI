@@ -302,7 +302,7 @@ contains
         case (r_par_derive_r)
             call Calc_ST_from_PAR()
             R = PAR / 0.45
-            PPFD = PAR / Wm2_uE
+            PPFD = PAR * Wm2_uE
         case (r_par_derive_par)
             PAR = R * 0.45
             PPFD = PAR * Wm2_uE
