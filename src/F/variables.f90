@@ -105,8 +105,8 @@ module Variables
     real, public, save :: fPARdif
     real, public, save :: LAIsun
     real, public, save :: LAIshade
-    real, public, save :: PARsun
-    real, public, save :: PARshade
+    real, public, save :: PARsun        ! PAR in sunlit canopy (Wm-2)
+    real, public, save :: PARshade      ! PAR in shaded canopy (Wm-2)
     real, public, save :: ST
 
 end module Variables

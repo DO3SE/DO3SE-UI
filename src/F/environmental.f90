@@ -50,7 +50,7 @@ contains
         ! TODO: document variables
         use Constants, only: seaP
         use Parameters, only: f_lightfac, cosA
-        use Inputs, only: PAR, sinB
+        use Inputs, only: PPFD, sinB
         use Variables, only: LAI, Flight, leaf_flight, Flightsun, Flightshade
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
@@ -59,8 +59,8 @@ contains
 
         cosT = sinB
         if (sinB > 0 .and. LAI > 0) then
-             PARdir = fPARdir * PAR
-             PARdif = fPARdif * PAR
+             PARdir = fPARdir * PPFD
+             PARdif = fPARdif * PPFD
 
             ! In canopy PAR
             LAIsun = (1 - exp(-0.5 * LAI / cosT)) * (cosT/cosA)
@@ -69,9 +69,7 @@ contains
             PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-cosT)
             PARsun = PARdir * cosA/cosT + PARshade
 
-
-
-            leaf_flight = (1.0 - exp(-f_lightfac * PAR))
+            leaf_flight = (1.0 - exp(-f_lightfac * PPFD))
 
             ! Setup for g_sun and fst_sunlit as in EMEP model.
 
@@ -101,8 +99,8 @@ contains
     ! Calculates ST and PARdir and PARdif
     !==========================================================================
     subroutine Calc_PAR_from_cloudfrac()
-        use Constants, only: seaP
-        use Inputs, only: P, sinB, cloudfrac, PAR
+        use Constants, only: seaP, Wm2_uE
+        use Inputs, only: P, sinB, cloudfrac, PPFD
         use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
               PARdir, PARdif, ST, LAI
 
@@ -132,13 +130,14 @@ contains
 
             fPARdif = 1 - fPARdir
 
-            ! TODO: is this PAR or PPFD?
-            PAR = ST * pPARtotal
+            PPFD = ST * pPARtotal
+            PAR = PPFD / Wm2_uE
             PARdir = fPARdir * PAR
             PARdif = PAR - PARdir
         else
             ST = 0
             PAR = 0
+            PPFD = 0
             PARdir = 0
             PARdif = 0
             pPARdir = 0
