@@ -48,9 +48,9 @@ contains
     !==========================================================================
     subroutine Calc_Flight()
         ! TODO: document variables
-        use Constants, only: seaP, Wm2_uE
+        use Constants, only: seaP
         use Parameters, only: f_lightfac, cosA
-        use Inputs, only: PAR, sinB, PPFD
+        use Inputs, only: PAR, sinB
         use Variables, only: LAI, Flight, leaf_flight, Flightsun, Flightshade
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
@@ -71,15 +71,14 @@ contains
 
 
 
-            leaf_flight = (1.0 - exp(-f_lightfac * PPFD * Wm2_uE))
+            leaf_flight = (1.0 - exp(-f_lightfac * PAR))
 
             ! Setup for g_sun and fst_sunlit as in EMEP model.
 
             ! Canopy
             ! TODO: does this need albedo?
-            ! TODO: Should we have Wm2_uE conversion here?
-            Flightsun = (1.0 - exp(-f_lightfac * PARsun * Wm2_uE))
-            Flightshade = (1.0 - exp(-f_lightfac * PARshade * Wm2_uE))
+            Flightsun = (1.0 - exp(-f_lightfac * PARsun))
+            Flightshade = (1.0 - exp(-f_lightfac * PARshade))
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
         else
             PARdir = 0
