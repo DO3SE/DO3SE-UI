@@ -412,9 +412,10 @@ def runner(
             #     lambda d: (d.x == i) & (d.y == j), drop=True).to_dataframe(
             # ).to_dict('records')
             #                 # TODO: Can we optimize this?!
-            rows_df = data_computed.where(
-                lambda d: (d.x == x) & (d.y == y), drop=True).to_dataframe(
-            )
+            # rows_df = data_computed.where(
+            #     lambda d: (d.x == x) & (d.y == y), drop=True).to_dataframe(
+            # )
+            rows_df = data_computed.isel(x=x, y=y).to_dataframe()
             rows = rows_df.values
             location_data = e_state_overrides.where(
                 lambda d: (d.x == x) & (d.y == y), drop=True).squeeze()
@@ -424,10 +425,11 @@ def runner(
             lon = location_data.lon.values.tolist()
             input_data_lat = rows_df.lat.iloc[0]
             input_data_lon = rows_df.lon.iloc[0]
-            grid_i = rows_df.reset_index().i.values[0].tolist()
-            grid_j = rows_df.reset_index().j.values[0].tolist()
+            # grid_i = rows_df.reset_index().i.values[0].tolist()
+            # grid_j = rows_df.reset_index().j.values[0].tolist()
 
-            logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
+            logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}")
+            # logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
             assert lat == input_data_lat, f"input_data and e_state_overrides lat do not match, {lat} != {input_data_lat}"
             assert lon == input_data_lon, f"input_data and e_state_overrides lon do not match, {lon} != {input_data_lon}"
 
