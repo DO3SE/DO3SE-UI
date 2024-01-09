@@ -276,7 +276,7 @@ def process_and_run(
             coords: List[Tuple[int, int]],
             preprocess_data_func=process_emep_data,
             return_processed_data=False, precompute=False,
-            dims: List[str] = ['lon', 'lat'],
+            dims: List[str] = ['j', 'i'],
             loadData_kwargs: dict = {},
             logger=print
         ):
@@ -285,7 +285,7 @@ def process_and_run(
         Parameters
         ----------
         coords : List[Tuple[int, int]] or "all"
-            _description_
+            NO LONGER USED!
         log_level : int, optional
             _description_, by default 0
         preprocess_data_func : _type_, optional
@@ -300,7 +300,7 @@ def process_and_run(
             If true will combine all outputs to a netcdf file
             If false will save each output as a csv file, by default False
         dims : List[str], optional
-            Dimensions to use for the data, by default ['lon', 'lat']
+            Dimensions to use for the data, by default ['j', 'i']
             This should match the dimensions in the netcdf files
         logger: print
             _description_, by default print
@@ -425,11 +425,16 @@ def runner(
             lon = location_data.lon.values.tolist()
             input_data_lat = rows_df.lat.iloc[0]
             input_data_lon = rows_df.lon.iloc[0]
-            # grid_i = rows_df.reset_index().i.values[0].tolist()
-            # grid_j = rows_df.reset_index().j.values[0].tolist()
+            grid_i = -1
+            grid_j = -1
+            try:
+                # This will only work if i and j are in the outputs of process_inputs
+                grid_i = rows_df.reset_index().i.values[0].tolist()
+                grid_j = rows_df.reset_index().j.values[0].tolist()
+            except Exception as e:
+                pass
 
-            logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}")
-            # logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
+            logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
             assert lat == input_data_lat, f"input_data and e_state_overrides lat do not match, {lat} != {input_data_lat}"
             assert lon == input_data_lon, f"input_data and e_state_overrides lon do not match, {lon} != {input_data_lon}"
 
@@ -480,8 +485,8 @@ def runner(
                 df = pd.DataFrame(output.data)
                 df['x'] = x
                 df['y'] = y
-                df['i'] = x + 1 # retained for backwards compatibility
-                df['j'] = y + 1 # retained for backwards compatibility
+                df['i_old'] = x + 1 # retained for backwards compatibility
+                df['j_old'] = y + 1 # retained for backwards compatibility
                 df['grid_i'] = grid_i
                 df['grid_j'] = grid_j
                 df['lat'] = float(lat)
