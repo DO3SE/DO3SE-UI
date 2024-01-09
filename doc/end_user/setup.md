@@ -2,7 +2,7 @@
 
 # Using packaged wheel
 
-1. install the latest wheel `pip install do3se-3.6.38-cp38-cp38-linux_x86_64.whl`
+1. install the latest wheel `pip install do3se-3.6.39-cp38-cp38-linux_x86_64.whl`
 
 # Using the source code
 
