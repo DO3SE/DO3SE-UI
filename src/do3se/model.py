@@ -47,8 +47,6 @@ input_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'required', 
      u'Global radiation (R, Wh/m\u00b2) **'),
     (inputs,    'par',      float,  False,  'PAR (W/m2)',
      u'Photosynthetically active radiation (PAR, W/m2) **'),
-    (inputs,    'ppfd',      float,  False,  'PPFD (umol/m^2/s)',
-     u'Photosynthetically active radiation (PPFD, umol/m\u00b2/s) **'),
     (inputs,    'rn',       float,  False,
      'Rn (MJ/m^2)',  u'Net radiation (Rn, MJ/m\u00b2)'),
     (inputs,    'cloudfrac',       float,  False,
@@ -100,8 +98,6 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      u'Global radiation (R, Wh/m\u00b2)'),
     (inputs,        'par',      float,  'PAR (W/m2)',
      u'Photosynthetically active radiation (PAR, W/m2)'),
-    (inputs,        'ppfd',      float,  'PPFD (umol/m^2/s)',
-     u'Photosynthetically active radiation (PPFD, umol/m\u00b2/s)'),
 
     # Calculated variables
     (inputs,        'ustar',    float,  'u* (m/s)',

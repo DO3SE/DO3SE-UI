@@ -16,7 +16,6 @@ module Inputs
     real, public, save :: CO2           ! Ambient CO2 concentration (ppm)
     real, public, save :: Hd            ! Sensible heat flux (W/m^2)
     real, public, save :: R             ! Global radiation (Wh/m^2)
-    real, public, save :: PPFD          ! PPFD (umol/m^2/s)
     real, public, save :: PAR           ! PAR (W/m2)
     real, public, save :: cloudfrac     ! Fraction of cloud cover
     real, public, save :: fSWP

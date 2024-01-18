@@ -300,17 +300,16 @@ contains
         !case (r_par_use_inputs)
         ! TODO: May need to still recalculate sun shade fracs
         case (r_par_derive_r)
-            call Calc_ST_from_PAR()
+            ! PAR is defined in external data
+            call Calc_ST_from_PAR() ! Calculates derivetives of PAR
             R = PAR / 0.45
-            PPFD = PAR * Wm2_uE
         case (r_par_derive_par)
+            ! R is defined in external data
             PAR = R * 0.45
-            PPFD = PAR * Wm2_uE
-            call Calc_ST_from_PAR()
+            call Calc_ST_from_PAR()  ! Calculates derivetives of PAR
         case (r_par_derive_cloudfrac)
             call Calc_PAR_from_cloudfrac()
             R = PAR / 0.45
-            PPFD = PAR * Wm2_uE
         end select
     end subroutine SB_Calc_R_PAR
 

@@ -47,10 +47,9 @@ contains
     ! Calculate Flight and flight with PAR
     !==========================================================================
     subroutine Calc_Flight()
-        ! TODO: document variables
-        use Constants, only: seaP
+        use Constants, only: seaP, Wm2_uE
         use Parameters, only: f_lightfac, cosA
-        use Inputs, only: PPFD, sinB
+        use Inputs, only: sinB
         use Variables, only: LAI, Flight, leaf_flight, Flightsun, Flightshade
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
@@ -59,8 +58,8 @@ contains
 
         cosT = sinB
         if (sinB > 0 .and. LAI > 0) then
-             PARdir = fPARdir * PPFD
-             PARdif = fPARdif * PPFD
+             PARdir = fPARdir * PAR
+             PARdif = fPARdif * PAR
 
             ! In canopy PAR
             LAIsun = (1 - exp(-0.5 * LAI / cosT)) * (cosT/cosA)
@@ -69,14 +68,14 @@ contains
             PARshade = PARdif*exp(-0.5*(LAI**0.7))+0.07*PARdir*(1.1-(0.1*LAI))*exp(-cosT)
             PARsun = PARdir * cosA/cosT + PARshade
 
-            leaf_flight = (1.0 - exp(-f_lightfac * PPFD))
+            leaf_flight = (1.0 - exp(-f_lightfac * PAR * Wm2_uE))
 
             ! Setup for g_sun and fst_sunlit as in EMEP model.
 
             ! Canopy
             ! TODO: does this need albedo?
-            Flightsun = (1.0 - exp(-f_lightfac * PARsun))
-            Flightshade = (1.0 - exp(-f_lightfac * PARshade))
+            Flightsun = (1.0 - exp(-f_lightfac * PARsun * Wm2_uE))
+            Flightshade = (1.0 - exp(-f_lightfac * PARshade * Wm2_uE))
             Flight = ((Flightsun * LAIsun) / LAI) + ((Flightshade * LAIshade) / LAI)
         else
             PARdir = 0
@@ -97,10 +96,12 @@ contains
     ! Calculate PAR from cloudfrac
     !
     ! Calculates ST and PARdir and PARdif
+
+    ! From discussion on EMEP email chain 03-2021
     !==========================================================================
     subroutine Calc_PAR_from_cloudfrac()
         use Constants, only: seaP, Wm2_uE
-        use Inputs, only: P, sinB, cloudfrac, PPFD
+        use Inputs, only: P, sinB, cloudfrac, PAR
         use Variables, only: pPARdir, pPARdif, fPARdir, fPARdif, &
               PARdir, PARdif, ST, LAI
 
@@ -120,8 +121,8 @@ contains
             ! Sky transmissivity from cloud frac
             ST = 1.0 - (0.75 * (cloudFrac ** 3.4))
 
-            ! A = 0.9
-            ! B = 0.7
+            ! A = 0.9 EMEP Vars
+            ! B = 0.7 EMEP Vars
             if (ST < 0.9) then
                 fPARdir = (pPARdir/pPARtotal) * (1-((0.9-ST)/0.7)**(2.0/3.0))
             else
@@ -130,14 +131,12 @@ contains
 
             fPARdif = 1 - fPARdir
 
-            PPFD = ST * pPARtotal
-            PAR = PPFD / Wm2_uE
+            PAR = ST * pPARtotal
             PARdir = fPARdir * PAR
             PARdif = PAR - PARdir
         else
             ST = 0
             PAR = 0
-            PPFD = 0
             PARdir = 0
             PARdif = 0
             pPARdir = 0
@@ -168,7 +167,7 @@ contains
             pPARtotal = pPARdir + pPARdif
 
             ! Sky transmissivity from cloud frac
-            ST = min(0.9, max(0.21, (PAR)/pPARtotal))
+            ST = min(0.9, max(0.21, PAR/pPARtotal))
 
             ! A = 0.9
             ! B = 0.7
