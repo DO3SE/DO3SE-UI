@@ -41,6 +41,10 @@ def load_estate_overrides(
     e_state_override_data = xr.open_dataset(e_state_overrides_path)
     assert e_state_override_data.x is not None, "x not found in e_state_override_data"
     assert e_state_override_data.y is not None, "y not found in e_state_override_data"
+    if hasattr(e_state_override_data, 'time'):
+        # This is to cover legacy e_state_override files that contain a time dimension
+        e_state_override_data = e_state_override_data.isel(time=0).squeeze().drop_vars('time')
+    assert list(e_state_override_data.dims.keys()) == ['x', 'y'], "e_state_override_data must only have x and y dims"
 
     return e_state_override_data
 
@@ -224,7 +228,8 @@ def get_config_overrides_from_estate(
     config_overrides = {}
     for estate_field, config_field in e_state_overrides_fields.items():
         if estate_field in location_data:
-            config_overrides[config_field] = float(location_data[estate_field].values[0])
+            # TODO: handle sometimes location data has time dimension
+            config_overrides[config_field] = float(location_data[estate_field].values)
         else:
             warn(f"Warning: {estate_field} not found in estate overrides file")
     return config_overrides
@@ -407,15 +412,7 @@ def runner(
             continue
         logger(f'Running coords: {x}_{y}')
         try:
-            # TODO: Can we optimize this?!
-            # rows = data_computed.where(
-            #     lambda d: (d.x == i) & (d.y == j), drop=True).to_dataframe(
-            # ).to_dict('records')
-            #                 # TODO: Can we optimize this?!
-            # rows_df = data_computed.where(
-            #     lambda d: (d.x == x) & (d.y == y), drop=True).to_dataframe(
-            # )
-            rows_df = data_computed.isel(x=x, y=y).to_dataframe()
+            rows_df = data_computed.isel(x=int(x), y=int(y)).to_dataframe()
             rows = rows_df.values
             location_data = e_state_overrides.where(
                 lambda d: (d.x == x) & (d.y == y), drop=True).squeeze()
@@ -431,7 +428,7 @@ def runner(
                 # This will only work if i and j are in the outputs of process_inputs
                 grid_i = rows_df.reset_index().i.values[0].tolist()
                 grid_j = rows_df.reset_index().j.values[0].tolist()
-            except Exception as e:
+            except Exception:
                 pass
 
             logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
