@@ -49,7 +49,7 @@ contains
     subroutine Calc_Flight()
         use Constants, only: seaP, Wm2_uE
         use Parameters, only: f_lightfac, cosA
-        use Inputs, only: sinB
+        use Inputs, only: sinB, PAR
         use Variables, only: LAI, Flight, leaf_flight, Flightsun, Flightshade
         use Variables, only: fPARdir, fPARdif, &
                 LAIsun, LAIshade, PARsun, PARshade, PARdir, PARdif
