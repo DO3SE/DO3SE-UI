@@ -289,7 +289,7 @@ contains
 
 
     subroutine SB_Calc_R_PAR()
-        use Inputs, only: R, PPFD, PAR
+        use Inputs, only: R, PAR
         use Environmental, only:Calc_PAR_from_cloudfrac, Calc_ST_from_PAR
         use Options, only: r_par_method, r_par_derive_r, r_par_derive_par, r_par_derive_cloudfrac
         use Constants, only: Wm2_uE
