@@ -164,6 +164,18 @@ contains
     end function estimate_velocity
 
 
+        function estimate_velocity_simple(ustar, z, z0) result (u)
+        use Constants, only: K
+        real, intent(in) :: ustar   ! Friction velocity (m/s)
+        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+
+        real :: u                   ! Output: velocity (m/s)
+
+        u = (ustar / K) * log(z / z0)
+    end function estimate_velocity_simple
+
+
     !==========================================================================
     ! Estimate Wind U*
     !==========================================================================
@@ -181,6 +193,19 @@ contains
 
         ustar = u * K / (log(z / z0) - psim_a + psim_b)
     end function estimate_ustar
+
+
+    function estimate_ustar_simple(u, z, z0) result (ustar)
+        real, intent(in) :: u       ! Velocity at height above boundary (m/s)
+        real, intent(in) :: z       ! Height above boundary, e.g. z - d (m)
+        real, intent(in) :: z0      ! Roughness length, height at which u=0 (m)
+
+        real :: ustar               ! Output: friction velocity, ustar (m/s)
+
+        real, parameter :: K = 0.41 ! von Karman's constant
+
+        ustar = (u * K) / log(z / z0)
+    end function estimate_ustar_simple
 
     !==========================================================================
     ! Calc Monin-Obukhov Length for row
@@ -203,43 +228,28 @@ contains
     !
     ! We are only supplied with wind speed at measured height
     !==========================================================================
+    ! Derive ustar for the flux canopy and the windspeed at the canopy
+    !
     subroutine Calc_ustar_uh()
-        use Constants, only: Rmass, Ts_K, k, g, cp, pi, izR
+        use Constants, only: izR
         use Parameters, only: h, d, zo, u_d, u_zo, uzR
 
         real :: ustar_ref   ! ustar for where windspeed is measured
-        real :: Tk
-        real :: uh_zr_lim
 
         real, parameter :: MIN_WINDSPEED = 0.1
-        real, parameter :: MIN_USTAR = 0.1
-
-        Tk = Ts_C + Ts_K
 
         ! Find ustar over reference canopy
-        uh_zr_lim = max(MIN_WINDSPEED, uh_zR)
-
-        ustar_ref = estimate_ustar(uh_zr_lim, uzR - u_d, u_zo, L)
-        ustar_ref = max(0.0001, ustar_ref)
-
-        ! TODO: We are recalculating L here but should split all into seperate components
-        L = calc_monin_obukhov_length(Tk, ustar_ref, Hd, P)
-        invL = 1/L
-
+        ustar_ref = estimate_ustar_simple(max(MIN_WINDSPEED, uh_zR), uzR - u_d, u_zo)
         ! Find windspeed at izR, over reference canopy
-        uh_i = estimate_velocity(uh_zr_lim, uzR, izR, zo, d, invL)
-        uh_i = max(MIN_WINDSPEED, uh_i)
-
+        uh_i = max(MIN_WINDSPEED, estimate_velocity_simple(ustar_ref, izR - u_d, u_zo))
         ! Find ustar over target canopy, assuming that at izR windspeed will be
         ! equal over both vegetations
-        ustar = estimate_ustar(uh_i, izR - d, zo, L)
-
+        ustar = estimate_ustar_simple(max(MIN_WINDSPEED, uh_i), izR - d, zo)
         ! Find windspeed at top of target canopy
-        uh = estimate_velocity(uh_i, izR, h, zo, d, invL)
-        uh = max(MIN_WINDSPEED, uh)
+        uh = max(MIN_WINDSPEED, estimate_velocity_simple(ustar, h - d, zo))
 
         ! Stop ustar being 0
-        ustar = max(MIN_USTAR, ustar)
+        ustar = max(0.0001, ustar)
     end subroutine Calc_ustar_uh
 
     !==========================================================================
