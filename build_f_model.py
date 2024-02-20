@@ -11,7 +11,7 @@ sys.argv[1:] = ['config_fc', '--fcompiler=gnu95', '--f90flags="-fimplicit-none"'
 
 
 # Remove need for duplication - use file list from standalone model build
-ext_files = [os.path.join('F', x) for x in
+ext_files = [os.path.join('src/F', x) for x in
         re.findall(r'\w+\.f90',
             re.sub(r'(\w+)\.o', r'\1.f90',
                 open(os.path.join('F', 'objects.mk'), 'r').read()))]
