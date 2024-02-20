@@ -126,14 +126,16 @@ contains
     ! Calculate the accumulated stomatal flux above threshold Y
     !==========================================================================
     subroutine Calc_AFstY()
-        use Variables, only: Fst_sun, AFstY, AFst0
+        use Variables, only: Fst, Fst_sun, AFstY, AFst0, AFstY_total
         use Parameters, only: Y
 
         ! Fst == 0 if Gsto_l == 0 (and Gsto_l == 0 if leaf_fphen == 0), so no
         ! need to check leaf_fphen
         AFst0 = AFst0 + ((Fst_sun*60*60)/1000000)
         AFstY = AFstY + ((max(0.0, Fst_sun - Y)*60*60)/1000000)
+        AFstY_total = AFstY_total + ((max(0.0, Fst - Y)*60*60)/1000000)
     end subroutine Calc_AFstY
+
 
     !==========================================================================
     ! Calculate the accumulated OT40

@@ -29,6 +29,7 @@ contains
 
         AFst0 = 0
         AFstY = 0
+        AFstY_total = 0
         AOT0 = 0
         AOT40 = 0
         Rsto_c = 100000

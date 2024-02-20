@@ -87,8 +87,9 @@ module Variables
     real, public, save :: Ftot          ! Total O3 flux
     real, public, save :: Fst           ! Upper leaf stomatal flux
     real, public, save :: Fst_sun       ! Upper leaf sunlit stomatal flux
-    real, public, save :: AFst0         ! Accumulated Fst
-    real, public, save :: AFstY         ! Accumulated Fst over threshold Y
+    real, public, save :: AFst0         ! Accumulated sunlit Fst
+    real, public, save :: AFstY         ! Accumulated sunlit Fst over threshold Y
+    real, public, save :: AFstY_total   ! Accumulated Fst over threshold Y
     real, public, save :: OT40          ! OT40 (canopy)
     real, public, save :: AOT40         ! Accumulated OT40 (canopy)
     real, public, save :: OT0           ! OT with no threshold (upper leaf)
