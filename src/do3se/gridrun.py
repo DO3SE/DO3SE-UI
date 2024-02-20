@@ -44,26 +44,19 @@ def load_estate_overrides(
     if hasattr(e_state_override_data, 'time'):
         # This is to cover legacy e_state_override files that contain a time dimension
         e_state_override_data = e_state_override_data.isel(time=0).squeeze().drop_vars('time')
-    assert list(e_state_override_data.dims.keys()) == ['x', 'y'], "e_state_override_data must only have x and y dims"
+    assert list(e_state_override_data.dims.keys()) == ['x', 'y'], "e_state_override_data must only have x and y dims but got " + str(list(e_state_override_data.dims.keys()))
 
     return e_state_override_data
 
-def assign_x_and_y(data_processed: xr.Dataset) -> xr.Dataset:
+def assign_x_and_y(data_processed: xr.Dataset, dims=["j", "i"]) -> xr.Dataset:
     data_template = data_processed.isel(time=0).squeeze().drop_vars('time')
-    size = data_template.ts_c.size
-    shape = data_template.ts_c.shape
-
-    y = (np.arange(size).reshape(
-        shape) % shape[1])
-    x = (np.arange(size).reshape(list(reversed(shape))) %
-        shape[0]).transpose()
-
-    x_da = xr.DataArray(x, data_template.coords, dims=data_template.lat.dims)
-    y_da = xr.DataArray(y, data_template.coords, dims=data_template.lat.dims)
-
-    data_processed_out = data_processed.assign_coords(dict(
-        x=x_da, y=y_da,
-    ))
+    shape = data_template[dims[0]].size, data_template[dims[1]].size
+    x = np.arange(shape[0])
+    y = np.arange(shape[1])
+    # TODO: May not need to drop i and j here
+    data_processed_out = data_processed.assign_coords(xb=(dims[0], x), yb=(dims[1], y)).rename_dims({dims[0]: 'x', dims[1]: 'y'})\
+        .rename({'xb': 'x', 'yb': 'y'})
+        # .drop(dims[0]).drop(dims[1]) # Can drop the dims here if not needed
     return data_processed_out
 
 def process_wrfchem_data(data_processed, dims=['lon', 'lat']):
