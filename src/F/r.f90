@@ -297,7 +297,7 @@ contains
         Gsto_l = gmax * min(leaf_fphen, fO3) * leaf_flight * max(fmin, ftemp * fVPD * fXWP)
         ! Leaf sunlit gsto
         Gsun_l = gmax * min(fphen, fO3) * Flightsun * max(fmin, ftemp * fVPD * fXWP)
-        Gsun_l_ms = gmax * min(fphen, fO3) * Flightsun * max(fmin, ftemp * fVPD * fXWP) * mmol2sm
+        Gsun_l_ms = gmax * min(fphen, fO3) * Flightsun * max(fmin, ftemp * fVPD * fXWP) * mmol2sm ! only used for debugging
         ! Mean Gsto
         ! TODO: Should we have fO3 here?
         Gsto = (gmax * gmorph) * fphen * flight * max(fmin, ftemp * fVPD * fXWP)
