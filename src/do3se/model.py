@@ -138,6 +138,8 @@ output_fields = dicts_to_map(to_dicts(('module', 'variable', 'type', 'short', 'l
      u'Mean stomatal conductance (Gsto, mmol/m\u00b2/s)'),
     (variables,     'rsto_l',   float,  'Rsto_l (s/m)',
      'Leaf stomatal resistance (Rsto_l, s/m)'),
+    (variables,     'rsun_l',   float,  'Rsun_l (s/m)',
+     'Sunlit Leaf stomatal resistance (Rsun_l, s/m)'),
     (variables,     'gsto_l',   float,  'Gsto_l (mmol/m^2/s)',
      u'Leaf stomatal conductance (Gsto_l, mmol/m\u00b2/s)'),
     (variables,     'gsun_l',   float,  'Gsun_l (mmol/m^2/s)',
