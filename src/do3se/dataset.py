@@ -48,12 +48,12 @@ class Dataset:
             input_data) is not dict
 
         self.input = input_data
-        dd_key = "dd" if not self.input_data_is_matrix else headings.index('dd')
-        ts_c_key = "ts_c" if not self.input_data_is_matrix else headings.index('ts_c')
+        dd_key = "dd" if not self.input_data_is_matrix else self.headings.index('dd')
+        ts_c_key = "ts_c" if not self.input_data_is_matrix else self.headings.index('ts_c')
         mean_temps, td_data = calc_thermal_time(self.input, dd_key, ts_c_key)
         self.input = [[*row, td] if self.input_data_is_matrix else {
             **row, "td": td} for row, td in zip(self.input, td_data)]
-        headings = [*headings, 'td']
+        headings = [*self.headings, 'td']
 
         # Check required fields are present
         required = [k for k, v in model.input_fields.items() if v['required']]
