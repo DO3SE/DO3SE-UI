@@ -121,6 +121,10 @@ contains
             ! Sky transmissivity from cloud frac
             ST = 1.0 - (0.75 * (cloudFrac ** 3.4))
 
+            ! PARTITIONING SOLAR RADIATION INTO DIRECT AND DIFFUSE,
+            ! VISIBLE AND NEAR-INFRARED COMPONENTS*
+            ! A. WEISS and J.M. NORMAN
+            ! Eq 11
             ! A = 0.9 EMEP Vars
             ! B = 0.7 EMEP Vars
             if (ST < 0.9) then
@@ -131,7 +135,7 @@ contains
 
             fPARdif = 1 - fPARdir
 
-            PAR = ST * pPARtotal
+            PAR = ST * pPARtotal ! W/m2
             PARdir = fPARdir * PAR
             PARdif = PAR - PARdir
         else
