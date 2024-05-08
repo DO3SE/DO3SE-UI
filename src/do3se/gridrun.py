@@ -34,30 +34,33 @@ def add_vpd(x):
     return xr.apply_ufunc(_inner, x.ts_c, x.rh, dask="parallelized",
                           output_dtypes=np.float64)
 
-
-def load_estate_overrides(
-    e_state_overrides_path: Path,
-):
-    e_state_override_data = xr.open_dataset(e_state_overrides_path)
-    assert e_state_override_data.x is not None, "x not found in e_state_override_data"
-    assert e_state_override_data.y is not None, "y not found in e_state_override_data"
-    if hasattr(e_state_override_data, 'time'):
-        # This is to cover legacy e_state_override files that contain a time dimension
-        e_state_override_data = e_state_override_data.isel(time=0).squeeze().drop_vars('time')
-    assert list(e_state_override_data.dims.keys()) == ['x', 'y'], "e_state_override_data must only have x and y dims but got " + str(list(e_state_override_data.dims.keys()))
-
-    return e_state_override_data
-
-def assign_x_and_y(data_processed: xr.Dataset, dims=["j", "i"]) -> xr.Dataset:
-    data_template = data_processed.isel(time=0).squeeze().drop_vars('time')
+def assign_x_and_y(data_processed: xr.Dataset, dims=["j", "i"], output_dims=["x", "y"]) -> xr.Dataset:
+    if 'time' in data_processed.dims:
+        data_template = data_processed.isel(time=0).squeeze().drop_vars('time')
+    else:
+        data_template = data_processed
     shape = data_template[dims[0]].size, data_template[dims[1]].size
     x = np.arange(shape[0])
     y = np.arange(shape[1])
-    # TODO: May not need to drop i and j here
-    data_processed_out = data_processed.assign_coords(xb=(dims[0], x), yb=(dims[1], y)).rename_dims({dims[0]: 'x', dims[1]: 'y'})\
-        .rename({'xb': 'x', 'yb': 'y'})
+    data_processed_out = data_processed.assign_coords(xb=(dims[0], x), yb=(dims[1], y)).rename_dims({dims[0]: output_dims[0], dims[1]: output_dims[1]})\
+        .rename({'xb': output_dims[0], 'yb': output_dims[1]})
         # .drop(dims[0]).drop(dims[1]) # Can drop the dims here if not needed
     return data_processed_out
+
+
+def load_estate_overrides(
+    e_state_overrides_path: Path,
+    dims: List[str]=['j', 'i'],
+    output_dims: List[str]=['x', 'y'],
+):
+    e_state_override_data = xr.open_dataset(e_state_overrides_path)
+
+    if hasattr(e_state_override_data, 'time'):
+        # This is to cover legacy e_state_override files that contain a time dimension
+        e_state_override_data = e_state_override_data.isel(time=0).squeeze().drop_vars('time')
+    e_state_override_data = assign_x_and_y(e_state_override_data, dims=list(e_state_override_data.dims.keys()), output_dims=output_dims)
+    return e_state_override_data
+
 
 def process_wrfchem_data(data_processed, dims=['lon', 'lat']):
     raise NotImplementedError("process_wrfchem_data not implemented")
@@ -105,7 +108,7 @@ def process_wrfchem_data(data_processed, dims=['lon', 'lat']):
     return data_processed_indexed
 
 
-def process_emep_data(data_processed, dims=['j', 'i']):
+def process_emep_data(data_processed):
     data_processed = data_processed.assign(hr=lambda d: d.time.dt.hour)
     data_processed = data_processed.assign(
         dd=lambda d: d.time.dt.strftime('%j').astype(int))
@@ -130,14 +133,16 @@ def process_emep_data(data_processed, dims=['j', 'i']):
         ])
     )
 
-    data_processed_indexed = assign_x_and_y(data_processed.squeeze())
-
-    return data_processed_indexed
+    return data_processed
 
 
 def load_and_process(
-        data_location, process_func=process_emep_data,
-        dims=['lat', 'lon'], **kwargs):
+        data_location,
+        process_func=process_emep_data,
+        dims: List[str] = ['j', 'i'],
+        output_dims: List[str]=['x', 'y'],
+        **kwargs
+    ):
     try:
         input_data_multi_ds = xr.open_mfdataset(
             f'{data_location}/*.nc',
@@ -159,11 +164,18 @@ def load_and_process(
     #  .where(lambda d: (d.i.isin(x)) & (d.j.isin(y)), drop=True)
     # TODO: Chunks .chunk({'i': 5, 'j': 5, 'time': 8760})
 
-    data_processed = process_func(input_data_multi_ds, dims=dims)
+    data_processed = process_func(input_data_multi_ds)
 
-    assert data_processed.x is not None, "x not found in processed input data"
-    assert data_processed.y is not None, "y not found in processed input data"
-    return data_processed
+    data_processed_indexed = assign_x_and_y(
+        data_processed.squeeze(),
+        dims=dims,
+        output_dims=output_dims,
+    )
+    assert output_dims[0] in data_processed_indexed.dims, f"{output_dims[0]} not found in processed input data"
+    assert output_dims[1] in data_processed_indexed.dims, f"{output_dims[1]} not found in processed input data"
+    assert data_processed_indexed[output_dims[0]] is not None, f"{output_dims[0]} not found in processed input data"
+    assert data_processed_indexed[output_dims[1]] is not None, f"{output_dims[1]} not found in processed input data"
+    return data_processed_indexed
 
 def get_coord_batches(
     coords, target_batch_size=1000, logger=print,
@@ -275,6 +287,7 @@ def process_and_run(
             preprocess_data_func=process_emep_data,
             return_processed_data=False, precompute=False,
             dims: List[str] = ['j', 'i'],
+            output_dims: List[str]=['x', 'y'],
             loadData_kwargs: dict = {},
             logger=print
         ):
@@ -300,6 +313,11 @@ def process_and_run(
         dims : List[str], optional
             Dimensions to use for the data, by default ['j', 'i']
             This should match the dimensions in the netcdf files
+        output_dims : List[str], optional
+            The names of the dimension in the output data where the
+            shape will be (lat, lon), by default ['x', 'y']
+            Note sometimes the the output may need to be ['y', 'x']
+            where lat=y and lon=x instead
         logger: print
             _description_, by default print
 
@@ -310,30 +328,25 @@ def process_and_run(
             data_location,
             process_func=preprocess_data_func,
             dims=dims,
+            output_dims=output_dims,
             **loadData_kwargs,
             # concat_dim="Time", # TODO: Make this an arg
             # combine="nested", # TODO: Make this an arg
         )
         logger("data shape", data.ts_c.shape)
-        # x, y = list(zip(*coords))
         e_state_overrides = load_estate_overrides(
             e_state_overrides_path,
-            # grid_size, grid_shape, x, y, dims
-            )
+            dims=dims,
+            output_dims=output_dims,
+        )
+        # TODO: Validate that input and overrides have the same shape
         logger("Computing data")
-        # coord_map = get_coord_map(mask_path)
 
         if return_processed_data:
             return data
         # TODO: Filter data by coords
         data_computed = data if not precompute \
             else data.compute()
-        # TODO: Get chunks
-        # TODO: Check why we saved here!
-        # data_computed.to_netcdf(tmp_data_loc)
-        # data_computed.chunk({'time': 10}).to_netcdf(tmp_data_loc)
-        # data_computed = xr.open_dataset(tmp_data_loc)
-
 
         end_time = datetime.now()
         logger(f"Pre process time: {end_time - start_time}")
@@ -350,6 +363,7 @@ def runner(
     zero_year: int,
     e_state_overrides_field_map: Dict[str, str] = None,
     output_file_path: Path=None,
+    output_dims: List[str]=['x', 'y'],
     process_output: Callable[[], any] = process_output_for_pod,
     throw_exceptions: bool = True,
     run_id="DO3SE_UI_run",
@@ -377,6 +391,11 @@ def runner(
         _description_
     output_file_path : _type_
         _description_
+    output_dims : List[str], optional
+            The names of the dimension in the output data where the
+            shape will be (lat, lon), by default ['x', 'y']
+            Note sometimes the the output may need to be ['y', 'x']
+            where lat=y and lon=x instead
     process_output : Callable[[], any], optional
         Function to process outputs from the DO3SE model, by default None
     throw_exceptions: bool = False,
@@ -400,15 +419,23 @@ def runner(
     outputs_full = []
     start_time = datetime.now()
     logger(f"Running model for {len(coords)} coords")
+    logger(f"Output dims {output_dims}")
     for x, y in coords:
+        # NOTE: X and Y may be swapped if output_dims is ['y', 'x']
         if x == INVALID_COORD and y == INVALID_COORD:
+            # our coords batches have to be padded to the same size
+            # so we skip the invalid coords
             continue
-        logger(f'Running coords: {x}_{y}')
+        logger(f'Running coords: {output_dims[0]}:{x} {output_dims[1]}:{y}')
         try:
-            rows_df = data_computed.isel(x=int(x), y=int(y)).to_dataframe()
+            rows_df = data_computed.isel(**{
+                output_dims[0]: int(x),
+                output_dims[1]: int(y),
+            }).to_dataframe()
+            # rows_df = data_computed.isel(x=int(x), y=int(y)).to_dataframe()
             rows = rows_df.values
             location_data = e_state_overrides.where(
-                lambda d: (d.x == x) & (d.y == y), drop=True).squeeze()
+                lambda d: (d[output_dims[0]] == x) & (d[output_dims[1]] == y), drop=True).squeeze()
 
             elevation = location_data.terrain.values.tolist()
             lat = location_data.lat.values.tolist()
@@ -424,7 +451,7 @@ def runner(
             except Exception:
                 pass
 
-            logger(f"Running coords: {x}_{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
+            logger(f"Running coords: {output_dims[0]}:{x} {output_dims[1]}:{y} with elevation: {elevation}, lat: {lat}, lon: {lon}, grid_i: {grid_i}, grid_j: {grid_j}")
             assert lat == input_data_lat, f"input_data and e_state_overrides lat do not match, {lat} != {input_data_lat}"
             assert lon == input_data_lon, f"input_data and e_state_overrides lon do not match, {lon} != {input_data_lon}"
 
@@ -473,8 +500,8 @@ def runner(
                 logger("Saving ds output for coords", x, y)
                 # TODO: Can we skip dataframe here?
                 df = pd.DataFrame(output.data)
-                df['x'] = x
-                df['y'] = y
+                df[output_dims[0]] = x
+                df[output_dims[1]] = y
                 df['i_old'] = x + 1 # retained for backwards compatibility
                 df['j_old'] = y + 1 # retained for backwards compatibility
                 df['grid_i'] = grid_i
@@ -485,7 +512,7 @@ def runner(
                 df['date'] = zero_date + \
                     pd.to_timedelta(df.dd-1, unit='D') + \
                     pd.to_timedelta(df.hr, unit='h')
-                df = df.set_index(['x', 'y', 'date'])
+                df = df.set_index([output_dims[0], output_dims[1], 'date'])
                 ds = df.to_xarray()
                 outputs_full.append(ds)
 
@@ -497,8 +524,8 @@ def runner(
                     "lat": lat,
                     "lon": lon,
                     "elev": elevation,
-                    "x": x,
-                    "y": y,
+                    output_dims[0]: x,
+                    output_dims[1]: y,
                     "grid_i": grid_i,
                     "grid_j": grid_j,
                 })
@@ -530,6 +557,7 @@ def gridrun(
     preprocess_data_func: Callable[[xr.Dataset], xr.Dataset] = process_emep_data,
     process_output: Callable[[], any] = process_output_for_pod,
     dims: Tuple[str, str]=['j', 'i'],
+    output_dims: List[str]=['x', 'y'],
     return_outputs: bool = False,
     output_fields: List[str] = out_fields,
     save_ds: bool = False,
@@ -555,7 +583,9 @@ def gridrun(
     e_state_overrides_path : Path
         Path to the e_state_overrides.nc file.
     coords : List[Tuple[int, int]]
-        list  of coordinates to run the model on
+        list of coordinates to run the model on. Should always be a list of tuples
+        where each tuple is a pair of x(lat) and y(lon) coordinates assuming
+        the input data is stored as a 2D grid with shape (x, y) or (lat, lon).
     e_state_overrides_field_map : Dict[str, str], optional
         A dictionary mapping the e_state_overrides field names to the input data field names, by default None
     preprocess_data_func : Callable[[xr.Dataset], xr.Dataset], optional
@@ -563,7 +593,12 @@ def gridrun(
     process_output : Callable[[], any]
         A function to process the output of the model before concatenating it.
     dims : List[str]
-        The dimensions used in the input data
+        The dimensions used in the input data. This is only used for the load_and_process function.
+    output_dims : List[str], optional
+            The names of the dimension in the output data where the
+            shape will be (lat, lon), by default ['x', 'y']
+            Note sometimes the the output may need to be ['y', 'x']
+            where lat=y and lon=x instead
     return_outputs : bool
         If true, return the output of the model. Note this will use more memory
     output_fields: List[str]
@@ -620,6 +655,7 @@ def gridrun(
         data_computed, e_state_overrides = setup(
             coords=coord_batch,
             dims=dims,
+            output_dims=output_dims,
             preprocess_data_func=preprocess_data_func,
             precompute=loadData_kwargs.pop('precompute', False),
             loadData_kwargs=loadData_kwargs,
@@ -638,6 +674,7 @@ def gridrun(
             process_output=process_output,
             run_id=run_id,
             batch_id=batch_i,
+            output_dims=output_dims,
             save_ds=save_ds,
             logger=logger,
         )

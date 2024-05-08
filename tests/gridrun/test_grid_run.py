@@ -29,6 +29,9 @@ def process_output(results):
         # process_output=process_output,
     # )
 
+e_state_overrides_field_map = {
+    "rsoil_grid":  "rsoil",
+}
 
 def test_can_run_grid_run_with_preprocessing_turned_on():
     start_time = datetime.now()
@@ -39,11 +42,14 @@ def test_can_run_grid_run_with_preprocessing_turned_on():
         output_location=f"{PROJECT_DIR}/outputs",
         zero_year=2012,
         e_state_overrides_path=f"{PROJECT_DIR}/e_state_overrides.nc",
+        e_state_overrides_field_map=e_state_overrides_field_map,
         coords=coords,
         save_ds=True,
         save_full_outputs=True,
         debug=True,
         target_batch_size=2,
+        dims=['j', 'i'],
+        output_dims=['foo', 'bar'],
         process_output=process_output,
         loadData_kwargs=dict(
             precompute=True,
