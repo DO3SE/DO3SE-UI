@@ -42,7 +42,12 @@ def assign_x_and_y(data_processed: xr.Dataset, dims=["j", "i"], output_dims=["x"
     shape = data_template[dims[0]].size, data_template[dims[1]].size
     x = np.arange(shape[0])
     y = np.arange(shape[1])
-    data_processed_out = data_processed.assign_coords(xb=(dims[0], x), yb=(dims[1], y)).rename_dims({dims[0]: output_dims[0], dims[1]: output_dims[1]})\
+    # Rename dims to avoid conflicts
+    data_processed_out = data_processed\
+        .assign_coords(xb=(dims[0], x), yb=(dims[1], y))\
+        .rename_dims({dims[0]: '_x', dims[1]: '_y'})\
+        .drop(dims[0]).drop(dims[1])\
+        .rename_dims({'_x': output_dims[0], '_y': output_dims[1]})\
         .rename({'xb': output_dims[0], 'yb': output_dims[1]})
         # .drop(dims[0]).drop(dims[1]) # Can drop the dims here if not needed
     return data_processed_out
