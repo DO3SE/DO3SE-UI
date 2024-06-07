@@ -149,9 +149,15 @@ contains
     ! vegetation under the windspeed measurement based on its height
     !==========================================================================
     subroutine Derive_Windspeed_d_zo()
-        ! TODO: Depends on ground cover type
-        u_d = u_h * 0.78 ! 0.7
-        u_zo = u_h * 0.07 ! 0.1
+        ! NOTE: Crude method of defining cover type
+        if (u_h < 3) then
+            ! Assume grass or crop
+            u_d = u_h * 0.7
+            u_zo = u_h * 0.1
+        else
+            u_d = u_h * 0.78
+            u_zo = u_h * 0.07
+        end if
     end subroutine Derive_Windspeed_d_zo
 
     !==========================================================================
@@ -159,9 +165,15 @@ contains
     ! vegetation under the O3 measurement based on its height
     !==========================================================================
     subroutine Derive_O3_d_zo()
-        ! TODO: Depends on ground cover type
-        O3_d = O3_h * 0.78
-        O3_zo = O3_h * 0.07
+        ! NOTE: Crude method of defining cover type
+        if (O3_h < 3) then
+            ! Assume grass or crop
+            O3_d = O3_h * 0.7
+            O3_zo = O3_h * 0.1
+        else
+            O3_d = O3_h * 0.78
+            O3_zo = O3_h * 0.07
+        end if
     end subroutine Derive_O3_d_zo
 
     !==========================================================================
@@ -169,9 +181,14 @@ contains
     ! the canopy.
     !==========================================================================
     subroutine Derive_d_zo()
-        ! TODO: Depends on ground cover type
-        d = h * 0.78
-        zo = min(1.0, h * 0.07)
+        if(h < 3) then
+            ! Assume grass or crop
+            d = h * 0.7
+            zo = h * 0.1
+        else
+            d = h * 0.78
+            zo = min(1.0, h * 0.07)
+        end if
     end subroutine Derive_d_zo
 
 end module Parameters

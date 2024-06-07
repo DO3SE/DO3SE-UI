@@ -330,13 +330,14 @@ contains
     end subroutine SB_Calc_SGS_EGS
 
     subroutine SB_Calc_ustar()
-        use Inputs, only: Calc_ustar_uh, Calc_ustar_uh_ustar_in, Calc_ustar_uh_ustar_i_in
+        use Inputs, only: Calc_ustar_uh, Calc_ustar_uh_ustar_in, Calc_ustar_uh_ustar_i_in, Calc_ustar_ref_O3_uh
         use Options, only: ustar_method, ustar_calculate, ustar_input, ustar_i_input
 
         select case (ustar_method)
 
         case (ustar_calculate)
             call Calc_ustar_uh()
+            call Calc_ustar_ref_O3_uh()
         case (ustar_input)
             call Calc_ustar_uh_ustar_in()
         case (ustar_i_input)

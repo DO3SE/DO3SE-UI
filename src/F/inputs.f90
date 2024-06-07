@@ -30,6 +30,7 @@ module Inputs
     real, public, save :: Rn_W          ! Net radiation (W/m^2)
     real, public, save :: ustar         ! Friction velocity (m/s)
     real, public, save :: ustar_ref     ! Friction velocity at reference height (m/s)
+    real, public, save :: ustar_ref_O3     ! Friction velocity at reference height (m/s)
     real, public, save :: uh_i          ! Windspeed at intermediate height
     real, public, save :: uh            ! Windspeed at canopy
     real, public, save :: L             ! Monin-Obukhov Length
@@ -41,6 +42,7 @@ module Inputs
 
     public :: Init_Inputs
     public :: Calc_ustar_uh
+    public :: Calc_ustar_ref_O3_uh
     public :: Calc_ustar_uh_ustar_in
     public :: Calc_ustar_uh_ustar_i_in
     public :: Accumulate_precip
@@ -68,6 +70,7 @@ contains
         precip_acc = 0
         ustar = 0.5
         ustar_ref = 1
+        ustar_ref_O3 = 1
         invL = 1
         L = 1
     end subroutine Init_Inputs
@@ -234,8 +237,6 @@ contains
         use Constants, only: izR
         use Parameters, only: h, d, zo, u_d, u_zo, uzR
 
-        real :: ustar_ref   ! ustar for where windspeed is measured
-
         real, parameter :: MIN_WINDSPEED = 0.1
 
         ! Find ustar over reference canopy
@@ -251,6 +252,21 @@ contains
         ! Stop ustar being 0
         ustar = max(0.0001, ustar)
     end subroutine Calc_ustar_uh
+
+    !==========================================================================
+    ! Derive ustar for the flux canopy and the ozone at the canopy
+    !
+    ! We are only supplied with wind speed at measured height
+    !==========================================================================
+    ! Derive ustar for the flux canopy and the windspeed at the canopy
+    !
+    subroutine Calc_ustar_ref_O3_uh()
+        use Parameters, only: O3_d, u_zo, uzR
+
+        ! Find ustar over reference canopy
+        ustar_ref_O3 = estimate_ustar_simple(uh_i, uzR - O3_d, u_zo)
+
+    end subroutine Calc_ustar_ref_O3_uh
 
     !==========================================================================
     ! Derive Wind state from ustar ref input(WIP)

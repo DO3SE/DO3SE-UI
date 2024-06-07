@@ -23,8 +23,8 @@ contains
     !==========================================================================
     subroutine Calc_O3_Concentration()
         use Constants, only: k, izR, v, DO3, Pr, Ts_K
-        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar, L, invL, ustar_ref
-        use Inputs, only: estimate_ustar
+        use Inputs, only: O3_ppb_zR, uh_i, Ts_C, P, ustar, L, invL, ustar_ref_O3
+        use Inputs, only: estimate_ustar,estimate_ustar_simple
         use Variables, only: Ra, Rb, Rsur, Rb_ref
         use Variables, only: Vd, O3_ppb, O3_nmol_m3, Vd_i, O3_ppb_i, Ra_ref_i, &
                              Ra_O3zR_i, Ra_tar_i
@@ -37,17 +37,12 @@ contains
 
         real ::  Vn
 
-        ! ustar over reference canopy
-        ! TODO: we calculate ustar here but if it is taken from input data
-        ! ustar_ref_o3 = estimate_ustar(uh_i, izR - O3_d, O3_zo, L)
-        ustar_ref_o3 = ustar_ref
-
         ! Ra between reference canopy and izR
         select case (ra_method)
             case (ra_simple)
-                Ra_ref_i = calc_ra_simple(ustar_ref_o3, O3_zo + O3_d, izR, O3_d)
+                Ra_ref_i = calc_ra_simple(ustar_ref_O3, O3_zo + O3_d, izR, O3_d)
             case (ra_with_heat_flux)
-                Ra_ref_i = calc_ra_with_heat_flux(ustar_ref_o3, O3_zo + O3_d, izR, invL)
+                Ra_ref_i = calc_ra_with_heat_flux(ustar_ref_O3, O3_zo + O3_d, izR, invL)
         end select
         ! Rb for reference canopy
         Rb_ref = rb_func(ustar_ref_o3, DO3)
