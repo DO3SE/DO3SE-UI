@@ -65,6 +65,7 @@ contains
         ! Ra between target canopy and izR
         ! Same as Ra from r.f90 but lower height includes +h*0.78 and upper height removes h*0.78
         ! (ustar already calculated for target canopy)
+        ! NOTE: ustar is calculated for windspeed heights not O3 heights
         select case (ra_method)
             case (ra_simple)
                 Ra_tar_i = calc_ra_simple(ustar, zo + d, izR, d)

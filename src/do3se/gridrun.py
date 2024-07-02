@@ -523,7 +523,7 @@ def runner(
 
             if process_output:
                 logger("Processing output for coords", x, y)
-                output_processed = process_output(output)
+                output_processed = process_output(output, input_data_df=rows_df, options=options, x=x, y=y)
                 outputs.append({
                     **output_processed,
                     "lat": lat,
