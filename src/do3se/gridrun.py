@@ -505,6 +505,7 @@ def runner(
                 logger("Saving ds output for coords", x, y)
                 # TODO: Can we skip dataframe here?
                 df = pd.DataFrame(output.data)
+                df = df[output_fields] # filter to output fields
                 df[output_dims[0]] = x
                 df[output_dims[1]] = y
                 df['i_old'] = x + 1 # retained for backwards compatibility
