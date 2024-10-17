@@ -1,3 +1,4 @@
 [build-system]
-requires = ["setuptools>=61.0", "numpy==1.24.4"]
+# NOTE Numpy and Setuptools have specific versions. Newer versions cause build errors.
+requires = ["setuptools==61.0", "numpy==1.24.4"]
 build-backend = "setuptools.build_meta"

@@ -16,7 +16,9 @@ from numpy.distutils.core import Extension, setup
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-root = os.environ['BUILD_ROOT'] # This is a hack to fix missing objects.mk issue
+root = os.environ.get('BUILD_ROOT', None) # This is a hack to fix missing objects.mk issue
+if not root:
+    raise Exception('Env var BUILD_ROOT not set')
 app_name = 'do3se'
 app_description = 'Deposition of Ozone and Stomatal Exchange'
 app_version = '3.6.50'
