@@ -155,8 +155,6 @@ class Dataset:
         self.params['o3_h'] = self.params['h'] if o3_h['disabled'] else o3_h['value']
 
         if SGS_EGS['func'] == 3:
-            # self.params['sgs']
-            # print (mean_temps[self.params['mid_anthesis']])
             sgs_set = False
             egs_set = False
             astart_set = False
@@ -185,14 +183,39 @@ class Dataset:
                     leaf_f_phen_2_set = True
                 i = i + 1
 
-            self.params['fphen_1'] = fphen_1_day - self.params['sgs']
-            self.params['leaf_fphen_1'] = leaf_fphen_1_day - \
-                self.params['astart']
-            self.params['leaf_fphen_2'] = self.params['aend'] - \
-                leaf_fphen_2_day
-            self.params['fphen_4'] = self.params['egs'] - \
-                self.params['mid_anthesis']
-            self.params['aend'] = self.params['egs'] + 1
+            if (
+                not fphen_1_set or not egs_set or not leaf_f_phen_1_set or not leaf_f_phen_2_set or not sgs_set or not astart_set
+            ):
+                if self.params.get('allow_invalid_td', False):
+                    _log.warning(
+                        "Failed to calculate SGS/EGS, using input values")
+                    # Set to invalid values so that fphen and leaf_fphen are not calculated
+                    self.params['sgs'] = -999
+                    self.params['egs'] = 999
+                    self.params['astart'] = -998
+                    self.params['fphen_1'] = 0
+                    self.params['aend'] = 998
+                    self.params['leaf_fphen_1'] = 0
+                    self.params['leaf_fphen_2'] = 0
+                    self.params['fphen_4'] = 999
+                    self.params['invalid_td'] = True
+                else:
+                    raise Exception(
+                        "Failed to calculate SGS/EGS, use allow_invalid_td to ignore")
+
+            else:
+                self.params['fphen_1'] = fphen_1_day - self.params['sgs']
+
+                self.params['aend'] = self.params['egs'] + 1
+
+                self.params['leaf_fphen_1'] = leaf_fphen_1_day - \
+                    self.params['astart']
+
+                self.params['leaf_fphen_2'] = self.params['aend'] - \
+                    leaf_fphen_2_day
+
+                self.params['fphen_4'] = self.params['egs'] - \
+                    self.params['mid_anthesis']
 
         _log.info("Loaded %d data rows" % len(self.input))
 

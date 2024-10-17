@@ -99,5 +99,5 @@ def run_from_pipe(options, projectfile, input_fields=[], output_file=None, headi
                 options.format,
                 options.show_headers,
                 (project.data['sgs'], project.data['egs']) if options.reduce_output else None)
-        return results
+        return results, dataset
     return _inner

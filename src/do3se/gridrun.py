@@ -497,7 +497,7 @@ def runner(
                 headings=input_fields,
             )
 
-            output = runner_int(rows, config_overrides)
+            output, dataset_processed = runner_int(rows, config_overrides)
             if output_file:
                 logger("Runner output saved to", output_file_path, "for coords", x, y)
 
@@ -524,7 +524,7 @@ def runner(
 
             if process_output:
                 logger("Processing output for coords", x, y)
-                output_processed = process_output(output, input_data_df=rows_df, options=options, x=x, y=y)
+                output_processed = process_output(output, input_data_df=rows_df, options=options, x=x, y=y, config_processed=dataset_processed.params)
                 outputs.append({
                     **output_processed,
                     "lat": lat,
