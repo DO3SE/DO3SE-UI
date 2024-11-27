@@ -261,10 +261,10 @@ contains
     ! Derive ustar for the flux canopy and the windspeed at the canopy
     !
     subroutine Calc_ustar_ref_O3_uh()
-        use Parameters, only: O3_d, u_zo, uzR
+        use Parameters, only: O3_d, u_zo, O3zR
 
         ! Find ustar over reference canopy
-        ustar_ref_O3 = estimate_ustar_simple(uh_i, uzR - O3_d, u_zo)
+        ustar_ref_O3 = estimate_ustar_simple(uh_i, O3zR - O3_d, u_zo)
 
     end subroutine Calc_ustar_ref_O3_uh
 
