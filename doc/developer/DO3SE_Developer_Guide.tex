@@ -1,0 +1,403 @@
+% vim: fo=aw2tq tw=100
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[vmargin=1in,hcentering]{geometry}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true}
+
+\usepackage{color}
+\definecolor{lightgray}{gray}{0.95}
+
+\usepackage{listings}
+\lstset{lineskip=-1pt, basicstyle=\small\ttfamily, backgroundcolor=\color{lightgray}, frame=single, 
+framerule=0pt}
+
+%\setcounter{secnumdepth}{3}
+
+% Hyperlinks suitable for both HTML and PDF
+\newcommand{\fhref}[2]{\htmladdnormallinkfoot{#2}{#1}}
+% Easier way of using backslash (damn Windows file paths)
+\newcommand{\bslash}{\symbol{92}}
+% The DO3SE thingy
+\newcommand{\DOSE}{{DO$_3$SE}}
+
+\title{\DOSE{} Developer Guide}
+\author{Stockholm Environmental Institute,\\
+Alan Briolat (\href{mailto:sei@alanbriolat.co.uk}{sei@alanbriolat.co.uk})}
+%\date{}
+
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+%\section{Software Structure}
+
+%\subsection{F Model}
+
+%\subsection{Graphical User Interface}
+
+%\subsection{Fortran-Python Integration}
+
+%\subsection{Build System}
+
+
+
+\section{Development Environment}
+\label{dev:env}
+
+To build any of the software, at the very least the software the build system is based on and the 
+dependencies for the software must be present.
+
+The build system is a collection of ``Makefiles'', as used by GNU Make.  Therefore any platform on 
+which the software is to built must have GNU Make installed.
+
+To build the F model, a Fortran compiler which understands the F standard is needed.  Currently the 
+only freely-available such compiler is G95, which is built on GCC (the GNU Compiler Collection), 
+therefore both GCC and G95 must be installed in some form to build the F model.
+
+The GUI (Graphical User Interface) is written in the Python programming language, using the 
+wxWidgets cross-platform GUI toolkit.  The bridge between Python and the F model is created by F2PY 
+(Fortran-to-Python) which is part of the NumPy (Numerical Python) library.  The full dependencies 
+are:
+
+\begin{itemize}
+\item A working environment for building the F model
+\item Python $>=$ 2.5 (but not Python 3.x)
+\item NumPy $>=$ 1.1.0
+\item wxWidgets 2.8
+\item wxPython 2.8 (the Python bindings for wxWidgets)
+\end{itemize}
+
+The following sections describe how to install the necessary dependencies for both software builds 
+on common platforms.
+
+
+\subsection{Preparing a Windows Environment}
+\label{dev:env:windows}
+
+\subsubsection{F Model Dependencies}
+
+G95 for Windows depends on MinGW (``Minimalist GNU for Windows'') to provide GCC.  GNU Make is 
+provided by MSYS\footnote{MinGW also provides Make, but does not have a full shell environment and 
+therefore lacks important utilities.} (``Minimal System''), a basic Linux-like environment for 
+Windows. 
+
+\paragraph{Installing MinGW}
+
+\begin{enumerate}
+
+\item Download and run the latest Automated MinGW Installer from the 
+\fhref{http://sourceforge.net/projects/mingw/files/}{MinGW download page}---click on ``Automated 
+MinGW Installer'' and then on the latest \verb|.exe| file, e.g. \verb|MinGW-5.1.4.exe|.
+
+\item Click through the installer; the options are self-explanatory in most cases.
+
+\item When given a choice of which components to install, the ``Minimal'' install is sufficient.  
+Select additional features if desired.
+
+\item When asked for a ``Destination Folder'', use \verb|C:\MinGW|
+
+\item Click ``Install'' and wait for the necessary files to be downloaded and installed.  This will 
+probably take a few minutes on a fast Internet connection.
+
+\end{enumerate}
+
+\paragraph{Installing G95}
+
+\begin{enumerate}
+
+\item Navigate to the \fhref{http://www.g95.org/downloads.shtml}{G95 downloads page}, click on the 
+most recent ``Stable Version'' link.
+
+\item Download the installer by clicking one of the links next to ``Self-extracting Windows x86'' 
+and run it.
+
+\item Make sure the ``Destination Folder'' is the same as where MinGW was installed to 
+(\verb|C:\MinGW|) and click ``Install'', then click ``Yes'' when notified that it will install into 
+the MinGW directory structure.
+
+\item When asked about setting \verb|PATH| and \verb|LIBRARY_PATH| variables, it is not essential to 
+answer ``OK'' here, but may be desirable---adding the ``bin'' directory to the \verb|PATH| variable 
+removes the need to use the full path to the compilers when using them for other projects.
+
+\end{enumerate}
+
+\paragraph{Installing MSYS}
+
+\begin{enumerate}
+
+\item Download and run the MSYS Base System installer from the 
+\fhref{http://sourceforge.net/projects/mingw/files/}{MinGW download page}---click on ``MSYS Base 
+System'', then ``Current Release'', then the \verb|.exe| file, e.g.  \verb|MSYS-1.0.10.exe|.
+
+\item Click through the installer; the options are self-explanatory in most cases.
+
+\item When asked for a ``Destination Directory'', use \verb|C:\msys\1.0|
+
+\item In the command prompt window that appears after installing MSYS, it is safe to answer ``n'' to 
+skip the post-install process.
+
+\item It's probably undesirable to read all the technical documents that come with MSYS at this 
+point, so uncheck the two boxes on the final screen before clicking ``Finish''.
+
+\end{enumerate}
+
+\paragraph{Adding MSYS to the PATH Variable (Optional)}
+
+It may be desirable to add MSYS to the \verb|PATH| environment variable so it is not necessary to 
+use the full path to \verb|make| when running the build system.
+
+\begin{enumerate}
+
+\item Open the ``System Properties'' dialog, for example by pressing the ``Win+Break'' key 
+combination or right-clicking on ``My Computer'' and clicking ``Properties''.
+
+\item Click the ``Advanced'' tab, and then the ``Environment Variables'' button.
+
+\item If the \verb|PATH| variable already exists in the ``User variables'' section, click it and 
+click ``Edit'', otherwise click ``New'' and use \verb|PATH| as the variable name.
+
+\item Add the path to the MSYS binary path to the value (prefixing it with a semicolon---``;''---if 
+a value already exists).  The MSYS binary path should look something like \verb|c:\msys\1.0\bin|.
+
+\end{enumerate}
+
+
+\subsubsection{GUI Dependencies}
+
+Before installing the GUI dependencies, it is necessary to install the F model dependencies first.  
+You \emph{should} follow all instructions for adding to the \verb|PATH| environment variable in the 
+guide for installing the F model dependencies.
+
+\begin{enumerate}
+
+\item From the \fhref{http://python.org/download/}{Python download page}, download and run the 
+``Python 2.x.x Windows installer'' (where 2.x.x is the version number, e.g. 2.6.2).
+
+\item Install Python with the default settings, but make a note of the installation directory, e.g.
+\verb|C:\Python26|.
+
+\item Edit the \verb|PATH| variable (as described above) and add the Python installation directory 
+noted in the previous step.
+
+\item Navigate to the \fhref{http://sourceforge.net/projects/numpy/files}{NumPy files page}, expand 
+the folder for the latest version, and download the version that matches your platform and Python 
+version.  For Windows, the filename will contain \verb|win32|, and for Python 2.6 it will end with 
+\verb|python2.6.exe|.
+
+\item Run the NumPy installer and click through it---it will install the necessary files to the 
+correct location after automatically detecting where Python was installed.
+
+\item From the \fhref{http://www.wxpython.org/download.php\#binaries}{wxPython download page}, 
+download and run the installer appropriate to the version of Python that was installed (use the 
+installer ending in \verb|-unicode|, not \verb|-ansi|).  Yet again, just click through the 
+installer.
+
+\item From the \fhref{http://sourceforge.net/projects/py2exe/files/}{py2exe download page}, download 
+and install the version of py2exe appropriate to your platform---for example, for Python 2.6 the 
+filename will contain \verb|-py2.6|.
+
+\end{enumerate}
+
+
+\subsection{Preparing a Linux Environment}
+\label{dev:linux}
+
+\subsubsection{F Model Dependencies}
+
+Building the F model on a Linux system requires the presence of both GNU Make and G95 (which in turn 
+depends on GCC).  Make and GCC can usually be installed via the package manager, using the ``make'' 
+and ``gcc'' packages.  (If you are using a distribution which does not have these packages, you most 
+likely know how to build them yourself.)
+
+\paragraph{Installing G95}
+
+\begin{enumerate}
+
+\item Navigate to the \fhref{http://www.g95.org/downloads.shtml}{G95 downloads page}, click on the 
+most recent ``Stable Version'' link.
+
+\item Download the ``Linux x86'' version if you are running 32-bit Linux, or a ``Linux 
+x86\_64/EMT64'' version if you are running 64-bit Linux.  If you do not know which you are running, 
+run \verb|uname -m| (i686 is 32-bit, x86\_64 is 64-bit).
+
+\item Unpack the files, which should create a \verb|g95-install| directory:
+\begin{lstlisting}
+$ tar xzf g95-x86-linux.tgz
+\end{lstlisting}
+Or, to put it somewhere more permanent,
+\begin{lstlisting}
+$ tar xzf g95-x86-linux.tgz -C /opt/
+\end{lstlisting}
+
+\item Create a symbolic link for the \verb|g95| binary (the filename will be different for 64-bit, 
+but there will be only one file in \verb|g95-install/bin|):
+\begin{lstlisting}
+$ ln -s /opt/g95-install/bin/i686-pc-linux-gnu-g95 /usr/local/bin/g95
+\end{lstlisting}
+
+\item Check that G95 was installed correctly by attempting to run it:
+\begin{lstlisting}
+$ g95
+g95: no input files
+\end{lstlisting}
+
+\end{enumerate}
+
+
+\subsubsection{GUI Dependencies}
+
+The dependencies for building and running the GUI are specified in \ref{dev:env}, and can usually be 
+installed using your Linux distribution's package manager.  The development files for Python are 
+required to run F2PY and are usually in a separate package, so this needs to be installed even if 
+Python is already installed.  For example, under Ubuntu or Debian:
+
+\begin{lstlisting}
+$ sudo apt-get install python-dev python-wxgtk2.8 python-numpy
+\end{lstlisting}
+
+In addition, the only Fortran compiler on Linux that appears to work with F2PY correctly is 
+\verb|gfortran|, so this also needs to be installed:
+
+\begin{lstlisting}
+$ sudo apt-get install gfortran
+\end{lstlisting}
+
+
+
+\section{Building the Software}
+\label{dev:build}
+
+This section describes how to use the build system to build the software in different environments, 
+but not how to modify the software or set it up to do something useful---this is covered in later 
+sections.  This is because the build step varies between platforms, whereas modifying the software 
+does not.
+
+It is assumed that a ``zip file'' containing the source code has already been obtained and unzipped 
+somewhere.
+
+\subsection{In a Windows Environment}
+
+\subsubsection{Building the F Model}
+
+\begin{enumerate}
+
+\item Open the Makefile from the source directory in a text editor and check that the 
+\verb|WIN32_LIB_...| and \verb|WIN32_BIN_...| paths ``look right'' for how MinGW and MSYS was 
+installed.
+
+\item Open a Windows terminal prompt, for example by clicking the ``Start'' button and then 
+``Run...'' and typing \verb|cmd.exe|, and change directory into the directory that was extracted 
+from the zip file.  For example, if the zip file was \verb|DO3SE-src-F-20090620| and was extracted 
+to ``My Documents'', your terminal session might look like this:
+\begin{lstlisting}
+C:\Documents and Settings\Alan>cd "My Documents\DO3SE-src-F-20090620"
+C:\Documents and Settings\Alan\My Documents\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+...
+\end{lstlisting}
+For Windows Vista and above, replace ``Documents and Settings'' and ``My Documents'' with ``Users'' 
+and ``Documents''.
+
+\item Run \verb|make PLATFORM=win32| to build the F model for 32-bit Windows.  If MSYS was not added 
+to the \verb|PATH|, supply the full path to the \verb|make| executable:
+\begin{lstlisting}
+C:\...\DO3SE-src-F-20090620>c:\msys\1.0\make PLATFORM=win32
+\end{lstlisting}
+
+\item If there are no errors, the program \verb|dose.exe| should have be created in the current 
+directory.
+\begin{lstlisting}
+C:\Documents and Settings\Alan\My Documents\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+20/06/2009  18:56               dose.exe
+...
+\end{lstlisting}
+
+\end{enumerate}
+
+
+%\subsection{In a Linux Environment}
+
+
+
+\section{Using the F Model---Quick Start}
+
+The F model, when built, is a stand-alone command-line program.  To run it, make sure there is an 
+input file of the correct filename in the current directory and then execute the program from the 
+command line:
+\begin{lstlisting}
+C:\...\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+20/06/2009  18:56               dose.exe
+20/06/2009  18:56               input_newstyle.csv
+...
+C:\...\DO3SE-src-F-20090620>dose.exe
+C:\...\DO3SE-src-F-20090620>dir
+...
+20/06/2009  18:53   <DIR>       .
+20/06/2009  18:53   <DIR>       ..
+20/06/2009  18:53   <DIR>       F
+20/06/2009  18:53               Makefile
+20/06/2009  18:56               dose.exe
+20/06/2009  18:56               input_newstyle.csv
+20/06/2009  18:59               output.csv
+...
+\end{lstlisting}
+
+Alternatively, double-click on \verb|dose.exe| to run it---be aware that this will hide any errors 
+that might have been visible on the command line.
+
+If the output file (\verb|output.csv| by default) is empty, it is most likely that no output columns 
+have been specified (see the next section).
+
+\subsection{Configuring Input and Output}
+
+The input and output of the F model is configured in \verb|F/dose.f90|.
+
+\begin{itemize}
+
+\item The input and output filenames are set near the bottom of the file, in the \verb|Run_DOSE| 
+section.
+
+\item The columns to include in the output are set in the \verb|WriteData| subroutine.  Uncomment a 
+line to include that variable in the output.  The variables and their meanings are documented in 
+\verb|F/variables.f90|.
+
+\item The input format is defined in the \verb|ReadData| subroutine.  \emph{This should be used for 
+guidance, but not modified.}  The variables and their meanings are documented in 
+\verb|F/inputs.f90|.
+
+\item Where certain calculations have multiple implementations, these can be chosen between in the 
+\verb|Calculate| subroutine.
+
+\end{itemize}
+
+To change any of these options, edit \verb|F/dose.f90| as necessary and save it.  To use the 
+changes, rebuild the model (see \ref{dev:build}) and run it again.  \emph{If the output filename has 
+not been changed and the previous results have not been moved, they will be overwritten.}
+
+
+%\subsection{Building the User Interface}
+
+\end{document}

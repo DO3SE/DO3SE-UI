@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0","numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "do3se"
+version = "3.6.34"
+authors = [
+  { name="Sam Bland", email="sbland.co.uk@gmail.com" },
+  { name="Alan Briolat"},
+]
+description = "DO3SE model python API"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+#py-modules = ["_custom_build"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  ".","src/do3se","tests"
+]
+testpaths = [
+  "tests","tests/gridrun"
+]

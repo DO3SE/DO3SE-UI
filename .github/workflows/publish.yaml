@@ -1,0 +1,43 @@
+name: Publish
+on:
+  push:
+    branches:
+      - RELEASE
+jobs:
+  publish_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # TODO: push release branch to release repo
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest
+          pip install -r requirements/common.txt
+          pip install -r requirements/deployment.txt
+          pip install --upgrade build
+        shell: bash
+      - name: Build Fortran
+        run: make dose
+      - name: Build
+        run: python setup.py build
+        shell: bash
+        env:
+          BUILD_ROOT: "."
+      - name: Check Builda
+        run: echo $(ls src/F)
+      - name: BuildB
+        run: export BUILD_ROOT=$PWD && python -m build
+        shell: bash
+      - name: Check Build
+        run: echo $(ls dist)
+      - name: Publish
+        run: ./.github/scripts/publish.sh
+        shell: bash
+        env:
+          GITHUB_TOKEN: "${{ secrets.PRIVATE_RELEASE_REPO_SECRET }}"
+          GH_TOKEN: ${{ secrets.PRIVATE_RELEASE_REPO_SECRET  }}

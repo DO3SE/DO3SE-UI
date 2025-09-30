@@ -1,0 +1,235 @@
+131  	
+real, parameter :: D_meas = 0.5  !measurement depth in m of observed data
+
+145	
+real :: r_meas      ! root fraction at measured data depth
+
+148	
+real :: P_input_meas ! P input to soil layer above measured data depth
+
+159	
+real :: et_meas      ! tranpiration at measured data depth
+
+178	
+real :: Sn_meas
+
+185	
+real :: Trans_diff_meas 
+
+192	
+real :: Sn_diff_meas
+
+200	
+real :: SWP_meas
+
+211	
+real :: SMD_meas 
+
+634	 
+!Initialise variables for SWP - Layers
+
+646	 
+r_meas = (1-(0.97**(D_meas*100)))-(1-(0.97**(D0*100)))
+
+653	 
+SWP_meas      = SWP_AE*((SWC_sat/FC_m)**soil_B)
+
+661	 
+Sn_meas         = Sn_star
+
+667	 
+SMD_meas         = 0
+
+679	 
+Sn_diff_meas     = 0
+
+685	 
+Trans_diff_meas  = 0
+
+691	 
+et_meas        = 0
+
+1239
+P_input_meas = P_input
+
+1530
+ hour_count_6 = Hour_count_6 + 1
+
+ if (hour_count_6 < 25) then
+
+1533
+et_meas = et_meas
+
+1549
+Trans_diff_meas = Trans_diff_meas
+
+1555
+Sn_diff_meas = Sn_diff_meas
+
+1561
+Sn_meas = Sn_meas
+
+1567
+SWP_meas = SWP_meas
+
+1573
+SMD_meas = SMD_meas
+
+1562
+ else if (hour_count_6 == 25) then
+
+1649
+Et_meas = AEt_use * R_meas
+
+if (Et_meas > ((Sn_meas-PWP_vol) * D_meas)) then
+
+Et_meas = (Sn_meas-PWP_vol) * D_meas
+
+
+else
+
+Et_meas = Et_meas
+
+end if
+
+
+
+! change in soil water storage at each depth
+
+1697
+trans_diff_meas = P_input_meas - et_meas
+Sn_diff_meas = (trans_diff_meas) / D_meas
+Sn_meas = min(FC_m, Sn_meas + Sn_diff_meas)
+if (Sn_meas < PWP_vol) then
+   Sn_meas = PWP_vol
+end if
+
+!Soil water potential at each depth
+
+1726
+SWP_meas = SWP_AE * ((SWC_sat / Sn_meas)**soil_b)
+if (SWP_meas < -4) then
+   SWP_meas = -4
+end if
+
+!SMD at each depth
+1741
+SMD_meas = (Fc_m - Sn_meas) * D_meas
+
+hour_count_6 = 1
+end if
+
+
+
+227
+
+!====================================
+!Leaf water potential (LWP) variables
+!====================================
+
+real :: LWP                     !leaf water potential (MPa)
+real :: LWP_1                   !leaf water potential of previous hour (MPa)
+real :: deltaLWP                !change in leaf water potential between hours
+real :: fLWP                    !LWP limitation on gsto
+
+real :: SWP_1                   !soil water potential of previous day
+
+Real :: Rsr                      !soil-root resistance of all layers in parallel
+
+
+
+Real :: Ks                         !Bulk soil hydraulic conductivity
+
+real :: delta_t                 !change in time (h)
+real :: delta_Et               !change in AEt between hours
+real :: Et_hr_1                !previous hour's Et
+
+real, parameter  :: K1 = 0.0000000000035 ! constant related to root density
+
+
+
+
+real, parameter  :: C  = 1                !Plant capacitance mm MPa-1
+real, parameter  :: Rc = 1.6        ! storage/destorage hydraulic resistance MPa h mm-1
+real, parameter  :: Rp = 23        !plant hydraulic resistance MPa h mm-1
+
+
+
+470	
+Real, parameter :: Ksat = 0.0002178   ! Saturated soil conductance (s-2 MPa-1 m2)
+                                              ! sandy loam = 0.0009576, silt loam, 0.0002178, loam, 0.0002286
+                                              ! clay loam = 0.00016 (estimated)       
+
+
+
+1039	
+ks = Ksat * ((SWP_AE/SWP)**((3/soil_b)+2))
+
+1046
+Rsr = K1 / (Root * Ks)
+
+1051
+  !Initialise LWP
+
+
+delta_t = 1
+
+
+
+If (hr < 3) then
+
+LWP_1 = SWP
+
+else
+
+LWP_1 = LWP
+
+end if
+
+if (hr < 3) then
+
+DeltaLWP = 0
+
+else
+
+DeltaLWP = ((((SWP-LWP_1-(Rsr+Rp)*(Et_hr*1000))/(C*(Rsr+Rp+Rc)))*Delta_t)-(((Rsr+Rp)*Rc)/(Rsr+Rp+Rc))*(delta_Et*1000))
+
+end if
+
+
+
+if (hr < 3) then
+
+LWP = SWP
+
+else
+
+LWP = LWP_1 + DeltaLWP
+
+end if
+
+
+
+flwp = (((-1) * LWP)** (-0.706)) * 0.355
+flwp = max (flwp, fmin)
+
+
+if (flwp > 1) then
+flwp = 1
+end if
+
+! =======================================
+! Calculate Gsto using previous days fSWP
+! =======================================
+
+! Leaf Gsto
+
+Gsto_1 = gmax * fphen * leaf_flight * max(fmin, ftemp * fVPD * flWP)   
+
+! Mean Gsto
+
+Gsto = (gmax * 0.84) * fphen * flight * max(fmin, ftemp * fVPD * flWP) 
+
+!Estimate canopy Gsto from mean leaf Gsto
+
+Gsto_c = Gsto * LAI

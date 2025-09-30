@@ -1,0 +1,8 @@
+Building F module in Windows
+----------------------------
+
++ Install python
++ Install numpy
++ Install mingw to C:\mingw
++ Install g95 to C:\mingw - *** say "yes" to changing the path *** (no to installing utilities)
++ python f2py.py -c --fcompiler=f95 --compiler=mingw32

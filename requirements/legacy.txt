@@ -1,0 +1,22 @@
+# These are dependencies that may no longer be needed
+wxPython # Install from website
+libSDL2-2.0.so.0 # install with sudo apt-get
+
+
+- If running with a headless ubuntu setup (Docker/WSL etc) then additional dependencies may need to be installed.
+
+```
+apt-get install freeglut3-dev \
+libgl1-mesa-dev \
+libglu1-mesa-dev \
+libgstreamer-plugins-base1.0-dev \
+libgtk-3-dev \
+libjpeg-dev \
+libnotify-dev \
+libpng-dev \
+libsdl2-dev \
+libsm-dev \
+libtiff-dev \
+libwebkit2gtk-4.0-dev \
+libxtst-dev
+```
