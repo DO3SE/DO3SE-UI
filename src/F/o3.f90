@@ -100,7 +100,7 @@ contains
     subroutine Calc_Fst()
         use Parameters, only: Lm, Rext
         use Inputs, only: uh
-        use Variables, only: Rsto, Gsto_l, Rsto_l, O3_nmol_m3, Fst, Fst_sun, Rsun_l
+        use Variables, only: Gsto_l, Rsto_l, O3_nmol_m3, Fst, Fst_sun, Rsun_l
 
         real :: leaf_rb, leaf_r_l, leaf_rs
 
@@ -110,7 +110,7 @@ contains
             leaf_r_l = 1.0 / ((1.0/Rsto_l) + (1.0/Rext))  ! leaf resistance in s/m
             Fst = O3_nmol_m3 * (1/Rsto_l) * (leaf_r_l / (leaf_rb + leaf_r_l))
 
-            leaf_rs = 1.0 / ((1.0/Rsto) + (1.0/Rext))  ! resistance in s/m
+            leaf_rs = 1.0 / ((1.0/Rsto_l) + (1.0/Rext))  ! resistance in s/m
             Fst_sun = O3_nmol_m3 *(leaf_rs / (leaf_rb + leaf_rs)) *  (1/Rsun_l)
         else
             Fst = 0
