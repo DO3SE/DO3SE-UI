@@ -13,6 +13,10 @@ For grid runs also run `pip install -r requirements/gridruns.txt`
 
 or...
 
+- Create Python 3.8 environment
+- Install dependencies with `pip install -r requirements/common.txt`
+- Install build tools with `pip install -r requirements/build.txt`
+- `pip install --upgrade build`
 `python -m build`
 
 
@@ -61,3 +65,7 @@ To deploy to HPC machines run
 - wxpython missing dependencies on linux. Check extra dependencies installed: https://github.com/wxWidgets/Phoenix/blob/master/README.rst#prerequisites
 
 - Make sure to run `make py_cli` after making any fortran changes
+
+
+- Could not find a Fortran compiler. Install gfortran or if already installed
+- make sure it is in your PATH. `sudo apt-get install gfortran` on ubuntu.
